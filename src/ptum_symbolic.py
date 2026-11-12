@@ -48,6 +48,11 @@ H = sp.symbols("H", real=True)
 # Dimensionless couplings
 alpha, lam_psi, g_DM, lambda_phi = sp.symbols("alpha lambda_psi g_DM lambda_phi", positive=True)
 y_psi, g_psi, kappa, lam_res = sp.symbols("y_psi g_psi kappa lambda_res", real=True)
+# ``fbar f`` is treated as a background bilinear.  It must be ONE object shared
+# by every module: a symbol here, and in ``ptum_transfer`` the very same symbol
+# is what the time derivative acts on.  (See the ``g00`` identity trap in the
+# SPRINT-1 notes: duplicating a symbol silently makes substitutions no-ops.)
+fbarf = sp.Symbol("fbarf", real=True)
 
 # Dimensionful parameters
 V0, m, m_chi, E_th, W0, Lam_NP, f_res = sp.symbols(
@@ -371,7 +376,7 @@ def frw_eoms_symbolic():
     Phi_res = sp.Function("Phi_res")(t)
 
     L = L_total_density(Phi, psi, chi, Phi_res,
-                        sp.Symbol("fbarf"), sp.Function("phi_SM")(t))
+                        fbarf, sp.Function("phi_SM")(t))
     eqs = eom_from_action(L, [Phi, psi, chi, Phi_res], a_t)
     out = {}
     for fld, eq in zip(("Phi", "psi", "chi", "Phi_res"), eqs):
