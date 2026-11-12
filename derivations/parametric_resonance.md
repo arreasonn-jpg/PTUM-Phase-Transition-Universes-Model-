@@ -3,8 +3,9 @@
 **Proje:** PTUM bilimsel olgunluk denetimi
 **Sprint:** 3 / 6
 **Tarih:** 2026-11-12
+**Revizyon:** 2 — SPRINT 4 öncesi açık kapı taraması (bkz. §12)
 **Durum:** ✅ Tamamlandı
-**Test:** `pytest tests/` → **95/95 PASS** (S1: 27, S2: 33, S3: 35), 27.4 s
+**Test:** `pytest tests/` → **104/104 PASS** (S1: 27, S2: 33, S3: 44), 32.7 s
 **`main.tex`:** ❌ **değiştirilmedi** (`sha256[:16] = ba1a630914b809ae`)
 
 ---
@@ -480,12 +481,12 @@ Satır 1686'daki Yukawa `Q_SM` düzeltmesi (SPRINT 2 §9.1) artık **kanıtlanm�
 |---|---|---|
 | `μ_max(q)`, eşik, benchmark | Sayısal, 2 integratör | SAYISAL DOĞRULANDI |
 | Fermiyonik kapanış (düz uzay) | Sembolik, kalıntı 0 | TÜRETİLDİ |
-| Fermiyonik kapanış (FRW) | `H/ω` düzeltmesi ihmal | KOŞULLU |
+| Fermiyonik kapanış (FRW) | Spin bağlantısı dahil, kalıntı 0 | **TÜRETİLDİ** (rev.2) |
 | `β³` üssü | Faz uzayı argümanı | ANALİTİK DOĞRULANDI |
 | Kuartik kanal `Γ` | Lagrangian vermiyor | FENOMENOLOJİK |
 | `S_obs ~ 10⁸⁸` | Ani dönüşüm varsayımı | KOŞULLU |
 | İz anomalisi sayısal önemi | `T_rh` belirsizliği | EKSİK |
-| Geri-tepme, backreaction | Yapılmadı | EKSİK (SPRINT 5) |
+| Geri-tepme, backreaction | Kapalı-form üst sınır türetildi | **TÜRETİLDİ** (rev.2), sayısal sim. EKSİK |
 | Lattice verisi | Kod yok, doğrulanamaz | EKSİK |
 
 ---
@@ -509,3 +510,123 @@ SPRINT 3 tamamlandı. **`main.tex` değiştirilmedi.**
 3. SPRINT 2'nin `PARTIAL` etiketinin kaldırılması.
 
 Onayınızla SPRINT 4'e (mikroskopik alan vs. proxy-akışkan) geçebilirim.
+
+---
+
+## 12. Revizyon 2 — SPRINT 4 öncesi açık kapı taraması
+
+SPRINT 4'e geçmeden önce SPRINT 3'ün kendi bıraktığı `KOŞULLU` ve `EKSİK`
+etiketlerini tek tek gözden geçirdim. Üçü kapatıldı, biri daraltıldı, ve
+**kendi kodumda bir tutarsızlık** buldum.
+
+### 12.1 C2 — Fermiyonik FRW kapanışı: `KOŞULLU` → `TÜRETİLDİ`
+
+SPRINT 3'te "FRW'de `H/ω` mertebesinde, ihmal edilebilir ama türetilmedi"
+demiştim. Türettim.
+
+FRW'de homojen bir mod için Dirac denklemi spin bağlantısı terimi taşır:
+
+```
+iγ⁰∂₀f + (3i/2)H γ⁰f = (m_f + y_ψψ)f
+⟹  ∂₀f = [i(m_f + y_ψψ)γ⁰ − (3/2)H] f
+```
+
+Spin bağlantısı terimi **gerçek** ve `f` ile aynı şekilde çarpılıyor; bu yüzden
+kütle teriminin aksine bilineerlerde **kalmaz değil, kalır**:
+
+```
+∂₀(f̄f) = −3H(f̄f)                              (bilineer kırmızıya kayar)
+T_f^{00} = (m_f + y_ψψ)f̄f
+∂₀T_f^{00} = [y_ψψ̇ − 3H(m_f + y_ψψ)] f̄f
+```
+
+Yani
+
+```
+Q_f = y_ψψ̇f̄f − 3Hρ_f = −Q_ψ − 3Hρ_f
+```
+
+İkinci terim **sektörler arası transfer değil**, fermiyon enerjisinin
+seyrelmesidir — süreklilik denkleminin sol tarafındaki `3Hρ` parçasının ta
+kendisi. Onu oraya yazınca:
+
+```
+ρ̇_f + 3H(ρ_f + p_f) = Q_f   ⟹   Q_f = −Q_ψ
+```
+
+düz uzay sonucu geri geliyor. **`KOŞULLU` etiketi kaldırıldı.**
+
+Testler: `test_frw_bilinear_redshifts`, `test_frw_fermionic_closure`,
+`test_frw_reduces_to_flat_space`, `test_redshift_term_is_not_a_transfer`.
+
+### 12.2 Geri-tepme: uydurma simülasyondan kapalı-form sınıra
+
+İlk denemem `dA/dz = −(sabit)·ρ_χ·A/(1+ρ_χ)` gibi **uydurma** bir sönüm terimi
+içeren bir ODE sistemiydi. Onu raporlayamam — kuplajı ben seçmiştim, sonuç
+fiziğin değil seçimin ürünüydü. Attım.
+
+Yerine **türetilebilir** olan kriteri koydum. Parametrik rezonans analizi `χ`'yi
+sabit `Φ_res` içinde bir **test alanı** olarak ele alır. Bu, `Φ_res`
+denklemindeki geri-tepme terimi küçük olduğu sürece geçerlidir:
+
+```
+Φ_res'' + 3HΦ_res' + W' + 2g_DM χ²Φ_res = 0
+⟹   2g_DM⟨χ²⟩ ≪ ω_res²
+```
+
+`χ ∝ exp(μωt)` ile `⟨χ²⟩ = χ₀²e^{2μωt}`:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│   B ≡ 2μω t_br = ln[ ω_res² / (2 g_DM χ₀²) ]            │   (#)
+└─────────────────────────────────────────────────────────┘
+```
+
+Yani rezonansın kendini kapatmadan önce koşabileceği e-fold sayısı, kuplaja
+**yalnızca logaritmik** olarak bağlı. `g_DM` iki katına çıkarmak sadece `ln2`
+e-fold maliyetindedir.
+
+**Dürüst sınır:** `B`, `χ₀`'a bağlıdır. 10 dekad `χ₀` farkı `2ln(10¹⁰) ≈ 46`
+e-fold demektir. Bu yüzden bunu bir **üst sınır** olarak raporluyorum, tahmin
+olarak değil. `χ₀` başlangıç genliği PTUM'da bağımsız olarak sabitlenmiyor —
+`EKSİK` kalıyor.
+
+Testler: `test_backreaction_bound_formula`,
+`test_backreaction_is_logarithmic_in_the_coupling`,
+`test_backreaction_none_without_a_resonance`,
+`test_backreaction_depends_on_the_assumed_amplitude`.
+
+### 12.3 Kendi kodumdaki tutarsızlık
+
+`src/ptum_mathieu.py` içinde `mu_broad_resonance_literature(q)` adlı bir
+yardımcı vardı ve **`0.2` döndürüyordu** — yani ölçtüğüm `0.545√q` sonucuyla
+çelişiyordu. Hiçbir yerde kullanılmıyordu ama modülde "sonuç" gibi duruyordu.
+
+Düzelttim: fonksiyon artık `NotImplementedError` atıyor ve docstring'de
+"superseded, use `mu_max_asymptotics()`" diyor.
+Test: `test_superseded_placeholder_raises`.
+
+### 12.4 Kapatılmayan (ve neden)
+
+| Konu | Durum | Neden |
+|---|---|---|
+| `χ₀` başlangıç genliği | `EKSİK` | PTUM'da bağımsız olarak sabitlenmiyor (12.2) |
+| Geri-tepme sayısal simülasyonu | `EKSİK` | Güvenilir bir kuplaj türetimi gerektirir; uydurma olur |
+| Lattice verisi | `EKSİK` | Kod yok, `PTUM.zip`'te `run_lattice.py` bulunamadı |
+| İz anomalisi sayısal önemi | `EKSİK` | `T_rh` belirsizliğine bağlı (M-04) |
+
+**Bunlar SPRINT 5'in konusu** (sayısal yeniden üretilebilirlik). SPRINT 4'ü
+engellemiyorlar.
+
+### 12.5 Bu turda bulduğum kendi test hatalarım
+
+Dördü de testlerin işe yaradığını gösteriyor:
+
+1. `t` sembolünü import etmeyi unuttum → `NameError`.
+2. Geri-tepme bağımlılığında `2ln(1e40)` yazdım, doğrusu `2ln(5e24)` — `χ₀`
+   değerleri 1e-25 ve **0.5**, oranları `1e25` değil.
+3. Fonksiyonun `ratio < 1` için 0'a kırptığını hesaba katmadım.
+4. **İşareti ters yazdım:** "büyük `χ₀` → çok e-fold" sandım; doğrusu
+   **küçük** `χ₀` → çok e-fold (daha geç geri-tepme).
+
+Hiçbiri fiziksel sonucu değiştirmedi; dördü de test/ifade hatasıydı.

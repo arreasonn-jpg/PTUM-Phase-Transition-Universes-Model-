@@ -261,3 +261,101 @@ def fermion_limit_checks():
     return {"yukawa_off": sp.simplify(Q.subs(y_psi, 0)),
             "static_scalar": sp.simplify(Q.subs(sp.diff(psi_b, t), 0)),
             "Q_f": Q}
+
+
+# ---------------------------------------------------------------------------
+# 9. FRW: the closure with the spin connection (was CONDITIONAL in SPRINT 3)
+# ---------------------------------------------------------------------------
+# In FRW the Dirac equation of a homogeneous mode carries the spin-connection
+# term (3i/2)H gamma^0 acting on f, so that
+#
+#     i gamma^0 d_0 f + (3i/2) H gamma^0 f = (m_f + y psi) f
+#     =>   d_0 f = [ i (m_f + y psi) gamma^0 - (3/2) H ] f
+#
+# The spin-connection piece is real and multiplies f identically, so it gives
+# a *common* contribution to d_0 f and d_0 fbar and therefore survives in the
+# bilinears -- unlike the mass term, whose two halves cancel.
+#
+# Consequences (both verified symbolically below):
+#
+#     d_0 (fbar f) = -3 H (fbar f)                    (the bilinear redshifts)
+#     T_f^{00}     = (m_f + y psi) fbar f
+#     d_0 T_f^{00} = [ y psidot - 3 H (m_f + y psi) ] fbar f
+#
+# so the transfer is
+#
+#     Q_f = y psidot fbar f - 3 H (m_f + y psi) fbar f
+#         = -Q_psi            - 3 H rho_f                       (***)
+#
+# The second term is *not* a transfer between sectors: it is the redshift of
+# the fermion energy, i.e. exactly the "3H rho" piece that the continuity
+# equation  rhodot + 3H(rho+p) = Q  absorbs on its left-hand side.  Writing
+# *** in that form,
+#
+#     (rhodot_f + 3H rho_f) + 3H p_f = Q_f  =>  Q_f = -Q_psi   (p_f = 0 + ...)
+#
+# recovers the flat-space result.  So SPRINT 3's CONDITIONAL becomes TURETILDI:
+# the fermionic half closes in FRW as well, provided the redshift is booked on
+# the left-hand side as it must be.
+
+def frw_onshell_d0(mass=None, y=None, a=None):
+    """``d_0 f`` and ``d_0 fbar`` for a homogeneous mode including ``(3/2)H``."""
+    m = m_f if mass is None else mass
+    yy = y_psi if y is None else y
+    if a is None:
+        a = sp.Function("a")(t)
+    Hs = sp.diff(a, t) / a
+    g = gamma_matrices()
+    f = sp.Matrix(F)
+    fb = sp.Matrix(1, 4, FB)
+    M = m + yy * psi_b
+    d0f = sp.expand(I * M * g[0] * f - sp.Rational(3, 2) * Hs * f)
+    d0fb = sp.expand(-I * M * fb * g[0] - sp.Rational(3, 2) * Hs * fb)
+    return ([d0f[i, 0] for i in range(4)], [d0fb[0, i] for i in range(4)])
+
+
+def _frw_total_derivative(expr, d0f, d0fb):
+    total = sp.diff(expr, t)
+    for i in range(4):
+        total += sp.diff(expr, F[i]) * d0f[i]
+        total += sp.diff(expr, FB[i]) * d0fb[i]
+    return sp.expand(total)
+
+
+def frw_bilinear_redshift():
+    """``d_0 (fbar f) = -3H (fbar f)``: the standard redshift of a density."""
+    a = sp.Function("a")(t)
+    Hs = sp.diff(a, t) / a
+    d0f, d0fb = frw_onshell_d0(a=a)
+    fbarf = sum(FB[i] * F[i] for i in range(4))
+    return sp.simplify(_frw_total_derivative(fbarf, d0f, d0fb) + 3 * Hs * fbarf)
+
+
+def frw_fermion_closure_residual():
+    """``d_0 T_f^{00} - [y psidot - 3H(m_f+y psi)] fbar f``; must be zero.
+
+    Equivalently ``d_0 rho_f + 3H rho_f = y psidot fbar f = -Q_psi``, i.e. the
+    fermionic half of the Yukawa closure holds in FRW too once the redshift
+    term ``3H rho_f`` is booked on the continuity-equation left-hand side.
+    """
+    a = sp.Function("a")(t)
+    Hs = sp.diff(a, t) / a
+    d0f, d0fb = frw_onshell_d0(a=a)
+    f = sp.Matrix(F)
+    fb = sp.Matrix(1, 4, FB)
+    T00 = sp.simplify(sp.Rational(1, 2) * I * (
+        (fb * gamma_matrices()[0] * sp.Matrix(d0f))[0, 0]
+        - (sp.Matrix(1, 4, d0fb) * gamma_matrices()[0] * f)[0, 0]))
+    fbarf = sum(FB[i] * F[i] for i in range(4))
+    dT = _frw_total_derivative(sp.expand(T00), d0f, d0fb)
+    target = (y_psi * sp.diff(psi_b, t) - 3 * Hs * effective_mass()) * fbarf
+    return sp.simplify(dT - target)
+
+
+def frw_transfer_flat_limit():
+    """In the ``H -> 0`` limit the FRW result reduces to the flat-space one."""
+    a = sp.Function("a")(t)
+    Hs = sp.diff(a, t) / a
+    fbarf = sum(FB[i] * F[i] for i in range(4))
+    Q_f_frw = y_psi * sp.diff(psi_b, t) * fbarf - 3 * Hs * effective_mass() * fbarf
+    return sp.simplify(Q_f_frw.subs(Hs, 0) - y_psi * sp.diff(psi_b, t) * fbarf)

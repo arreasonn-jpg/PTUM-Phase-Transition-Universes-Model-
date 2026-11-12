@@ -154,21 +154,25 @@ def mu_narrow_resonance(q):
 
 
 def mu_broad_resonance_manuscript(q):
-    """The manuscript's claim ``mu_max ~ q omega_res/2`` in dimensionless form."""
+    """The manuscript's claim ``mu_max ~ q omega_res/2`` in dimensionless form.
+
+    This function exists only to *represent the claim* so it can be compared
+    with the numerics.  It is **not** physics: SPRINT 3 shows the true
+    asymptotics is ``~0.545 sqrt(q)`` (see :func:`mu_max_asymptotics`).
+    """
     return q / 2.0
 
 
 def mu_broad_resonance_literature(q):
-    """Known broad-resonance behaviour for the Mathieu equation.
+    """Superseded placeholder -- kept only so nothing silently changes meaning.
 
-    For ``q >> 1`` the instability band near ``sqrt(a) ~ 1`` has width
-    ``O(1)`` in ``a`` and ``mu_max`` approaches ``O(0.2)`` in units of ``z``
-    -- it does **not** grow like ``q``.  (The ``q``-growth often quoted in
-    preheating is for ``mu`` in units of the *oscillation frequency* with a
-    different normalisation of the mode equation.)  We test the actual
-    asymptotics numerically in :func:`mu_max_scan` rather than assert it.
+    My first guess was ``0.2`` (constant).  The numerics in
+    :func:`mu_max_scan` show the truth is ``0.545 sqrt(q)``: neither constant
+    nor linear.  Use :func:`mu_max_asymptotics`; do not use this function.
     """
-    return 0.2
+    raise NotImplementedError(
+        "superseded by the measured asymptotics: mu_max ~ 0.545 sqrt(q); "
+        "see mu_max_asymptotics()")
 
 
 def mu_max_scan(q_values, a_min=0.01, a_max=4.0, n_a=400, n_steps=240):
@@ -335,3 +339,61 @@ def ptum_is_in_the_narrow_regime(g_DM, A_res, omega_res):
 def required_g_for_resonance(A_res, omega_res, safety=4.0):
     """``g_DM`` needed to reach ``q = safety * q_crit``."""
     return safety * q_critical() * 4.0 * omega_res**2 / A_res**2
+
+
+# ---------------------------------------------------------------------------
+# 7. Backreaction: an analytic criterion, not a toy simulation
+# ---------------------------------------------------------------------------
+# The parametric-resonance treatment above treats chi as a *test field* in a
+# fixed background Phi_res = A cos(omega t).  That is legitimate only while the
+# backreaction term in the Phi_res equation stays small:
+#
+#     Phi_res'' + 3H Phi_res' + W' + 2 g_DM chi^2 Phi_res = 0
+#
+#                          2 g_DM <chi^2>  <<  omega_res^2 .
+#
+# With chi growing as exp(mu omega t), <chi^2> = chi_0^2 exp(2 mu omega t), so
+#
+#     2 mu omega t_br = ln[ omega_res^2 / (2 g_DM chi_0^2) ]          (#)
+#
+# i.e. the number of e-folds the resonance can run before it shuts itself off
+# depends only logarithmically on the coupling.  This is the honest version of
+# "backreaction": a closed-form bound, not a guessed damping term.
+
+def backreaction_efolds(g_DM, A_res, omega_res, chi0=None, mu=None):
+    """E-folds of chi growth allowed before backreaction, eq. (#).
+
+    ``chi0`` defaults to the zero-point amplitude ``omega_res/2`` (one quantum
+    per mode at the resonance frequency); ``mu`` defaults to the measured
+    ``0.545 sqrt(q)``.
+    """
+    if chi0 is None:
+        chi0 = omega_res / 2.0
+    if mu is None:
+        a, q = ptum_to_mathieu(g_DM, A_res, omega_res, 0.0)
+        mu = float(floquet_mu(a, q, 300))
+    if mu <= 0:
+        return {"efolds": None, "mu": mu,
+                "note": "no resonance at these parameters, so no backreaction either"}
+    ratio = omega_res**2 / (2.0 * g_DM * chi0**2)
+    if ratio <= 1:
+        return {"efolds": 0.0, "mu": mu,
+                "note": "backreaction already active at chi_0"}
+    return {"efolds": float(np.log(ratio)), "mu": mu,
+            "time_br": float(np.log(ratio) / (2.0 * mu * omega_res))}
+
+
+def backreaction_is_negligible(g_DM, A_res, omega_res, chi0=None):
+    """``True`` when the resonance can run at least ``ln(10^2)`` e-folds."""
+    r = backreaction_efolds(g_DM, A_res, omega_res, chi0)
+    return bool(r["efolds"] is not None and r["efolds"] > np.log(100))
+
+
+def energy_density_of_produced_field(g_DM, A_res, omega_res, efolds):
+    """``rho_chi ~ omega_res^4 exp(2 * efolds) /(2 pi)^3`` -- mode counting.
+
+    This is what the manuscript's ``n_chi`` integral reduces to for a single
+    dominant mode; it is *not* a prediction, it is the bookkeeping needed to
+    compare with the backreaction bound.
+    """
+    return omega_res**4 * np.exp(2 * efolds) / (2 * np.pi)**3

@@ -313,3 +313,91 @@ def test_scheme_dependence_of_individual_transfers():
 
 def test_open_questions_are_recorded():
     assert len(A.OPEN_QUESTIONS) >= 3
+
+
+# ===========================================================================
+# C2. FRW closure of the fermionic half (was CONDITIONAL in SPRINT 3)
+# ===========================================================================
+def test_frw_bilinear_redshifts():
+    """``d_0 (fbar f) = -3H fbar f`` once the spin connection is included."""
+    assert F.frw_bilinear_redshift() == 0
+
+
+def test_frw_fermionic_closure():
+    """``d_0 T_f^{00} = [y psidot - 3H(m_f+y psi)] fbar f`` exactly.
+
+    Writing this as ``d_0 rho_f + 3H rho_f = y psidot fbar f = -Q_psi`` shows the
+    fermionic half closes in FRW too, with the redshift booked on the
+    continuity-equation left-hand side.  The SPRINT-3 CONDITIONAL label is
+    therefore removed.
+    """
+    assert F.frw_fermion_closure_residual() == 0
+
+
+def test_frw_reduces_to_flat_space():
+    assert F.frw_transfer_flat_limit() == 0
+
+
+def test_redshift_term_is_not_a_transfer():
+    """The ``-3H rho_f`` piece is the standard dilution, not an energy exchange.
+
+    Stated as: it survives with ``y = 0``, where no transfer can exist.
+    """
+    a = sp.Function("a")(F.t)
+    Hs = sp.diff(a, F.t) / a
+    fbarf = sum(F.FB[i] * F.F[i] for i in range(4))
+    M = F.effective_mass()
+    Q_f = (F.y_psi * sp.diff(F.psi_b, F.t) - 3 * Hs * M) * fbarf
+    # set the coupling to zero: the transfer must collapse to the pure dilution
+    Q_no_yukawa = sp.simplify(Q_f.subs(F.y_psi, 0))
+    assert sp.simplify(Q_no_yukawa + 3 * Hs * F.m_f * fbarf) == 0
+
+
+# ===========================================================================
+# A2. Backreaction as a closed-form bound (replaces the toy simulation)
+# ===========================================================================
+def test_backreaction_bound_formula(mathieu):
+    """``2 mu omega t_br = ln[omega^2/(2 g chi_0^2)]``."""
+    g, w, chi0 = 10.0, 1e13, 1e-5 * 1e13
+    r = mathieu.backreaction_efolds(g, w, w, chi0=chi0)
+    expected = np.log(w**2 / (2 * g * chi0**2))
+    assert r["efolds"] == pytest.approx(expected, rel=1e-12)
+
+
+def test_backreaction_is_logarithmic_in_the_coupling(mathieu):
+    """Doubling ``g`` costs only ``ln 2`` e-folds -- the key qualitative point."""
+    w, chi0 = 1e13, 1e-5 * 1e13
+    e1 = mathieu.backreaction_efolds(10.0, w, w, chi0=chi0)["efolds"]
+    e2 = mathieu.backreaction_efolds(20.0, w, w, chi0=chi0)["efolds"]
+    assert e1 - e2 == pytest.approx(np.log(2.0), rel=1e-9)
+
+
+def test_backreaction_none_without_a_resonance(mathieu):
+    """Below threshold there is no growth, hence no backreaction time."""
+    r = mathieu.backreaction_efolds(1e-3, 1e13, 1e13)
+    assert r["efolds"] is None
+    assert mathieu.backreaction_is_negligible(1e-3, 1e13, 1e13) is False
+
+
+def test_backreaction_depends_on_the_assumed_amplitude(mathieu):
+    """The bound is only meaningful once ``chi_0`` is specified -- say so.
+
+    This is why SPRINT 3 reports it as a bound and not as a prediction.
+    """
+    w, g = 1e13, 10.0
+    # both amplitudes must keep  omega^2/(2 g chi0^2) > 1  so nothing is clamped
+    # a SMALLER chi0 allows MORE e-folds: B = ln[omega^2/(2 g chi0^2)]
+    tiny = mathieu.backreaction_efolds(g, w, w, chi0=1e-25 * w)["efolds"]
+    bigger = mathieu.backreaction_efolds(g, w, w, chi0=1e-15 * w)["efolds"]
+    assert tiny > bigger
+    # B = const - 2 ln chi0, so 10 decades of chi0 cost 2 ln(1e10) e-folds
+    assert tiny - bigger == pytest.approx(2 * np.log(1e10), rel=1e-9)
+    # and with a macroscopic amplitude the bound is clamped to zero: backreaction
+    # is already active, which is the correct physical statement
+    assert mathieu.backreaction_efolds(g, w, w, chi0=0.5 * w)["efolds"] == 0.0
+
+
+def test_superseded_placeholder_raises(mathieu):
+    """My first guess (constant 0.2) must not linger as if it were a result."""
+    with pytest.raises(NotImplementedError):
+        mathieu.mu_broad_resonance_literature(10.0)
