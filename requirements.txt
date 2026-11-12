@@ -1,0 +1,6 @@
+# PTUM symbolic + numerical stack (SPRINT 1)
+# Versions used for the verification run reported in derivations/action_consistency.md
+numpy>=1.24,<3
+scipy>=1.10,<2
+sympy>=1.12,<2
+pytest>=7,<10
