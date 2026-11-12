@@ -1,0 +1,15 @@
+{
+  "package": "PTUM_LIBRARY_FINAL_v1.2_CODE_AVAILABLE_CORRECTED_COMPLETE",
+  "exact_github_repository": "https://github.com/ErdemEsa/ptum-cosmology.git",
+  "updated_main_tex_code_availability": true,
+  "includes_main_pdf": true,
+  "includes_cover_letter": true,
+  "includes_highlights": true,
+  "includes_svjour_cls": true,
+  "includes_svepj_clo": true,
+  "figure_pdf_count": 18,
+  "class_patch_public": true,
+  "class_patch_apply_check": "PASS, reported by user",
+  "cobaya_production_configs": "pending",
+  "full_mcmc_chains": "pending or external archive"
+}

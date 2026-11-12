@@ -1,0 +1,124 @@
+2
+E. Esa: PTUM: A Discharge-Based Cosmological Creation Scenario
+mological framework, PTUM proposes a discharge-based
+creation mechanism in which all dark-sector components
+arise from a single cosmogonic event. In this picture, a
+scalar quantum fuel field Φ accumulates in a metastable
+multiverse-like background and, once a critical threshold
+is reached, undergoes a tachyonic transition that activates
+string-like proxy modes. The resulting discharge is mod-
+eled as separating into:
+– a clustering passive component →a dark-matter can-
+didate sector (χ),
+– a residual negative-pressure component →dark en-
+ergy (Φres),
+– a radiation-like transient component →proxy-fluid
+dark radiation (pfd, ψ).
+The
+most
+distinctive—and
+directly
+falsifiable—
+observable consequence of this framework is the pfd
+sector. Unlike standard extra dark radiation, which is
+usually assumed to free-stream and hence to develop non-
+zero anisotropic stress [8,9,10], the PTUM proxy-fluid
+behaves as a relativistic perfect fluid with
+w = 1
+3,
+c2
+s = 1
+3,
+σ = 0 .
+(1)
+Free-streaming dark radiation generates a characteris-
+tic phase shift of the CMB acoustic peaks through its
+anisotropic stress [8,9,10]; the pfd component, having
+σ = 0 in the effective linear fluid description, produces no
+such shift. This absence would constitute a distinctive dis-
+criminator: if additional relativistic degrees of freedom are
+detected in CMB data, the presence or absence of the asso-
+ciated phase shift separates free-streaming from fluid dark
+radiation. As we show in Section 10, CMB-S4 may make
+this distinction at high significance for ∆Nfluid ≳0.20, de-
+pending on the realized pfd abundance, making PTUM a
+concretely testable cosmological framework.
+The aim of the present paper is therefore broader than
+a phenomenological dark-radiation study. We pursue three
+linked goals:
+(i) to formulate PTUM as a cosmological creation sce-
+nario based on a discharge event, establishing the the-
+oretical framework and its effective field theory;
+(ii) to show that the resulting effective dark-sector struc-
+ture is internally consistent within the tested param-
+eter regime, with perturbation stability, EFT valid-
+ity, and compatibility with BBN and isocurvature con-
+straints;
+(iii) to test the observable consequences of the model
+against current cosmological data through a Bayesian
+benchmark analysis, profile likelihood, and dataset-
+split diagnostics.
+Scope and claim boundaries. Throughout this work,
+PTUM is treated as an effective cosmological frame-
+work, not as a completed first-principles theory of the
+origin of the Universe. The model does not derive the
+metastable pre-discharge background, does not solve the
+cosmological-constant hierarchy by itself, and does not
+specify a UV completion. Its present claims are narrower:
+it defines a threshold-triggered phase-transition scenario,
+implements the associated proxy-fluid perturbations, and
+identifies an observational discriminator between fluid and
+free-streaming dark radiation.
+To this end, we proceed in two steps. First, we con-
+struct the effective field theory of PTUM, derive its equa-
+tions of motion, study the primordial creation sector—
+including exact-background inflationary dynamics—and
+identify the parameter region in which the late-time dark-
+energy sector remains observationally viable. Second, we
+implement the proxy-fluid perturbations in the CLASS
+Boltzmann code [12,13], compute the cosmological signa-
+tures, and constrain the model using a Bayesian bench-
+mark analysis with Cobaya [14]. The resulting constraints
+are cross-checked through profile likelihood extraction and
+dataset-split analysis, and confronted with BBN, isocur-
+vature, and linear stability requirements.
+We find that PTUM is observationally viable: the pfd
+abundance is bounded to ∆Nfluid < 0.31 at 95% credi-
+bility from the full data combination, model comparison
+gives ∆AIC = 2.26 relative to ΛCDM, and all consistency
+checks are satisfied. The Hubble constant shifts upward
+by ∼0.8 km s−1 Mpc−1 relative to ΛCDM, partially alle-
+viating the Hubble tension without being designed to do
+so. The discharge energy scale is fixed to V 1/4
+0
+∼1015–
+1016 GeV by the observed scalar amplitude, and the cre-
+ation sector is compatible with current bounds on the
+scalar spectral index and the tensor-to-scalar ratio.
+The paper is organized as follows. Section 2 summa-
+rizes the physical picture of PTUM. Section 3 presents
+the effective field theory, equations of motion, and sym-
+metry structure. Section 4 studies the primordial creation
+sector. Section 5 analyses the late-time dark-energy and
+dark-sector structure. Section 6 describes the perturbation
+framework and CLASS implementation. Section 7 presents
+the cosmological signatures. Section 8 gives the Bayesian
+constraints, profile likelihood, dataset-split analysis, and
+model comparison. Section 9 collects the stability and con-
+sistency tests. We discuss the interpretation, limitations,
+and future prospects in Section 11 and conclude in Sec-
+tion 12.
+2 Conceptual overview of PTUM
+PTUM begins with a multiverse-like background contain-
+ing a scalar quantum fuel field Φ. The central idea is that
+local accumulation of this field drives a threshold-triggered
+discharge process. Once a critical configuration is reached,
+the effective mass of a proxy activation mode becomes
+negative, generating a tachyonic transition that activates
+string-like degrees of freedom.
+The basic sequence is:
+(a) Fuel accumulation. The scalar fuel field Φ accumu-
+lates in a metastable environment. The effective poten-
+tial is chosen such that it is approximately quadratic
+at small field values but saturates to a plateau at large
+field values.

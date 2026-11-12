@@ -1,0 +1,9 @@
+1. Introduces PTUM as a finite-energy discharge-based cosmological scenario rather than a purely initial-condition description of the hot expanding Universe.
+
+2. Connects dark matter, dark energy, and dark radiation to distinct residual sectors sourced by a single discharge transition.
+
+3. Identifies a proxy-fluid dark-radiation signature with w = 1/3, c_s^2 = 1/3, and zero anisotropic stress within the effective linear proxy-fluid description.
+
+4. Distinguishes proxy-fluid dark radiation from free-streaming relativistic species through the absence of a neutrino-induced CMB acoustic phase shift.
+
+5. Implements the model in CLASS/Cobaya and derives current observational constraints, including Delta N_fluid < 0.31 at 95% credibility from Planck 2018, BAO, CMB lensing, and Pantheon+.

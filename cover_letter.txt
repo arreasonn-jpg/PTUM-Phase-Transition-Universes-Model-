@@ -1,0 +1,22 @@
+Dear Editor,
+
+I am pleased to submit the manuscript entitled “Phase Transition Universes Model: A Discharge-Based Cosmological Creation Scenario with a Unified Dark Sector” for consideration in your journal.
+
+The manuscript develops the Phase Transition Universes Model (PTUM), an effective-field-theory cosmological scenario in which a finite-energy discharge event sources the hot expanding Universe and generates a unified dark sector. The framework connects an early fuel-field sector, a discharge-triggered transition, a superheavy dark-matter candidate sector, a residual dark-energy component, and a proxy-fluid dark-radiation sector within a single dynamical construction.
+
+The central observational signature is the proxy-fluid dark-radiation component. Unlike free-streaming dark radiation, this component is modeled as a coherent effective fluid with equation of state \(w=1/3\), sound speed \(c_s^2=1/3\), and vanishing anisotropic stress within the effective linear proxy-fluid description. Consequently, it does not produce the neutrino-induced CMB acoustic phase shift associated with free-streaming relativistic species. This distinction gives the model a clear falsifiable signature.
+
+The manuscript includes an implementation of the proxy-fluid sector in CLASS/Cobaya and compares the model with Planck 2018, BAO, CMB lensing, and Pantheon+ data. The resulting bound \(\Delta N_{\rm fluid}<0.31\) at 95% credibility shows that the model remains observationally viable, while current data still mildly prefer \(\Lambda\)CDM under information criteria. The paper therefore presents PTUM not as a replacement for \(\Lambda\)CDM already favored by current data, but as a testable discharge-based extension with a distinctive future CMB signature.
+
+The manuscript also discusses theoretical consistency and limitations, including EFT validity, perturbative stability, the need for a more fundamental derivation of the metastable pre-discharge background, the absence of a full reheating-sector model, and the open question of UV completion. These limitations are presented explicitly to make the model’s domain of validity and falsifiability clear.
+
+I believe the paper will be of interest to readers working on early-Universe cosmology, dark radiation, CMB phenomenology, effective field theory, and models of the dark sector.
+
+The manuscript is original, has not been published elsewhere, and is not under consideration by another journal. I have reviewed and approved the final version and take full responsibility for its content.
+
+Sincerely,
+
+Erdem Esa  
+Independent Researcher  
+Istanbul, Turkey  
+erdem.esa.71@gmail.com
