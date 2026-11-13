@@ -790,7 +790,7 @@ def test_linear_waterfall_spectrum_keeps_modes_independent_and_vacuum_stable():
         H_dot=np.zeros_like(t),
     )
     assert result["k_comoving"] == pytest.approx([0.0, 0.5, 1.0])
-    assert np.all(result["log_amplification"] == pytest.approx(0.0, abs=2.0e-7))
+    assert np.allclose(result["log_amplification"], 0.0, atol=2.0e-7)
     assert np.all(result["particle_number_is_adiabatic"])
     assert all(n == pytest.approx(0.0, abs=1.0e-7) for n in result["final_particle_number"])
 
