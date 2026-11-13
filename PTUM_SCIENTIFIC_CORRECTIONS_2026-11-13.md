@@ -252,3 +252,13 @@ The schematic renormalizable operator $-y_\psi\psi\bar f f$ is gauge invariant f
 with the appropriate flavour matrices and Higgs doublet. After electroweak symmetry breaking these generate effective couplings proportional to $C_f v/(\sqrt2\Lambda)$. The transfer source and decay widths must be recomputed for this EFT realization. The shorthand $\phi_{\rm SM}^2$ in the scalar reheating operator must likewise denote a gauge-invariant Higgs bilinear such as $H^\dagger H$, with an explicit normalization convention.
 
 This does not complete the SM action or Hilbert tensor. It prevents the current generic Dirac bookkeeping formula from being misrepresented as a full chiral-SM derivation.
+
+## 15. Correcting the scan's benchmark coverage
+
+A further audit found that the earlier 18-point scan runner used $V_0=10^{56}\,\mathrm{GeV}^4$, while the threshold-matched high-scale benchmark discussed in the claim-boundary document uses $V_0\sim10^{64}\,\mathrm{GeV}^4$. The earlier scan was therefore a low-scale underdamped control, not a direct test of the high-scale benchmark. Its 16 non-quartic and two insufficient-data classifications remain valid for that control only.
+
+The CI scan runner has now been expanded to run both:
+- `high_scale_threshold_matched`: $V_0=10^{64}\,\mathrm{GeV}^4$, $\Phi_c=1.387M_{\rm Pl}$;
+- `low_scale_underdamped_control`: $V_0=10^{56}\,\mathrm{GeV}^4$, with the same threshold matching and initial-condition grid.
+
+This produces 36 integrations. Each output row carries the scenario name, $V_0$, $\Phi_c/M_{\rm Pl}$, and both local and plateau damping ratios. A regression test verifies that the high-scale case is overdamped by the local potential estimate and the low-scale control is underdamped. The next CI run must inspect the high-scale outcome before any conclusion is drawn about whether the stated benchmark reaches the quartic regime.
