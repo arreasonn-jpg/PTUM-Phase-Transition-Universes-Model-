@@ -1,30 +1,62 @@
-# PTUM Final Audit, v1.2 Code-Availability Corrected Complete
+# PTUM Final Audit, Evidence-Corrected Snapshot
+
+**Review date:** 2026-11-13  
+**Canonical repository:** https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-
 
 ## Package status
 
 ```text
-PTUM_LIBRARY_FINAL_v1.2_CODE_AVAILABLE_CORRECTED_COMPLETE: PASS
-Updated main.tex Code availability: PASS
-Exact repository URL: https://github.com/ErdemEsa/ptum-cosmology.git
-main.pdf included: PASS
-cover_letter.txt included: PASS
-highlights.txt included: PASS
-figures included: 18 PDF figures
-svjour.cls included: PASS
-svepj.clo included: PASS
+Current manuscript source: present
+Historical main.pdf: present, but predates current scientific corrections
+Cover letter and highlights: present
+Figure PDFs: present in figures/
+Journal class files: present
+Current LaTeX build: pending fresh CI verification
+Current 51-test suite: pending fresh CI verification
+100-trajectory scan: pending; no validated artifact
 ```
 
-## Code availability
+## CLASS/Cobaya code availability
 
 ```text
-GitHub repository: https://github.com/ErdemEsa/ptum-cosmology.git
-CLASS v3.2.0 PTUM patch: public
-Patch apply check: PASS, against clean CLASS v3.2.0 tree
+Historical repository URL: https://github.com/ErdemEsa/ptum-cosmology.git
+Historical URL API result: HTTP 404 during 2026-11-13 review
+Canonical repository CLASS patch as individual tracked source: not located
+PTUM.zip archive contents: not inspected
+CLASS v3.2.0 patch public availability: UNVERIFIED
+Clean-tree patch apply check: UNVERIFIED
+Cobaya production configs: pending / not verified
+Full MCMC chains: pending or external archive, not verified
 ```
 
-## Remaining boundary
+The earlier v1.2 package audit marked the CLASS patch public and its
+apply-check as PASS based on a historical user-reported status. That
+claim could not be independently verified against the current
+canonical repository snapshot and is superseded by this evidence-based
+audit. A repository URL returning 404 does not establish whether the
+legacy repository is private, renamed, or deleted.
 
-```text
-Cobaya production configs: pending
-Full MCMC chains: pending or external archive
-```
+## Scientific and software status
+
+The current correction branch specifies the minimally coupled
+classical tree-level PTUM+SM action, revises the scalar and transfer
+conventions, includes the exact inflation endpoint and trajectory
+matching, and provides homogeneous simulation and linear resonance
+diagnostics. These are not a complete nonlinear waterfall, reheating,
+relic-abundance, or observational reproduction pipeline.
+
+The branch contains 51 regression tests, but the latest full CI run
+is pending at this snapshot. The current LaTeX build and 100-trajectory
+scan are not claimed as passing. See
+`PTUM_10_OF_10_ACCEPTANCE.md`,
+`PTUM_CLAIM_BOUNDARY.md`, and
+`PTUM_REPRODUCIBILITY_NOTES.md` for the detailed evidence gates.
+
+## Audit disposition
+
+The former label
+`PTUM_LIBRARY_FINAL_v1.2_CODE_AVAILABLE_CORRECTED_COMPLETE: PASS`
+is withdrawn. The package must not be described as fully code-available,
+fully reproducible, or 10/10 until the CLASS patch, production configs,
+chains, current manuscript build, scan artifact, and outstanding
+scientific calculations are independently verified.
