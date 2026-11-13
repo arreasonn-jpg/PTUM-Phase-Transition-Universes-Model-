@@ -802,6 +802,7 @@ def test_manuscript_contains_explicit_curved_sm_action_and_hilbert_tensor():
     from pathlib import Path
 
     source = Path("main.tex").read_text(encoding="utf-8")
+    normalized_source = " ".join(source.split())
     for required in (
         r"\label{sec:sm_covariant_action}",
         r"\label{eq:sm_curved_action}",
@@ -947,7 +948,7 @@ def test_manuscript_documents_linear_waterfall_mode_hierarchy():
         "occupation number is withheld",
         "does not include mode backreaction",
     ):
-        assert required in source
+        assert required in normalized_source
 
 
 def test_waterfall_finite_band_spectrum_reports_units_and_wronskian_status():
