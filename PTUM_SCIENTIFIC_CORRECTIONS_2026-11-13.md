@@ -597,7 +597,7 @@ $\rho_\psi/\rho_{\nu,\rm std}=\Delta N_{\rm fluid}/N_{\rm eff}^{\rm std}=3.3$--$
 f_\psi^{\rm rad}=
 \frac{C_\nu\Delta N_{\rm fluid}}
 {1+C_\nu(N_{\rm eff}^{\rm std}+\Delta N_{\rm fluid})}
-\simeq1.3\\text{--}4.0\\%.
+\simeq1.3\text{--}4.0\%.
 \]
 A new `ptum_radiation_budget.py` module implements these conversions with explicit denominator labels and validation tests. The quoted $\mu/\Lambda$ mapping is now identified as a separate reheating-EFT estimate that cannot be inferred from these fractions without branching and thermalization dynamics.
 
@@ -605,7 +605,7 @@ The manuscript's absolute statement that a perfect proxy fluid produces no CMB p
 
 The EFT validity section contained a more serious conceptual error: it identified $4\pi\psi_0/\sqrt{\lambda_\psi}$ as a strong-coupling energy cutoff of a canonical renormalizable quartic scalar theory. The quartic $2\to2$ tree amplitude is energy-independent, so that field-dependent expression is not a cutoff derived from this interaction. The expression and the unsupported numerical cutoff claim have been withdrawn. The Wilsonian $\Lambda_{\rm EFT}$ is now explicitly an independent UV-dependent scale. The dimension-five $\psi\mathcal O_{\rm SM}/\Lambda$ operator requires a coupled-channel partial-wave analysis and Wilson-coefficient bounds before a numerical cutoff can be claimed. The waterfall's negative mass squared below threshold is also correctly identified as an intended tachyonic instability, not as an absence of tachyonic modes.
 
-The rebased claims/EFT branch contains 54 regression tests: the latest 43-test scientific base plus five radiation-budget/residual-potential tests and six linear-mode/spectrum tests. The combined 54-test suite has not yet been run in GitHub Actions. No new residual-DE viability percentage, CMB forecast, reheating coupling or UV cutoff is claimed as independently reproduced by these changes.
+The rebased claims/EFT branch contains 54 regression tests: the latest 43-test scientific base plus five radiation-budget/residual-potential tests and six linear-mode/spectrum tests. The combined 54-test Python suite has passed on the current PR #4 run. The 100-trajectory scan is still running; the LaTeX build currently fails on the inherited undefined \\mathscr command, which is being corrected. No new residual-DE viability percentage, CMB forecast, reheating coupling or UV cutoff is claimed as independently reproduced by these changes.
 
 
 ## 37. Linear quantum waterfall-mode solver
@@ -622,6 +622,6 @@ The initial mode is the leading adiabatic vacuum. The solver computes the WKB ad
 
 Six regression tests cover a static stable vacuum, tachyonic growth with Wronskian preservation, rejection of an initially tachyonic state, FRW rescaling terms, discrete-k spectrum stability and wavenumber validation.
 
-This is a linear mode calculation on a prescribed background. A discrete comoving-wavenumber wrapper now runs the single-mode solver over an ordered k grid and returns mode-by-mode amplification, tachyonic duration and guarded final occupation diagnostics. It does not yet evolve a self-consistent coupled background with mode backreaction, perform the renormalized momentum integral for the fluctuation stress tensor, include rescattering, or resolve the real-$\psi$ domain-wall network. It is therefore a meaningful step toward the inhomogeneous waterfall gate, not a relic-abundance or nonlinear-lattice result. The branch now contains 46 tests, including explicit FRW-rescaling and discrete-momentum-spectrum regressions; CI verification is pending.
+This is a linear mode calculation on a prescribed background. A discrete comoving-wavenumber wrapper now runs the single-mode solver over an ordered k grid and returns mode-by-mode amplification, tachyonic duration and guarded final occupation diagnostics. It does not yet evolve a self-consistent coupled background with mode backreaction, perform the renormalized momentum integral for the fluctuation stress tensor, include rescattering, or resolve the real-$\psi$ domain-wall network. It is therefore a meaningful step toward the inhomogeneous waterfall gate, not a relic-abundance or nonlinear-lattice result. The branch contains 54 tests, including explicit FRW-rescaling and discrete-momentum-spectrum regressions; all 54 passed in the current PR #4 Python test step.
 
 
