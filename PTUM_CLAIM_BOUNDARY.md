@@ -53,9 +53,9 @@ The revised code, manuscript, and tests must pass a fresh CI scan
 before any new regime conclusion is accepted. The onset itself still
 requires coupled quantum/inhomogeneous evolution and backreaction.
 
-## Current Task 1 status
+## Task 1 baseline under the previous activation sign (historical)
 
-**The quartic-dominated regime is not demonstrated in either current homogeneous scan.** GitHub Actions run 43392067477 completed 24 regression tests and 36/36 integrations successfully:
+**Under the previous activation-mass sign, the quartic-dominated regime was not demonstrated in either homogeneous scan.** GitHub Actions run 43392067477 completed 24 regression tests and 36/36 integrations successfully. These results are historical and do not validate the revised waterfall sign:
 - High-scale threshold-matched benchmark ($V_0=10^{64}\,\mathrm{GeV}^4$, $\Phi_c=1.387M_{\rm Pl}$, local damping ratio $3H_c/(2\mu)\simeq4.87$): 16 non-quartic and two insufficient-oscillation-data trajectories; zero quartic or quadratic-candidate trajectories.
 - Low-scale underdamped control ($V_0=10^{56}\,\mathrm{GeV}^4$): 16 non-quartic and two insufficient-oscillation-data trajectories; zero quartic or quadratic-candidate trajectories.
 
