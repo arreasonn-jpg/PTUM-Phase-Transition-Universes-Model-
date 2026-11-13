@@ -477,3 +477,10 @@ $Q_{\rm SM,H}^\nu=-Q_{\psi,H}^\nu$. Both currents have mass dimension five and c
 For small oscillations about a fixed broken-phase minimum, the local curvature mass is $m_{\rm osc}^2=-2m_{\rm eff}^2$. A conditional perturbative width to a fermion pair is displayed using $m_{\rm osc}$ and $y_{\psi f}^{\rm eff}$; it is not a reheating prediction until $\Lambda$, flavour matrices, competing Higgs channels and the time-dependent post-waterfall background are fixed.
 
 The dimension-five operator is odd in $psi$ and may explicitly break the $Z_2$ symmetry of the isolated real-scalar potential. Whether this lifts the two-vacuum degeneracy enough to eliminate domain walls depends on Wilson coefficients and any additional discrete charge assignments. The domain-wall issue therefore remains open, not solved by merely writing the EFT operator.
+
+
+## 30. Explicit scalar Hilbert tensors and formal SM split
+
+The manuscript now writes $T_\Phi^{\mu\nu}$ and $T_\psi^{\mu\nu}$ explicitly from the revised scalar action. The $Phi$--$psi$ interaction and Higgs portal are included exactly once in $T_\psi$; the $chi^2\Phi_{\rm res}^2$ interaction remains assigned to $T_{\rm DM}$; the dimension-five fermion-Higgs operator is assigned to $T_{\rm SM}$. A formal Hilbert definition of $T_{{\rm SM},0}^{\mu\nu}$ from the curved-spacetime chiral SM action is now displayed, with $-g^{\mu\nu}U_Y$ as the assigned interaction contribution.
+
+This closes the bookkeeping definition of the sector split at the action level, but not the full explicit SM tensor derivation: gauge, Higgs, tetrad and spin-connection terms for all chiral fermions still need to be evaluated and checked against the displayed transfer currents. Gate 3 therefore remains PARTIAL.
