@@ -840,6 +840,7 @@ def test_expanding_mode_solver_allows_intermediate_tachyonic_canonical_frequency
     assert np.isfinite(result["particle_number"])
     assert result["wronskian_relative_error"] < 1.0e-7
 
+
 def test_manuscript_withdraws_unverified_lattice_outputs_and_reproduction_claims():
     from pathlib import Path
 
@@ -847,10 +848,11 @@ def test_manuscript_withdraws_unverified_lattice_outputs_and_reproduction_claims
     start = source.index(r"\subsection{Nonlinear lattice validation: current status}")
     end = source.index("%============================================================\n% REFERENCES", start)
     section = source[start:end]
-    assert "does not expose an individually reviewable PTUM lattice solver" in section
-    assert "does \emph{not} claim" in section
-    assert "sub-percent energy-conservation" in section
-    assert "raw outputs and checksums" in section
+    normalized_section = " ".join(section.split())
+    assert "does not expose an individually reviewable PTUM lattice solver" in normalized_section
+    assert r"does \emph{not} claim" in normalized_section
+    assert "sub-percent energy-conservation" in normalized_section
+    assert "raw outputs and checksums" in normalized_section
     for unsupported_claim in (
         "The following lattice outputs are included",
         "convergence tested up to",
@@ -859,7 +861,7 @@ def test_manuscript_withdraws_unverified_lattice_outputs_and_reproduction_claims
         r"S_{\rm obs} \sim 10^{88}",
         "docker run -v",
     ):
-        assert unsupported_claim not in section
+        assert unsupported_claim not in normalized_section
 
 
 def test_manuscript_describes_proxy_fluid_as_a_phenomenological_closure():
