@@ -307,3 +307,15 @@ The threshold-matched high-scale benchmark ($V_0=10^{64}\,\mathrm{GeV}^4$, $\Phi
 For the high-scale cases with measurable oscillations, $Q$ is many orders of magnitude below two, so the quartic potential is negligible relative to the tachyonic quadratic contribution. This strengthens the conclusion that the stated high-scale benchmark does not realize the proxy-fluid quartic regime in the present homogeneous truncation. It does not prove that no parameter choice or inhomogeneous evolution can realize it.
 
 The scan artifact was downloaded and parsed independently. It contains 36 rows, includes the scenario and damping metadata, and is strict JSON. The LaTeX job in the same run also completed successfully and produced a 38-page PDF. Its first clean build pass emitted unresolved-reference warnings while auxiliary files were being regenerated; latexmk completed its subsequent passes, and no final unresolved-reference summary was emitted. The manuscript still has a harmless float-placement warning (`h` changed to `ht`) and the workflow action versions emit Node.js 20 deprecation warnings, which should be cleaned up in a later CI-maintenance pass.
+
+
+## 19. Independent quadratic-regime virial diagnostic
+
+The previous `quadratic_candidate` label required only a matter-like cycle-averaged equation of state and a subdominant quartic ratio. That was too weak to identify a quadratic oscillator. A separate half-cycle diagnostic is now implemented:
+\[
+R_2=\frac{\langle K\rangle}
+{\langle V_2\rangle},
+\qquad
+V_2=\frac12m_{\rm eff}^2(\Phi)\psi^2,
+\]
+and is defined only on complete half-cycles where $m_{\rm eff}^2>0$. A harmonic oscillator with slowly varying positive mass approaches $R_2=1$. The classifier now requires $|w|<0.1$, $Q<1$, and $|R_2-1|<0.2$ before assigning `quadratic_candidate`. Two new tests check the harmonic limit and reject tachyonic intervals; another verifies the classifier gate. The updated suite contains 24 tests and is pending its latest CI result.
