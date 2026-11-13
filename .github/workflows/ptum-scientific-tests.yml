@@ -32,3 +32,10 @@ jobs:
           sudo apt-get install -y latexmk texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-publishers
       - name: Compile manuscript
         run: latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+      - name: Upload compiled manuscript
+        uses: actions/upload-artifact@v4
+        with:
+          name: ptum-manuscript-pdf
+          path: main.pdf
+          if-no-files-found: error
+          retention-days: 30
