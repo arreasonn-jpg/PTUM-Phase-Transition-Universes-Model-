@@ -1874,50 +1874,98 @@ T_{\rm rh} &\sim \left(\frac{90}{\pi^2 g_*}\right)^{1/4} \sqrt{\Gamma_\psi M_{\r
 \end{equation}
 No numerical value of $T_{\rm rh}$ is claimed here: the condensate-averaged decay rate, branching fractions, non-perturbative production, and thermalization efficiency have not been computed self-consistently. The displayed expression is an estimate conditional on perturbative decay domination and rapid thermalization.
 
-The energy density released in the discharge is $\rho_{\rm dis} \sim V_0$. Assuming instantaneous thermalization at temperature $T_{\rm rh}$, the entropy density is
+The energy density released in the discharge is not generically $V_0$.
+It must be obtained from the decrease of the total energy density along
+the coupled background trajectory. In the potential-dominated,
+threshold-matched single-field estimate, with
+$\Phi_c\simeq\Phi_{\rm end}\simeq1.387M_{\rm Pl}$ for
+$\lambda_\Phi=0.02$ and $V(0)=0$, the available fuel potential is only
 \begin{equation}
-s = \frac{2\pi^2}{45}g_* T_{\rm rh}^3,
+\rho_{\rm dis}\simeq V(\Phi_c)-V(0)
+\simeq0.0378V_0,
 \end{equation}
-where $g_*$ is the effective number of relativistic degrees of freedom. The reheating temperature is determined by equating the released energy to the radiation energy density:
-\begin{equation}
-\rho_{\rm rad} = \frac{\pi^2}{30}g_* T_{\rm rh}^4 \sim V_0.
-\end{equation}
-This gives
-\begin{equation}
-\begin{split}
-T_{\rm rh} &\sim \left(\frac{30 V_0}{\pi^2 g_*}\right)^{1/4} \\
-&\sim 10^{15}\,\mathrm{GeV} \left(\frac{V_0^{1/4}}{10^{16}\,\mathrm{GeV}}\right)
-\left(\frac{100}{g_*}\right)^{1/4}.
-\end{split}
-\end{equation}
-The comoving entropy per unit volume is then
-\begin{equation}
-S_{\rm com} = s a^3 \sim \frac{2\pi^2}{45}g_* T_{\rm rh}^3 a^3.
-\end{equation}
-Using $a \propto T^{-1}$ during radiation domination, the comoving entropy is conserved after reheating. The total entropy in the observable universe today is
-\begin{equation}
-S_{\rm obs} \sim s_0 a_0^3 \sim 10^{88} \left(\frac{g_*}{100}\right)
-\left(\frac{T_{\rm rh}}{10^{15}\,\mathrm{GeV}}\right)^3,
-\end{equation}
-where $s_0 \sim 10^9\,\mathrm{cm}^{-3}$ is the current entropy density and $a_0$ is the current scale factor. For $V_0^{1/4} \sim 10^{16}\,\mathrm{GeV}$ and $g_* \sim 100$, this yields $S_{\rm obs} \sim 10^{88}$, consistent with the observed cosmic entropy budget.
+provided initial kinetic and proxy-field contributions are negligible.
+This is a conditional estimate, not the energy release computed by the
+full interacting system.
 
-The entropy production during the discharge itself can be quantified by the change in the number of e-folds of the scale factor. The discharge occurs over a timescale $\Delta t \sim |m_{\rm eff}|^{-1} \sim 10^{-13}\,\mathrm{GeV}^{-1}$, during which the scale factor grows by a factor
+Assuming instantaneous thermalization, the entropy density and
+radiation energy density are
 \begin{equation}
-\frac{a_{\rm end}}{a_{\rm start}} \sim \exp(H_* \Delta t) \sim 1 + \mathcal{O}(10^{-3}).
+s_{\rm rh}=\frac{2\pi^2}{45}g_{*s}T_{\rm rh}^3,
+\qquad
+\rho_{\rm rad}=\frac{\pi^2}{30}g_*T_{\rm rh}^4
+\simeq\rho_{\rm dis}.
 \end{equation}
-The entropy production is therefore dominated by the conversion of potential energy to radiation, not by the expansion during the discharge.
+For $g_*=100$ and the threshold-matched potential estimate this gives
+\begin{equation}
+T_{\rm rh}\simeq
+\left(\frac{30\rho_{\rm dis}}{\pi^2g_*}\right)^{1/4}
+\simeq1.84\times10^{15}\,\mathrm{GeV}
+\left(\frac{V_0^{1/4}}{10^{16}\,\mathrm{GeV}}\right)
+\left(\frac{g_*}{100}\right)^{-1/4}
+\left(\frac{\rho_{\rm dis}}{0.0378V_0}\right)^{1/4}.
+\end{equation}
+The result changes if the coupled fields carry appreciable kinetic or
+interaction energy at discharge, or if thermalization is delayed.
 
-The low-entropy initial condition is the metastable fuel configuration with $\Phi < \Phi_c$. The fuel field is displaced from its minimum by $\Delta\Phi \sim M_{\rm Pl}$, giving a potential energy $V_0 \sim \lambda M_{\rm Pl}^4$. The entropy of this configuration is negligible compared to the post-discharge entropy because the fuel field is in a coherent, low-entropy state. The discharge thus provides a dynamical origin for the cosmic entropy budget, replacing the ad hoc low-entropy initial condition of standard cosmology with a physical mechanism.
+The comoving entropy density after reheating is
+\begin{equation}
+S_{\rm com}=s a^3.
+\end{equation}
+It is conserved during subsequent adiabatic radiation domination,
+up to changes in the effective entropy degrees of freedom. The
+present entropy density is approximately
+$s_0\simeq2.9\times10^3\,\mathrm{cm}^{-3}$; multiplying by the
+present observable-universe volume gives a total entropy of order
+$10^{88}$. This is an observed cosmological quantity, not a prediction
+of the PTUM discharge calculation. Connecting it to $T_{\rm rh}$
+requires a specified thermal history, entropy degrees of freedom,
+scale-factor normalization, and absence (or modelling) of later
+entropy injection.
 
-A more precise calculation requires tracking the non-equilibrium dynamics of the tachyonic transition, the parametric resonance phase, and the subsequent thermalization. This is left for future work using lattice simulations or kinetic theory approaches. The time-averaged energy partition ratios
-for the benchmark parameters are:
+The expansion during discharge is governed by
+\begin{equation}
+\frac{a_{\rm end}}{a_{\rm start}}
+=\exp\!\left(\int_{t_{\rm start}}^{t_{\rm end}}H(t)\,dt\right).
+\end{equation}
+The previous estimate $H_*\Delta t\sim10^{-3}$ and the associated
+claim of negligible expansion are withdrawn. In the threshold-matched
+benchmark, the local potential-dominated damping ratio is
+$3H_c/(2\mu)\simeq4.9$, corresponding to $H_c/\mu\simeq3.27$.
+Thus even the nominal interval $\mu^{-1}$ is not short compared with
+the Hubble time. The actual discharge duration and scale-factor growth
+must be obtained from the coupled background solution; the frozen
+short-time approximation is not justified for this benchmark.
+
+A homogeneous coherent scalar configuration can have low coarse-grained
+matter entropy under a specified coarse-graining prescription. That
+observation does not determine the total gravitational entropy or
+explain the special low-entropy initial state of the Universe. PTUM
+therefore does not claim to replace the cosmological Past Hypothesis or
+to derive the thermodynamic arrow of time. A non-equilibrium treatment
+of tachyonic growth, inhomogeneous modes, rescattering, and
+thermalization would be needed to calculate entropy production
+microscopically.
+
+The quantities below are phenomenological reference targets or
+observationally constrained parameters, not energy-partition outputs
+of the present homogeneous simulation or CLASS perturbation code:
 \begin{itemize}
-\item Proxy fluid (pfd): $\sim 10^{-2}$--$10^{-1}$ of $V_0$ (set by $\Delta N_{\rm fluid}$ bound)
-\item Dark matter: $\Omega_\chi h^2 \sim 0.12$ (set by parametric resonance efficiency)
-\item Dark energy: $\rho_{\rm DE} \sim 10^{-120} M_{\rm Pl}^4$ (residual)
-\item SM radiation: remainder $\sim V_0$ (reheating)
+\item Proxy-fluid dark radiation: $\Delta N_{\rm fluid}$ is constrained
+by the phenomenological perturbation analysis; its microscopic
+normalization requires a calculated production and dilution history.
+\item Dark matter: $\Omega_\chi h^2\simeq0.12$ is the observed abundance
+to be reproduced, not a relic abundance calculated by the present
+frozen-background Floquet diagnostic.
+\item Dark energy: the present residual density is an observational
+target; its value has not been derived from the discharge dynamics.
+\item Standard Model radiation: the reheating fraction depends on
+branching ratios, thermalization, and the full energy-transfer history,
+which have not been solved self-consistently.
 \end{itemize}
-The precise partition depends on the trajectory in field space and is computed numerically in the CLASS implementation.
+The CLASS implementation evolves the stated effective linear
+perturbation sector. It does not calculate the above microscopic
+energy partition from the scalar-field dynamics.
 
 \subsection{Proxy-fluid dark radiation}
 
