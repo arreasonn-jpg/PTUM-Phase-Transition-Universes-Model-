@@ -276,3 +276,23 @@ For $V_4=\lambda_\psi\psi^4/4$ and the magnitude of the tachyonic quadratic cont
 \frac{\langle V_4\rangle}{\langle|V_2|\rangle}=\frac{Q}{2}.
 \]
 Therefore quartic potential-energy dominance corresponds to $Q/2>1$, or $Q>2$. The previous classifier used $Q>5$ without documenting a physical derivation. It now reports the explicit ratio $Q/2$ and applies the energy-dominance boundary $Q>2$, together with independent cycle-averaged equation-of-state and virial conditions. A new regression test checks values on either side of this boundary. This criterion is an operational diagnostic for the homogeneous truncation, not a proof of a radiation-like effective fluid by itself.
+
+
+## 17. Critical mismatch: inflationary field direction versus tachyonic activation
+
+For the adopted fuel potential
+\[
+V(\Phi)=V_0\left[1-e^{-\lambda_\Phi\Phi^2/M_{\rm Pl}^2}\right],
+\]
+one has $V_{,\Phi}>0$ for $\Phi>0$, and canonical slow roll gives
+$\dot\Phi\simeq-V_{,\Phi}/(3H)<0$. The matched inflationary trajectory therefore rolls from $\Phi_*/M_{\rm Pl}\simeq10.5$ toward $\Phi_{\rm end}/M_{\rm Pl}\simeq1.387$.
+
+However, the current activation mass
+\[
+m_{\rm eff}^2=m_\psi^2\left(1-\Phi^2/\Phi_c^2\right)
+\]
+is negative for $|\Phi|>\Phi_c$. If $\Phi_c\simeq\Phi_{\rm end}$, the proxy mode is tachyonic throughout the observable slow-roll interval and becomes non-tachyonic as $\Phi$ falls below the threshold. This is the reverse of the manuscript's stated dormant-to-tachyonic onset at the end of inflation.
+
+The current inflation module omits $\psi$ and does not track its stability during inflation. The homogeneous two-field scan starts at $\Phi>\Phi_c$, already on the tachyonic side, so it does not simulate the onset from a dormant state. The manuscript and claim boundary now state this explicitly. A characterization regression test verifies the sign ordering. No arbitrary sign flip has been applied: the model must derive either a different activation function or a physically motivated fuel trajectory from one consistent action before the threshold-trigger narrative can be claimed.
+
+This is a **critical unresolved model-structure issue**, not a cosmetic wording issue. It blocks a 10/10 scientific-readiness claim until resolved and re-tested in the coupled background.
