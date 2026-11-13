@@ -379,3 +379,24 @@ The revised runner now uses a $5\times5\times2$ grid in:
 - post-threshold offset $(\Phi_c-\Phi)/\Phi_c\in\{0.01,0.1\}$.
 
 It runs 50 initial conditions at each energy scale (100 total), with 4001 output points over $20\mu^{-1}$ per trajectory. Each JSON row records the scenario, damping ratios, time span, output resolution and seed grid. Regression tests check the 50-point grid and ensure positive offsets start below $\Phi_c$ on the tachyonic side. This remains a homogeneous post-threshold sensitivity scan, not a quantum-vacuum seed distribution or a simulation of the threshold crossing itself. The new CI run 43393188155 has passed all **25 regression tests**. Its 100 high-resolution integrations and LaTeX build are still in progress.
+
+
+## 23. Exact inflation endpoint replaces the potential slow-roll endpoint
+
+A further numerical audit found that the earlier threshold match used the potential slow-roll proxy $\epsilon_V=1$, which gives $\Phi/M_{\rm Pl}=1.387175$ for $\lambda_\Phi=0.02$. The exact canonical background integration instead terminates when the Hubble-flow parameter reaches $\epsilon_H=1$. For the same model and $N_{\rm target}=60$, this gives
+\[
+\Phi_{\rm end}^{(H)}/M_{\rm Pl}=0.98622808,
+\qquad
+\epsilon_V(\Phi_{\rm end}^{(H)})=2.01657.
+\]
+The old $1.387175M_{\rm Pl}$ threshold is crossed about $0.31852$ e-folds before the exact end. The potential slow-roll value remains useful as a first-order estimate, but it is not the exact end field.
+
+The inflation module now reports both $x_{\rm end}^{(V)}$ and $x_{\rm end}^{(H)}$, the potential parameter at the exact endpoint, and the e-fold offset of the old threshold. The threshold-matched high/low scan now derives $\Phi_c$ from $x_{\rm end}^{(H)}$ rather than hardcoding the potential slow-roll value. The simulation default threshold and regression tests have been updated accordingly.
+
+This changes the threshold potential fraction from $V(1.387M_{\rm Pl})/V_0\simeq0.0378$ to
+\[
+V(\Phi_{\rm end}^{(H)})/V_0\simeq0.0192649.
+\]
+The conditional instantaneous-thermalization estimate at $V_0^{1/4}=10^{16}\,\mathrm{GeV}$ and $g_*=100$ becomes $T_{\rm rh}\simeq1.56\times10^{15}\,\mathrm{GeV}$. The local potential-dominated damping ratio becomes $3H_c/(2\mu)\simeq3.48$, still overdamped. These values supersede the earlier $0.0378V_0$, $1.84\times10^{15}\,\mathrm{GeV}$, and $4.9$ estimates in Sections 13 and 21.
+
+The new regression test checks both end-field values and the $0.31852$ e-fold crossing offset. A fresh 100-point high-resolution scan must run with this exact threshold before its outcomes are accepted.
