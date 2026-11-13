@@ -185,10 +185,16 @@ def integrate_expanding_mode(
         raise ValueError("time samples must be strictly increasing")
     if np.any(a_arr <= 0.0):
         raise ValueError("scale factor must remain positive")
-    if k_comoving < 0.0 or m_chi < 0.0 or omega_dummy(k_comoving, m_chi):
+    scalar_parameters = np.asarray(
+        [k_comoving, m_chi, g_dm, rtol, atol, max_initial_adiabaticity],
+        dtype=float,
+    )
+    if not np.all(np.isfinite(scalar_parameters)):
+        raise ValueError("mode parameters and solver tolerances must be finite")
+    if k_comoving < 0.0 or m_chi < 0.0:
         raise ValueError("wavenumber and mass must be non-negative")
-    if max_initial_adiabaticity <= 0.0:
-        raise ValueError("max_initial_adiabaticity must be positive")
+    if rtol <= 0.0 or atol <= 0.0 or max_initial_adiabaticity <= 0.0:
+        raise ValueError("solver tolerances and adiabaticity threshold must be positive")
 
     h_dot_arr = np.gradient(h_arr, t_arr, edge_order=2)
     omega_chi_sq = (
@@ -294,8 +300,3 @@ def integrate_expanding_mode(
         "particle_number": occupation,
         "integration_success": bool(solution.success),
     }
-
-
-def omega_dummy(k_comoving: float, m_chi: float) -> bool:
-    """Compatibility-free predicate kept local to argument validation."""
-    return not np.isfinite(k_comoving) or not np.isfinite(m_chi)
