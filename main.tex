@@ -46,7 +46,7 @@ with a Unified Dark Sector}
 
 \abstract{%
 The dark sector of the standard cosmological model comprises dark matter, dark energy, and possible dark radiation, whose common origin remains unexplained. We present the Phase Transition Universes Model (PTUM), a discharge-based cosmological creation scenario where a scalar quantum fuel field $\Phi$ accumulates, reaches a critical threshold, and undergoes a tachyonic transition. Within this effective description, the discharge event leaves behind a dark-matter candidate sector ($\chi$), a residual dark-energy sector ($\Phi_{\rm res}$), and a relativistic proxy-fluid dark radiation component (pfd, $\psi$). Within the effective linear proxy-fluid description the pfd component is \emph{assigned} $w=1/3$, $c_s^2=1/3$ and zero anisotropic stress ($\sigma=0$) as a phenomenological closure; this closure is a falsifiable hypothesis about the pfd sector, not a prediction of the PTUM field theory. Section~\ref{sec:tachyonic_to_quartic} shows that the underlying canonical field reaches $w=1/3$ only in a quartic-dominated regime that the stated benchmark does not realize. This produces no neutrino-induced CMB acoustic peak phase shift, distinguishing it from free-streaming dark radiation---a signature that may be tested at high significance by next-generation CMB experiments such as CMB-S4, depending on the realized pfd abundance. The authors report implementing the effective phenomenological system in \texttt{CLASS} at background and perturbation levels \emph{(modified code not yet public)}. The creation sector supports a plateau-type slow-roll phase compatible with current CMB constraints, fixing the discharge scale to $V_0^{1/4}\sim 10^{15}$--$10^{16}\,\mathrm{GeV}$. The dark-energy sector admits a broad near-$\Lambda$ viable region with $w_{\rm DE}\approx -1$. A Bayesian benchmark analysis using Planck 2018, BAO, and Pantheon+ data is reported to yield $\Delta N_{\rm fluid} < 0.31$ at $95\%$ credibility \emph{(author-reported; chains not yet public)}. Model comparison is reported to give $\Delta\chi^2 = +0.26$ and $\Delta\mathrm{AIC}=2.26$; current data therefore show a weak preference for $\Lambda$CDM while leaving PTUM viable as a falsifiable effective extension. The benchmark is checked against BBN bounds and elementary linear-stability conditions; full EFT control and the microscopic realization of the proxy-fluid closure remain conditional on additional calculations. \textbf{Critical caveat:} Numerical integration of the coupled background equations with the benchmark parameters ($V_0\sim10^{64}\,\mathrm{GeV}^4$, $H_*\sim10^{13}\,\mathrm{GeV}$) shows the system is overdamped ($3H/(2\mu)\approx 25$); the quartic-dominated regime with $w_\psi=1/3$ is \emph{not achieved} with these parameters. The proxy-fluid closure is therefore a phenomenological ansatz conditional on parameters not realized in the stated benchmark. The formulation should be read as an effective phenomenological framework rather than as a first-principles derivation of the pre-discharge background, a solution of the cosmological-constant hierarchy, or a UV completion.%
-} % abstract'ın kapanış parantezi
+} % end of abstract
 \PACS{
       {98.80.Cq}{Particle-theory and field-theory models of the early Universe} \and
       {95.36.+x}{Dark energy} \and
@@ -893,7 +893,7 @@ from first principles. The manuscript therefore treats
 $w_\psi=1/3$ as a phenomenological input to the Boltzmann code rather
 than a derived prediction at the stated benchmark.
 
-\noindent\textbf{Resolution scenarios (all currently VARSAYIM).}
+\noindent\textbf{Resolution scenarios (all currently assumption).}
 Three concrete routes could in principle reconcile the two scales,
 none of which is implemented or verified here:
 \begin{enumerate}[label=(\alph*)]
@@ -908,10 +908,14 @@ $\Phi$ field into $\psi$ (the $\alpha m^2\Phi^2\psi^2/E_{\rm th}^2$
 interaction) could maintain oscillations after barrier crossing even
 when the bare damping is large. The public scan
 (\texttt{ptum\_task1\_simulation.py}, 18 initial-condition points)
-finds \texttt{quartic\_achieved = False} in every scanned point, so
-this route is \textbf{not} realized by the scanned initial conditions
-(SAYISAL OLARAK DOĞRULANDI for the scanned set; not excluded in
-general).
+reports \texttt{quartic\_achieved = False} in every scanned point.
+That flag is \textbf{not} cited here as evidence: in the current version
+of the script the quartic-dominance estimator returns zero on the segment
+that \texttt{classify\_outcome} reads, so the flag is fixed at
+\(\mathtt{False}\) regardless of the initial conditions. The correct
+statement is therefore that the scanned initial conditions were not
+verified to leave the quadratic regime, which does not exclude the route
+in general.
 \item \emph{Reframed benchmark:} accept $w_\psi=0$ (overdamped, field
 pinned at the barrier top) at the CMB-normalized benchmark and treat
 the $w=1/3$ proxy-fluid as a separate, lower-$V_0$ phenomenological
@@ -1109,7 +1113,7 @@ perturbative, and the theory is free from ghost, gradient, and
 tachyonic instabilities. The EFT cutoff is \textbf{not}
 identified with the potential height: setting
 $\Lambda_{\rm EFT}\sim V_0^{1/4}$ would be an unjustified assumption
-(ÖNCELİK 6.6). Instead, the cutoff is bounded from unitarity of
+(priority 6.6). Instead, the cutoff is bounded from unitarity of
 $2\to2$ scattering in the quartic sector. For the interaction
 $-\frac{\lambda_\psi}{4}\psi^4$, partial-wave unitarity requires
 $\lambda_\psi \lesssim 8\pi$ at tree level, which is satisfied
@@ -1121,7 +1125,7 @@ $E\ll\Lambda_{\rm sc}\sim10^{14}$--$10^{15}$ GeV, which still contains
 $H_*\sim10^{13}$ GeV and all fields with $m\sim10^{13}$ GeV, but is
 \emph{below} $V_0^{1/4}\sim10^{15}$--$10^{16}$ GeV at the upper end.
 The precise cutoff depends on the UV completion and is left as an
-open parameter (VARSAYIM: $\Lambda_{\rm EFT}\sim10^{14}$--$10^{15}$ GeV);
+open parameter (assumption: $\Lambda_{\rm EFT}\sim10^{14}$--$10^{15}$ GeV);
 all predictions in this work are computed at
 $E\lesssim H_*\ll\Lambda_{\rm EFT}$. The question of
 which specific UV completion gives rise to the PTUM effective
@@ -1488,7 +1492,7 @@ not yet public.}
 \label{sec:lcdm_limit}
 
 The PTUM dark sector reduces to \(\Lambda\)CDM in a well-defined
-parameter limit (GÖSTERİLDİ at the level of the effective fluid
+parameter limit (demonstrated at the level of the effective fluid
 description):
 \begin{itemize}
 \item \textbf{pfd off:} \(\Delta N_{\rm fluid}\to0\) removes the proxy-fluid
@@ -1599,7 +1603,7 @@ At the background level in FRW, the energy transfer rates are
 Q_{\rm DM} &= -2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res}, \\
 Q_{\rm DE} &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res},
 \end{align}
-and \(Q_{\rm DM}+Q_{\rm DE}=0\) exactly (GÖSTERİLDİ; each interaction
+and \(Q_{\rm DM}+Q_{\rm DE}=0\) exactly (demonstrated; each interaction
 assigned once with opposite signs to the two exchanging sectors, as
 in Section~\ref{sec:microscopic_transfer}). The term
 \(-2g_{\rm DM}\chi\Phi_{\rm res}^2\dot\chi\) that appeared in an
@@ -1691,7 +1695,7 @@ Q_{\rm DE}^\nu &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
 Q_{\rm SM}^\nu &= -y_\psi \psi \bar{f}\gamma^\nu f - g_\psi \psi^2 \phi_{\rm SM} \partial^\nu\phi_{\rm SM}.
 \end{align}
 Direct summation now gives $\sum_i Q_i^\nu = 0$ identically, as required
-by $\nabla_\mu T^{\mu\nu}_{\rm total}=0$ (GÖSTERİLDİ). The terms
+by $\nabla_\mu T^{\mu\nu}_{\rm total}=0$ (demonstrated). The terms
 $\alpha m^2(\Phi^2/E_{\rm th}^2)\psi\partial^\nu\psi$ and
 $g_{\rm DM}\chi\Phi_{\rm res}^2\partial^\nu\chi$ that appeared in an
 earlier draft arose from double-counting the symmetric interaction
@@ -1700,8 +1704,9 @@ to each of the two exchanging sectors. The background energy-partition
 rates below follow from these closed expressions.
 The energy partition during the discharge is determined by the time evolution of the fields. During the tachyonic growth phase ($\Phi \approx \Phi_c$, $\psi$ growing exponentially), the dominant transfer is from the fuel field to the proxy field:
 \begin{equation}
-Q_\psi \approx -Q_\Phi \approx \alpha m^2 \frac{\Phi_c}{E_{\rm th}^2} \psi^2 \dot\Phi
-\qquad\text{(GÖSTERİLDİ from the closed } Q_i^\nu \text{ above).}
+Q_\Phi \approx -\alpha m^2 \frac{\Phi_c}{E_{\rm th}^2} \psi^2 \dot\Phi,
+\qquad |Q_\psi| \approx |Q_\Phi|
+\qquad\text{(leading term of the closed } Q_i^\nu \text{ above).}
 \end{equation}
 (The additional term \(\alpha m^2(\Phi_c^2/E_{\rm th}^2)\psi\dot\psi\)
 that appeared in an earlier draft is not part of \(Q_\Phi^\nu\); it
@@ -2342,9 +2347,9 @@ incidental consequences of the extra radiation component.
 
 All four PTUM sectors have canonical kinetic terms
 \(\tfrac12(\partial\phi)^2\), so the kinetic matrix is the identity and
-is positive definite: no ghosts (GÖSTERİLDİ). The scalar perturbation
+is positive definite: no ghosts (demonstrated). The scalar perturbation
 speeds are \(c_s^2=1\) for the canonical fields \(\Phi,\chi,\Phi_{\rm res}\)
-and \(c_s^2=1/3\) for the pfd fluid closure (FENOMENOLOJİK, conditional
+and \(c_s^2=1/3\) for the pfd fluid closure (phenomenological, conditional
 on the quartic regime). The relevant quantities are summarized in
 Table~\ref{tab:stability}.
 
@@ -2634,7 +2639,7 @@ current and future experiments. Top left: tensor ratio \(r\) vs
 \(\lambda\) with detector reach bands; top right: projected
 \(\Delta N_{\rm fluid}\) upper-limit improvement; bottom left:
 fluid--free-streaming phase-shift detectability; bottom right:
-summary detection matrix. \emph{(FENOMENOLOJİK forecast; Fisher code
+summary detection matrix. \emph{(phenomenological forecast; Fisher code
 not public.)}}
 \label{fig:forecast}
 \end{figure*}
@@ -2665,8 +2670,8 @@ at \(\sim5\sigma\).
 The forecasts presented here are derived from Fisher matrix
 analyses using the full experimental covariance matrices for
 CMB-S4 and CMB-HD, following the methodology of
-\cite{Abazajian2016,Abazajian2019,Sehgal2019} \emph{(FENOMENOLOJİK
-tahmin; Fisher kodu yayında değil)}. We summarize the
+\cite{Abazajian2016,Abazajian2019,Sehgal2019} \emph{(phenomenological
+forecast; the Fisher code is not public)}. We summarize the
 key specifications and assumptions below.
 
 \textbf{CMB-S4:} We adopt the baseline CMB-S4 configuration from
@@ -2798,7 +2803,7 @@ Four distinct pillars are claimed, with the following status labels:
       exact-background check is performed at the homogeneous level only)};
 \item the discharge scale is normalised to a concrete high-energy
       band, $V_0^{1/4}\sim10^{15}$--$10^{16}\,\mathrm{GeV}$
-      \emph{(GÖSTERİLDİ from the scalar amplitude; in unresolved tension
+      \emph{(demonstrated from the scalar amplitude; in unresolved tension
       with the quartic-regime requirement, see Sec.~\ref{subsec:ptum_operational_stability})};
 \item the late-time dark-energy sector contains a broad viable
       region with near-$\Lambda$ behaviour
@@ -2817,7 +2822,7 @@ as a relativistic perfect fluid with
 $w=1/3$, $c_s^2=1/3$, and $\sigma=0$, it would not
 produce the neutrino-like acoustic phase shift characteristic of
 free-streaming dark radiation. This absence is the cleanest proposed observational discriminator
-of the model \emph{(KOŞULLU: the quartic oscillatory regime behind
+of the model \emph{(conditional: the quartic oscillatory regime behind
 $w_\psi=1/3$ is not achieved at the benchmark parameters)}. Current
 data are reported to constrain the abundance of this
 component to $\Delta N_{\rm fluid}<0.31$ at 95\% credibility
@@ -3086,7 +3091,7 @@ The dark matter field $\chi$ couples to the residual fuel field
 $\Phi_{\rm res}$ via the interaction term
 $-g_{\rm DM}\chi^2\Phi_{\rm res}^2$ in the Lagrangian. The factor of
 2 in the effective mass below follows from the normalization of this
-interaction term (GÖSTERİLDİ):
+interaction term (demonstrated):
 \begin{equation}
 m_{\chi,\rm eff}^2(t) = m_\chi^2 + 2g_{\rm DM}\Phi_{\rm res}^2(t),
 \end{equation}
@@ -3124,7 +3129,7 @@ exponential growth of modes within the resonance band:
 \end{equation}
 For the broad resonance regime ($q \gg 1$),
 the maximum Floquet exponent is $\mu_{\rm max} \approx q\,\omega_{\rm res}/2$
-(GÖSTERİLDİ from the standard Mathieu asymptotics; the earlier draft's
+(demonstrated from the standard Mathieu asymptotics; the earlier draft's
 $\mu_{\rm max}\approx0.2\,\omega_{\rm res}$ was a narrow-resonance
 estimate and is not used here). The occupation number of produced
 $\chi$ particles after $N$ oscillation periods is
@@ -3155,7 +3160,7 @@ $2\mu_{\rm max}N\,\omega_{\rm res}^{-1}\sim\ln(10^2\text{--}10^3)$,
 rather than being an automatic output of natural parameter choices.
 A full numerical integration of the mode equations including Hubble
 expansion and backreaction is required for precise predictions and
-is left for future work (EKSİK: no public code performs this
+is left for future work (incomplete: no public code performs this
 integration).
 
 \noindent\textbf{Clarification: parametric resonance target vs. CLASS evolution.}
@@ -3280,7 +3285,7 @@ For the benchmark parameters $\lambda_\psi \sim 0.1$, $\psi_0 \sim
 $\Gamma_\psi \sim 10^{10}$--$10^{11}\,\mathrm{GeV}$
 and $T_{\rm rh} \sim 10^{14}$--$10^{15}\,\mathrm{GeV}$, consistent
 with the instantaneous thermalization estimate below
-\emph{(order-of-magnitude parametric estimate, VARSAYIM-based decay
+\emph{(order-of-magnitude parametric estimate, assumption-based decay
 width; not a lattice-derived value)}.
 
 The energy density released in the discharge is $\rho_{\rm dis}
