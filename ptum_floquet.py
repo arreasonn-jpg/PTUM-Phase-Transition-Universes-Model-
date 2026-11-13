@@ -133,3 +133,169 @@ def scan_momentum(
         row["mu_time"] = float(omega_res * row["mu_z"])
         results.append(row)
     return results
+
+
+
+def integrate_expanding_mode(
+    t: Iterable[float],
+    scale_factor: Iterable[float],
+    hubble: Iterable[float],
+    phi_res: Iterable[float],
+    *,
+    k_comoving: float,
+    m_chi: float,
+    g_dm: float,
+    rtol: float = 1.0e-9,
+    atol: float = 1.0e-12,
+    max_initial_adiabaticity: float = 0.1,
+) -> dict[str, object]:
+    """Evolve one chi_k mode on a supplied expanding-FRW background.
+
+    The physical mode equation is integrated for chi_k:
+        chi_ddot + 3 H chi_dot
+        + [k^2/a^2 + m_chi^2 + 2 g_dm phi_res(t)^2] chi = 0.
+
+    Initial conditions are imposed on X_k=a^(3/2) chi_k using a
+    first-order adiabatic/WKB vacuum. The canonical frequency is
+        Omega_k^2 = k^2/a^2 + m_chi^2 + 2 g_dm phi_res^2
+                    - 3 Hdot/2 - 9 H^2/4.
+
+    The initial state is rejected if Omega_k^2<=0 or if the WKB
+    adiabaticity parameter |Omegadot/Omega^2| exceeds the supplied
+    threshold. The final instantaneous occupation number is reported
+    only when the final canonical frequency is real and positive.
+
+    This is a linear mode calculation on a prescribed background. It
+    does not include mode backreaction, rescattering, nonlinear
+    fragmentation, or a self-consistent Friedmann evolution.
+    """
+    t_arr = np.asarray(tuple(t), dtype=float)
+    a_arr = np.asarray(tuple(scale_factor), dtype=float)
+    h_arr = np.asarray(tuple(hubble), dtype=float)
+    phi_arr = np.asarray(tuple(phi_res), dtype=float)
+
+    arrays = (t_arr, a_arr, h_arr, phi_arr)
+    if any(arr.ndim != 1 for arr in arrays):
+        raise ValueError("background histories must be one-dimensional")
+    if len(t_arr) < 3 or any(len(arr) != len(t_arr) for arr in arrays[1:]):
+        raise ValueError("background histories must have equal length >= 3")
+    if not all(np.all(np.isfinite(arr)) for arr in arrays):
+        raise ValueError("background histories must be finite")
+    if np.any(np.diff(t_arr) <= 0.0):
+        raise ValueError("time samples must be strictly increasing")
+    if np.any(a_arr <= 0.0):
+        raise ValueError("scale factor must remain positive")
+    if k_comoving < 0.0 or m_chi < 0.0 or omega_dummy(k_comoving, m_chi):
+        raise ValueError("wavenumber and mass must be non-negative")
+    if max_initial_adiabaticity <= 0.0:
+        raise ValueError("max_initial_adiabaticity must be positive")
+
+    h_dot_arr = np.gradient(h_arr, t_arr, edge_order=2)
+    omega_chi_sq = (
+        (k_comoving / a_arr) ** 2
+        + m_chi**2
+        + 2.0 * g_dm * phi_arr**2
+    )
+    omega_canonical_sq = (
+        omega_chi_sq - 1.5 * h_dot_arr - 2.25 * h_arr**2
+    )
+    if omega_canonical_sq[0] <= 0.0:
+        raise ValueError("initial canonical mode frequency is not real and positive")
+
+    omega_arr = np.sqrt(omega_canonical_sq)
+    omega_dot_arr = np.gradient(omega_arr, t_arr, edge_order=2)
+    initial_adiabaticity = float(
+        abs(omega_dot_arr[0]) / max(omega_arr[0] ** 2, np.finfo(float).tiny)
+    )
+    if initial_adiabaticity > max_initial_adiabaticity:
+        raise ValueError(
+            "initial state is not sufficiently adiabatic: "
+            f"|Omega_dot/Omega^2|={initial_adiabaticity:.6g} exceeds "
+            f"{max_initial_adiabaticity:.6g}"
+        )
+
+    omega0 = omega_arr[0]
+    X0 = 1.0 / np.sqrt(2.0 * omega0)
+    X_dot0 = (
+        -1j * omega0 - 0.5 * omega_dot_arr[0] / omega0
+    ) * X0
+    chi0 = X0 / a_arr[0] ** 1.5
+    chi_dot0 = (
+        X_dot0 - 1.5 * h_arr[0] * X0
+    ) / a_arr[0] ** 1.5
+
+    def background_at(time: float) -> tuple[float, float, float]:
+        return (
+            float(np.interp(time, t_arr, a_arr)),
+            float(np.interp(time, t_arr, h_arr)),
+            float(np.interp(time, t_arr, phi_arr)),
+        )
+
+    def rhs(time: float, state: np.ndarray) -> np.ndarray:
+        chi, chi_dot = state
+        a_now, h_now, phi_now = background_at(time)
+        frequency_sq = (
+            (k_comoving / a_now) ** 2
+            + m_chi**2
+            + 2.0 * g_dm * phi_now**2
+        )
+        return np.array([
+            chi_dot,
+            -3.0 * h_now * chi_dot - frequency_sq * chi,
+        ], dtype=complex)
+
+    solution = solve_ivp(
+        rhs,
+        (float(t_arr[0]), float(t_arr[-1])),
+        np.array([chi0, chi_dot0], dtype=complex),
+        t_eval=t_arr,
+        method="DOP853",
+        rtol=rtol,
+        atol=atol,
+    )
+    if not solution.success:
+        raise RuntimeError(f"Expanding mode integration failed: {solution.message}")
+
+    chi = solution.y[0]
+    chi_dot = solution.y[1]
+    X = a_arr**1.5 * chi
+    X_dot = a_arr**1.5 * (chi_dot + 1.5 * h_arr * chi)
+    wronskian = X * np.conjugate(X_dot) - np.conjugate(X) * X_dot
+    wronskian_relative_error = float(
+        abs(wronskian[-1] - 1j) / max(abs(wronskian[0]), np.finfo(float).tiny)
+    )
+
+    final_omega_sq = float(omega_canonical_sq[-1])
+    if final_omega_sq > 0.0:
+        final_omega = float(np.sqrt(final_omega_sq))
+        occupation = float(
+            (abs(X_dot[-1]) ** 2 + final_omega_sq * abs(X[-1]) ** 2)
+            / (2.0 * final_omega)
+            - 0.5
+        )
+        occupation = max(occupation, 0.0) if occupation > -1.0e-10 else occupation
+        final_frequency_valid = True
+    else:
+        final_omega = float("nan")
+        occupation = float("nan")
+        final_frequency_valid = False
+
+    return {
+        "t": t_arr,
+        "chi": chi,
+        "chi_dot": chi_dot,
+        "canonical_mode": X,
+        "canonical_mode_dot": X_dot,
+        "canonical_frequency_sq": omega_canonical_sq,
+        "initial_adiabaticity": initial_adiabaticity,
+        "wronskian_relative_error": wronskian_relative_error,
+        "final_frequency_valid": final_frequency_valid,
+        "final_omega": final_omega,
+        "particle_number": occupation,
+        "integration_success": bool(solution.success),
+    }
+
+
+def omega_dummy(k_comoving: float, m_chi: float) -> bool:
+    """Compatibility-free predicate kept local to argument validation."""
+    return not np.isfinite(k_comoving) or not np.isfinite(m_chi)
