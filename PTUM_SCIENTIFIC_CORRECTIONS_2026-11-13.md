@@ -409,3 +409,10 @@ The abstract reported $\Delta\chi^2=+0.26$, while the claim-boundary note previo
 \Delta\chi^2\equiv\chi^2_{\rm PTUM}-\chi^2_{\Lambda\rm CDM}.
 \]
 Thus the author-reported $+0.26$ indicates a slightly worse best-fit chi-square for PTUM under this convention, consistent with the reported $\Delta\mathrm{AIC}=+2.26$ preference for the simpler $\Lambda$CDM model. These numbers remain author-reported because the exact chains and likelihood configuration are not yet publicly reproducible.
+
+
+## 25. Objective 10/10 acceptance matrix
+
+Added `PTUM_10_OF_10_ACCEPTANCE.md` to the repository. It defines ten evidence gates covering the complete action, inflation-to-waterfall connection, Hilbert tensors and conservation, converged background numerics, inhomogeneous waterfall dynamics, expanding-background resonance and relic abundance, microscopic proxy-fluid realization, reheating/entropy, observational reproducibility, and software/manuscript reproducibility.
+
+The matrix explicitly separates partial work from unmet requirements and sets a non-negotiable rule: PTUM is not called 10/10 until every gate is supported by reproducible evidence. Passing tests alone cannot satisfy the physics gates.
