@@ -442,3 +442,33 @@ The manuscript and claim-boundary document now state this limitation, and the 10
 ## 28. Pinned scientific CI environment
 
 Added `requirements-ci.txt` with the Python 3.11 runner's verified package versions: pip 26.3, NumPy 2.4.6, SciPy 1.17.1, pytest 9.2.0, and their iniconfig/packaging/pluggy/Pygments dependencies. The workflow now installs this lock file, enables pip caching keyed to it, and records `pip freeze` in the job log. This removes floating versions from the Python CI package stack. The Python patch release and GitHub-hosted Ubuntu image remain runner-managed and should be recorded in each CI run.
+
+
+## 29. Gauge-invariant reheating EFT and Higgs-portal transfer currents
+
+The reheating interaction has been sharpened from a generic scalar $phi_{\rm SM}$ and Dirac shorthand to an explicit gauge-invariant EFT, assuming $psi$ is a real SM gauge singlet:
+\[
+\mathcal O_{\rm SM}=
+\bar Q_L C_d H d_R+
+\bar Q_L C_u\widetilde H u_R+
+\bar L_L C_e H e_R+\mathrm{h.c.},
+\qquad
+\mathcal L_{\rm rh}=
+-\frac{\psi}{\Lambda}\mathcal O_{\rm SM}
+-\frac12g_{\psi H}\psi^2H^\dagger H.
+\]
+The first term is dimension five and reduces after electroweak symmetry breaking to effective scalar-fermion couplings $y_{\psi f}^{\rm eff}=C_fv/(\sqrt2\Lambda)$. The second is a renormalizable gauge-invariant Higgs portal.
+
+Under the declared sector split (fermion-Higgs operator assigned to $T_{\rm SM}$, Higgs portal assigned to $T_\psi$), the corresponding currents are now written as
+\[
+Q_{\psi,Y}^\nu=\frac{\mathcal O_{\rm SM}}{\Lambda}\nabla^\nu\psi,
+\quad
+Q_{\psi,H}^\nu=-\frac{g_{\psi H}}2\psi^2
+\left[H^\dagger D^\nu H+(D^\nu H)^\dagger H\right],
+\]
+with $Q_{\rm SM,Y}^\nu=-Q_{\psi,Y}^\nu$ and
+$Q_{\rm SM,H}^\nu=-Q_{\psi,H}^\nu$. Both currents have mass dimension five and cancel pairwise in the total tensor divergence.
+
+For small oscillations about a fixed broken-phase minimum, the local curvature mass is $m_{\rm osc}^2=-2m_{\rm eff}^2$. A conditional perturbative width to a fermion pair is displayed using $m_{\rm osc}$ and $y_{\psi f}^{\rm eff}$; it is not a reheating prediction until $\Lambda$, flavour matrices, competing Higgs channels and the time-dependent post-waterfall background are fixed.
+
+The dimension-five operator is odd in $psi$ and may explicitly break the $Z_2$ symmetry of the isolated real-scalar potential. Whether this lifts the two-vacuum degeneracy enough to eliminate domain walls depends on Wilson coefficients and any additional discrete charge assignments. The domain-wall issue therefore remains open, not solved by merely writing the EFT operator.
