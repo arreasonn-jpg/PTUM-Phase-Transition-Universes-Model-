@@ -315,3 +315,22 @@ def test_task1_scan_includes_threshold_matched_high_scale_and_low_scale_control(
     assert low.V0 == pytest.approx(1.0e56)
     assert high.damping_ratio > 1.0
     assert low.damping_ratio < 1.0
+
+
+
+def test_quartic_threshold_matches_potential_energy_dominance():
+    base = {
+        "success": True,
+        "w_psi_avg": np.array([1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0]),
+        "virial_ratio": np.ones(100),
+    }
+    quartic = dict(base, Q=np.full(100, 2.1))
+    non_quartic = dict(base, Q=np.full(100, 1.9))
+
+    q_class = classify_outcome(quartic, PTUMParameters())
+    non_q_class = classify_outcome(non_quartic, PTUMParameters())
+
+    assert q_class["quartic_achieved"]
+    assert q_class["quartic_to_tachyonic_potential_ratio"] == pytest.approx(1.05)
+    assert not non_q_class["quartic_achieved"]
+    assert non_q_class["quartic_to_tachyonic_potential_ratio"] == pytest.approx(0.95)
