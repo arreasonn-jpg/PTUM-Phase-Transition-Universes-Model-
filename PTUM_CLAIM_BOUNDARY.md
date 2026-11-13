@@ -32,11 +32,15 @@ It should not be framed as positive evidence that current data prefer PTUM.
 
 ## Current Task 1 status
 
-**The quartic-dominated regime is not demonstrated by the completed low-scale control scan.** GitHub Actions run 43390565834 completed all 18 low-scale ($V_0=10^{56}\,\mathrm{GeV}^4$) integrations successfully, but classified 16 trajectories as non-quartic and two zero-seed trajectories as having insufficient oscillation data. No trajectory met the combined quartic criteria ($Q_{\rm final}>2$, $w_{\rm final}\simeq1/3$, and virial ratio near one). This earlier 18-point scan was an underdamped control and did **not** test the threshold-matched high-scale benchmark ($V_0\sim10^{64}\,\mathrm{GeV}^4$).
+**The quartic-dominated regime is not demonstrated in either current homogeneous scan.** GitHub Actions run 43391427434 completed 36/36 integrations successfully:
+- High-scale threshold-matched benchmark ($V_0=10^{64}\,\mathrm{GeV}^4$, $\Phi_c=1.387M_{\rm Pl}$, local damping ratio $3H_c/(2\mu)\simeq4.87$): 15 non-quartic, two insufficient-oscillation-data, and one quadratic-candidate trajectory; zero quartic trajectories.
+- Low-scale underdamped control ($V_0=10^{56}\,\mathrm{GeV}^4$): 16 non-quartic, two insufficient-oscillation-data, and zero quartic trajectories.
 
-The two exactly zero-seed solutions remain at $\psi=0$ in the deterministic homogeneous equations; this is an invariant solution, not evidence that quantum fluctuations are absent physically. A fluctuation-seeded or inhomogeneous treatment is required to model tachyonic growth from vacuum fluctuations.
+The single high-scale quadratic-candidate label is not a demonstrated quadratic attractor; its classification uses only the coarse-grained $w$ and quartic-dominance indicators and its virial diagnostic is far from a quartic value. In the high-scale scan, the measured $Q$ values are extremely small, so the quartic potential contribution is negligible relative to the tachyonic quadratic contribution over the sampled late-time intervals. Neither scan meets the combined quartic conditions ($Q>2$, $\langle V_4\rangle/\langle|V_2|\rangle>1$, $w\simeq1/3$, and virial ratio near one).
 
-The earlier classifier labelled any valid trajectory with $w_{\rm final}>0.5$ as `barrier_crossing`, although it did not measure a field-space barrier crossing. That label has been withdrawn. The classifier now reports `non_quartic` unless a defined quartic or quadratic-candidate criterion is met. The updated CI runner now scans both the threshold-matched high-scale benchmark and the low-scale underdamped control (36 initial-condition integrations in total); conclusions about the high-scale benchmark must wait for that new artifact.
+The two exactly zero-seed solutions remain at $\psi=0$ in the deterministic homogeneous equations; this is an invariant solution, not evidence that quantum fluctuations are absent physically. A fluctuation-seeded or inhomogeneous treatment is required to model tachyonic growth from vacuum fluctuations. Both scans are homogeneous post-trigger tests and do not establish the full inhomogeneous discharge or microscopic proxy-fluid production.
+
+The earlier classifier label \`barrier_crossing\` has been withdrawn because $w>0.5$ does not measure a field-space barrier crossing. The classifier now uses \`non_quartic\` unless explicit quartic or quadratic-candidate criteria are met.
 
 The benchmark inputs considered are:
 - $V_0 \sim 10^{64}\,\mathrm{GeV}^4$ (plateau scale $H_* \sim 10^{13}\,\mathrm{GeV}$)
