@@ -235,12 +235,46 @@ def run_simulation(params: PTUMParameters,
     p_psi_arr = np.array([pressure_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
     rho_total_arr = rho_phi_arr + rho_psi_arr
     p_total_arr = p_phi_arr + p_psi_arr
-    continuity_residual = np.gradient(rho_total_arr, t) + 3.0 * H * (rho_total_arr + p_total_arr)
-    continuity_scale = np.maximum(
-        np.abs(np.gradient(rho_total_arr, t)) + 3.0 * np.abs(H * (rho_total_arr + p_total_arr)),
-        np.finfo(float).tiny
+    # Evaluate d(rho)/dt by the chain rule using the same RHS that evolves
+    # the fields. This avoids differencing a nearly constant, ~1e50 GeV^4
+    # vacuum density and dividing round-off noise by an almost-zero scale.
+    # It is an equation-consistency diagnostic, not an independent solver test.
+    coupling = params.alpha * params.m_psi**2 / params.E_th**2
+    m_eff_sq_arr = np.array([meff_sq_psi(x, params) for x in Phi])
+    dV_dPhi_arr = np.array([dveff_dphi(x, params) for x in Phi])
+    Phi_ddot_arr = -3.0 * H * Phi_dot - dV_dPhi_arr + coupling * Phi * psi**2
+    psi_ddot_arr = -3.0 * H * psi_dot - m_eff_sq_arr * psi - params.lambda_psi * psi**3
+    dm_eff_sq_dPhi_arr = -2.0 * coupling * Phi
+    rho_dot_chain_rule = (
+        Phi_dot * (Phi_ddot_arr + dV_dPhi_arr)
+        + psi_dot * psi_ddot_arr
+        + m_eff_sq_arr * psi * psi_dot
+        + 0.5 * dm_eff_sq_dPhi_arr * Phi_dot * psi**2
+        + params.lambda_psi * psi**3 * psi_dot
     )
-    continuity_residual_relative = continuity_residual / continuity_scale
+    expansion_term = 3.0 * H * (rho_total_arr + p_total_arr)
+    continuity_residual = rho_dot_chain_rule + expansion_term
+    continuity_scale = np.abs(rho_dot_chain_rule) + np.abs(expansion_term)
+    continuity_residual_relative = np.divide(
+        continuity_residual,
+        continuity_scale,
+        out=np.zeros_like(continuity_residual),
+        where=continuity_scale > 0.0
+    )
+
+    # Keep the sampled finite-difference estimate as a separate convergence
+    # diagnostic. It is expected to be noisy when rho is vacuum dominated.
+    rho_dot_finite_difference = np.gradient(rho_total_arr, t)
+    continuity_residual_finite_difference = rho_dot_finite_difference + expansion_term
+    continuity_scale_finite_difference = (
+        np.abs(rho_dot_finite_difference) + np.abs(expansion_term)
+    )
+    continuity_residual_finite_difference_relative = np.divide(
+        continuity_residual_finite_difference,
+        continuity_scale_finite_difference,
+        out=np.full_like(continuity_residual_finite_difference, np.nan),
+        where=continuity_scale_finite_difference > 0.0
+    )
     w_psi_arr = np.array([w_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
     
     # Quartic diagnostics are evaluated over complete half-cycles.
@@ -268,6 +302,8 @@ def run_simulation(params: PTUMParameters,
         'p_total': p_total_arr,
         'continuity_residual': continuity_residual,
         'continuity_residual_relative': continuity_residual_relative,
+        'continuity_residual_finite_difference': continuity_residual_finite_difference,
+        'continuity_residual_finite_difference_relative': continuity_residual_finite_difference_relative,
         'w_psi': w_psi_arr,
         'w_psi_avg': w_avg,
         't_avg': t_avg,
