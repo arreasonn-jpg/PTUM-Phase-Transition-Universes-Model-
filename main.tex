@@ -469,7 +469,7 @@ Equivalently, the effective discharge trigger can be written as
 This condition defines the transition from the dormant proxy phase to the
 activated proxy phase. It should be interpreted as an effective threshold
 criterion, not as a microscopic derivation of the pre-discharge background.
-Here, $E_{\rm th}$ is the dimensionful discharge threshold scale (naturally related to the creation energy $V_0^{1/4}$), and $\alpha$ is a dimensionless coupling constant. The tachyonic instability is triggered when the fuel field rolls below the critical threshold $\Phi_c=E_{\rm th}/\sqrt{\alpha}$. The transition duration is not assumed to be negligible compared with the local Hubble time: for the threshold-matched benchmark the potential-dominated estimate gives $3H_c/(2\mu)\simeq4.9$. The discharge and energy partition must therefore be evolved in the expanding background rather than imposed as an instantaneous event. For \(m_{\rm eff}^2>0\) the proxy mode is dormant; for \(m_{\rm eff}^2<0\) it is activated by the tachyonic instability.
+Here, $E_{\rm th}$ is the dimensionful discharge threshold scale (naturally related to the creation energy $V_0^{1/4}$), and $\alpha$ is a dimensionless coupling constant. The tachyonic instability is triggered when the fuel field rolls below the critical threshold $\Phi_c=E_{\rm th}/\sqrt{\alpha}$. The transition duration is not assumed to be negligible compared with the local Hubble time: for the threshold-matched benchmark the potential-dominated estimate gives $3H_c/(2\mu)\simeq3.48$. The discharge and energy partition must therefore be evolved in the expanding background rather than imposed as an instantaneous event. For \(m_{\rm eff}^2>0\) the proxy mode is dormant; for \(m_{\rm eff}^2<0\) it is activated by the tachyonic instability.
 
 The dark-matter sector is
 \begin{equation}
@@ -1159,20 +1159,28 @@ where \(\lambda_\Phi\) is dimensionless. Writing
 =2\lambda_\Phi
 \frac{e^{-x}(1-2x)}{1-e^{-x}}.
 \end{align}
-Inflation ends when the first slow-roll condition reaches unity.
-For the illustrative value \(\lambda_\Phi=0.02\), solving
-\(\epsilon_V=1\) gives
+The potential slow-roll proxy for the end is obtained by solving
+$\epsilon_V=1$. For $\lambda_\Phi=0.02$ this gives
 \begin{equation}
-\Phi_{\rm end}\simeq1.387\,M_{\rm Pl},
+\Phi_{\epsilon_V=1}\simeq1.387175\,M_{\rm Pl}.
 \end{equation}
-not \(M_{\rm Pl}/\sqrt{\lambda_\Phi}\simeq7.07M_{\rm Pl}\).
-The latter is the field value at which the exponent \(x=1\), not
-the end-of-inflation field value.
+This is not the exact end of inflation. Integrating the canonical
+background equations and terminating at the Hubble-flow condition
+$\epsilon_H=3X^2=1$ gives
+\begin{equation}
+\Phi_{\rm end}^{(H)}\simeq0.986228\,M_{\rm Pl},
+\qquad
+\epsilon_V(\Phi_{\rm end}^{(H)})\simeq2.01657.
+\end{equation}
+The earlier threshold match at $1.387175M_{\rm Pl}$ is crossed about
+$0.31852$ e-folds before the exact $\epsilon_H=1$ endpoint. The
+value $M_{\rm Pl}/\sqrt{\lambda_\Phi}\simeq7.07M_{\rm Pl}$ is merely
+the field value at which the exponent $x=1$.
 
-At leading slow-roll order, with the end condition above and
-\(N_*=\int_{\Phi_{\rm end}}^{\Phi_*}
-V/(M_{\rm Pl}^2V_{,\Phi})\,d\Phi\), the illustrative
-\(\lambda_\Phi=0.02\) predictions are:
+The leading potential-slow-roll table below uses the
+$\epsilon_V=1$ proxy endpoint and should be read as a first-order
+estimate. The threshold-matched coupled benchmark instead uses the
+exact Hubble-flow endpoint $\Phi_c=\Phi_{\rm end}^{(H)}$.
 \begin{center}
 \begin{tabular}{c|c|c|c|c}
 \(N_*\) & \(\Phi_*/M_{\rm Pl}\) & \(n_s\) & \(r\) &
@@ -1234,7 +1242,7 @@ solution.
 
 The canonical slow-roll trajectory has $\dot\Phi<0$ for $\Phi>0$ and
 moves from $\Phi_*/M_{\rm Pl}\simeq10.5$ toward
-$\Phi_{\rm end}/M_{\rm Pl}\simeq1.387$. With the revised waterfall
+$\Phi_{\rm end}^{(H)}/M_{\rm Pl}\simeq0.986228$. With the revised waterfall
 mass, $m_{\rm eff}^2>0$ for $|\Phi|>\Phi_c$ and
 $m_{\rm eff}^2<0$ for $|\Phi|<\Phi_c$. Matching
 $\Phi_c\simeq\Phi_{\rm end}$ therefore leaves the proxy massive and
@@ -1935,11 +1943,11 @@ The energy density released in the discharge is not generically $V_0$.
 It must be obtained from the decrease of the total energy density along
 the coupled background trajectory. In the potential-dominated,
 threshold-matched single-field estimate, with
-$\Phi_c\simeq\Phi_{\rm end}\simeq1.387M_{\rm Pl}$ for
+$\Phi_c\simeq\Phi_{\rm end}^{(H)}\simeq0.986228M_{\rm Pl}$ for
 $\lambda_\Phi=0.02$ and $V(0)=0$, the available fuel potential is only
 \begin{equation}
 \rho_{\rm dis}\simeq V(\Phi_c)-V(0)
-\simeq0.0378V_0,
+\simeq0.0192649V_0,
 \end{equation}
 provided initial kinetic and proxy-field contributions are negligible.
 This is a conditional estimate, not the energy release computed by the
@@ -1957,7 +1965,7 @@ For $g_*=100$ and the threshold-matched potential estimate this gives
 \begin{equation}
 T_{\rm rh}\simeq
 \left(\frac{30\rho_{\rm dis}}{\pi^2g_*}\right)^{1/4}
-\simeq1.84\times10^{15}\,\mathrm{GeV}
+\simeq1.56\times10^{15}\,\mathrm{GeV}
 \left(\frac{V_0^{1/4}}{10^{16}\,\mathrm{GeV}}\right)
 \left(\frac{g_*}{100}\right)^{-1/4}
 \left(\frac{\rho_{\rm dis}}{0.0378V_0}\right)^{1/4}.
@@ -3263,8 +3271,8 @@ phenomenologically characterized by the following properties:
       excursion. For the illustrative $\lambda_\Phi=0.02$
       single-field slow-roll solution, the field moves from
       $\Phi_*\simeq10.5M_{\rm Pl}$ at $N_*=55$ to
-      $\Phi_{\rm end}\simeq1.39M_{\rm Pl}$, giving
-      $\Delta\Phi\simeq9.1M_{\rm Pl}$.
+      $\Phi_{\rm end}^{(H)}\simeq0.986M_{\rm Pl}$, giving
+      $\Delta\Phi\simeq9.73M_{\rm Pl}$.
       At horizon exit ($N_*=55$) the illustrative solution is in
       the slow-roll regime. By the quoted end point,
       $\epsilon_V(\Phi_{\rm end})\simeq1$, so the slow-roll expansion
