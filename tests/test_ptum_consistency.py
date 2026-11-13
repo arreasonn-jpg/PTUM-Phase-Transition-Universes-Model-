@@ -7,6 +7,7 @@ from ptum_task1_simulation import (
     M_PL,
     meff_sq_psi,
     veff_phi,
+    dveff_dphi,
     rho_phi,
     rho_psi,
     rho_total,
@@ -150,3 +151,21 @@ def test_regime_classifier_uses_late_time_diagnostics():
     assert classification["quartic_achieved"]
     assert classification["Q_final"] == pytest.approx(10.0)
     assert classification["virial_final"] == pytest.approx(1.0)
+
+
+
+def test_fuel_potential_exponent_is_dimensionless_at_critical_field():
+    p = PTUMParameters(V0=3.0e50, lambda_phi=0.02)
+    assert veff_phi(p.Phi_c, p) == pytest.approx(p.V0 * (1.0 - np.exp(-1.0)))
+    expected_derivative = (
+        2.0 * p.V0 * p.lambda_phi * p.Phi_c / M_PL**2 * np.exp(-1.0)
+    )
+    assert dveff_dphi(p.Phi_c, p) == pytest.approx(expected_derivative)
+
+    step = 1.0e-6 * p.Phi_c
+    finite_difference = (
+        veff_phi(p.Phi_c + step, p) - veff_phi(p.Phi_c - step, p)
+    ) / (2.0 * step)
+    assert dveff_dphi(p.Phi_c, p) == pytest.approx(
+        finite_difference, rel=1.0e-8
+    )
