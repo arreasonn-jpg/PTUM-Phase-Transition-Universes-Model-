@@ -104,9 +104,17 @@ The quartic-dominance diagnostic now uses the actual Phi(t) history and local |m
 
 ## 7. Regression tests and verification boundary
 
-A pytest regression file was added at tests/test_ptum_consistency.py to check single-count interaction energy, Friedmann density consistency, time-local quartic diagnostic behavior, non-oscillatory diagnostic handling, and finite component density/pressure bookkeeping.
+A pytest regression file is maintained at `tests/test_ptum_consistency.py`. The initial six-test suite passed in GitHub Actions on commit `c2007f455f4cdfc0eee7221aef350ea2ad811659` (`6 passed in 0.42s`). The subsequently added static de Sitter test failed: finite-differencing an almost exactly constant vacuum-dominated density produced round-off-sized derivatives, while normalizing by the same near-zero derivative scale generated spurious relative values of 1.
 
-**Execution status:** The initial six-test suite ran in GitHub Actions on commit `c2007f455f4cdfc0eee7221aef350ea2ad811659` and passed (`6 passed in 0.42s`). A seventh test, covering the static de Sitter continuity limit, was then added in commit `bb82caa4d9b5343bd849de981404a86d0ff9d3be`; no run result for that newest commit was available at the time this note was updated. The tests cover helper-level accounting and a simple limiting case, not full parameter scans or numerical convergence. The continuity residual still needs timestep and solver-tolerance refinement.
+The diagnostic has now been split:
+- `continuity_residual` and `continuity_residual_relative`: chain-rule evaluation using the field accelerations from the background RHS. This is an equation-consistency diagnostic, not an independent solver validation.
+- `continuity_residual_finite_difference` and its relative counterpart: sampled `numpy.gradient` diagnostic retained separately for timestep/output-grid convergence studies. It is not expected to be well-conditioned for an exactly static, vacuum-dominated solution.
+
+The expansion term is evaluated as (3H(\\dot\\Phi^2+\\dot\\psi^2)), algebraically equivalent to (3H(\\rho+p)) for the two canonical homogeneous scalar fields, but numerically avoids subtracting vacuum-sized density and pressure terms.
+
+An independent local numerical reproduction of the static and evolving test setups gave a zero normalized chain-rule residual for the static case and a maximum relative residual of approximately (1.44\\times10^{-16}) for the evolving two-field case. This was a calculation of the diagnostic equations, not execution of the repository's full pytest suite. The current branch contains eight tests; no GitHub Actions run or combined status was visible for the latest commit at the time of this note. Therefore the latest full CI suite is still **pending verification**, not claimed as passing.
+
+The tests and local checks cover homogeneous bookkeeping and internal equation consistency only. They do not establish the full PTUM scenario, reproduce CLASS/Cobaya, or calculate a physical dark-matter relic abundance.
 
 ## 8. Still open
 
