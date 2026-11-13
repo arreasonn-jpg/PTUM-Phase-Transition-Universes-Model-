@@ -81,3 +81,23 @@ The expanding-background mode solver requires supplied histories (a(t),H(t),\Phi
 ## 6. Reproducibility boundary
 
 A passing Python test suite is necessary but not sufficient. The project is not 10/10 until the latest CI and LaTeX build pass, the complete 100-trajectory scan is validated, all relevant numerical convergence studies are supplied, the CLASS/Cobaya pipeline is independently reproducible, and the microscopic waterfall, resonance, reheating, and proxy-fluid claims are supported by the required calculations.
+
+## 2026-11-13 follow-up: nonlinear lattice status
+
+The manuscript's former nonlinear-lattice subsection has been replaced.
+The current canonical repository does not expose an individually
+reviewable PTUM lattice solver, full run configuration, raw field
+configurations, or diagnostic artifacts sufficient to reproduce the
+previously described numerical outputs. Consequently, the historical
+grid-size, energy-conservation, Floquet, relic-density, defect, and
+entropy values are not treated as verified results. A future release
+must provide the solver/version, action and discretization, physical
+initial-state prescription and UV treatment, fixed seeds, energy
+bookkeeping, raw outputs, checksums, and volume/grid/timestep/ensemble
+convergence.
+
+The current numerical evidence remains limited to the homogeneous
+two-field background and linear modes on prescribed external
+background histories. The proxy-fluid closure remains phenomenological.
+Two regression tests now guard the manuscript's claim boundary; their
+latest CI result is pending.
