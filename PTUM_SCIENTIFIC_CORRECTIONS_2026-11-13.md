@@ -567,3 +567,20 @@ The manuscript's absolute statement that a perfect proxy fluid produces no CMB p
 The EFT validity section contained a more serious conceptual error: it identified $4\pi\psi_0/\sqrt{\lambda_\psi}$ as a strong-coupling energy cutoff of a canonical renormalizable quartic scalar theory. The quartic $2\to2$ tree amplitude is energy-independent, so that field-dependent expression is not a cutoff derived from this interaction. The expression and the unsupported numerical cutoff claim have been withdrawn. The Wilsonian $\Lambda_{\rm EFT}$ is now explicitly an independent UV-dependent scale. The dimension-five $\psi\mathcal O_{\rm SM}/\Lambda$ operator requires a coupled-channel partial-wave analysis and Wilson-coefficient bounds before a numerical cutoff can be claimed. The waterfall's negative mass squared below threshold is also correctly identified as an intended tachyonic instability, not as an absence of tachyonic modes.
 
 The claim/EFT audit branch currently contains 40 regression tests (35 inherited tests plus five radiation-budget and residual-potential tests). These five new tests have not yet been run in GitHub Actions. No new residual-DE viability percentage, CMB forecast, reheating coupling or UV cutoff is claimed as independently reproduced by these changes.
+
+
+## 36. Linear quantum waterfall-mode solver
+
+A first linear inhomogeneous stage has been added in `ptum_waterfall_modes.py`. For a supplied homogeneous FRW background it evolves the canonical variable $v_k=a^{3/2}\delta\psi_k$ with
+\[
+\ddot v_k+\Omega_k^2(t)v_k=0,
+\quad
+\Omega_k^2=\frac{k^2}{a^2}+m_{\rm eff}^2(\Phi)
++3\lambda_\psi\bar\psi^2
+-\frac32\dot H-\frac94H^2.
+\]
+The initial mode is the leading adiabatic vacuum. The solver computes the WKB adiabaticity parameter and rejects an initial state outside the declared adiabatic threshold. It monitors the canonical Wronskian, reports tachyonic time fraction and amplification, and only returns a final particle number when the final frequency is positive and adiabatic. If the final mode remains tachyonic or non-adiabatic, particle number is explicitly unavailable.
+
+Three regression tests cover a static stable vacuum (no spurious particle production and Wronskian preservation), tachyonic growth (large mode amplification but no invalid final particle number), and rejection of an initially tachyonic state.
+
+This is a linear mode calculation on a prescribed background. It does not yet evolve a self-consistent coupled background with mode backreaction, integrate the full momentum spectrum, renormalize the fluctuation stress tensor, include rescattering, or resolve the real-$\psi$ domain-wall network. It is therefore a meaningful step toward the inhomogeneous waterfall gate, not a relic-abundance or nonlinear-lattice result. The branch now contains 43 tests; CI verification is pending.
