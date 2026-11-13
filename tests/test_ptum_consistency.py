@@ -701,3 +701,54 @@ def test_residual_dark_energy_potential_rejects_nonphysical_scales():
         residual_potential(1.0, 1.0, -0.1, 0.2)
     with pytest.raises(ValueError):
         residual_potential(1.0, 1.0, 0.1, 0.2, f_res=0.0)
+
+
+
+def test_linear_waterfall_mode_preserves_vacuum_in_static_stable_background():
+    from ptum_waterfall_modes import integrate_waterfall_mode
+
+    t = np.linspace(0.0, 100.0, 1001)
+    a = np.ones_like(t)
+    H = np.zeros_like(t)
+    Phi = np.full_like(t, 1.1)
+    result = integrate_waterfall_mode(
+        t, a, H, Phi, k_comoving=0.0, m_psi=1.0, Phi_c=1.0,
+        H_dot=np.zeros_like(t),
+    )
+    assert result["initial_adiabaticity"] == pytest.approx(0.0)
+    assert result["wronskian_error"] < 1.0e-7
+    assert result["amplification"] == pytest.approx(1.0, rel=2.0e-7)
+    assert result["final_particle_number"] == pytest.approx(0.0, abs=1.0e-7)
+    assert result["tachyonic_time_fraction"] == 0.0
+
+
+def test_linear_waterfall_mode_detects_tachyonic_growth_without_false_particle_count():
+    from ptum_waterfall_modes import integrate_waterfall_mode
+
+    t = np.linspace(0.0, 100.0, 1001)
+    a = np.ones_like(t)
+    H = np.zeros_like(t)
+    Phi = np.linspace(1.1, 0.5, len(t))
+    result = integrate_waterfall_mode(
+        t, a, H, Phi, k_comoving=0.0, m_psi=1.0, Phi_c=1.0,
+        H_dot=np.zeros_like(t),
+    )
+    assert result["initial_adiabaticity"] < 0.1
+    assert result["omega_sq"][0] > 0.0
+    assert result["omega_sq"][-1] < 0.0
+    assert result["tachyonic_time_fraction"] > 0.8
+    assert result["amplification"] > 1.0e20
+    assert result["final_particle_number"] is None
+    assert not result["particle_number_is_adiabatic"]
+
+
+def test_linear_waterfall_mode_rejects_nonadiabatic_initial_frequency():
+    from ptum_waterfall_modes import integrate_waterfall_mode
+
+    t = np.linspace(0.0, 1.0, 101)
+    with pytest.raises(ValueError, match="Initial canonical frequency squared"):
+        integrate_waterfall_mode(
+            t, np.ones_like(t), np.zeros_like(t),
+            np.full_like(t, 0.9), k_comoving=0.0, m_psi=1.0, Phi_c=1.0,
+            H_dot=np.zeros_like(t),
+        )
