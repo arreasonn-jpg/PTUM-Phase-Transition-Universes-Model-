@@ -154,18 +154,24 @@ def test_regime_classifier_uses_late_time_diagnostics():
 
 
 
-def test_fuel_potential_exponent_is_dimensionless_at_critical_field():
-    p = PTUMParameters(V0=3.0e50, lambda_phi=0.02)
-    assert veff_phi(p.Phi_c, p) == pytest.approx(p.V0 * (1.0 - np.exp(-1.0)))
-    expected_derivative = (
-        2.0 * p.V0 * p.lambda_phi * p.Phi_c / M_PL**2 * np.exp(-1.0)
-    )
-    assert dveff_dphi(p.Phi_c, p) == pytest.approx(expected_derivative)
+def test_fuel_potential_exponent_is_dimensionless_and_threshold_is_independent():
+    p = PTUMParameters(V0=3.0e50, lambda_phi=0.02, Phi_c=1.4 * M_PL)
+    phi_lambda = M_PL / np.sqrt(p.lambda_phi)
 
-    step = 1.0e-6 * p.Phi_c
+    assert veff_phi(phi_lambda, p) == pytest.approx(
+        p.V0 * (1.0 - np.exp(-1.0))
+    )
+    expected_derivative = (
+        2.0 * p.V0 * p.lambda_phi * phi_lambda / M_PL**2 * np.exp(-1.0)
+    )
+    assert dveff_dphi(phi_lambda, p) == pytest.approx(expected_derivative)
+
+    step = 1.0e-6 * phi_lambda
     finite_difference = (
-        veff_phi(p.Phi_c + step, p) - veff_phi(p.Phi_c - step, p)
+        veff_phi(phi_lambda + step, p) - veff_phi(phi_lambda - step, p)
     ) / (2.0 * step)
-    assert dveff_dphi(p.Phi_c, p) == pytest.approx(
+    assert dveff_dphi(phi_lambda, p) == pytest.approx(
         finite_difference, rel=1.0e-8
     )
+    assert meff_sq_psi(p.Phi_c, p) == pytest.approx(0.0, abs=1.0e-10 * p.m_psi**2)
+    assert meff_sq_psi(1.01 * p.Phi_c, p) < 0.0
