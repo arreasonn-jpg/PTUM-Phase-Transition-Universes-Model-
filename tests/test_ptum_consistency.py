@@ -848,9 +848,9 @@ def test_manuscript_withdraws_unverified_lattice_outputs_and_reproduction_claims
     start = source.index(r"\subsection{Nonlinear lattice validation: current status}")
     end = source.index("%============================================================\n% REFERENCES", start)
     section = source[start:end]
-    normalized_section = " ".join(section.split())
+    normalized_section = " ".join(section.split()).lower()
     assert "does not expose an individually reviewable PTUM lattice solver" in normalized_section
-    assert r"does \emph{not} claim" in normalized_section
+    assert r"does \emph{not} claim".lower() in normalized_section
     assert "sub-percent energy-conservation" in normalized_section
     assert "raw outputs and checksums" in normalized_section
     for unsupported_claim in (
