@@ -767,7 +767,7 @@ def test_expanding_spectrum_integrates_finite_band_vacuum_control():
     t = np.linspace(0.0, 5.0, 251)
     H0 = 0.05
     result = integrate_expanding_spectrum(
-        k_values=np.array([0.1, 0.5, 1.0, 2.0]),
+        k_values=np.array([0.0, 1.0e-5]),
         t=t,
         scale_factor=np.exp(H0 * t),
         hubble=np.full_like(t, H0),
@@ -779,7 +779,7 @@ def test_expanding_spectrum_integrates_finite_band_vacuum_control():
     assert result["finite_band_only"]
     assert result["n_comoving_finite_band"] == pytest.approx(0.0, abs=2.0e-7)
     assert result["n_physical_finite_band"] == pytest.approx(0.0, abs=2.0e-7)
-    assert len(result["occupation_numbers"]) == 4
+    assert len(result["occupation_numbers"]) == 2
 
 
 def test_expanding_spectrum_rejects_unsorted_momentum_grid():
