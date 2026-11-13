@@ -218,6 +218,70 @@ def compute_observables(
     }
 
 
+def state_at_field_value(
+    lambda_phi: float,
+    x_target: float,
+    *,
+    V0: float,
+    n_max: float = 180.0,
+) -> dict[str, float]:
+    """Return the single-field FRW state when the rolling field reaches x_target.
+
+    The integration starts on the same 60-e-fold slow-roll attractor used by
+    the inflation benchmark and continues through epsilon_H=1 if necessary.
+    It is intended to initialize post-threshold scans from the actual
+    homogeneous trajectory, rather than assigning a potential-slow-roll
+    velocity at an arbitrary post-end field value.
+    """
+    M_PL_GEV = 2.435e18
+    if V0 <= 0.0 or x_target <= 0.0 or lambda_phi <= 0.0:
+        raise ValueError("V0, x_target and lambda_phi must be positive")
+
+    x_initial, _ = find_initial_field(
+        lambda_phi, n_target=60.0, n_max=n_max
+    )
+    X_initial = logarithmic_slope(x_initial, lambda_phi) / np.sqrt(6.0)
+
+    def field_reached(_N: float, state: np.ndarray, _lambda: float) -> float:
+        return float(state[0] - x_target)
+
+    field_reached.terminal = True
+    field_reached.direction = -1.0
+
+    sol = solve_ivp(
+        background_rhs,
+        (0.0, n_max),
+        np.array([x_initial, X_initial]),
+        args=(lambda_phi,),
+        events=field_reached,
+        rtol=2.0e-9,
+        atol=1.0e-11,
+        max_step=0.04,
+    )
+    if not sol.success or not len(sol.t_events[0]):
+        raise RuntimeError(
+            f"Could not reach x_target={x_target}: {sol.message}"
+        )
+
+    N_hit = float(sol.t_events[0][0])
+    x_hit, X_hit = map(float, sol.y_events[0][0])
+    if not (abs(X_hit) < 1.0):
+        raise RuntimeError("Background reached an invalid kinetic fraction")
+    V = V0 * potential_fraction(x_hit, lambda_phi)
+    rho = V / (1.0 - X_hit**2)
+    H = float(np.sqrt(rho / (3.0 * M_PL_GEV**2)))
+    phi_dot = float(np.sqrt(6.0) * X_hit * H * M_PL_GEV)
+    return {
+        "N": N_hit,
+        "x": x_hit,
+        "X": X_hit,
+        "H": H,
+        "Phi_dot": phi_dot,
+        "rho": rho,
+        "epsilon_H": float(3.0 * X_hit**2),
+    }
+
+
 def run_scan(
     lambdas: Iterable[float] = (0.02, 0.05, 0.1, 0.2, 0.5, 1.0, 2.0, 5.0),
     *,
