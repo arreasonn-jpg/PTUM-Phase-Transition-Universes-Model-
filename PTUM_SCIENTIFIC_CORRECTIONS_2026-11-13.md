@@ -426,3 +426,14 @@ Q_\psi^0=+\frac{\alpha m_\psi^2}{E_{\rm th}^2}
 \Phi\psi^2\dot\Phi,\qquad Q_\Phi^0=-Q_\psi^0.
 \]
 The new regression test checks the sign for $\dot\Phi<0$ and exact pairwise cancellation. This makes the manuscript's signed source convention directly inspectable in the simulation output; it does not replace the still-pending full SM-sector Hilbert-tensor derivation.
+
+
+## 27. Real-scalar waterfall defect topology
+
+The manuscript now distinguishes the scalar proxy from an actual string field. In the current real-$\psi$ truncation, the tachyonic quartic potential has two degenerate minima
+\[
+\psi_{\min}=\pm\sqrt{-m_{\rm eff}^2/\lambda_\psi}.
+\]
+A spatially inhomogeneous waterfall can therefore break a $Z_2$ symmetry and form domain walls. The string-tachyon comparison is explicitly labelled a structural analogy; it is not a derivation of cosmic strings. The previously reported winding analysis concerns $\Phi_{\rm res}$ and does not establish the absence of $\psi$ domain walls.
+
+The manuscript and claim-boundary document now state this limitation, and the 10/10 acceptance matrix requires a field-topology choice and an inhomogeneous defect-network calculation. A defect-safe completion may require a complex/gauged order parameter or a physically justified bias term, but no such modification is imposed without a model-level decision because it changes the symmetry and dynamics.
