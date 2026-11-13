@@ -113,7 +113,16 @@ def test_vacuum_dominated_near_static_background_satisfies_frw_continuity_diagno
     t = np.linspace(0.0, 1.0e-9, 101)
     result = run_simulation(p, ic, (t[0], t[-1]), t_eval=t)
     assert result["success"]
-    # The chain-rule residual must vanish for the exact static solution.
+    assert np.allclose(
+        result["rho_phi_split"] + result["rho_psi_exc"],
+        result["rho_total"], rtol=1.0e-12, atol=1.0e-30
+    )
+    assert np.allclose(
+        result["p_phi_split"] + result["p_psi_exc"],
+        result["p_total"], rtol=1.0e-12, atol=1.0e-30
+    )
+    assert np.allclose(result["Q_psi_exc0"] + result["Q_Phi_split0"], 0.0)
+    # The chain-rule residual must vanish for the near-static background.
     assert np.max(np.abs(result["continuity_residual_relative"])) < 1.0e-10
     assert np.max(np.abs(result["continuity_residual_background_relative"])) < 1.0e-10
     assert np.max(np.abs(result["continuity_residual_finite_difference_background_relative"])) < 1.0e-6
