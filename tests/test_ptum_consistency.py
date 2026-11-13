@@ -177,7 +177,7 @@ def test_fuel_potential_exponent_is_dimensionless_and_threshold_is_independent()
         finite_difference, rel=1.0e-8
     )
     assert meff_sq_psi(p.Phi_c, p) == pytest.approx(0.0, abs=1.0e-10 * p.m_psi**2)
-    assert meff_sq_psi(1.01 * p.Phi_c, p) < 0.0
+    assert meff_sq_psi(1.01 * p.Phi_c, p) > 0.0
 
 
 
@@ -338,10 +338,9 @@ def test_quartic_threshold_matches_potential_energy_dominance():
 
 
 
-def test_threshold_matched_inflation_starts_on_tachyonic_side():
-    # Characterization test: this confirms the current sign/trajectory
-    # mismatch documented in the manuscript. It is not a claim that the
-    # dormant-to-tachyonic trigger has been dynamically realized.
+def test_threshold_matched_inflation_starts_dormant_and_becomes_tachyonic():
+    # The revised waterfall mass is positive during slow roll above Phi_c
+    # and negative after the field crosses below the critical value.
     p = PTUMParameters(
         lambda_phi=0.02,
         Phi_c=1.387 * M_PL,
@@ -350,17 +349,17 @@ def test_threshold_matched_inflation_starts_on_tachyonic_side():
     )
     phi_star = 10.535 * M_PL
     phi_end = 1.387 * M_PL
-    assert meff_sq_psi(phi_star, p) < 0.0
+    assert meff_sq_psi(phi_star, p) > 0.0
     assert meff_sq_psi(phi_end, p) == pytest.approx(
         0.0, abs=1.0e-10 * p.m_psi**2
     )
-    assert meff_sq_psi(0.99 * phi_end, p) > 0.0
+    assert meff_sq_psi(0.99 * phi_end, p) < 0.0
 
 
 
 def test_quadratic_virial_ratio_is_unity_for_harmonic_oscillator():
     p = PTUMParameters()
-    phi = 0.9 * p.Phi_c
+    phi = 1.1 * p.Phi_c
     mass = np.sqrt(meff_sq_psi(phi, p))
     t = np.linspace(0.0, 20.0 * np.pi / mass, 4001)
     amplitude = 1.0e10
@@ -378,7 +377,7 @@ def test_quadratic_virial_ratio_is_unity_for_harmonic_oscillator():
 
 def test_quadratic_virial_ratio_is_unavailable_for_tachyonic_mass():
     p = PTUMParameters()
-    phi = 1.1 * p.Phi_c
+    phi = 0.9 * p.Phi_c
     t = np.linspace(0.0, 10.0, 1001)
     psi = np.cos(t)
     psi_dot = -np.sin(t)
