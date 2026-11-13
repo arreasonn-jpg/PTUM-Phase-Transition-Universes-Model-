@@ -18,6 +18,7 @@ from ptum_task1_simulation import (
     InitialConditions,
     run_simulation,
     compute_time_averaged_w,
+    classify_outcome,
 )
 
 
@@ -134,3 +135,18 @@ def test_cycle_averaged_equation_of_state_is_ratio_of_averages():
     assert t_avg[0] == pytest.approx(2.0)
     # This differs from mean(p/rho), which would be 1.0 here.
     assert w_avg[0] != pytest.approx(np.mean(pressure[1:4] / density[1:4]))
+
+
+
+def test_regime_classifier_uses_late_time_diagnostics():
+    result = {
+        "success": True,
+        "w_psi_avg": np.array([0.0, 0.1, 0.2, 1.0 / 3.0, 1.0 / 3.0]),
+        "Q": np.concatenate([np.zeros(80), np.full(20, 10.0)]),
+        "virial_ratio": np.concatenate([np.full(80, 0.2), np.ones(20)]),
+    }
+    classification = classify_outcome(result, PTUMParameters())
+    assert classification["regime"] == "quartic"
+    assert classification["quartic_achieved"]
+    assert classification["Q_final"] == pytest.approx(10.0)
+    assert classification["virial_final"] == pytest.approx(1.0)
