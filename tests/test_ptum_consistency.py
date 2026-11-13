@@ -17,6 +17,7 @@ from ptum_task1_simulation import (
     compute_quartic_virial_ratio,
     InitialConditions,
     run_simulation,
+    compute_time_averaged_w,
 )
 
 
@@ -117,3 +118,19 @@ def test_frw_chain_rule_residual_closes_for_evolving_two_field_solution():
     assert np.max(np.abs(result["continuity_residual_relative"])) < 1.0e-10
     assert np.max(np.abs(result["Phi"] - result["Phi"][0])) > 0.0
     assert np.max(np.abs(result["psi"] - result["psi"][0])) > 0.0
+
+
+
+def test_cycle_averaged_equation_of_state_is_ratio_of_averages():
+    t = np.arange(5.0)
+    psi_dot = np.array([1.0, 1.0, -1.0, -1.0, 1.0])
+    pressure = np.array([0.0, 4.0, 3.0, 2.0, 0.0])
+    density = np.array([1.0, 2.0, 6.0, 2.0, 1.0])
+    w_avg, t_avg = compute_time_averaged_w(t, pressure, density, psi_dot)
+
+    # The first complete half-cycle uses indices 1, 2, 3:
+    # <p>/<rho> = (4+3+2)/(2+6+2) = 0.9.
+    assert w_avg[0] == pytest.approx(0.9)
+    assert t_avg[0] == pytest.approx(2.0)
+    # This differs from mean(p/rho), which would be 1.0 here.
+    assert w_avg[0] != pytest.approx(np.mean(pressure[1:4] / density[1:4]))
