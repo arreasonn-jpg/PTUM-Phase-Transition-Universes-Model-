@@ -20,6 +20,7 @@ from ptum_task1_simulation import (
     compute_quartic_virial_ratio,
     compute_quadratic_virial_ratio,
     InitialConditions,
+    create_initial_conditions,
     run_simulation,
     compute_time_averaged_w,
     classify_outcome,
