@@ -232,3 +232,22 @@ def test_damping_ratio_uses_local_threshold_hubble_scale():
     assert p.H_threshold_potential == pytest.approx(expected_hc)
     assert p.damping_ratio == pytest.approx(3.0 * expected_hc / (2.0 * p.mu))
     assert p.damping_ratio < p.damping_ratio_plateau
+
+
+
+def test_two_field_parameter_scan_returns_explicit_classification():
+    from ptum_task1_simulation import run_parameter_scan
+
+    p = PTUMParameters(V0=1.0e56, m_psi=1.0e13, lambda_psi=0.1)
+    results = run_parameter_scan(
+        p,
+        psi_init_range=[0.01 * p.psi_0],
+        psi_dot_init_range=[0.1 * p.mu * p.psi_0],
+        phi_offset_range=[0.01 * p.Phi_c],
+        t_max=1.0,
+        n_points=40,
+    )
+    assert len(results) == 1
+    assert results[0]["success"]
+    assert "regime" in results[0]["classification"]
+    assert "quartic_achieved" in results[0]["classification"]
