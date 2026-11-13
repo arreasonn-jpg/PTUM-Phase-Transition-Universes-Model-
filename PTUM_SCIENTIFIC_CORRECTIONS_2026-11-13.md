@@ -441,4 +441,4 @@ The manuscript and claim-boundary document now state this limitation, and the 10
 
 ## 28. Pinned scientific CI environment
 
-Added `requirements-ci.txt` with the Python 3.11 runner's verified direct dependency versions: NumPy 2.4.6, SciPy 1.17.1 and pytest 9.2.0. The workflow now installs this file, enables pip caching keyed to it, and records `pip freeze` in the job log. This removes the previous floating-dependency behavior for the direct scientific test stack. The Python patch release and GitHub-hosted Ubuntu image remain runner-managed and should be recorded in each CI run.
+Added `requirements-ci.txt` with the Python 3.11 runner's verified package versions: pip 26.3, NumPy 2.4.6, SciPy 1.17.1, pytest 9.2.0, and their iniconfig/packaging/pluggy/Pygments dependencies. The workflow now installs this lock file, enables pip caching keyed to it, and records `pip freeze` in the job log. This removes floating versions from the Python CI package stack. The Python patch release and GitHub-hosted Ubuntu image remain runner-managed and should be recorded in each CI run.
