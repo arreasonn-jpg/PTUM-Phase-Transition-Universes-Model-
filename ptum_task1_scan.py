@@ -10,7 +10,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 
-from ptum_inflation_background import compute_observables
+from ptum_inflation_background import compute_observables, state_at_field_value
 from ptum_task1_simulation import (
     M_PL,
     PTUMParameters,
@@ -66,6 +66,18 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
         psi_init_range, psi_dot_init_range, phi_offset_range = (
             build_initial_condition_grid(params)
         )
+        # Initialize Phi_dot from the same single-field FRW trajectory
+        # that defines the exact epsilon_H=1 endpoint. Each post-threshold
+        # offset is reached by integrating beyond that endpoint, rather than
+        # assigning a potential-slow-roll velocity at the displaced field.
+        phi_dot_init_by_offset = {}
+        for offset in phi_offset_range:
+            x_target = (params.Phi_c - offset) / M_PL
+            state = state_at_field_value(
+                params.lambda_phi, x_target, V0=params.V0
+            )
+            phi_dot_init_by_offset[offset] = state["Phi_dot"]
+
         rows = run_parameter_scan(
             params,
             psi_init_range,
@@ -73,6 +85,7 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
             phi_offset_range,
             t_max=t_max,
             n_points=n_points,
+            phi_dot_init_by_offset=phi_dot_init_by_offset,
         )
         for row in rows:
             row["scan_metadata"] = {
@@ -87,6 +100,9 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
                 "psi_seed_scales": list(SEED_SCALES),
                 "psi_velocity_scales": list(VELOCITY_SCALES),
                 "phi_offset_scales": list(PHI_OFFSETS),
+                "fuel_velocity_source": "integrated_single_field_FRW_trajectory",
+                "quantum_vacuum_seeded": False,
+                "zero_seed_rows_are_exact_classical_invariant_controls": True,
             }
         all_results.extend(rows)
     return all_results
