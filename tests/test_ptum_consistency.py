@@ -100,3 +100,20 @@ def test_static_de_sitter_solution_satisfies_frw_continuity_diagnostic():
     # not expected to reach this tolerance for a vacuum-dominated constant rho.
     assert result["continuity_residual_finite_difference"].shape == t.shape
     assert result["continuity_residual_finite_difference_relative"].shape == t.shape
+
+
+
+def test_frw_chain_rule_residual_closes_for_evolving_two_field_solution():
+    p = PTUMParameters(V0=1.0e50, m_psi=1.0e5, lambda_psi=0.1)
+    ic = InitialConditions(
+        Phi=0.9 * p.Phi_c,
+        Phi_dot=1.0e20,
+        psi=1.0e4,
+        psi_dot=1.0e8,
+    )
+    t = np.linspace(0.0, 1.0e-9, 101)
+    result = run_simulation(p, ic, (t[0], t[-1]), t_eval=t)
+    assert result["success"]
+    assert np.max(np.abs(result["continuity_residual_relative"])) < 1.0e-10
+    assert np.max(np.abs(result["Phi"] - result["Phi"][0])) > 0.0
+    assert np.max(np.abs(result["psi"] - result["psi"][0])) > 0.0
