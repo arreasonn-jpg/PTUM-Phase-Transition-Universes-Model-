@@ -178,16 +178,21 @@ def test_fuel_potential_exponent_is_dimensionless_and_threshold_is_independent()
 
 
 
-def test_reproducible_inflation_background_scan_lambda_002():
-    from ptum_inflation_background import compute_observables
+def test_reproducible_inflation_background_scan():
+    from ptum_inflation_background import run_scan
 
-    result = compute_observables(0.02, n_target=60.0, n_star=55.0)
-    assert result["n_end"] == pytest.approx(60.0, abs=1.0e-6)
-    assert result["x_initial"] == pytest.approx(10.71523918, rel=2.0e-7)
-    assert result["x_star"] == pytest.approx(10.46534426, rel=2.0e-7)
-    assert result["n_s_hubble_flow_1st_order"] == pytest.approx(
+    results = run_scan(n_target=60.0, n_star=55.0)
+    assert len(results) == 8
+    assert all(row["n_end"] == pytest.approx(60.0, abs=1.0e-6)
+               for row in results)
+
+    reference = results[0]
+    assert reference["lambda_phi"] == pytest.approx(0.02)
+    assert reference["x_initial"] == pytest.approx(10.71523918, rel=2.0e-7)
+    assert reference["x_star"] == pytest.approx(10.46534426, rel=2.0e-7)
+    assert reference["n_s_hubble_flow_1st_order"] == pytest.approx(
         0.95808593, abs=2.0e-7
     )
-    assert result["r_hubble_flow_1st_order"] == pytest.approx(
+    assert reference["r_hubble_flow_1st_order"] == pytest.approx(
         0.02195265, abs=2.0e-7
     )
