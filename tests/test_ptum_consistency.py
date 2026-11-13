@@ -284,6 +284,7 @@ def test_scan_summary_is_strict_json_and_nonfinite_values_become_null(tmp_path):
             "n_oscillations": 0,
         },
         "ic_params": {"psi_init": 0.0, "psi_dot_init": 0.0, "phi_offset": 0.0},
+        "scan_metadata": {"scenario": "unit_test", "n_output_points": 101},
         "psi": np.array([0.0, 0.0]),
         "Phi": np.array([1.0, 1.0]),
         "continuity_residual_relative": np.array([0.0, 0.0]),
@@ -299,6 +300,8 @@ def test_scan_summary_is_strict_json_and_nonfinite_values_become_null(tmp_path):
     assert parsed[0]["classification"]["Q_final"] is None
     assert "NaN" not in raw
     assert "max_abs_psi_over_trajectory" in parsed[0]
+    assert parsed[0]["scan_metadata"]["scenario"] == "unit_test"
+    assert parsed[0]["scan_metadata"]["n_output_points"] == 101
 
 
 
