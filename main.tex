@@ -1698,6 +1698,37 @@ Q_{\rm DM}^\nu &= -2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
 Q_{\rm DE}^\nu &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
 Q_{\rm SM}^\nu &= -y_\psi \bar f f\,\nabla^\nu\psi + g_\psi \psi^2 \phi_{\rm SM} \nabla^\nu\phi_{\rm SM}.
 \end{align}
+The signs can be checked directly from the assigned interaction
+potentials. For
+$U_{\Phi\psi}=-\tfrac12(\alpha m^2/E_{\rm th}^2)\Phi^2\psi^2$,
+assigning $U_{\Phi\psi}$ to the $\psi$ tensor gives
+$Q_\Phi^\nu=U_{\Phi\psi,\Phi}\nabla^\nu\Phi$ and
+$Q_\psi^\nu=-U_{\Phi\psi,\Phi}\nabla^\nu\Phi$.
+Consequently, in homogeneous FRW,
+\begin{equation}
+Q_\psi^0=-\frac{\alpha m^2}{E_{\rm th}^2}
+\Phi\psi^2\dot\Phi,\qquad
+Q_\Phi^0=+\frac{\alpha m^2}{E_{\rm th}^2}
+\Phi\psi^2\dot\Phi.
+\end{equation}
+Likewise, for $U_{\chi r}=g_{\rm DM}\chi^2\Phi_{\rm res}^2$
+assigned to the DM tensor,
+$Q_{\rm DM}^\nu=-U_{\chi r,\Phi_{\rm res}}
+\nabla^\nu\Phi_{\rm res}$ and
+$Q_{\rm DE}^\nu=+U_{\chi r,\Phi_{\rm res}}
+\nabla^\nu\Phi_{\rm res}$, so
+\begin{equation}
+Q_{\rm DM}^0=+2g_{\rm DM}\chi^2\Phi_{\rm res}
+\dot\Phi_{\rm res},\qquad
+Q_{\rm DE}^0=-2g_{\rm DM}\chi^2\Phi_{\rm res}
+\dot\Phi_{\rm res}.
+\end{equation}
+Here $Q_i^0$ is the source in
+$\dot\rho_i+3H(\rho_i+p_i)=Q_i^0$, since
+$\nabla^0\varphi=-\dot\varphi$ for the $(-+++)$ signature.
+This explicit conversion prevents confusing a contravariant time
+component with the covariant derivative of a homogeneous scalar.
+
 Direct summation now gives $\sum_i Q_i^\nu = 0$ identically, as required
 by $\nabla_\mu T^{\mu\nu}_{\rm total}=0$ within the stated sector split. The terms
 $\alpha m^2(\Phi^2/E_{\rm th}^2)\psi\partial^\nu\psi$ and
