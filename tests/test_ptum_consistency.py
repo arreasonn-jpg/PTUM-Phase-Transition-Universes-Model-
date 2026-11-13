@@ -694,3 +694,182 @@ def test_manuscript_does_not_overstate_psi_z2_or_phi_res_shift_symmetry():
     source = Path("main.tex").read_text(encoding="utf-8")
     assert "explicitly broken when any" in source
     assert "No exact or technically protected shift symmetry" in source
+
+
+def test_delta_neff_radiation_fraction_uses_total_radiation_denominator():
+    from ptum_radiation_budget import radiation_fractions
+
+    low = radiation_fractions(0.10, 3.044)
+    high = radiation_fractions(0.31, 3.044)
+    assert low["extra_over_standard_neutrino_equivalent"] == pytest.approx(
+        0.10 / 3.044
+    )
+    assert low["extra_fraction_including_itself"] == pytest.approx(
+        0.0132499388, rel=2.0e-8
+    )
+    assert high["extra_fraction_including_itself"] == pytest.approx(
+        0.0399628492, rel=2.0e-8
+    )
+    assert high["extra_fraction_including_itself"] > low["extra_fraction_including_itself"]
+
+def test_delta_neff_radiation_fraction_rejects_invalid_inputs():
+    from ptum_radiation_budget import radiation_fractions
+
+    with pytest.raises(ValueError):
+        radiation_fractions(-0.1)
+    with pytest.raises(ValueError):
+        radiation_fractions(0.1, 0.0)
+    with pytest.raises(ValueError):
+        radiation_fractions(float("nan"))
+
+def test_residual_dark_energy_potential_derivatives_match_finite_differences():
+    from ptum_dark_energy import (
+        M_PL_GEV,
+        residual_potential,
+        residual_potential_prime,
+        residual_potential_second,
+    )
+
+    args = {
+        "W0": 1.0e40,
+        "kappa": 0.4,
+        "lambda_res": 0.2,
+        "Lambda_np4": 1.0e39,
+        "S_E": 3.0,
+        "f_res": 0.8 * M_PL_GEV,
+    }
+    phi = 0.7 * M_PL_GEV
+    h = 1.0e-4 * M_PL_GEV
+    d1_fd = (
+        residual_potential(phi + h, **args)
+        - residual_potential(phi - h, **args)
+    ) / (2.0 * h)
+    d2_fd = (
+        residual_potential_prime(phi + h, **args)
+        - residual_potential_prime(phi - h, **args)
+    ) / (2.0 * h)
+    assert residual_potential_prime(phi, **args) == pytest.approx(d1_fd, rel=2.0e-7)
+    assert residual_potential_second(phi, **args) == pytest.approx(d2_fd, rel=2.0e-7)
+
+def test_residual_dark_energy_potential_has_dimensionally_consistent_origin():
+    from ptum_dark_energy import residual_potential, residual_potential_prime
+
+    value = residual_potential(
+        0.0, W0=1.0e40, kappa=0.4, lambda_res=0.2,
+        Lambda_np4=1.0e39, S_E=3.0, f_res=1.0e18,
+    )
+    assert value == pytest.approx(1.0e39 * np.exp(-3.0))
+    assert residual_potential_prime(
+        0.0, W0=1.0e40, kappa=0.4, lambda_res=0.2,
+        Lambda_np4=1.0e39, S_E=3.0, f_res=1.0e18,
+    ) == pytest.approx(0.0, abs=1.0e-30)
+
+def test_residual_dark_energy_potential_rejects_nonphysical_scales():
+    from ptum_dark_energy import residual_potential
+
+    with pytest.raises(ValueError):
+        residual_potential(1.0, 1.0, -0.1, 0.2)
+    with pytest.raises(ValueError):
+        residual_potential(1.0, 1.0, 0.1, 0.2, f_res=0.0)
+
+def test_linear_waterfall_mode_preserves_vacuum_in_static_stable_background():
+    from ptum_waterfall_modes import integrate_waterfall_mode
+
+    t = np.linspace(0.0, 100.0, 1001)
+    a = np.ones_like(t)
+    H = np.zeros_like(t)
+    Phi = np.full_like(t, 1.1)
+    result = integrate_waterfall_mode(
+        t, a, H, Phi, k_comoving=0.0, m_psi=1.0, Phi_c=1.0,
+        H_dot=np.zeros_like(t),
+    )
+    assert result["initial_adiabaticity"] == pytest.approx(0.0)
+    assert result["wronskian_error"] < 1.0e-7
+    assert result["amplification"] == pytest.approx(1.0, rel=2.0e-7)
+    assert result["final_particle_number"] == pytest.approx(0.0, abs=1.0e-7)
+    assert result["tachyonic_time_fraction"] == 0.0
+
+def test_linear_waterfall_mode_detects_tachyonic_growth_without_false_particle_count():
+    from ptum_waterfall_modes import integrate_waterfall_mode
+
+    t = np.linspace(0.0, 100.0, 1001)
+    a = np.ones_like(t)
+    H = np.zeros_like(t)
+    Phi = np.linspace(1.1, 0.5, len(t))
+    result = integrate_waterfall_mode(
+        t, a, H, Phi, k_comoving=0.0, m_psi=1.0, Phi_c=1.0,
+        H_dot=np.zeros_like(t),
+    )
+    assert result["initial_adiabaticity"] < 0.1
+    assert result["omega_sq"][0] > 0.0
+    assert result["omega_sq"][-1] < 0.0
+    assert result["tachyonic_time_fraction"] > 0.8
+    assert result["amplification"] > 1.0e20
+    assert result["log_amplification"] > 40.0
+    assert result["wronskian_error"] < 1.0e-12
+    assert result["final_particle_number"] is None
+    assert not result["particle_number_is_adiabatic"]
+
+def test_linear_waterfall_mode_rejects_nonadiabatic_initial_frequency():
+    from ptum_waterfall_modes import integrate_waterfall_mode
+
+    t = np.linspace(0.0, 1.0, 101)
+    with pytest.raises(ValueError, match="Initial canonical frequency squared"):
+        integrate_waterfall_mode(
+            t, np.ones_like(t), np.zeros_like(t),
+            np.full_like(t, 0.9), k_comoving=0.0, m_psi=1.0, Phi_c=1.0,
+            H_dot=np.zeros_like(t),
+        )
+
+def test_linear_waterfall_mode_includes_frw_rescaling_terms():
+    from ptum_waterfall_modes import integrate_waterfall_mode
+
+    t = np.linspace(0.0, 1.0, 101)
+    H = 0.1 + 0.001 * t
+    H_dot = np.full_like(t, 0.001)
+    a = np.exp(0.1 * t + 0.0005 * t**2)
+    Phi = np.full_like(t, 2.0)
+    result = integrate_waterfall_mode(
+        t, a, H, Phi, k_comoving=0.0, m_psi=1.0, Phi_c=1.0,
+        H_dot=H_dot,
+    )
+    expected = 3.0 - 1.5 * H_dot - 2.25 * H**2
+    assert result["omega_sq"] == pytest.approx(expected)
+    assert result["wronskian_error"] < 1.0e-7
+
+def test_linear_waterfall_spectrum_keeps_modes_independent_and_vacuum_stable():
+    from ptum_waterfall_modes import integrate_waterfall_spectrum
+
+    t = np.linspace(0.0, 20.0, 401)
+    result = integrate_waterfall_spectrum(
+        t,
+        np.ones_like(t),
+        np.zeros_like(t),
+        np.full_like(t, 2.0),
+        k_comoving_values=[0.0, 0.5, 1.0],
+        m_psi=1.0,
+        Phi_c=1.0,
+        H_dot=np.zeros_like(t),
+    )
+    assert result["k_comoving"] == pytest.approx([0.0, 0.5, 1.0])
+    assert np.allclose(result["log_amplification"], 0.0, atol=2.0e-7)
+    assert np.all(result["particle_number_is_adiabatic"])
+    assert all(n == pytest.approx(0.0, abs=1.0e-7) for n in result["final_particle_number"])
+
+def test_linear_waterfall_spectrum_rejects_unsorted_or_invalid_wavenumbers():
+    from ptum_waterfall_modes import integrate_waterfall_spectrum
+
+    t = np.linspace(0.0, 1.0, 11)
+    common = (
+        t, np.ones_like(t), np.zeros_like(t), np.full_like(t, 2.0)
+    )
+    with pytest.raises(ValueError, match="strictly increasing"):
+        integrate_waterfall_spectrum(
+            *common, [0.0, 1.0, 0.5], m_psi=1.0, Phi_c=1.0,
+            H_dot=np.zeros_like(t),
+        )
+    with pytest.raises(ValueError, match="non-negative"):
+        integrate_waterfall_spectrum(
+            *common, [-1.0, 0.5], m_psi=1.0, Phi_c=1.0,
+            H_dot=np.zeros_like(t),
+        )
