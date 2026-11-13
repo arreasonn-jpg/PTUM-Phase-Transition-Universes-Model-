@@ -1808,19 +1808,28 @@ establish the interaction-current bookkeeping algebraically. They
 do not replace the still-missing explicit SM action and its full
 Hilbert tensor.
 
-Direct summation now gives $\sum_i Q_i^\nu = 0$ identically, as required
-by $\nabla_\mu T^{\mu\nu}_{\rm total}=0$ within the stated sector split. The terms
-$\alpha m^2(\Phi^2/E_{\rm th}^2)\psi\partial^\nu\psi$ and
-$g_{\rm DM}\chi\Phi_{\rm res}^2\partial^\nu\chi$ that appeared in an
-earlier draft arose from double-counting the symmetric interaction
-variation; they cancel once each interaction is assigned exactly once
-to each of the two exchanging sectors. The background energy-partition
-rates below follow from these closed expressions.
-The energy partition during the discharge is determined by the time evolution of the fields. During the tachyonic growth phase ($\Phi \approx \Phi_c$, $\psi$ growing exponentially), the dominant transfer is from the fuel field to the proxy field:
+Direct summation gives
 \begin{equation}
-Q_\psi \approx -Q_\Phi \approx -\alpha m^2 \frac{\Phi_c}{E_{\rm th}^2} \psi^2 \dot\Phi
-\qquad\text{(GÖSTERİLDİ from the closed } Q_i^\nu \text{ above).}
+\sum_i Q_i^\nu=0,
 \end{equation}
+as required by
+\(\nabla_\mu T^{\mu\nu}_{\rm total}=0\) within the stated sector
+assignment. Terms proportional to
+\(\alpha m^2\Phi^2\psi\nabla^\nu\psi/E_{\rm th}^2\) and
+\(g_{\rm DM}\chi\Phi_{\rm res}^2\nabla^\nu\chi\), which appeared in
+an earlier draft, cancel against the corresponding field-equation
+terms when each interaction is assigned exactly once. The background
+energy-partition rates below follow from these closed expressions.
+
+During the tachyonic growth phase, with \(\Phi\) near \(\Phi_c\) and
+\(\psi\) growing, the leading fuel-to-proxy transfer is
+\begin{equation}
+Q_\psi \simeq -Q_\Phi
+\simeq -\alpha m^2\frac{\Phi_c}{E_{\rm th}^2}
+\psi^2\dot\Phi.
+\end{equation}
+This is the homogeneous time-component source obtained from the
+covariant currents above.
 (The additional term \(\alpha m^2(\Phi_c^2/E_{\rm th}^2)\psi\dot\psi\)
 that appeared in an earlier draft is not part of \(Q_\Phi^\nu\); it
 belongs to the proxy sector's own energy balance and is already
@@ -3233,10 +3242,16 @@ A_k = \frac{k^2/a^2+m_\chi^2+g_{\rm DM}\mathcal{A}_{\rm res}^2
 {\omega_{\rm res}^2}.
 \end{equation}
 The $\chi$ field experiences parametric resonance when the Mathieu
-parameters place the mode in an instability band, the dominant one
-being $A_k\simeq1$ for the narrow primary band, corresponding to
-$\sqrt{k^2/a^2+m_\chi^2+g_{\rm DM}\mathcal A_{\rm res}^2}
-\simeq\omega_{\rm res}$, not $\omega_\chi\simeq\omega_{\rm res}/2$.
+parameters place the mode in an instability band. The narrow primary
+band is centered near $A_k\simeq1$. In the short-time limit where the
+Hubble-rescaling terms are negligible, this corresponds to
+\begin{equation}
+\sqrt{\frac{k^2}{a^2}+m_\chi^2+
+g_{\rm DM}\mathcal A_{\rm res}^2}
+\simeq\omega_{\rm res}.
+\end{equation}
+The characteristic frequency is therefore near $\omega_{\rm res}$,
+not $\omega_{\rm res}/2$.
 
 The equation of motion for the $\chi$ field modes in an FRW
 background is
