@@ -3299,256 +3299,36 @@ mode system, momentum integral, backreaction, and reheating history
 are solved consistently.
 
 \noindent\textbf{Clarification: parametric resonance target vs. CLASS evolution.}
-The value $\Omega_\chi h^2 \sim 0.12$ derived above is a \emph{target
-benchmark} for the parametric resonance production mechanism during
-the discharge event; note that parametric resonance presupposes the
-oscillatory (quartic-dominated) regime of $\Phi_{\rm res}$, which is
-not achieved at the stated benchmark parameters (overdamped,
-$3H/(2\mu)\approx25$; see the abstract and
-Section~\ref{subsec:ptum_operational_stability}). It is \emph{not} an output of the CLASS
-Boltzmann code. The CLASS implementation evolves the dark matter
-sector \emph{after} the discharge, using the post-discharge initial
-conditions (energy density, equation of state) as inputs. The
-parametric resonance calculation is a separate pre-CLASS step that
-determines the initial dark matter abundance. The two are
-consistent if the parametric resonance produces the correct initial
-$\rho_\chi$ for the CLASS evolution. The benchmark parameters are
-chosen such that this consistency holds, but a full self-consistent
-calculation coupling the non-equilibrium resonance dynamics to the
-post-discharge Boltzmann evolution is left for future work.
+The observed value \(\Omega_\chi h^2\simeq0.12\) is a target that a
+microscopic production calculation must reproduce; it is not a
+result derived in this work. The CLASS implementation evolves the
+post-discharge cosmological perturbations and requires the initial
+dark-matter abundance as an input. It does not calculate the
+pre-discharge parametric production. The required link is therefore
+a separate calculation of the expanding \(\chi_k\) modes, their
+occupation spectrum, the momentum-integrated abundance, and the
+subsequent entropy dilution. That calculation has not yet been
+completed. Moreover, the stated benchmark is overdamped
+(\(3H/(2\mu)\approx25\)) and does not realize the coherent
+oscillatory regime assumed by the simple Floquet reduction. Thus the
+present manuscript does not establish that its benchmark produces
+the observed dark-matter abundance or that the pre-CLASS and
+post-discharge descriptions have been matched.
 
-\noindent\textbf{Reconciling $\Phi_{\rm res}$ dual role.}
-The residual field $\Phi_{\rm res}$ plays two distinct roles:
-\begin{enumerate}
-\item \textbf{During discharge:} $\Phi_{\rm res}$ oscillates with
-      frequency $\omega_{\rm res} \sim 10^{13}$ GeV, driving
-      parametric resonance for $\chi$ production. This is a
-      high-frequency, large-amplitude oscillation.
-\item \textbf{Post-discharge (late universe):} $\Phi_{\rm res}$
-      settles into its minimum and acts as a dark energy field with
-      mass $m_{\rm res} \sim H_0 \sim 10^{-33}$ eV, giving
-      $w_{\rm DE} \approx -1$.
-\end{enumerate}
-These are not contradictory: the high-frequency oscillations during
-the discharge are damped by Hubble expansion and particle production
-on a timescale $\Delta t \sim \omega_{\rm res}^{-1} \ll H_*^{-1}$.
-After the discharge, the field relaxes to its minimum and its
-late-time dynamics are governed by the shallow residual potential
-$W(\Phi_{\rm res})$. The transition from the oscillatory phase to
-the dark energy phase is a standard feature of scalar field
-cosmology (e.g., quintessence after reheating).
+\noindent\textbf{Conditional roles of \(\Phi_{\rm res}\).}
+In a parameter regime where the residual field is displaced and
+undergoes coherent oscillations, its time-dependent amplitude can
+drive \(\chi\)-mode resonance during the discharge. After sufficient
+damping, the same field may approach a shallow region of
+\(W(\Phi_{\rm res})\) and behave as a dark-energy-like component.
+This is a conditional scenario, not a demonstrated trajectory for
+the overdamped benchmark. The transition between the high-frequency
+oscillatory regime and the late-time slowly varying regime requires
+a single background solution with specified initial conditions,
+energy transfer, and expansion history. Until that solution is
+computed, the two roles are model assumptions rather than a
+quantitatively established evolution.
 
-The superheavy nature of $\chi$ ($m_\chi \gg 1$ TeV) implies that
-direct detection via nuclear recoils is not feasible. Indirect
-detection through annihilation products is also suppressed by the
-large mass. The primary observational signature would be through
-gravitational effects and possible topological defect formation
-during the discharge transition.
-
-\item[Dark energy and the cosmological constant.] 
-PTUM represents dark energy as a residual field $W(\Phi_{\rm res})$
-with near-$\Lambda$ behaviour over $\sim90\%$ of the scanned
-parameter space. Whether the extreme hierarchy
-$V_{\rm res}/V_0\sim10^{-108}$ admits a dynamical explanation
-remains an open problem; DESI and Euclid constraints on $w_0$--$w_a$
-will test the viable parameter region in the near future.
-
-\item[String theory and swampland.] 
-The tachyonic activation mechanism bears structural resemblance to
-open-string tachyon condensation in D-brane--anti-D-brane systems.
-A full string-theoretic embedding would require specifying the
-K\"ahler potential, flux background, and moduli stabilisation
-procedure. Swampland criteria (distance conjecture, de Sitter
-conjecture) provide additional consistency checks that PTUM
-satisfies in its inflationary phase.
-
-\item[Baryogenesis.] 
-The discharge is a departure from thermal equilibrium by definition,
-satisfying the third Sakharov condition. If the fuel field is extended
-to include CP-violating phases, the discharge transition can generate
-a net baryon number analogously to the Affleck--Dine mechanism.
-Quantitative realisation requires a dedicated analysis of the
-CP-violating sector.
-
-\item[Entropy production and the arrow of time.] 
-The discharge is irreversible and produces entropy. A rough estimate
-gives $S_{\rm obs}\sim10^{88}$ for the observed cosmic entropy
-budget, suggesting the discharge can account
-for the observed entropy without a separate low-entropy initial
-condition. A detailed entropy budget and its connection to the
-cosmogonically low-entropy fuel configuration remain to be
-quantified.
-
-\subsubsection{Entropy production budget}
-\label{sec:entropy_budget}
-
-The total entropy produced during the discharge can be estimated
-from the energy released and the temperature of the resulting
-radiation bath. The discharge converts the fuel field potential
-energy $V_0 \sim (10^{15}\text{--}10^{16}\,\mathrm{GeV})^4$ into
-radiation, dark matter, and dark energy. The dominant entropy
-production comes from the relativistic proxy-fluid component (pfd)
-and any additional radiation produced during reheating.
-
-\noindent\textbf{Phenomenological reheating sector.}
-We parametrize the reheating process by introducing a phenomenological
-coupling between the proxy field $\psi$ and Standard Model degrees of
-freedom. The Lagrangian includes a term
-\begin{equation}
-\mathcal{L}_{\rm rh} = -y_\psi \psi \bar{f} f - \frac{1}{2} g_\psi \psi^2 \phi_{\rm SM}^2,
-\end{equation}
-where $f$ represents SM fermions and $\phi_{\rm SM}$ represents SM
-scalars. During the quartic oscillation phase, $\psi$ decays
-perturbatively with a total decay width
-\begin{equation}
-\Gamma_\psi \sim \frac{y_\psi^2}{8\pi} m_\psi + \frac{g_\psi^2}{8\pi} m_\psi,
-\end{equation}
-where $m_\psi \sim \sqrt{\lambda_\psi}\psi_0$ is the effective mass
-during oscillations. Reheating completes when $\Gamma_\psi \sim H$,
-giving a reheating temperature
-\begin{equation}
-\begin{split}
-T_{\rm rh} &\sim \left(\frac{90}{\pi^2 g_*}\right)^{1/4}
-\sqrt{\Gamma_\psi M_{\rm Pl}} \\
-&\sim 10^{15}\,\mathrm{GeV} \left(\frac{\Gamma_\psi}{10^{13}\,\mathrm{GeV}}\right)^{1/2}
-\left(\frac{100}{g_*}\right)^{1/4}.
-\end{split}
-\end{equation}
-For the benchmark parameters $\lambda_\psi \sim 0.1$, $\psi_0 \sim
-10^{13}\,\mathrm{GeV}$, and perturbative couplings $y_\psi, g_\psi
-\sim 10^{-3}$--$10^{-2}$, the parametric estimate gives
-$\Gamma_\psi \sim 10^{10}$--$10^{11}\,\mathrm{GeV}$
-and $T_{\rm rh} \sim 10^{14}$--$10^{15}\,\mathrm{GeV}$, consistent
-with the instantaneous thermalization estimate below
-\emph{(order-of-magnitude parametric estimate, VARSAYIM-based decay
-width; not a lattice-derived value)}.
-
-The energy density released in the discharge is $\rho_{\rm dis}
-\sim V_0$. Assuming instantaneous thermalization at temperature
-$T_{\rm rh}$, the entropy density is
-\begin{equation}
-s = \frac{2\pi^2}{45}g_* T_{\rm rh}^3,
-\end{equation}
-where $g_*$ is the effective number of relativistic degrees of
-freedom. The reheating temperature is determined by equating the
-released energy to the radiation energy density:
-\begin{equation}
-\rho_{\rm rad} = \frac{\pi^2}{30}g_* T_{\rm rh}^4 \sim V_0.
-\end{equation}
-This gives
-\begin{equation}
-\begin{split}
-T_{\rm rh} &\sim \left(\frac{30 V_0}{\pi^2 g_*}\right)^{1/4} \\
-&\sim 10^{15}\,\mathrm{GeV} \left(\frac{V_0^{1/4}}{10^{16}\,\mathrm{GeV}}\right)
-\left(\frac{100}{g_*}\right)^{1/4}.
-\end{split}
-\end{equation}
-The comoving entropy (entropy per comoving volume, $s a^3$) is then
-\begin{equation}
-S_{\rm com} = s a^3 \sim \frac{2\pi^2}{45}g_* T_{\rm rh}^3 a^3.
-\end{equation}
-Using $a \propto T^{-1}$ during radiation domination, the comoving
-entropy is conserved after reheating. The total entropy in the
-observable universe today is
-\begin{equation}
-S_{\rm obs} \sim s_0 a_0^3 \sim 10^{88} \left(\frac{g_*}{100}\right)
-\left(\frac{T_{\rm rh}}{10^{15}\,\mathrm{GeV}}\right)^3,
-\end{equation}
-where $s_0 \sim 10^9\,\mathrm{cm}^{-3}$ is the current entropy
-density and $a_0$ is the current scale factor. For $V_0^{1/4} \sim
-10^{16}\,\mathrm{GeV}$ and $g_* \sim 100$, this yields
-$S_{\rm obs} \sim 10^{88}$, consistent with the observed cosmic
-entropy budget.
-
-The entropy production during the discharge itself can be
-quantified by the change in the number of e-folds of the scale
-factor. The discharge occurs over a timescale $\Delta t \sim
-|m_{\rm eff}|^{-1} \sim 10^{-13}\,\mathrm{GeV}^{-1}$, during which
-the scale factor grows by a factor
-\begin{equation}
-\frac{a_{\rm end}}{a_{\rm start}} \sim \exp(H_* \Delta t) \sim
-1 + \mathcal{O}(10^{-3}).
-\end{equation}
-The entropy production is therefore dominated by the conversion of
-potential energy to radiation, not by the expansion during the
-discharge.
-
-The low-entropy initial condition is the metastable fuel
-configuration with $\Phi < \Phi_c$. The fuel field is displaced from
-its minimum by $\Delta\Phi \sim M_{\rm Pl}$, giving a potential
-energy $V_0 \sim \lambda M_{\rm Pl}^4$. The entropy of this
-configuration is negligible compared to the post-discharge entropy
-because the fuel field is in a coherent, low-entropy state. The
-discharge thus provides a dynamical origin for the cosmic entropy
-budget, replacing the ad hoc low-entropy initial condition of
-standard cosmology with a physical mechanism.
-
-A more precise calculation requires tracking the non-equilibrium
-dynamics of the tachyonic transition, the parametric resonance
-phase, and the subsequent thermalization. This is left for future
-work using lattice simulations or kinetic theory approaches.
-
-\subsubsection{Non-linear lattice simulation of the tachyonic transition}
-\label{sec:lattice_simulation}
-
-The linear perturbation treatment of the tachyonic growth phase
-(Section~\ref{sec:tachyonic_to_quartic}) assumes that the field
-fluctuations remain small compared to the homogeneous background.
-To validate this assumption and capture non-linear effects such as
-bubble nucleation, defect formation, and mode-mode coupling, we
-performed non-linear lattice simulations of the tachyonic transition
-using the \texttt{LATTICEEASY} framework~\cite{Felder2000}.
-
-The simulation setup follows the PTUM discharge dynamics:
-\begin{itemize}
-\item Initial conditions: $\Phi = \Phi_c - \delta\Phi$ (just below
-      threshold), $\psi = \psi_{\rm vac} + \delta\psi$ with quantum
-      fluctuations $\delta\psi_k \sim H_*/2\pi$.
-\item Potential: $V(\Phi,\psi) = V_0(1-e^{-\lambda_\Phi\Phi^2/M_{\rm Pl}^2}) +
-      \frac{1}{2}m^2(1-\alpha\Phi^2/E_{\rm th}^2)\psi^2 +
-      \frac{1}{4}\lambda_\psi\psi^4$.
-\item Lattice: $N=512^3$ points, comoving box size $L \sim 10/H_*$,
-      conformal time step $\Delta\eta \sim 0.01/m_{\rm eff}$.
-\item Evolution: Full non-linear Klein-Gordon equations in expanding
-      FRW background with $H(t)$ from the energy density.
-\end{itemize}
-
-The manuscript reports that the simulations confirm the linear perturbation results; however, the present source archive does not include the lattice code, configuration files, raw field snapshots, or diagnostic outputs needed for independent reproduction. The following items should therefore be read as author-reported results rather than independently auditable numerical evidence:
-\begin{itemize}
-\item The tachyonic growth rate matches the linear prediction
-      $\Gamma_k \approx \sqrt{|m_{\rm eff}^2| - k^2/a^2}$ for
-      $k \lesssim a|m_{\rm eff}|$.
-\item The transition to quartic oscillations occurs at $\psi \sim
-      \psi_0 \equiv \sqrt{m^2/\lambda_\psi}$ as predicted.
-\item Non-linear effects (mode coupling, bubble formation) become
-      significant only after $\psi$ reaches $\mathcal{O}(\psi_0)$,
-      i.e., at the end of the linear growth phase.
-\item The energy transfer from $\Phi$ to $\psi$ is consistent with
-      the background transfer rate $Q_\psi \approx -Q_\Phi$ derived
-      in Section~\ref{sec:microscopic_transfer}.
-\item No topological defects or long-lived inhomogeneities are
-      produced for the benchmark parameters; the transition is
-      homogeneous on super-horizon scales.
-\end{itemize}
-
-These reported results are suggestive but do not, in the absence of the
-simulation artifacts, independently validate the instantaneous-discharge
-approximation ($\Delta t \ll H^{-1}$) or the linear perturbation
-treatment used in CLASS. The lattice calculation should be treated as
-unverified until the code version, input parameters, random seeds,
-convergence tests, raw outputs, and analysis scripts are released with
-the reproducibility package (Section~\ref{app:code-availability}).
-
-\end{description}
-
-In summary, PTUM reframes dark energy as a residual-field sector,
-dark matter as a superheavy discharge-product candidate, and the hot
-Big Bang as a finite-energy trigger event within an effective
-cosmological framework. The research
-programme outlined here addresses the questions that this first step
-raises but does not resolve.
-
-%============================================================
 \subsection{Limitations and honest boundaries}
 \label{sec:limits}
 
