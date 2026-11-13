@@ -104,8 +104,10 @@ def test_vacuum_dominated_near_static_background_satisfies_frw_continuity_diagno
     assert result["success"]
     # The chain-rule residual must vanish for the exact static solution.
     assert np.max(np.abs(result["continuity_residual_relative"])) < 1.0e-10
-    # The sampled finite-difference estimate is retained separately; it is
-    # not expected to reach this tolerance for a vacuum-dominated constant rho.
+    assert np.max(np.abs(result["continuity_residual_background_relative"])) < 1.0e-10
+    assert np.max(np.abs(result["continuity_residual_finite_difference_background_relative"])) < 1.0e-6
+    # The sampled finite-difference estimate is retained separately; its
+    # local normalization is ill-conditioned when rho is vacuum dominated.
     assert result["continuity_residual_finite_difference"].shape == t.shape
     assert result["continuity_residual_finite_difference_relative"].shape == t.shape
 
@@ -123,6 +125,8 @@ def test_frw_chain_rule_residual_closes_for_evolving_two_field_solution():
     result = run_simulation(p, ic, (t[0], t[-1]), t_eval=t)
     assert result["success"]
     assert np.max(np.abs(result["continuity_residual_relative"])) < 1.0e-10
+    assert np.max(np.abs(result["continuity_residual_background_relative"])) < 1.0e-10
+    assert np.max(np.abs(result["continuity_residual_finite_difference_background_relative"])) < 1.0e-6
     assert np.max(np.abs(result["Phi"] - result["Phi"][0])) > 0.0
     assert np.max(np.abs(result["psi"] - result["psi"][0])) > 0.0
 
