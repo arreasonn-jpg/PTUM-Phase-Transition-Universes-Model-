@@ -318,4 +318,4 @@ R_2=\frac{\langle K\rangle}
 \qquad
 V_2=\frac12m_{\rm eff}^2(\Phi)\psi^2,
 \]
-and is defined only on complete half-cycles where $m_{\rm eff}^2>0$. A harmonic oscillator with slowly varying positive mass approaches $R_2=1$. The classifier now requires $|w|<0.1$, $Q<1$, and $|R_2-1|<0.2$ before assigning `quadratic_candidate`. Two new tests check the harmonic limit and reject tachyonic intervals; another verifies the classifier gate. The updated suite contains 24 tests and is pending its latest CI result.
+and is defined only on complete half-cycles where $m_{\rm eff}^2>0$. A harmonic oscillator with slowly varying positive mass approaches $R_2=1$. The classifier now requires $|w|<0.1$, $Q<1$, and $|R_2-1|<0.2$ before assigning `quadratic_candidate`. Two new tests check the harmonic limit and reject tachyonic intervals; another verifies the classifier gate. The updated suite contains 24 tests. GitHub Actions run 43392067477 has completed the Python regression step successfully; the scan and LaTeX jobs were still running when this note was updated.
