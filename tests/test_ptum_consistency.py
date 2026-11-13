@@ -357,8 +357,8 @@ def test_threshold_matched_inflation_starts_dormant_and_becomes_tachyonic():
         m_psi=1.0e13,
         E_th=1.0e16,
     )
-    phi_star = 10.535 * M_PL
-    phi_end = 1.387 * M_PL
+    phi_star = 10.7152391828 * M_PL
+    phi_end = 0.9862280831 * M_PL
     assert meff_sq_psi(phi_star, p) > 0.0
     assert meff_sq_psi(phi_end, p) == pytest.approx(
         0.0, abs=1.0e-10 * p.m_psi**2
