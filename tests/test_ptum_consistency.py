@@ -845,7 +845,8 @@ def test_off_shell_sm_hilbert_tensor_reduces_with_full_ptum_fermion_eom():
     assert r"g^{\mu\nu}\left(\mathcal K_f-U_{{\rm SM},Y}\right)" in tensor_definition
     assert r"T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}+T_{f,0}^{\mu\nu}" in tensor_definition
     assert r"U_{{\rm SM},Y}+U_Y" in source
-    assert "full PTUM+SM fermion equations of motion" in source
+    normalized_source = " ".join(source.split())
+    assert "full PTUM+SM fermion equations of motion" in normalized_source
     assert r"T_{{\rm SM},0}^{\mu\nu}-g^{\mu\nu}U_Y" in source
     assert r"T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}" in source
     assert r"T_{f,\mathrm{kin}}^{\mu\nu}" in source
