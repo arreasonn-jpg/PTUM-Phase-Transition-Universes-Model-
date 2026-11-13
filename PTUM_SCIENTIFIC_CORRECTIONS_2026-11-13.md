@@ -367,3 +367,15 @@ For the slow-roll direction $\dot\Phi<0$, the assigned $\psi$-sector source is n
 The Python model has been updated consistently: $m_{\rm eff}^2$, $\partial m_{\rm eff}^2/\partial\Phi$, the $\Phi$ acceleration, the chain-rule continuity diagnostic, the local tachyonic scale, and initial conditions are all aligned with the revised sign. Positive $\phi$ offsets now place the initial field below $\Phi_c$, on the tachyonic side. Baseline tests and sign-characterization tests have been updated.
 
 The previous 36-point scan (run 43392067477) used the old sign and is now historical only. It must not be cited as a result for the revised model. A fresh CI run must verify the revised equations, 24-plus regression tests, both benchmark scans, and LaTeX build. Even after that, the current two-field scan begins below threshold and does not resolve the onset itself; coupled quantum seeds, inhomogeneous waterfall growth, and backreaction remain necessary.
+
+
+## 22. High-resolution initial-condition scan
+
+The earlier 36-point post-threshold scan used only 200 output samples over $20\mu^{-1}$. The high-scale trajectories exhibited many turning points, leaving only a few output samples per half-cycle. That resolution is inadequate for reliable cycle-averaged $w$, $Q$, and virial diagnostics. The scan grid has therefore been expanded and the output resolution raised.
+
+The revised runner now uses a $5\times5\times2$ grid in:
+- initial field seed $\psi/\psi_0\in\{0,0.1,1,2,5\}$;
+- initial velocity seed $\dot\psi/(\mu\psi_0)\in\{0,0.1,1,2,5\}$;
+- post-threshold offset $(\Phi_c-\Phi)/\Phi_c\in\{0.01,0.1\}$.
+
+It runs 50 initial conditions at each energy scale (100 total), with 4001 output points over $20\mu^{-1}$ per trajectory. Each JSON row records the scenario, damping ratios, time span, output resolution and seed grid. Regression tests check the 50-point grid and ensure positive offsets start below $\Phi_c$ on the tachyonic side. This remains a homogeneous post-threshold sensitivity scan, not a quantum-vacuum seed distribution or a simulation of the threshold crossing itself. The new CI result is pending.
