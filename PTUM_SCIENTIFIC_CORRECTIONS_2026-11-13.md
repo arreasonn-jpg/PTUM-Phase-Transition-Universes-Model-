@@ -166,7 +166,7 @@ The expansion term is evaluated as \(3H(\\dot\\Phi^2+\\dot\\psi^2)\), algebraica
 
 The cycle-averaged equation of state is now computed as \(\\langle p\\rangle/\\langle\\rho\\rangle\), not as \(\\langle p/\\rho\\rangle\). The regime classifier now evaluates the final 20% of the trajectory rather than inadvertently averaging the entire run. Regression tests cover both behaviours.
 
-The current branch contains eleven tests. No GitHub Actions run or combined status was visible for the latest commit at the time of this note. Therefore the latest full CI suite remains **pending verification**. No claim is made that the full repository pytest suite has passed.
+The current branch contains twelve tests. GitHub Actions run 43386985702 (run number 78) completed successfully on the PR merge ref for head commit a8cc97a9651df7d0aa46cee56e30fdfe2b6959ec. The job ran `python -m pytest -q tests/test_ptum_consistency.py` and reported `12 passed in 4.34s`. This confirms the current regression suite on the PR merge ref; it does not validate the full cosmological scenario, the manuscript's unreproduced observational claims, or the physics beyond the tested equations.
 
 These tests cover homogeneous bookkeeping and internal equation consistency only. They do not establish the full PTUM scenario, reproduce CLASS/Cobaya, or calculate a physical dark-matter relic abundance.
 
