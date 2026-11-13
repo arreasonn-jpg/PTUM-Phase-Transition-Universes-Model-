@@ -201,7 +201,6 @@ def integrate_expanding_mode(
         raise ValueError("solver tolerances and consistency thresholds must be positive")
 
     a_spline = CubicSpline(t_arr, a_arr, extrapolate=False)
-    h_spline = CubicSpline(t_arr, h_arr, extrapolate=False)
     phi_spline = CubicSpline(t_arr, phi_arr, extrapolate=False)
     hubble_from_scale_factor = a_spline.derivative()(t_arr) / a_arr
     # Use a tiny interval-based floor so a nearly static background
@@ -222,14 +221,18 @@ def integrate_expanding_mode(
             f"{max_hubble_consistency_error:.6g} exceeds "
             f"{background_consistency_tolerance:.6g}"
         )
-    h_dot_arr = h_spline.derivative()(t_arr)
+    hubble_dot_from_scale_factor = (
+        a_spline.derivative(2)(t_arr) / a_arr
+        - hubble_from_scale_factor**2
+    )
     omega_chi_sq = (
         (k_comoving / a_arr) ** 2
         + m_chi**2
         + 2.0 * g_dm * phi_arr**2
     )
     omega_canonical_sq = (
-        omega_chi_sq - 1.5 * h_dot_arr - 2.25 * h_arr**2
+        omega_chi_sq - 1.5 * hubble_dot_from_scale_factor
+        - 2.25 * hubble_from_scale_factor**2
     )
     if omega_canonical_sq[0] <= 0.0:
         raise ValueError("initial canonical mode frequency is not real and positive")
@@ -254,15 +257,14 @@ def integrate_expanding_mode(
     ) * X0
     chi0 = X0 / a_arr[0] ** 1.5
     chi_dot0 = (
-        X_dot0 - 1.5 * h_arr[0] * X0
+        X_dot0 - 1.5 * hubble_from_scale_factor[0] * X0
     ) / a_arr[0] ** 1.5
 
     def background_at(time: float) -> tuple[float, float, float]:
-        return (
-            float(a_spline(time)),
-            float(h_spline(time)),
-            float(phi_spline(time)),
-        )
+        a_now = float(a_spline(time))
+        h_now = float(a_spline.derivative()(time) / a_now)
+        phi_now = float(phi_spline(time))
+        return a_now, h_now, phi_now
 
     def rhs(time: float, state: np.ndarray) -> np.ndarray:
         chi, chi_dot = state
@@ -292,7 +294,9 @@ def integrate_expanding_mode(
     chi = solution.y[0]
     chi_dot = solution.y[1]
     X = a_arr**1.5 * chi
-    X_dot = a_arr**1.5 * (chi_dot + 1.5 * h_arr * chi)
+    X_dot = a_arr**1.5 * (
+        chi_dot + 1.5 * hubble_from_scale_factor * chi
+    )
     wronskian = X * np.conjugate(X_dot) - np.conjugate(X) * X_dot
     wronskian_relative_error = float(
         abs(wronskian[-1] - 1j) / max(abs(wronskian[0]), np.finfo(float).tiny)
