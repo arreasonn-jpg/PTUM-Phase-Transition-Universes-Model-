@@ -305,3 +305,84 @@ def integrate_expanding_mode(
         "particle_number": occupation,
         "integration_success": bool(solution.success),
     }
+
+
+def integrate_expanding_spectrum(
+    k_values: Iterable[float],
+    t: Iterable[float],
+    scale_factor: Iterable[float],
+    hubble: Iterable[float],
+    phi_res: Iterable[float],
+    *,
+    m_chi: float,
+    g_dm: float,
+    rtol: float = 1.0e-9,
+    atol: float = 1.0e-12,
+    max_initial_adiabaticity: float = 0.1,
+) -> dict[str, object]:
+    """Integrate a finite k-grid and estimate the produced comoving number.
+
+    The supplied k-grid must be strictly increasing and contain at least
+    two points. The integral is the finite-band trapezoidal estimate
+        n_com = (1 / 2 pi^2) integral dk k^2 n_k.
+    The physical number density is n_com/a_final^3.
+
+    This routine does not extrapolate the uncomputed infrared or ultraviolet
+    tails. A result is only a finite-grid estimate; momentum-range and
+    resolution convergence must be demonstrated before interpreting it as
+    a relic abundance.
+    """
+    k_arr = np.asarray(tuple(k_values), dtype=float)
+    if k_arr.ndim != 1 or len(k_arr) < 2:
+        raise ValueError("k_values must be one-dimensional with at least two points")
+    if not np.all(np.isfinite(k_arr)) or np.any(k_arr < 0.0):
+        raise ValueError("k_values must be finite and non-negative")
+    if np.any(np.diff(k_arr) <= 0.0):
+        raise ValueError("k_values must be strictly increasing")
+
+    t_arr = np.asarray(tuple(t), dtype=float)
+    a_arr = np.asarray(tuple(scale_factor), dtype=float)
+    h_arr = np.asarray(tuple(hubble), dtype=float)
+    phi_arr = np.asarray(tuple(phi_res), dtype=float)
+    mode_results = [
+        integrate_expanding_mode(
+            t_arr,
+            a_arr,
+            h_arr,
+            phi_arr,
+            k_comoving=float(k),
+            m_chi=m_chi,
+            g_dm=g_dm,
+            rtol=rtol,
+            atol=atol,
+            max_initial_adiabaticity=max_initial_adiabaticity,
+        )
+        for k in k_arr
+    ]
+    occupations = np.asarray(
+        [mode["particle_number"] for mode in mode_results], dtype=float
+    )
+    all_final_frequencies_valid = all(
+        bool(mode["final_frequency_valid"]) for mode in mode_results
+    )
+    if all_final_frequencies_valid and np.all(np.isfinite(occupations)):
+        n_comoving = float(
+            np.trapezoid(k_arr**2 * occupations, x=k_arr) / (2.0 * np.pi**2)
+        )
+        n_physical = float(
+            n_comoving / float(np.asarray(tuple(scale_factor), dtype=float)[-1])**3
+        )
+    else:
+        n_comoving = float("nan")
+        n_physical = float("nan")
+
+    return {
+        "k_comoving": k_arr,
+        "occupation_numbers": occupations,
+        "mode_results": mode_results,
+        "n_comoving_finite_band": n_comoving,
+        "n_physical_finite_band": n_physical,
+        "all_final_frequencies_valid": all_final_frequencies_valid,
+        "finite_band_only": True,
+        "momentum_range": (float(k_arr[0]), float(k_arr[-1])),
+    }
