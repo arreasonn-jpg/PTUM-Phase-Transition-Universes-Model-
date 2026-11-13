@@ -594,8 +594,21 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     }
 
 
+def _json_safe(value):
+    """Convert NumPy values and non-finite floats to strict JSON values."""
+    if isinstance(value, dict):
+        return {str(key): _json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(item) for item in value]
+    if isinstance(value, np.generic):
+        value = value.item()
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    return value
+
+
 def save_results(results: List[Dict], filepath: str):
-    """Save simulation results to JSON (excluding large arrays)."""
+    """Save a strict-JSON summary, excluding large time-series arrays."""
     # Create summary without full time series
     summary = []
     for r in results:
