@@ -17,3 +17,5 @@ htmlcov/
 
 # Generated numerical scan output
 ptum_inflation_scan.json
+
+task1_parameter_scan_results.json
