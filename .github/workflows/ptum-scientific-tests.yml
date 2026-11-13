@@ -4,12 +4,13 @@ on:
   push:
     branches:
       - main
+      - 'ptum/full-scan-*'
   pull_request:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ github.event_name == 'workflow_dispatch' && format('ptum-full-scan-{0}', github.ref) || format('ptum-scientific-{0}', github.event.pull_request.number || github.ref) }}
-  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+  group: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/ptum/full-scan-')) && format('ptum-full-scan-{0}', github.ref) || format('ptum-scientific-{0}', github.event.pull_request.number || github.ref) }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/heads/ptum/full-scan-') }}
 
 permissions:
   contents: read
@@ -33,10 +34,10 @@ jobs:
       - name: Run PTUM regression tests
         run: python -m pytest -q tests/test_ptum_consistency.py
       - name: Run four-trajectory two-scale CI smoke scan
-        if: github.event_name != 'workflow_dispatch'
+        if: github.event_name != 'workflow_dispatch' && !(github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-'))
         run: python ptum_task1_scan.py --profile ci --output task1_parameter_scan_ci.json
       - name: Upload two-scale CI smoke summary
-        if: always() && github.event_name != 'workflow_dispatch'
+        if: always() && github.event_name != 'workflow_dispatch' && !(github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-'))
         uses: actions/upload-artifact@v7
         with:
           name: ptum-two-scale-ci-smoke
@@ -45,9 +46,9 @@ jobs:
           retention-days: 30
 
   full-waterfall-scan:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-'))
     runs-on: ubuntu-latest
-    timeout-minutes: 300
+    timeout-minutes: 360
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
