@@ -60,10 +60,13 @@ tree-level EFT**. The manuscript specifies the \(SU(3)_c\times SU(2)_L\times
 U(1)_Y\) representations, three chiral generations, complex Higgs doublet,
 four real PTUM gauge singlets, all displayed potentials and interaction
 operators, canonical dimensions, and the actual symmetry breaking induced by
-the odd \(\psi\mathcal O_{\rm SM}/\Lambda\) operator. The full tree-level SM
-Hilbert tensor is expressed as gauge + Higgs + symmetric chiral-fermion
-(Belinfante) pieces, with ordinary SM Yukawa potential and the assigned PTUM
-interaction included exactly once.
+the odd \(\psi\mathcal O_{\rm SM}/\Lambda\) operator. The tree-level SM
+Hilbert tensor is expressed as gauge + Higgs + symmetric on-shell
+chiral-fermion (Belinfante) pieces. The ordinary SM Yukawa equations of
+motion are included in the on-shell fermion tensor, so the ordinary
+Yukawa potential is not added a second time as a separate metric term.
+The distinct PTUM operator is outside the SM reference action and is
+assigned exactly once through the explicit $-g^{\\mu\\nu}U_Y$ term.
 
 ptum_covariant_action.py and regression tests check the hypercharge
 contractions, non-Abelian singlet contractions, and canonical dimensions.
@@ -72,3 +75,17 @@ This is an algebraic consistency layer, not an SM field solver. Gate 3 remains
 convergence has yet been performed with the SM/Higgs/fermion fields active.
 The quantum/renormalized effective action, loop-induced curvature operators,
 thermal bias of the real-\(\psi\) vacua, and reheating rates remain open.
+
+
+
+## 2026-11-13 follow-up: LaTeX and Hilbert bookkeeping
+
+The latest observed 43-test regression step passed, but the LaTeX job
+failed because `mathrsfs` was not loaded for `\\mathscr D_\\mu`.
+The package is now loaded and a source regression guards its presence.
+A further tensor audit removed a duplicate explicit ordinary-SM-Yukawa
+term from the displayed on-shell fermion Hilbert tensor; the separate
+PTUM interaction $U_Y$ remains assigned once to the SM sector.
+The current branch has 45 tests, but these newest changes have not yet
+been verified by a fresh CI run. Gate 3 remains PARTIAL until the
+independent variational and full-sector conservation checks are complete.
