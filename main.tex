@@ -469,7 +469,7 @@ Equivalently, the effective discharge trigger can be written as
 This condition defines the transition from the dormant proxy phase to the
 activated proxy phase. It should be interpreted as an effective threshold
 criterion, not as a microscopic derivation of the pre-discharge background.
-Here, $E_{\rm th}$ is the dimensionful discharge threshold scale (naturally related to the creation energy $V_0^{1/4}$), and $\alpha$ is a dimensionless coupling constant. The tachyonic instability is triggered when the fuel field crosses the critical threshold $\Phi = E_{\rm th}/\sqrt{\alpha}$. The transition timescale is assumed to be much shorter than the local Hubble time ($H^{-1}$), allowing the discharge to be treated as a nearly instantaneous phase transition at the background level that partitions the available energy into the residual dark sector and standard radiation. For \(m_{\rm eff}^2>0\) the proxy mode is dormant; for \(m_{\rm eff}^2<0\) it is activated by the tachyonic instability.
+Here, $E_{\rm th}$ is the dimensionful discharge threshold scale (naturally related to the creation energy $V_0^{1/4}$), and $\alpha$ is a dimensionless coupling constant. The tachyonic instability is triggered when the fuel field rolls below the critical threshold $\Phi_c=E_{\rm th}/\sqrt{\alpha}$. The transition duration is not assumed to be negligible compared with the local Hubble time: for the threshold-matched benchmark the potential-dominated estimate gives $3H_c/(2\mu)\simeq4.9$. The discharge and energy partition must therefore be evolved in the expanding background rather than imposed as an instantaneous event. For \(m_{\rm eff}^2>0\) the proxy mode is dormant; for \(m_{\rm eff}^2<0\) it is activated by the tachyonic instability.
 
 The dark-matter sector is
 \begin{equation}
@@ -555,35 +555,35 @@ Applying this to each sector:
 
 \begin{enumerate}
 \item \textbf{Fuel field \(\Phi\):} The potential is
-      \(V_{\rm eff}(\Phi) + \frac{1}{2}m^2(1-\alpha\Phi^2/E_{\rm th}^2)\psi^2\).
-      The derivative is
+      \(V_{\rm eff}(\Phi) +
+      \frac{1}{2}m^2(\alpha\Phi^2/E_{\rm th}^2-1)\psi^2\).
+      Its derivative is
       \begin{equation}
       \begin{split}
       &\frac{\partial}{\partial\Phi}\left[V_{\rm eff}(\Phi)
       + \frac{m^2}{2}\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi^2\right] \\
       &\quad= \frac{\partial V_{\rm eff}}{\partial\Phi}
-      - \frac{\alpha m^2}{E_{\rm th}^2}\Phi\psi^2.
+      + \frac{\alpha m^2}{E_{\rm th}^2}\Phi\psi^2.
       \end{split}
       \end{equation}
       The equation of motion is
       \begin{equation}
       \ddot\Phi + 3H\dot\Phi + \frac{\partial V_{\rm eff}}{\partial\Phi}
-      - \frac{\alpha m^2}{E_{\rm th}^2}\Phi\psi^2 = 0,
+      + \frac{\alpha m^2}{E_{\rm th}^2}\Phi\psi^2 = 0,
       \label{eq:Phi_eom}
       \end{equation}
-      which matches Eq.~\eqref{eq:frw1} (note the sign convention:
-      the interaction term in \(\mathcal{L}_{\rm activation}\) is
-      \(-\frac{m^2}{2}(1-\alpha\Phi^2/E_{\rm th}^2)\psi^2\), so
-      \(\partial\mathcal{L}/\partial\Phi = +\alpha m^2\Phi\psi^2/E_{\rm th}^2\),
-      giving \(-\partial V/\partial\Phi = -\alpha m^2\Phi\psi^2/E_{\rm th}^2\)
-      in the EOM).
+      consistent with the activation Lagrangian
+      \(-\frac{m^2}{2}(\alpha\Phi^2/E_{\rm th}^2-1)\psi^2\),
+      for which \(\partial\mathcal L/\partial\Phi
+      =-\alpha m^2\Phi\psi^2/E_{\rm th}^2\).
 
 \item \textbf{Proxy field \(\psi\):} The potential is
-      \(\frac{1}{2}m^2(1-\alpha\Phi^2/E_{\rm th}^2)\psi^2 +
-      \frac{\lambda_\psi}{4}\psi^4\). The derivative is
+      \(\frac{1}{2}m^2(\alpha\Phi^2/E_{\rm th}^2-1)\psi^2
+      +\frac{\lambda_\psi}{4}\psi^4\). Its derivative is
       \begin{equation}
       \begin{split}
-      &\frac{\partial}{\partial\psi}\left[\frac{m^2}{2}\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi^2
+      &\frac{\partial}{\partial\psi}\left[
+      \frac{m^2}{2}\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi^2
       + \frac{\lambda_\psi}{4}\psi^4\right] \\
       &\quad= m^2\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi
       + \lambda_\psi\psi^3.
@@ -591,7 +591,8 @@ Applying this to each sector:
       \end{equation}
       The equation of motion is
       \begin{equation}
-      \ddot\psi + 3H\dot\psi + m^2\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi
+      \ddot\psi + 3H\dot\psi
+      + m^2\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi
       + \lambda_\psi\psi^3 = 0,
       \end{equation}
       matching Eq.~\eqref{eq:frw2}.
@@ -1231,32 +1232,22 @@ control both stages, but the threshold matching, energy partition,
 and duration of the transition require a self-consistent numerical
 solution.
 
-There is a further field-direction consistency issue that must be
-resolved before the transition can be called dynamically triggered.
-For $\Phi>0$, the adopted fuel potential has $V_{,\Phi}>0$, so the
-canonical slow-roll equation gives
-$\dot\Phi\simeq-V_{,\Phi}/(3H)<0$: the field rolls from
-$\Phi_*\simeq10.5M_{\rm Pl}$ toward
-$\Phi_{\rm end}\simeq1.387M_{\rm Pl}$. But the activation mass used
-above satisfies
-With the revised waterfall sign,
-$m_{\rm eff}^2>0$ for $|\Phi|>\Phi_c$ and
-$m_{\rm eff}^2<0$ for $|\Phi|<\Phi_c$. The canonical slow-roll
-trajectory has $\dot\Phi<0$ for $\Phi>0$ and moves from
-$\Phi_*/M_{\rm Pl}\simeq10.5$ toward
-$\Phi_{\rm end}/M_{\rm Pl}\simeq1.387$. With
-$\Phi_c\simeq\Phi_{\rm end}$, the proxy is therefore massive and
-stable during the observable slow-roll interval and becomes
-tachyonic after the field crosses below the threshold. The sign
-ordering now matches the intended dormant-to-waterfall chronology.
+The canonical slow-roll trajectory has $\dot\Phi<0$ for $\Phi>0$ and
+moves from $\Phi_*/M_{\rm Pl}\simeq10.5$ toward
+$\Phi_{\rm end}/M_{\rm Pl}\simeq1.387$. With the revised waterfall
+mass, $m_{\rm eff}^2>0$ for $|\Phi|>\Phi_c$ and
+$m_{\rm eff}^2<0$ for $|\Phi|<\Phi_c$. Matching
+$\Phi_c\simeq\Phi_{\rm end}$ therefore leaves the proxy massive and
+stable during observable slow roll and makes it tachyonic after
+$\Phi$ crosses below the threshold. The algebraic sign ordering now
+matches the intended dormant-to-waterfall chronology.
 
-The single-field inflation module still omits $\psi$ and therefore
-does not calculate the growth of its quantum fluctuations or their
-backreaction through the crossing. The homogeneous two-field scan
-starts just below $\Phi_c$, on the already tachyonic side, and tests
-post-trigger relaxation rather than the onset itself. Thus the
-algebraic sign/trajectory mismatch is corrected, but a fully
-dynamical threshold-trigger calculation remains outstanding.
+The single-field inflation module still omits $\psi$ and does not
+calculate the growth of its quantum fluctuations or their backreaction
+through the crossing. The homogeneous two-field scan starts just
+below $\Phi_c$, on the already tachyonic side, and tests post-trigger
+relaxation rather than the onset itself. A fully dynamical
+threshold-trigger calculation remains outstanding.
 
 %============================================================
 \section{Primordial consistency of the creation sector}
