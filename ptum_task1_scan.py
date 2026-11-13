@@ -78,10 +78,27 @@ def build_initial_condition_grid(params: PTUMParameters, profile: str = "full"):
 
 def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
                    n_points: int = DEFAULT_N_POINTS,
-                   profile: str = "full"):
+                   profile: str = "full",
+                   checkpoint_path: str | None = None):
     """Run the selected scan profile at both high and low energy scales."""
     seed_scales, velocity_scales, phi_offsets = scan_profile_scales(profile)
     all_results = []
+    checkpoint_results = []
+
+    def record_checkpoint(row, metadata):
+        row["scan_metadata"] = metadata
+        checkpoint_results.append(row)
+        if checkpoint_path is not None:
+            save_results(checkpoint_results, checkpoint_path)
+        ic = row.get("ic_params", {})
+        print(
+            f"[scan] completed trajectory {len(checkpoint_results)}/"
+            f"{expected_scan_count(profile)} ({metadata['scenario']}): "
+            f"psi={ic.get('psi_init')}, psi_dot={ic.get('psi_dot_init')}, "
+            f"phi_offset={ic.get('phi_offset')}, success={row.get('success')}",
+            flush=True,
+        )
+
     for scenario_name, params in build_scan_scenarios():
         psi_init_range, psi_dot_init_range, phi_offset_range = (
             build_initial_condition_grid(params, profile=profile)
@@ -102,6 +119,23 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
             f"[scan] starting {scenario_name}: {len(psi_init_range) * len(psi_dot_init_range) * len(phi_offset_range)} trajectories",
             flush=True,
         )
+        metadata = {
+            "scenario": scenario_name,
+            "V0_GeV4": params.V0,
+            "Phi_c_over_Mpl": params.Phi_c / M_PL,
+            "exact_endpoint_damping_ratio": params.damping_ratio,
+            "potential_only_endpoint_damping_ratio": params.damping_ratio_potential,
+            "plateau_damping_ratio": params.damping_ratio_plateau,
+            "t_max_over_mu_inverse": t_max,
+            "n_output_points": n_points,
+            "scan_profile": profile,
+            "psi_seed_scales": list(seed_scales),
+            "psi_velocity_scales": list(velocity_scales),
+            "phi_offset_scales": list(phi_offsets),
+            "fuel_velocity_source": "integrated_single_field_FRW_trajectory",
+            "quantum_vacuum_seeded": False,
+            "zero_seed_rows_are_exact_classical_invariant_controls": True,
+        }
         rows = run_parameter_scan(
             params,
             psi_init_range,
@@ -112,26 +146,9 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
             phi_dot_init_by_offset=phi_dot_init_by_offset,
             progress_interval=10,
             progress_label=scenario_name,
+            result_callback=lambda row, meta=metadata: record_checkpoint(row, meta),
         )
         print(f"[scan] finished {scenario_name}", flush=True)
-        for row in rows:
-            row["scan_metadata"] = {
-                "scenario": scenario_name,
-                "V0_GeV4": params.V0,
-                "Phi_c_over_Mpl": params.Phi_c / M_PL,
-                "exact_endpoint_damping_ratio": params.damping_ratio,
-                "potential_only_endpoint_damping_ratio": params.damping_ratio_potential,
-                "plateau_damping_ratio": params.damping_ratio_plateau,
-                "t_max_over_mu_inverse": t_max,
-                "n_output_points": n_points,
-                "scan_profile": profile,
-                "psi_seed_scales": list(seed_scales),
-                "psi_velocity_scales": list(velocity_scales),
-                "phi_offset_scales": list(phi_offsets),
-                "fuel_velocity_source": "integrated_single_field_FRW_trajectory",
-                "quantum_vacuum_seeded": False,
-                "zero_seed_rows_are_exact_classical_invariant_controls": True,
-            }
         all_results.extend(rows)
     return all_results
 
@@ -166,6 +183,10 @@ def main() -> None:
         default="task1_parameter_scan_results.json",
         help="Path for the compact strict-JSON summary",
     )
+    parser.add_argument(
+        "--checkpoint", default=None,
+        help="Atomically save a compact partial summary after each completed trajectory",
+    )
     parser.add_argument("--t-max", type=float, default=DEFAULT_T_MAX)
     parser.add_argument("--n-points", type=int, default=DEFAULT_N_POINTS)
     parser.add_argument(
@@ -175,7 +196,8 @@ def main() -> None:
     args = parser.parse_args()
 
     results = run_scan_suite(
-        t_max=args.t_max, n_points=args.n_points, profile=args.profile
+        t_max=args.t_max, n_points=args.n_points, profile=args.profile,
+        checkpoint_path=args.checkpoint,
     )
     # Persist the complete diagnostic summary before enforcing the CI gate,
     # so a failed run still leaves an inspectable artifact.

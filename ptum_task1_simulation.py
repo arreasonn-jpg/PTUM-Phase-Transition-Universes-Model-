@@ -36,7 +36,7 @@ Diagnostics:
 import numpy as np
 from scipy.integrate import solve_ivp
 from dataclasses import dataclass
-from typing import Optional, Tuple, List, Dict
+from typing import Optional, Tuple, List, Dict, Callable
 import json
 import os
 import math
@@ -685,7 +685,9 @@ def run_parameter_scan(params: PTUMParameters,
                        n_points: int = 500,
                        phi_dot_init_by_offset: Optional[Dict[float, float]] = None,
                        progress_interval: int = 0,
-                       progress_label: str = "scan") -> List[Dict]:
+                       progress_label: str = "scan",
+                       result_callback: Optional[Callable[[Dict], None]] = None
+                       ) -> List[Dict]:
     """
     Run parameter scan over initial conditions.
     
@@ -740,10 +742,12 @@ def run_parameter_scan(params: PTUMParameters,
                         'phi_offset': phi_offset
                     }
                     results.append(result)
+                    if result_callback is not None:
+                        result_callback(result)
                     record_progress()
                     
                 except Exception as e:
-                    results.append({
+                    failed_result = {
                         'success': False,
                         'error': str(e),
                         'ic_params': {
@@ -751,7 +755,10 @@ def run_parameter_scan(params: PTUMParameters,
                             'psi_dot_init': psi_dot_init,
                             'phi_offset': phi_offset
                         }
-                    })
+                    }
+                    results.append(failed_result)
+                    if result_callback is not None:
+                        result_callback(failed_result)
                     record_progress()
     
     return results
@@ -977,8 +984,13 @@ def save_results(results: List[Dict], filepath: str):
                 'ic_params': r['ic_params']
             })
     
-    with open(filepath, 'w', encoding='utf-8') as f:
+    # Atomic replacement preserves the last complete checkpoint on interruption.
+    temporary_path = f"{filepath}.tmp"
+    with open(temporary_path, 'w', encoding='utf-8') as f:
         json.dump(_json_safe(summary), f, indent=2, allow_nan=False)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(temporary_path, filepath)
 
 
 # ============================================================

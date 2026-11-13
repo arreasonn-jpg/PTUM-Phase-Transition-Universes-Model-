@@ -313,6 +313,26 @@ def test_high_w_does_not_claim_barrier_crossing_without_a_barrier_diagnostic():
     assert "barrier_crossed" not in classification
 
 
+
+def test_parameter_scan_calls_result_callback_for_each_completed_trajectory():
+    from ptum_task1_simulation import run_parameter_scan
+
+    p = PTUMParameters(V0=1.0e56, m_psi=1.0e13, lambda_psi=0.1)
+    observed = []
+    results = run_parameter_scan(
+        p,
+        psi_init_range=[0.01 * p.psi_0],
+        psi_dot_init_range=[0.1 * p.mu * p.psi_0],
+        phi_offset_range=[0.01 * p.Phi_c],
+        t_max=1.0,
+        n_points=40,
+        result_callback=observed.append,
+    )
+    assert len(results) == 1
+    assert observed == results
+    assert observed[0]["success"]
+
+
 def test_scan_summary_is_strict_json_and_nonfinite_values_become_null(tmp_path):
     from ptum_task1_simulation import save_results
 
@@ -346,6 +366,25 @@ def test_scan_summary_is_strict_json_and_nonfinite_values_become_null(tmp_path):
     assert parsed[0]["scan_metadata"]["scenario"] == "unit_test"
     assert parsed[0]["scan_metadata"]["n_output_points"] == 101
 
+
+
+
+def test_scan_summary_replaces_checkpoint_atomically(tmp_path):
+    from ptum_task1_simulation import save_results
+
+    result = {
+        "success": True,
+        "classification": {"regime": "insufficient_oscillation_data"},
+        "ic_params": {"psi_init": 0.0, "psi_dot_init": 0.0, "phi_offset": 0.0},
+        "psi": np.array([0.0, 0.0]),
+        "Phi": np.array([1.0, 1.0]),
+        "continuity_residual_relative": np.array([0.0, 0.0]),
+    }
+    output = tmp_path / "checkpoint.json"
+    save_results([result], str(output))
+    assert output.exists()
+    assert not (tmp_path / "checkpoint.json.tmp").exists()
+    assert json.loads(output.read_text(encoding="utf-8"))[0]["ic_params"]["psi_init"] == 0.0
 
 
 def test_task1_scan_includes_threshold_matched_high_scale_and_low_scale_control():

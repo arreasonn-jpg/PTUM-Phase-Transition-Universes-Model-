@@ -61,13 +61,18 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-ci.txt
       - name: Run complete 100-trajectory high-resolution waterfall scan
-        run: python ptum_task1_scan.py --profile full --output task1_parameter_scan_results.json
-      - name: Upload full two-field scan summary
+        run: >-
+          python ptum_task1_scan.py --profile full
+          --output task1_parameter_scan_results.json
+          --checkpoint task1_parameter_scan_checkpoint.json
+      - name: Upload full and incremental two-field scan summaries
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: ptum-two-field-full-scan
-          path: task1_parameter_scan_results.json
+          path: |
+            task1_parameter_scan_results.json
+            task1_parameter_scan_checkpoint.json
           if-no-files-found: ignore
           retention-days: 30
 
