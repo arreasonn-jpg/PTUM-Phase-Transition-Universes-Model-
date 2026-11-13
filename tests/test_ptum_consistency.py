@@ -94,4 +94,9 @@ def test_static_de_sitter_solution_satisfies_frw_continuity_diagnostic():
     t = np.linspace(0.0, 1.0e-9, 101)
     result = run_simulation(p, ic, (t[0], t[-1]), t_eval=t)
     assert result["success"]
+    # The chain-rule residual must vanish for the exact static solution.
     assert np.max(np.abs(result["continuity_residual_relative"])) < 1.0e-10
+    # The sampled finite-difference estimate is retained separately; it is
+    # not expected to reach this tolerance for a vacuum-dominated constant rho.
+    assert result["continuity_residual_finite_difference"].shape == t.shape
+    assert result["continuity_residual_finite_difference_relative"].shape == t.shape
