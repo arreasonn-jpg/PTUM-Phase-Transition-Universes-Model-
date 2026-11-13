@@ -6,9 +6,9 @@ This file defines the evidence required before PTUM can be called scientifically
 
 | Gate | Required evidence for 10/10 | Current status |
 |---|---|---|
-| 1. Complete action and conventions | One explicit covariant action; fixed metric/sign conventions; all fields, dimensions, gauge representations, potentials, couplings, real/complex field choices and symmetry-breaking structure specified | **PARTIAL**. Scalar conventions and waterfall sign revised; complete SM/Higgs/fermion action remains open |
+| 1. Complete action and conventions | One explicit covariant action; fixed metric/sign conventions; all fields, dimensions, gauge representations, potentials, couplings, real/complex field choices and symmetry-breaking structure specified | **MET (classical tree-level EFT)**. The minimally coupled Einstein + PTUM + chiral-SM action, field representations, canonical dimensions, Higgs and Yukawa potentials, dimension-five PTUM operators, and the explicit \(\psi\)/\(\Phi_{\rm res}\) symmetry scope are now specified. Quantum/UV completion remains outside this gate and open separately |
 | 2. Inflation-to-waterfall connection | Exact inflation endpoint; threshold crossing in the same coupled background; stability of all modes before crossing; quantum seed prescription | **PARTIAL**. Exact epsilon_H endpoint is computed; post-threshold scan velocities are now taken from the integrated single-field FRW trajectory at each offset, but the coupled crossing and quantum seeds are not evolved |
-| 3. Hilbert tensors and conservation | Every sector tensor derived from the same action; all Q_i^nu derived; sum of currents cancels; numerical conservation converges independently with solver tolerance and timestep | **PARTIAL**. Scalar-sector split and selected currents are derived; full SM/Higgs sector tensors are missing |
+| 3. Hilbert tensors and conservation | Every sector tensor derived from the same action; all Q_i^nu derived; sum of currents cancels; numerical conservation converges independently with solver tolerance and timestep | **PARTIAL**. The classical tree-level gauge, Higgs, chiral-fermion and PTUM Hilbert tensors and all interaction currents are now written from one action; the current solver does not evolve SM fields, and full-sector numerical conservation/timestep-tolerance convergence is not yet demonstrated |
 | 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **PARTIAL**. Chain-rule and finite-difference diagnostics exist; convergence campaign remains open |
 | 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and a defect-topology analysis (including the Z2 domain-wall risk of a real waterfall scalar) | **NOT MET**. Current scan is homogeneous and post-threshold |
 | 6. Resonance and relic abundance | Expanding-background mode equations; converged monodromy/Floquet growth; momentum integration; backreaction; thermalization and entropy dilution; independently reproduced relic abundance | **NOT MET**. Mathieu reduction and frozen-background diagnostics exist; no validated expanding-background relic calculation |
@@ -51,3 +51,24 @@ PTUM is 10/10 only when all ten gates are **MET**, every numerical claim is repr
 ## Latest engineering correction
 
 The high-resolution scan now derives each post-threshold fuel velocity from the integrated single-field FRW trajectory rather than the potential slow-roll formula at an arbitrary displaced field value. The scan validates all 100 expected rows and fails if any integration fails; the JSON summary is written before this gate so failures remain inspectable. The zero-seed cases are marked as exact classical invariant controls, not quantum-vacuum seeds. The coupled threshold crossing, quantum-seeded inhomogeneous evolution and backreaction remain unmet.
+
+
+## 2026-11-13 classical action completion update
+
+Gate 1 is now **MET for the explicitly stated minimally coupled classical
+tree-level EFT**. The manuscript specifies the \(SU(3)_c\times SU(2)_L\times
+U(1)_Y\) representations, three chiral generations, complex Higgs doublet,
+four real PTUM gauge singlets, all displayed potentials and interaction
+operators, canonical dimensions, and the actual symmetry breaking induced by
+the odd \(\psi\mathcal O_{\rm SM}/\Lambda\) operator. The full tree-level SM
+Hilbert tensor is expressed as gauge + Higgs + symmetric chiral-fermion
+(Belinfante) pieces, with ordinary SM Yukawa potential and the assigned PTUM
+interaction included exactly once.
+
+ptum_covariant_action.py and regression tests check the hypercharge
+contractions, non-Abelian singlet contractions, and canonical dimensions.
+This is an algebraic consistency layer, not an SM field solver. Gate 3 remains
+**PARTIAL** because no numerical evolution or independent conservation
+convergence has yet been performed with the SM/Higgs/fermion fields active.
+The quantum/renormalized effective action, loop-induced curvature operators,
+thermal bias of the real-\(\psi\) vacua, and reheating rates remain open.

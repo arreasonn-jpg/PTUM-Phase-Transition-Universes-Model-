@@ -546,3 +546,42 @@ $H_{c,\rm exact}=\sqrt{3/2}\,H_{c,V}$ for a canonical single-field endpoint at $
 The workflow's scan-artifact upload also produced a secondary error because pytest stopped the job before the scan output file existed. The upload step now uses `if: always()` with `if-no-files-found: ignore`: it preserves an artifact when the scan ran, without masking an earlier test failure with a second missing-file failure.
 
 These are corrective changes after the failed run. A new CI run is required; the latest suite and scan are not yet claimed to pass.
+
+## 35. Explicit curved-space chiral-SM action and Hilbert tensor
+
+The microscopic-transfer section previously acknowledged that
+\(\mathcal L_{\rm SM}^{(0)}\) and its Hilbert tensor were not explicitly
+specified. This gap is now closed at the **classical, tree-level,
+minimally coupled EFT** level.
+
+The manuscript now fixes the gauge group
+\(SU(3)_c\times SU(2)_L\times U(1)_Y\), the representations of
+\(Q_L,u_R,d_R,L_L,e_R,H\), three generations, the complex Higgs doublet,
+and the four real PTUM gauge singlets. It writes the curved-space gauge,
+Higgs and chiral-fermion kinetic terms, the Higgs potential, ordinary SM
+Yukawa matrices, the distinct PTUM dimension-five Higgs-dressed operators,
+and the Higgs portal. The Einstein-Hilbert term and the absence of
+nonminimal curvature couplings are stated.
+
+The Hilbert tensor is obtained by vierbein variation. The gauge tensor,
+Higgs tensor, and symmetric on-shell chiral-fermion tensor are displayed;
+the standard SM Yukawa potential is included in \(T_{{\rm SM},0}^{\mu\nu}\),
+and \(U_Y=\psi\mathcal O_{\rm SM}/\Lambda\) is assigned once to the SM
+sector. Together with the existing scalar tensors, the stated sector
+assignment gives the previously listed pairwise \(Q_i^\nu\) and
+\(\sum_i Q_i^\nu=0\). The operator charges and dimensions are checked
+by the new ptum_covariant_action.py registry and regression tests.
+
+The symmetry paragraph is corrected: \(\psi\to-\psi\) is a symmetry of
+the scalar-only truncation, not of the full EFT when \(C_f\ne0\);
+the odd dimension-five operator explicitly breaks it if SM fields are
+untransformed. The Higgs portal remains even. The continuous shift of
+\(\Phi_{\rm res}\) is not a symmetry of the specified \(W(\Phi_{\rm res})\).
+
+Important boundary: this is not a UV completion or a quantum/renormalized
+effective action. The loop-corrected potential across the tachyonic branch,
+SM/Higgs/fermion evolution, independent full-sector conservation convergence,
+the thermal vacuum bias, and the domain-wall network are not computed.
+The numerical background remains the \(\Phi\)--\(\psi\) truncation.
+The full SM reheating rate and energy partition are therefore still
+unavailable.

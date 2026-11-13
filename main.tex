@@ -302,7 +302,7 @@ field $\Phi$ to the other sectors:
 
 \begin{itemize}
 \item \textbf{Proxy sector:} The $\psi$ field has effective mass
-      $m_\psi^2(\Phi) = m^2(\alpha\Phi^2/E_{\rm th}^2 - 1)$ with
+      $m_\psi^2(\Phi) = m_\psi^2(\alpha\Phi^2/E_{\rm th}^2 - 1)$ with
       $n_\psi = 1$ (real scalar).
 \item \textbf{Dark matter sector:} The $\chi$ field has effective mass
       $m_\chi^2(\Phi) = m_\chi^2 + 2g_{\rm DM}\Phi_{\rm res}^2$; at the
@@ -333,7 +333,7 @@ The activation sector is
 \begin{equation}
 \mathcal{L}_{\rm activation}
 =-\tfrac{1}{2}g^{\mu\nu}\partial_\mu\psi\partial_\nu\psi
--\frac{m^2}{2}\psi^2\!\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)
+-\frac{m_\psi^2}{2}\psi^2\!\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)
 -\frac{\lambda_\psi}{4}\psi^4,
 \label{eq:lact}
 \end{equation}
@@ -441,12 +441,12 @@ Applying this to each sector:
 \begin{enumerate}
 \item \textbf{Fuel field \(\Phi\):} The potential is
       \(V_{\rm eff}(\Phi) +
-      \frac{1}{2}m^2(\alpha\Phi^2/E_{\rm th}^2-1)\psi^2\).
+      \frac{1}{2}m_\psi^2(\alpha\Phi^2/E_{\rm th}^2-1)\psi^2\).
       Its derivative is
       \begin{equation}
       \begin{split}
       &\frac{\partial}{\partial\Phi}\left[V_{\rm eff}(\Phi)
-      + \frac{m^2}{2}\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi^2\right] \\
+      + \frac{m_\psi^2}{2}\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi^2\right] \\
       &\quad= \frac{\partial V_{\rm eff}}{\partial\Phi}
       + \frac{\alpha m_\psi^2}{E_{\rm th}^2}\Phi\psi^2.
       \end{split}
@@ -458,17 +458,17 @@ Applying this to each sector:
       \label{eq:Phi_eom}
       \end{equation}
       consistent with the activation Lagrangian
-      \(-\frac{m^2}{2}(\alpha\Phi^2/E_{\rm th}^2-1)\psi^2\),
+      \(-\frac{m_\psi^2}{2}(\alpha\Phi^2/E_{\rm th}^2-1)\psi^2\),
       for which \(\partial\mathcal L/\partial\Phi
       =-\alpha m_\psi^2\Phi\psi^2/E_{\rm th}^2\).
 
 \item \textbf{Proxy field \(\psi\):} The potential is
-      \(\frac{1}{2}m^2(\alpha\Phi^2/E_{\rm th}^2-1)\psi^2
+      \(\frac{1}{2}m_\psi^2(\alpha\Phi^2/E_{\rm th}^2-1)\psi^2
       +\frac{\lambda_\psi}{4}\psi^4\). Its derivative is
       \begin{equation}
       \begin{split}
       &\frac{\partial}{\partial\psi}\left[
-      \frac{m^2}{2}\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi^2
+      \frac{m_\psi^2}{2}\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi^2
       + \frac{\lambda_\psi}{4}\psi^4\right] \\
       &\quad= m_\psi^2\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi
       + \lambda_\psi\psi^3.
@@ -830,7 +830,7 @@ The discharge threshold is determined by the proxy-field effective mass,
 \begin{equation}
 m_{\rm eff}^2(\Phi)
 =
-m^2
+m_\psi^2
 \left(
 \frac{\alpha\Phi^2}{E_{\rm th}^2}-1
 \right),
@@ -919,14 +919,23 @@ and the late-time expansion analysis below.
 The symmetry structure of the effective theory includes:
 
 \begin{itemize}
-\item an exact \(\mathbb{Z}_2\) symmetry \(\Phi\to-\Phi\),
-\item a spontaneously broken \(\mathbb{Z}_2\) symmetry
-      \(\psi\to-\psi\),
-\item an exact \(\mathbb{Z}_2\) symmetry \(\chi\to-\chi\) ensuring
-      dark-matter stability,
-\item an approximate shift symmetry
-      \(\Phi_{\rm res}\to\Phi_{\rm res}+c\) protecting the
-      dark-energy sector.
+\item An exact reflection symmetry \(\Phi\to-\Phi\) is respected by
+      the specified fuel potential and the \(\Phi^2\psi^2\) interaction.
+\item An exact reflection symmetry \(\chi\to-\chi\) is respected by
+      the displayed dark-matter action and protects the lightest
+      \(\chi\) excitation when no additional \(\chi\)-odd operator is added.
+\item The real-\(\psi\) scalar truncation has a \(\mathbb{Z}_2\)
+      symmetry \(\psi\to-\psi\). In the full EFT this symmetry is
+      explicitly broken when any \(C_f\ne0\), because
+      \(\psi\mathcal O_{\rm SM}/\Lambda\) is odd if SM fields are
+      untransformed. The Higgs portal alone is even in \(\psi\).
+      The induced vacuum bias and the fate of any domain-wall network
+      are not determined without the quantum/thermal effective
+      potential and an inhomogeneous calculation.
+\item No exact or technically protected shift symmetry is assumed
+      for \(\Phi_{\rm res}\): the specified \(W(\Phi_{\rm res})\)
+      explicitly breaks continuous shifts. Its small-slope behaviour
+      is a property of the chosen potential, not a symmetry proof.
 \end{itemize}
 
 \subsection{UV perspective and effective field theory scope}
@@ -1637,14 +1646,14 @@ from the microscopic interactions in the PTUM Lagrangian. The full interacting a
 +\mathcal{L}_{\rm SM}^{(0)}
 +\mathcal{L}_{\rm rh},
 \end{equation}
-Here \(\mathcal{L}_{\rm SM}^{(0)}\) denotes the uncoupled
-Standard Model matter action, including the kinetic and self-interaction
-terms for the fermionic and scalar fields appearing below. Its explicit
-field content, gauge representations, and normalization are not
-specified in the present manuscript; therefore the complete Standard
-Model Hilbert tensor is not yet derived here. The transfer currents
-below are interaction contributions under the stated bookkeeping
-convention, not a substitute for that missing full derivation.
+Here \(\mathcal{L}_{\rm SM}^{(0)}\) denotes the minimally coupled,
+curved-spacetime chiral Standard Model action specified explicitly in
+Sec.~\ref{sec:sm_covariant_action}. The field representations,
+normalization, Higgs potential, gauge and fermion kinetic terms, and
+ordinary Yukawa matrices are fixed there. The present numerical
+background code still evolves only the conservative \(\Phi\)--\(\psi\)
+truncation; specifying the full action does not mean that the SM
+fields or reheating channels have already been numerically evolved.
 
 The homogeneous equations of motion
 Eqs.~(\ref{eq:frw1})--(\ref{eq:frw4}) describe the conservative scalar
@@ -1693,6 +1702,184 @@ breaks that symmetry unless an additional discrete charge
 assignment is supplied. Its effect on the two-vacuum bias and
 domain-wall evolution must therefore be calculated rather than
 assumed.
+
+\subsubsection{Curved-space chiral Standard Model action}
+\label{sec:sm_covariant_action}
+
+We take the gauge group to be
+\(\mathcal G_{\rm SM}=SU(3)_c\times SU(2)_L\times U(1)_Y\),
+with electric charge normalized as \(Q_{\rm em}=T_3+Y\), three
+fermion generations, and no right-handed neutrino in the minimal
+field content. The representations are
+\begin{equation}
+\begin{array}{c|ccc}
+\text{field} & SU(3)_c & SU(2)_L & Y\\ \hline
+Q_L & \mathbf 3 & \mathbf 2 & 1/6\\
+u_R & \mathbf 3 & \mathbf 1 & 2/3\\
+d_R & \mathbf 3 & \mathbf 1 & -1/3\\
+L_L & \mathbf 1 & \mathbf 2 & -1/2\\
+e_R & \mathbf 1 & \mathbf 1 & -1\\
+H   & \mathbf 1 & \mathbf 2 & 1/2
+\end{array}
+\label{eq:sm_representations}
+\end{equation}
+The four PTUM scalars \(\Phi,\psi,\chi,\Phi_{\rm res}\) are real
+\((\mathbf 1,\mathbf 1,0)\) gauge singlets; the Higgs field \(H\) is
+a complex doublet. We use minimal curvature coupling: no
+\(\xi_\varphi\varphi^2R\) or \(\xi_H H^\dagger H R\) terms are included.
+
+Let \(e^a{}_\mu\) be a vierbein, \(e=\sqrt{-g}\),
+\(\gamma^\mu=e^\mu{}_a\gamma^a\), and
+\(\{\gamma^a,\gamma^b\}=-2\eta^{ab}\) for
+\(\eta_{ab}=\operatorname{diag}(-1,1,1,1)\).
+With \(\gamma^{ab}=\tfrac12[\gamma^a,\gamma^b]\), the spinor
+derivative contains the torsion-free spin connection and the
+appropriate gauge connection,
+\begin{equation}
+\mathscr D_\mu f =
+\left(\partial_\mu-\frac14\omega_{\mu ab}\gamma^{ab}
+-i g_s G_\mu^A T^A
+-i g W_\mu^I t^I
+-i g'Y_f B_\mu\right)f ,
+\label{eq:sm_spinor_derivative}
+\end{equation}
+where \(t^I=\tau^I/2\) on weak doublets and vanishes on singlets.
+For the Higgs doublet,
+\begin{equation}
+D_\mu H =
+\left(\partial_\mu-i g W_\mu^I\frac{\tau^I}{2}
+-i\frac{g'}{2}B_\mu\right)H .
+\end{equation}
+The gauge field strengths are
+\begin{align}
+G_{\mu\nu}^A&=2\partial_{[\mu}G_{\nu]}^A
++g_s f^{ABC}G_\mu^B G_\nu^C,\nonumber\\
+W_{\mu\nu}^I&=2\partial_{[\mu}W_{\nu]}^I
++g\epsilon^{IJK}W_\mu^J W_\nu^K,\qquad
+B_{\mu\nu}=2\partial_{[\mu}B_{\nu]} .
+\end{align}
+We define
+\begin{equation}
+\widetilde H=i\tau^2H^*,\qquad
+V_H(H)=-\mu_H^2H^\dagger H+\lambda_H(H^\dagger H)^2,
+\end{equation}
+with \(\mu_H^2>0\) and \(\lambda_H>0\), and the ordinary SM
+Yukawa potential
+\begin{equation}
+U_{{\rm SM},Y}=
+\bar Q_LY_dHd_R+\bar Q_LY_u\widetilde H u_R
++\bar L_LY_eHe_R+\mathrm{h.c.},
+\label{eq:sm_yukawa_potential}
+\end{equation}
+where \(Y_{u,d,e}\) are dimensionless complex \(3\times3\)
+flavour matrices. The curved-spacetime SM matter Lagrangian is
+\begin{align}
+\mathcal L_{\rm SM}^{(0)}={}&
+-\frac14G_{\mu\nu}^AG_A^{\mu\nu}
+-\frac14W_{\mu\nu}^IW_I^{\mu\nu}
+-\frac14B_{\mu\nu}B^{\mu\nu}
+-(D_\mu H)^\dagger D^\mu H
+-V_H(H)\nonumber\\
+&+\frac{i}{2}\sum_{\text{generations},\,f}
+\bar f\gamma^\mu\overleftrightarrow{\mathscr D}_\mu f
+-U_{{\rm SM},Y}.
+\label{eq:sm_curved_action}
+\end{align}
+Here \(f\in\{Q_L,u_R,d_R,L_L,e_R\}\), with the derivative
+appropriate to each representation, and
+\(\bar f\gamma^\mu\overleftrightarrow{\mathscr D}_\mu f
+\equiv\bar f\gamma^\mu\mathscr D_\mu f
+-(\mathscr D_\mu\bar f)\gamma^\mu f\).
+The gamma-matrix convention above makes the displayed \(i\)-weighted
+fermion kinetic term compatible with the \((-+++)\) metric.
+
+The complete classical matter action used to define the transfer
+bookkeeping is therefore
+\begin{equation}
+S_{\rm matter}=\int d^4x\sqrt{-g}\,
+\left[
+\mathcal L_{\rm PTUM}^{(0)}
++\mathcal L_{\rm SM}^{(0)}
+-U_Y-U_{\psi H}
+\right],
+\qquad
+S_{\rm tot}=S_{\rm EH}+S_{\rm matter},
+\end{equation}
+where
+\(S_{\rm EH}=\tfrac12M_{\rm Pl}^2\int d^4x\sqrt{-g}\,R\),
+\(U_Y=\psi\mathcal O_{\rm SM}/\Lambda\), and
+\(U_{\psi H}=\tfrac12g_{\psi H}\psi^2H^\dagger H\).
+The tree-level fuel potential in the numerical benchmark is
+\(V_\Phi=V_0[1-\exp(-\lambda_\Phi\Phi^2/M_{\rm Pl}^2)]\).
+The Coleman--Weinberg correction is not included in the present
+background integration; in particular, the real-time treatment of
+loop effects across the tachyonic branch is not specified here.
+
+The hypercharge contractions in the three PTUM fermion operators
+are explicitly neutral:
+\begin{align}
+Y(\bar Q_L H d_R)&=-\tfrac16+\tfrac12-\tfrac13=0,\nonumber\\
+Y(\bar Q_L\widetilde H u_R)&=-\tfrac16-\tfrac12+\tfrac23=0,\nonumber\\
+Y(\bar L_L H e_R)&=+\tfrac12+\tfrac12-1=0.
+\end{align}
+Their colour and weak-isospin indices contract to singlets through
+\(\overline{\mathbf3}\otimes\mathbf3\) and
+\(\mathbf2\otimes\mathbf2\), respectively. With canonical
+dimensions \([\Phi]=[\psi]=[\chi]=[\Phi_{\rm res}]=[H]=1\),
+\([f]=3/2\), and \([A_\mu]=1\), each term in
+\(\mathcal O_{\rm SM}\) has dimension four and
+\([U_Y]=[\psi]+[\mathcal O_{\rm SM}]-[\Lambda]=4\).
+The portal \(U_{\psi H}\), the \(\Phi^2\psi^2\) interaction,
+and the \(\chi^2\Phi_{\rm res}^2\) interaction also have dimension
+four. The independent parameter dimensions are
+\([m_\psi]=[m_\chi]=[E_{\rm th}]=[\Lambda]=[M_{\rm Pl}]
+=[\mu_H]=[\Lambda_{\rm NP}]=[f_{\rm res}]=1\),
+\([V_0]=[W_0]=4\),
+\([\alpha]=[\lambda_\Phi]=[\lambda_\psi]=[g_{\rm DM}]
+=[g_{\psi H}]=[\lambda_H]=[Y_f]=[C_f]=[g_s]=[g]=[g']=0\), and
+\([\kappa]=[\lambda_{\rm res}]=-2\), while \(S_E\) is dimensionless.
+Thus the chiral operator is a dimension-five EFT interaction with
+coefficient \(C_f/\Lambda\), not a renormalizable
+\(\psi\bar f f\) Yukawa coupling. Its Wilson matrices and cutoff
+remain free parameters; no numerical reheating rate follows until
+they are fixed.
+
+At tree level, variation with respect to the vierbein gives the
+symmetric Hilbert (Belinfante) tensor. Define
+\begin{align}
+T_{\rm gauge}^{\mu\nu}={}&
+\sum_A\left(G^{A\mu\rho}G^{A\nu}{}_\rho
+-\tfrac14g^{\mu\nu}G_{\rho\sigma}^AG_A^{\rho\sigma}\right)
++\sum_I\left(W^{I\mu\rho}W^{I\nu}{}_\rho
+-\tfrac14g^{\mu\nu}W_{\rho\sigma}^IW_I^{\rho\sigma}\right)
+\nonumber\\
+&+B^{\mu\rho}B^\nu{}_\rho
+-\tfrac14g^{\mu\nu}B_{\rho\sigma}B^{\rho\sigma},\nonumber\\
+T_H^{\mu\nu}={}&
+(D^\mu H)^\dagger D^\nu H
++(D^\nu H)^\dagger D^\mu H
+-g^{\mu\nu}\left[(D_\rho H)^\dagger D^\rho H+V_H\right],
+\nonumber\\
+T_f^{\mu\nu}={}&
+-\frac{i}{4}\sum_{\text{generations},\,f}
+\left[
+\bar f\gamma^\mu\overleftrightarrow{\mathscr D}^{\,\nu}f
++\bar f\gamma^\nu\overleftrightarrow{\mathscr D}^{\,\mu}f
+\right],\nonumber\\
+T_{{\rm SM},0}^{\mu\nu}={}&
+T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}+T_f^{\mu\nu}
+-g^{\mu\nu}U_{{\rm SM},Y}.
+\label{eq:sm_hilbert_tensor}
+\end{align}
+The fermion term is the on-shell symmetric tensor obtained after
+including the vierbein and spin-connection variations; it is not
+the canonical unsymmetrized flat-space tensor. The PTUM operator
+\(U_Y\) is assigned to the SM sector, so
+\(T_{\rm SM}^{\mu\nu}=T_{{\rm SM},0}^{\mu\nu}-g^{\mu\nu}U_Y\).
+This is a classical tree-level EFT derivation. It does not include
+quantum trace anomalies, loop-induced curvature operators, or a
+renormalized in-in effective action, and the current homogeneous
+simulation does not evolve these SM fields.
 
 For small oscillations about a fixed broken-phase minimum,
 $\psi_{\min}=\pm\sqrt{-m_{\rm eff}^2/\lambda_\psi}$, the local
@@ -1754,10 +1941,11 @@ action including gauge, Higgs and fermion fields. The
 $\chi^2\Phi_{\rm res}^2$ potential is assigned to $T_{\rm DM}$,
 as displayed above. Thus every non-derivative interaction
 potential appears exactly once in the total Hilbert tensor.
-The explicit evaluation of $T_{{\rm SM},0}^{\mu\nu}$, including
-the tetrad and spin-connection contributions of the chiral
-fermions, remains a required derivation before the full SM
-sector can be called independently completed.
+The explicit classical tree-level expression, including the
+vierbein and spin-connection contributions of the chiral fermions,
+is given in Eq.~\eqref{eq:sm_hilbert_tensor}. Numerical evolution
+and independent conservation convergence for the full SM sector
+remain outstanding.
 
 For late-time excitation diagnostics it is useful to introduce a
 second, purely bookkeeping split around the instantaneous minimum
@@ -3358,7 +3546,7 @@ phenomenologically characterized by the following properties:
 
 \item \textbf{Metastability:} The configuration is metastable because
       the proxy field $\psi$ has a positive effective mass squared
-      $m_{\rm eff}^2(\Phi) = m^2(\alpha\Phi^2/E_{\rm th}^2 - 1) > 0$
+      $m_{\rm eff}^2(\Phi) = m_\psi^2(\alpha\Phi^2/E_{\rm th}^2 - 1) > 0$
       for $|\Phi| > \Phi_c$. The $\psi$ field sits at the origin
       $\psi = 0$, which is a local minimum of the activation
       potential. The system is stable against small fluctuations in

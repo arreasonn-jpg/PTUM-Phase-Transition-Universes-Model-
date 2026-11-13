@@ -111,7 +111,7 @@ PTUM does not claim to be:
 - a solution of the cosmological low-entropy initial-condition problem or a derivation of the thermodynamic arrow of time,
 
 - a UV-complete derivation of the pre-discharge background,
-- a complete gauge-invariant chiral Standard Model reheating interaction or full SM Hilbert-tensor derivation; the displayed Dirac coupling is generic EFT shorthand pending specification,
+- a renormalizable single-field chiral-SM Yukawa coupling for \(\psi\): the gauge-invariant Higgs-dressed dimension-five EFT operator and its classical tree-level Hilbert tensor are now specified, but its Wilson matrices/cutoff are unfixed, its quantum/thermal effective action is incomplete, and no SM reheating dynamics or branching fractions are numerically evolved,
 - a fully dynamical coupled inflation-to-waterfall calculation including quantum seeds, inhomogeneous growth, and backreaction; the corrected mass sign gives the intended stable-above/tachyonic-below threshold ordering, but the current single-field inflation and post-trigger homogeneous scan do not yet evolve the onset,
 - a solution of the cosmological-constant problem,
 - a unique microscopic theory of the dark sector,
@@ -153,3 +153,25 @@ to a clean CLASS v3.2.0 tree.
   the full $V_0$ is available at the threshold is withdrawn.
 - The local Floquet monodromy solver is now available, but it is a frozen-background diagnostic. It does not calculate the expanding-background relic abundance.
 - The full Standard Model Hilbert tensor, complete pre-CLASS dark-matter production, and the observational MCMC pipeline remain open verification items.
+
+
+## Classical covariant action status (2026-11-13)
+
+The branch now specifies a minimally coupled classical tree-level action for
+Einstein gravity, the four real PTUM singlets, the complex SM Higgs doublet,
+the three chiral SM fermion generations, and the
+\(SU(3)_c\times SU(2)_L\times U(1)_Y\) gauge fields. The ordinary SM Yukawa
+matrices and the distinct PTUM dimension-five matrices \(C_{u,d,e}/\Lambda\)
+are separated. The gauge-invariant operator charges and canonical dimensions
+are machine-checked in ptum_covariant_action.py. The tree-level symmetric
+Hilbert tensor is written in vierbein/Belinfante form, and the sector currents
+are assigned so that each interaction appears once and the pairwise currents
+cancel.
+
+This closes the classical action specification gap for the stated EFT; it
+does not close the quantum/renormalized action, EFT/UV matching, thermal
+effective-potential, or dynamical reheating gaps. The homogeneous numerical
+solver still evolves only the \(\Phi\)--\(\psi\) truncation. The \(\psi\)
+reflection symmetry is exact only in the scalar truncation when \(C_f=0\);
+for nonzero \(C_f\), the odd dimension-five operator explicitly breaks it.
+The induced domain-wall bias and network evolution remain unresolved.

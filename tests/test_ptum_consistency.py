@@ -618,3 +618,79 @@ def test_scan_initial_conditions_accept_integrated_fuel_velocity():
         Phi_dot_override=expected_phi_dot,
     )
     assert ic.Phi_dot == expected_phi_dot
+
+
+# Gauge-representation, operator-dimension and manuscript/action regressions.
+def test_ptum_sm_yukawa_operators_are_hypercharge_neutral():
+    from ptum_covariant_action import yukawa_hypercharge_residuals
+
+    assert set(yukawa_hypercharge_residuals()) == {"down", "up", "charged_lepton"}
+    assert all(value == 0 for value in yukawa_hypercharge_residuals().values())
+
+
+def test_ptum_sm_yukawa_operators_form_nonabelian_singlets():
+    from ptum_covariant_action import yukawa_nonabelian_singlet_checks
+
+    checks = yukawa_nonabelian_singlet_checks()
+    assert set(checks) == {"down", "up", "charged_lepton"}
+    assert all(all(groups.values()) for groups in checks.values())
+
+
+def test_ptum_action_operator_mass_dimensions_are_four():
+    from fractions import Fraction
+    from ptum_covariant_action import operator_mass_dimensions
+
+    dimensions = operator_mass_dimensions()
+    assert dimensions
+    assert all(value == Fraction(4, 1) for value in dimensions.values())
+
+
+def test_ptum_scalar_fields_are_real_standard_model_gauge_singlets():
+    from ptum_covariant_action import PTUM_SCALAR_REPRESENTATIONS
+
+    assert set(PTUM_SCALAR_REPRESENTATIONS) == {"Phi", "psi", "chi", "Phi_res"}
+    for rep in PTUM_SCALAR_REPRESENTATIONS.values():
+        assert rep["su3"] == "1"
+        assert rep["su2"] == "1"
+        assert rep["hypercharge"] == 0
+        assert rep["reality"] == "real"
+
+
+def test_ptum_covariant_action_registry_passes_all_algebraic_checks():
+    from ptum_covariant_action import validate_action_registry
+
+    assert validate_action_registry()
+
+
+def test_manuscript_uses_one_waterfall_mass_parameter():
+    from pathlib import Path
+
+    source = Path("main.tex").read_text(encoding="utf-8")
+    assert "m^2" not in source
+    assert r"m_\psi^2" in source
+    assert r"m_{\rm eff}^2(\Phi)" in source
+
+
+def test_manuscript_contains_explicit_curved_sm_action_and_hilbert_tensor():
+    from pathlib import Path
+
+    source = Path("main.tex").read_text(encoding="utf-8")
+    for required in (
+        r"\label{sec:sm_covariant_action}",
+        r"\label{eq:sm_curved_action}",
+        r"\label{eq:sm_hilbert_tensor}",
+        r"T_{\rm gauge}^{\mu\nu}",
+        r"T_H^{\mu\nu}",
+        r"T_f^{\mu\nu}",
+        r"T_{{\rm SM},0}^{\mu\nu}",
+        r"-\frac{i}{4}",
+    ):
+        assert required in source
+
+
+def test_manuscript_does_not_overstate_psi_z2_or_phi_res_shift_symmetry():
+    from pathlib import Path
+
+    source = Path("main.tex").read_text(encoding="utf-8")
+    assert "explicitly broken when any" in source
+    assert "No exact or technically protected shift symmetry" in source
