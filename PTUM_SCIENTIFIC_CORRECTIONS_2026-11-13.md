@@ -628,3 +628,33 @@ momentum integral, relic abundance, or entropy dilution result. The
 threshold-matched benchmark remains overdamped, so the coherent
 oscillatory history required by the Floquet setup is not demonstrated.
 The latest two tests and manuscript changes await a fresh CI run.
+
+
+
+## 38. Finite-band momentum integration for expanding modes
+
+The expanding-background module now includes
+`integrate_expanding_spectrum`. It integrates a strictly increasing
+finite comoving-momentum grid by evolving each (chi_k) mode and
+evaluating
+[
+n_{\\chi,\\rm com}^{[k_{\\min},k_{\\max}]}
+=\\frac{1}{2\\pi^2}
+\\int_{k_{\\min}}^{k_{\\max}}dk\\,k^2n_k,
+qquad
+n_{\\chi,\\rm phys}^{[k_{\\min},k_{\\max}]}
+= n_{\\chi,\\rm com}^{[k_{\\min},k_{\\max}]}/a_f^3.
+]
+The quadrature is trapezoidal and the output is explicitly marked
+finite-band-only. The code does not invent the unresolved infrared or
+ultraviolet tails. Tests cover a de Sitter vacuum control and rejection
+of an unsorted momentum grid.
+
+This is not yet a relic-abundance result. A converged prediction still
+requires momentum-range and grid-spacing studies, a self-consistent
+PTUM background, backreaction, rescattering, nonlinear mode coupling,
+and entropy dilution. The solver's externally supplied histories do
+not establish that the overdamped PTUM benchmark develops the
+oscillatory (Phi_{\\rm res}) background required for resonance.
+The branch now contains 49 regression tests; the latest tests and
+manuscript updates still await a fresh GitHub Actions run.
