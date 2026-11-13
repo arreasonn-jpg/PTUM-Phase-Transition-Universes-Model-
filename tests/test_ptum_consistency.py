@@ -48,7 +48,7 @@ def test_quartic_diagnostic_uses_local_phi_history():
     phi = np.full_like(t, 1.01 * p.Phi_c)
     q = compute_quartic_dominance(t, psi, psi_dot, p, phi)
     assert np.isfinite(q).any()
-    assert np.isnan(q).any() is False
+    assert np.isnan(q).any()
 
 
 def test_quartic_diagnostic_marks_nonoscillatory_history_unavailable():
