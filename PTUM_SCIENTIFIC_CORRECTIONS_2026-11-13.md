@@ -496,3 +496,27 @@ C_{\rm FRW}^{\rm bg}
 The latter remains well-conditioned when a vacuum-dominated solution makes both $\dot\rho$ and $3H(\rho+p)$ very small. The finite-difference estimate has the same background-energy normalization, in addition to the original local normalization. The local ratio is retained for diagnostic purposes but must not be interpreted when its denominator approaches round-off scale.
 
 Regression tests now check the chain-rule and background-normalized finite-difference residuals for both the near-static vacuum-dominated and evolving two-field cases. The finite-difference tolerance is looser and is intended as a numerical diagnostic, not as a substitute for a timestep/tolerance convergence campaign.
+
+
+## 32. Positive excitation-energy split about the moving waterfall minimum
+
+The raw $psi$ potential is negative at its broken-phase minima, so the raw ratio $p_\psi/\rho_\psi$ is not a reliable late-time fluid diagnostic near those minima. A second, explicitly diagnostic sector split is now implemented without changing the equations of motion or total stress tensor.
+
+For $m_{\rm eff}^2<0$,
+\[
+V_{\min}(\Phi)=-\frac{[\max(-m_{\rm eff}^2,0)]^2}{4\lambda_\psi},
+\qquad
+V_{\rm exc}(\Phi,\psi)=V_\psi(\Phi,\psi)-V_{\min}(\Phi)\ge0.
+\]
+The code reports $\rho_{\psi,\rm exc}=\dot\psi^2/2+V_{\rm exc}$ and
+$p_{\psi,\rm exc}=\dot\psi^2/2-V_{\rm exc}$, while moving
+$V_{\min}$ into the $\Phi$ bookkeeping sector:
+\[
+\rho_{\Phi,\rm split}=\rho_\Phi+V_{\min},\qquad
+p_{\Phi,\rm split}=p_\Phi-V_{\min}.
+\]
+The sums of the split densities and pressures are exactly the original totals. The shifted source is
+$Q_{\psi,\rm exc}^0=Q_\psi^0-\dot V_{\min}$ and
+$Q_{\Phi,\rm split}^0=-Q_{\psi,\rm exc}^0$; it vanishes at the instantaneous moving minimum. The original Hilbert-sector source $Q_\psi^0$ remains available separately.
+
+The cycle-averaged $w_\psi$ diagnostic now uses the positive excitation energy, with the raw unshifted average retained separately. Four regression tests cover positivity, zero excitation potential at the instantaneous minimum, unbroken-phase behavior, conservation of the split totals, and vanishing shifted transfer at the moving minimum. This is a diagnostic bookkeeping improvement, not a calculation of reheating or a microscopic radiation-fluid realization.
