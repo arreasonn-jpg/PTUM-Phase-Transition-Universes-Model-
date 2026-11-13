@@ -166,7 +166,7 @@ The expansion term is evaluated as \(3H(\\dot\\Phi^2+\\dot\\psi^2)\), algebraica
 
 The cycle-averaged equation of state is now computed as \(\\langle p\\rangle/\\langle\\rho\\rangle\), not as \(\\langle p/\\rho\\rangle\). The regime classifier now evaluates the final 20% of the trajectory rather than inadvertently averaging the entire run. Regression tests cover both behaviours.
 
-The current branch contains twelve tests. GitHub Actions run 43386985702 (run number 78) completed successfully on the PR merge ref for head commit a8cc97a9651df7d0aa46cee56e30fdfe2b6959ec. The job ran `python -m pytest -q tests/test_ptum_consistency.py` and reported `12 passed in 4.34s`. This confirms the current regression suite on the PR merge ref; it does not validate the full cosmological scenario, the manuscript's unreproduced observational claims, or the physics beyond the tested equations.
+The current branch contains fifteen tests. GitHub Actions run 43387970066 (run number 114) on PR head 71148588f5f69f4cd83c7d263f031be243c50b0a ran `python -m pytest -q tests/test_ptum_consistency.py` and reported `15 passed in 6.35s`. A second CI job now compiles `main.tex` with latexmk; its result is pending. Passing Python tests establish only the tested equations and numerical routines, not the complete PTUM cosmology or observational results.
 
 These tests cover homogeneous bookkeeping and internal equation consistency only. They do not establish the full PTUM scenario, reproduce CLASS/Cobaya, or calculate a physical dark-matter relic abundance.
 
@@ -177,3 +177,34 @@ These tests cover homogeneous bookkeeping and internal equation consistency only
 3. Integrate chi_k modes in an expanding background, compute monodromy/Floquet bands, and include backreaction and rescattering before making relic-density claims.
 4. Resolve the benchmark inconsistency between the manuscript's overdamped psi dynamics and the conditional quartic proxy-fluid closure.
 5. Independently reproduce CLASS/Cobaya constraints from the public patch, production configs, chains, and data inputs.
+
+
+## 11. Further corrections and verification boundary
+
+### Transfer currents and action scope
+The manuscript now derives the Yukawa current from \(\mathcal L_Y=-y_\psi\psi\bar f f\), with the interaction assigned to the SM tensor:
+\[
+Q_{\psi,Y}^\nu=+y_\psi\bar f f\nabla^\nu\psi,
+\qquad Q_{{\rm SM},Y}^\nu=-Q_{\psi,Y}^\nu.
+\]
+For \(U_{\rm rh}=\tfrac12g_\psi\psi^2\phi_{\rm SM}^2\), assigned to the \(\psi\) tensor:
+\[
+Q_{\psi,\rm rh}^\nu=-g_\psi\psi^2\phi_{\rm SM}
+\nabla^\nu\phi_{\rm SM},
+\qquad Q_{{\rm SM},\rm rh}^\nu=-Q_{\psi,\rm rh}^\nu.
+\]
+Both have mass dimension five. The conservative scalar action is now distinguished from the schematic full action. The actual SM gauge/fermion/Higgs action remains unspecified, so a complete SM Hilbert tensor has not yet been derived.
+
+### Local damping and model truncation
+The homogeneous simulation module is explicitly documented as a two-field \((\Phi,\psi)\) truncation. Its Friedmann source excludes \(\chi\), \(\Phi_{\rm res}\), SM radiation, fermions, and backreaction. It is not a full cosmological evolution or relic-density solver.
+
+The code now distinguishes the plateau-scale damping estimate \(3H_*/(2\mu)\) from the local threshold estimate \(3H_c/(2\mu)\). With \(\lambda_\Phi=0.02\) and the additional matching \(\Phi_c\simeq\Phi_{\rm end}\simeq1.387M_{\rm Pl}\), the potential-dominated local estimate is about 4.9, whereas the plateau-scale estimate is about 25. Both are overdamped. The local value is conditional on threshold matching and must ultimately be replaced by the Hubble history from the full background trajectory.
+
+### Floquet and relic abundance
+The new ptum_floquet.py computes frozen-background Mathieu monodromy. It includes the \(-3\dot H/2-9H^2/4\) rescaling correction, checks \(\det M\simeq1\), and returns the real Floquet exponent. It is not an expanding-background calculation and does not include backreaction or rescattering. The former direct closed-form \(\Omega_\chi h^2\) estimate has been withdrawn. The momentum spectrum and post-production entropy history are still required.
+
+### CLASS reproducibility
+The legacy CLASS-patch repository URL returned HTTP 404 through the GitHub API during this review. This does not establish whether the repository is private, renamed, or deleted. The current root contains a binary PTUM.zip, but its contents were not inspected and the CLASS patch is not exposed as an individually reviewable tracked source file. Public patch availability is therefore marked UNVERIFIED until the patch, target CLASS commit, checksum, application command, and clean-tree apply log are available.
+
+### Manuscript compilation
+A LaTeX build job was added to CI using latexmk. The Python regression job has passed (15/15); the manuscript compilation job was still running when this addendum was written.
