@@ -219,3 +219,22 @@ The scan export previously emitted Python's non-standard `NaN` tokens for unavai
 The successful LaTeX build in run 43389261756 still reported two unresolved references to `sec:entropy_budget`. A dedicated `Reheating and entropy budget` subsubsection label has now been added before the reheating derivation. The next LaTeX CI run must confirm that the warnings are gone; a successful exit code alone is not sufficient if cross-references remain unresolved.
 
 The branch now has additional tests for (i) refusing to infer barrier crossing from (w>0.5), and (ii) serializing unavailable values as strict JSON nulls. The full test count and the corrected scan/LaTeX artifacts remain pending the next CI run.
+
+
+## 13. Reheating energy, entropy, and cosmological initial entropy
+
+The manuscript previously set the discharge energy to $V_0$ even after the corrected fuel potential and threshold matching had shown $V(\Phi_c)/V_0\simeq0.0378$. This was inconsistent. The reheating section now defines the released energy from the actual decrease of the total energy along the coupled trajectory. Only in the potential-dominated, threshold-matched single-field approximation with negligible initial kinetic/proxy contributions is
+\[
+\rho_{\rm dis}\simeq V(\Phi_c)-V(0)\simeq0.0378V_0.
+\]
+The corresponding instantaneous-thermalization estimate for $g_*=100$ is
+$T_{\rm rh}\simeq1.84\times10^{15}\,\mathrm{GeV}$
+when $V_0^{1/4}=10^{16}\,\mathrm{GeV}$. This is conditional and is not a full reheating solution.
+
+The former present-entropy estimate used $s_0\sim10^9\,\mathrm{cm}^{-3}$, which is not the present photon-plus-neutrino entropy density. The manuscript now uses $s_0\simeq2.9\times10^3\,\mathrm{cm}^{-3}$ and identifies the total entropy of order $10^{88}$ as an observed quantity obtained by multiplying by the present observable volume. It no longer presents a spurious direct $T_{\rm rh}^3$ scaling for the total observable entropy; a correct connection requires the full adiabatic thermal history and entropy degrees of freedom.
+
+The previous claim $H_*\Delta t\sim10^{-3}$ and negligible expansion during discharge was withdrawn. Under the threshold-matched benchmark, $3H_c/(2\mu)\simeq4.9$, hence $H_c/\mu\simeq3.27$. The nominal interval $\mu^{-1}$ is therefore not short relative to the Hubble time. The actual duration and expansion factor require the coupled background solution.
+
+A coherent homogeneous scalar may have low coarse-grained matter entropy, but this does not determine gravitational entropy or explain the low-entropy initial condition of the Universe. The manuscript now explicitly withdraws any claim that PTUM replaces the Past Hypothesis or derives the thermodynamic arrow of time.
+
+Finally, the former list of energy-partition ratios was not produced by the homogeneous simulation or the CLASS perturbation code. It has been reframed as phenomenological/observational target quantities: $\Delta N_{\rm fluid}$, the observed dark-matter abundance, the present dark-energy density, and the SM radiation fraction. The paper now states that their microscopic production and partition have not been computed self-consistently.
