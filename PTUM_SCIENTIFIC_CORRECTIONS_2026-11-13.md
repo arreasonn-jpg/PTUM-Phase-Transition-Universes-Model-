@@ -106,7 +106,7 @@ The quartic-dominance diagnostic now uses the actual Phi(t) history and local |m
 
 A pytest regression file was added at tests/test_ptum_consistency.py to check single-count interaction energy, Friedmann density consistency, time-local quartic diagnostic behavior, non-oscillatory diagnostic handling, and finite component density/pressure bookkeeping.
 
-**Execution status: NOT RUN.** The repository connector can create and inspect files but did not provide a runnable CI job in this session; a local clone was also unavailable. No test is marked passed. Run the tests in an environment with NumPy, SciPy, and pytest installed, then check continuity-residual convergence under timestep and solver-tolerance refinement.
+**Execution status:** The initial six-test suite ran in GitHub Actions on commit `c2007f455f4cdfc0eee7221aef350ea2ad811659` and passed (`6 passed in 0.42s`). A seventh test, covering the static de Sitter continuity limit, was then added in commit `bb82caa4d9b5343bd849de981404a86d0ff9d3be`; no run result for that newest commit was available at the time this note was updated. The tests cover helper-level accounting and a simple limiting case, not full parameter scans or numerical convergence. The continuity residual still needs timestep and solver-tolerance refinement.
 
 ## 8. Still open
 
