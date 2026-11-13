@@ -1497,42 +1497,48 @@ than solves the cosmological constant problem.
 \subsection{Energy-momentum conservation and inter-sector transfer}
 \label{sec:energy_momentum_conservation}
 
-The discharge process partitions the available energy among the four
-sectors while respecting local energy-momentum conservation. The
-total energy-momentum tensor is conserved,
+The discharge process is intended to partition the available energy
+among the interacting fields while respecting local energy-momentum
+conservation. During the transition the microscopic sectors are
+$\Phi$, $\psi$, $\chi$, $\Phi_{\rm res}$ and the Standard Model
+fields. The later four-fluid description (SM radiation, dark matter,
+proxy-fluid radiation and residual dark energy) is an effective
+post-discharge regrouping, not the fundamental field split at every
+stage. The total energy-momentum tensor is conserved,
 \begin{equation}
-\nabla_\mu T^{\mu\nu}_{\rm total} = 0,
+\nabla_\mu T^{\mu\nu}_{\rm total}=0,
 \qquad
-T^{\mu\nu}_{\rm total} = \sum_i T^{\mu\nu}_i,
+T^{\mu\nu}_{\rm total}=\sum_i T_i^{\mu\nu}.
 \end{equation}
-where the sum runs over the four sectors: SM radiation (r), dark
-matter (c), pfd \(\psi\), and residual dark energy (de).  At the
-background level, this implies
+For a homogeneous FRW background this implies
 \begin{equation}
-\dot\rho_i + 3H(\rho_i + p_i) = Q_i,
-\end{equation}
-with $\sum_i Q_i = 0$ required by total conservation; the explicit
-closed $Q_i$ expressions, for which $\sum_i Q_i^\nu=0$ holds
-identically, are derived in Section~\ref{sec:microscopic_transfer}.
-Here \(Q_i\) represents the energy transfer rate into sector \(i\).
-At the perturbative level, the conservation law for each sector is
-\begin{equation}
-\nabla_\mu T^{\mu\nu}_i = Q_i^\nu,
+\dot\rho_i+3H(\rho_i+p_i)=Q_i^0,
 \qquad
-\sum_i Q_i^\nu = 0,
+\sum_i Q_i^0=0,
 \end{equation}
-with the transfer four-vector \(Q_i^\nu\) satisfying
-\(Q_i^0 = Q_i\) and \(Q_i^j = 0\) in the fluid rest frame.  The
-spatial components \(Q_i^j\) encode momentum transfer between
-sectors.  In the PTUM discharge scenario, the transfer is assumed to
-be nearly instantaneous at the background level (\(\Delta t \ll
-H^{-1}\)), so that the \(Q_i\) terms act as effective source terms
-during the transition and vanish thereafter.  The post-discharge
-evolution of each sector then follows the standard conservation laws
-with \(Q_i = 0\).  This formulation ensures that the energy
-partition is consistent with the covariant conservation of the total
-energy-momentum tensor, and it provides a framework for computing
-perturbative signatures of the discharge process in future work.
+where $Q_i^0$ is the contravariant time component of the transfer
+four-vector in the stated $(-+++)$ convention. At the covariant level,
+\begin{equation}
+\nabla_\mu T_i^{\mu\nu}=Q_i^\nu,
+\qquad
+\sum_i Q_i^\nu=0.
+\end{equation}
+The spatial components describe momentum exchange and need not vanish
+in a generic perturbed or inhomogeneous configuration; setting them
+to zero is an additional background/fluid-frame approximation, not
+a general identity.
+
+The transition duration is not assumed to satisfy
+$\Delta t\ll H^{-1}$. In particular, the threshold-matched benchmark
+has a damping ratio of order four, so the discharge must be evolved
+through the expanding background rather than imposed as an
+instantaneous event. The source terms are determined by the coupled
+field equations and the specified interaction history. They may become
+negligible after the relevant interactions switch off or the fields
+dynamically decouple, but this is a condition to be demonstrated, not
+an assumption built into the conservation law. The later effective
+four-fluid system is obtained only after a justified coarse-graining
+and energy-partition prescription.
 
 \subsubsection{Dark matter--dark energy interaction}
 \label{sec:dm_de_interaction}
