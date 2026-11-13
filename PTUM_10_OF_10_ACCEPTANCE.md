@@ -6,11 +6,11 @@ This file defines the evidence required before PTUM can be called scientifically
 
 | Gate | Required evidence for 10/10 | Current status |
 |---|---|---|
-| 1. Complete action and conventions | One explicit covariant action; fixed metric/sign conventions; all fields, dimensions, gauge representations, potentials and couplings specified | **PARTIAL**. Scalar conventions and waterfall sign revised; complete SM/Higgs/fermion action remains open |
+| 1. Complete action and conventions | One explicit covariant action; fixed metric/sign conventions; all fields, dimensions, gauge representations, potentials, couplings, real/complex field choices and symmetry-breaking structure specified | **PARTIAL**. Scalar conventions and waterfall sign revised; complete SM/Higgs/fermion action remains open |
 | 2. Inflation-to-waterfall connection | Exact inflation endpoint; threshold crossing in the same coupled background; stability of all modes before crossing; quantum seed prescription | **PARTIAL**. Exact epsilon_H endpoint is computed and Phi_c is matched to it; current inflation module is single-field and the post-trigger scan does not evolve the crossing |
 | 3. Hilbert tensors and conservation | Every sector tensor derived from the same action; all Q_i^nu derived; sum of currents cancels; numerical conservation converges independently with solver tolerance and timestep | **PARTIAL**. Scalar-sector split and selected currents are derived; full SM/Higgs sector tensors are missing |
 | 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics; timestep and solver-tolerance convergence | **PARTIAL**. Chain-rule and finite-difference diagnostics exist; convergence campaign remains open |
-| 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction and rescattering | **NOT MET**. Current scan is homogeneous and post-threshold |
+| 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and a defect-topology analysis (including the Z2 domain-wall risk of a real waterfall scalar) | **NOT MET**. Current scan is homogeneous and post-threshold |
 | 6. Resonance and relic abundance | Expanding-background mode equations; converged monodromy/Floquet growth; momentum integration; backreaction; thermalization and entropy dilution; independently reproduced relic abundance | **NOT MET**. Mathieu reduction and frozen-background diagnostics exist; no validated expanding-background relic calculation |
 | 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The closure remains phenomenological; no microscopic realization is established |
 | 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. Conditional potential-dominated T_rh estimate only; branching and thermalization are not computed |
@@ -36,6 +36,7 @@ This file defines the evidence required before PTUM can be called scientifically
 2. Never infer a physical phase from one scalar diagnostic. Require independent energy, virial, equation-of-state and stability evidence.
 3. Never call the homogeneous post-threshold scan a simulation of the threshold crossing.
 4. Never infer quantum vacuum seeding from an exactly zero classical initial condition.
+9. Never call a real-scalar Z2 waterfall defect-free: check whether its two tachyonic minima generate domain walls; cosmic strings require a separately specified field manifold and topology.
 5. Never call a frozen-background Floquet exponent a relic abundance.
 6. Never describe a phenomenological proxy-fluid closure as microscopically realized without a calculation of its production and perturbations.
 7. Never call author-reported MCMC output independently reproduced without public inputs and chains.
