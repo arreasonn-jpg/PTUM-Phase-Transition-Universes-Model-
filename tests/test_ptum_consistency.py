@@ -15,6 +15,8 @@ from ptum_task1_simulation import (
     hubble_rate,
     compute_quartic_dominance,
     compute_quartic_virial_ratio,
+    InitialConditions,
+    run_simulation,
 )
 
 
@@ -78,3 +80,18 @@ def test_quartic_virial_ratio_is_defined_only_on_complete_half_cycles():
     ratio = compute_quartic_virial_ratio(t, psi, psi_dot, p)
     assert np.isfinite(ratio).any()
     assert np.isnan(ratio).any()
+
+
+
+def test_static_de_sitter_solution_satisfies_frw_continuity_diagnostic():
+    p = PTUMParameters(V0=1.0e50, m_psi=1.0e5, lambda_psi=0.1)
+    ic = InitialConditions(
+        Phi=0.9 * p.Phi_c,
+        Phi_dot=0.0,
+        psi=0.0,
+        psi_dot=0.0,
+    )
+    t = np.linspace(0.0, 1.0e-9, 101)
+    result = run_simulation(p, ic, (t[0], t[-1]), t_eval=t)
+    assert result["success"]
+    assert np.max(np.abs(result["continuity_residual_relative"])) < 1.0e-10
