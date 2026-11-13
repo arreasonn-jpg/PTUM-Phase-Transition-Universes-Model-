@@ -1,0 +1,4 @@
+# Direct CI dependencies pinned to the versions observed in the verified Python 3.11 runner.
+numpy==2.4.6
+scipy==1.17.1
+pytest==9.2.0
