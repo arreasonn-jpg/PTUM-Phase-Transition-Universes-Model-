@@ -14,10 +14,10 @@ and therefore does not produce the neutrino-like CMB acoustic phase shift associ
 
 ## Current-data status
 
-The benchmark analysis gives
+The benchmark analysis gives (with $\Delta\chi^2\equiv\chi^2_{\rm PTUM}-\chi^2_{\Lambda\rm CDM}$):
 
 ```text
-Delta chi^2 = -0.26
+Delta chi^2 = +0.26
 Delta AIC = +2.26
 Delta N_fluid < 0.31 at 95% credibility
 ```
