@@ -1521,8 +1521,8 @@ not yet public.}
 \label{sec:lcdm_limit}
 
 The PTUM dark sector reduces to \(\Lambda\)CDM in a well-defined
-parameter limit (GÖSTERİLDİ at the level of the effective fluid
-description):
+parameter limit, as an algebraic property of the effective-fluid
+description:
 \begin{itemize}
 \item \textbf{pfd off:} \(\Delta N_{\rm fluid}\to0\) removes the proxy-fluid
 component entirely; the Boltzmann system then contains only CDM,
@@ -1633,9 +1633,8 @@ At the background level in FRW, the energy transfer rates are
 Q_{\rm DM} &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res}, \\
 Q_{\rm DE} &= -2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res},
 \end{align}
-and \(Q_{\rm DM}+Q_{\rm DE}=0\) exactly (GÖSTERİLDİ; each interaction
-assigned once with opposite signs to the two exchanging sectors, as
-in Section~\ref{sec:microscopic_transfer}). The term
+and \(Q_{\rm DM}+Q_{\rm DE}=0\) exactly under the stated sector
+assignment, as derived in Section~\ref{sec:microscopic_transfer}. The term
 \(-2g_{\rm DM}\chi\Phi_{\rm res}^2\dot\chi\) that appeared in an
 earlier draft was a double-counting of the symmetric interaction
 variation and is not part of \(Q_{\rm DM}^\nu\). During the post-discharge
@@ -2469,7 +2468,9 @@ incidental consequences of the extra radiation component.
 
 All four PTUM sectors have canonical kinetic terms
 \(\tfrac12(\partial\phi)^2\), so the kinetic matrix is the identity and
-is positive definite: no ghosts (GÖSTERİLDİ). The scalar perturbation
+is positive definite for the displayed two-derivative canonical
+scalar sector. This does not certify higher-derivative operators or
+a UV completion. The scalar perturbation
 speeds are \(c_s^2=1\) for the canonical fields \(\Phi,\chi,\Phi_{\rm res}\)
 and \(c_s^2=1/3\) for the pfd fluid closure (FENOMENOLOJİK, conditional
 on the quartic regime). The relevant quantities are summarized in
@@ -2921,11 +2922,13 @@ Four distinct pillars are claimed, with the following status labels:
 \begin{enumerate}[label=(\roman*)]
 \item the creation sector admits a plateau-type primordial potential
       compatible with current CMB constraints on $n_s$ and $r$
-      \emph{(GÖSTERİLDİ at the analytic/slow-roll level; exact-background
-      check SAYISAL OLARAK DOĞRULANDI with the public script)};
+      \emph{(leading-order slow-roll estimate; the dimensionless
+      exact-background Hubble-flow scan is reproducible with
+      \texttt{ptum\_inflation\_background.py}; mode spectra are not)};
 \item the discharge scale is normalised to a concrete high-energy
       band, $V_0^{1/4}\sim10^{15}$--$10^{16}\,\mathrm{GeV}$
-      \emph{(GÖSTERİLDİ from the scalar amplitude; in unresolved tension
+      \emph{(from scalar-amplitude normalization in the single-field
+      slow-roll approximation; in unresolved tension
       with the quartic-regime requirement, see Sec.~\ref{subsec:ptum_operational_stability})};
 \item the late-time dark-energy sector contains a broad viable
       region with near-$\Lambda$ behaviour
@@ -3216,7 +3219,7 @@ The dark matter field $\chi$ couples to the residual fuel field
 $\Phi_{\rm res}$ via the interaction term
 $-g_{\rm DM}\chi^2\Phi_{\rm res}^2$ in the Lagrangian. The factor of
 2 in the effective mass below follows from the normalization of this
-interaction term (GÖSTERİLDİ):
+interaction term by varying the action:
 \begin{equation}
 m_{\chi,\rm eff}^2(t) = m_\chi^2 + 2g_{\rm DM}\Phi_{\rm res}^2(t),
 \end{equation}
