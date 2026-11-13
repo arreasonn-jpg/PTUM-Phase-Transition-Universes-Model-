@@ -1,0 +1,46 @@
+# PTUM 10/10 Scientific Acceptance Matrix
+
+This file defines the evidence required before PTUM can be called scientifically and computationally ready. A passing CI workflow is necessary but not sufficient. A phenomenological ansatz is not counted as a microscopic derivation, and an author-reported result is not counted as independently reproduced.
+
+## Acceptance gates
+
+| Gate | Required evidence for 10/10 | Current status |
+|---|---|---|
+| 1. Complete action and conventions | One explicit covariant action; fixed metric/sign conventions; all fields, dimensions, gauge representations, potentials and couplings specified | **PARTIAL**. Scalar conventions and waterfall sign revised; complete SM/Higgs/fermion action remains open |
+| 2. Inflation-to-waterfall connection | Exact inflation endpoint; threshold crossing in the same coupled background; stability of all modes before crossing; quantum seed prescription | **PARTIAL**. Exact epsilon_H endpoint is computed and Phi_c is matched to it; current inflation module is single-field and the post-trigger scan does not evolve the crossing |
+| 3. Hilbert tensors and conservation | Every sector tensor derived from the same action; all Q_i^nu derived; sum of currents cancels; numerical conservation converges independently with solver tolerance and timestep | **PARTIAL**. Scalar-sector split and selected currents are derived; full SM/Higgs sector tensors are missing |
+| 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics; timestep and solver-tolerance convergence | **PARTIAL**. Chain-rule and finite-difference diagnostics exist; convergence campaign remains open |
+| 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction and rescattering | **NOT MET**. Current scan is homogeneous and post-threshold |
+| 6. Resonance and relic abundance | Expanding-background mode equations; converged monodromy/Floquet growth; momentum integration; backreaction; thermalization and entropy dilution; independently reproduced relic abundance | **NOT MET**. Mathieu reduction and frozen-background diagnostics exist; no validated expanding-background relic calculation |
+| 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The closure remains phenomenological; no microscopic realization is established |
+| 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. Conditional potential-dominated T_rh estimate only; branching and thermalization are not computed |
+| 9. Observational reproducibility | Public exact CLASS patch; pinned version/commit; complete configs, likelihoods, data, chains and commands; independent rerun reproduces posteriors and model comparison | **NOT MET**. Reported numbers are author-reported; patch availability and chains remain unverified |
+| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Regression suite, CI workflow and strict JSON exist; latest revised-sign 100-point scan and LaTeX build must pass and be inspected |
+
+## Current implementation evidence
+
+- Canonical scalar kinetic and stress-tensor conventions use metric signature (-+++).
+- The waterfall mass is now
+  `m_eff^2(Phi) = m_psi^2 (alpha Phi^2/E_th^2 - 1)`,
+  stable above Phi_c and tachyonic below it.
+- The exact epsilon_H = 1 endpoint for lambda_phi = 0.02 is approximately 0.98622808 M_Pl. The older epsilon_V = 1 proxy endpoint, approximately 1.387175 M_Pl, is not the exact end.
+- The threshold-matched scan derives Phi_c from the exact Hubble-flow endpoint.
+- The revised scan uses 50 initial conditions per energy scale, two scales, 4001 output points per trajectory and a 20 mu^-1 time span. It is a homogeneous post-threshold sensitivity scan, not an inhomogeneous waterfall calculation.
+- The quartic energy-dominance indicator is Q/2 = <V4>/<|V2|>; the necessary energy-dominance boundary is Q > 2. Independent equation-of-state and virial checks are also required.
+- The signed sector source depends on the declared stress-tensor split. Under the current split, Q_psi^0 is negative for dot(Phi) < 0; this is not described as positive energy injection into psi.
+- The potential-dominated threshold energy and reheating temperature are conditional estimates, not the full coupled energy budget.
+
+## Non-negotiable scientific rules
+
+1. Never weaken a failed test merely to obtain green CI. Any tolerance must be justified by a numerical error estimate or convergence study.
+2. Never infer a physical phase from one scalar diagnostic. Require independent energy, virial, equation-of-state and stability evidence.
+3. Never call the homogeneous post-threshold scan a simulation of the threshold crossing.
+4. Never infer quantum vacuum seeding from an exactly zero classical initial condition.
+5. Never call a frozen-background Floquet exponent a relic abundance.
+6. Never describe a phenomenological proxy-fluid closure as microscopically realized without a calculation of its production and perturbations.
+7. Never call author-reported MCMC output independently reproduced without public inputs and chains.
+8. Keep all scientific changes on reviewable branches and PRs. Do not merge or modify main without explicit user instruction.
+
+## 10/10 decision rule
+
+PTUM is 10/10 only when all ten gates are **MET**, every numerical claim is reproducible from a clean checkout, the latest full CI and manuscript build pass, and no critical physics or claim-boundary issue remains open. Until then, report the gate statuses above rather than assigning an inflated percentage.
