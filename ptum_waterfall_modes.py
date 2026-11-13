@@ -223,7 +223,14 @@ def converge_waterfall_band_resolution(
     resolutions. It does not test convergence of the omitted infrared or
     ultraviolet tails and therefore never labels the full spectrum converged.
     """
-    counts = tuple(int(value) for value in resolutions)
+    raw_counts = tuple(resolutions)
+    if any(
+        isinstance(value, (bool, np.bool_))
+        or not isinstance(value, (int, np.integer))
+        for value in raw_counts
+    ):
+        raise ValueError("resolutions must contain integers, not rounded numeric values")
+    counts = tuple(int(value) for value in raw_counts)
     if (len(counts) < 2 or any(value < 4 for value in counts)
             or any(b <= a for a, b in zip(counts[:-1], counts[1:]))):
         raise ValueError("resolutions must be at least two strictly increasing integers >= 4")

@@ -1004,6 +1004,19 @@ def test_waterfall_band_resolution_helper_never_claims_uv_ir_convergence():
     )
 
 
+
+def test_waterfall_band_resolution_rejects_non_integer_grid_counts():
+    from ptum_waterfall_modes import converge_waterfall_band_resolution
+
+    with pytest.raises(ValueError, match="integers"):
+        converge_waterfall_band_resolution(
+            {},
+            k_min_over_mu=60.0,
+            k_max_over_mu=100.0,
+            resolutions=(4, 8.5),
+        )
+
+
 def test_deep_tachyonic_growth_with_wronskian_drift_withholds_particle_number():
     from ptum_waterfall_modes import build_waterfall_background, integrate_waterfall_mode
 
