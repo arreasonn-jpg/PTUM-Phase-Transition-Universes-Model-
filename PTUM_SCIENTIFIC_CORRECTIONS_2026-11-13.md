@@ -378,7 +378,7 @@ The revised runner now uses a $5\times5\times2$ grid in:
 - initial velocity seed $\dot\psi/(\mu\psi_0)\in\{0,0.1,1,2,5\}$;
 - post-threshold offset $(\Phi_c-\Phi)/\Phi_c\in\{0.01,0.1\}$.
 
-It runs 50 initial conditions at each energy scale (100 total), with 4001 output points over $20\mu^{-1}$ per trajectory. Each JSON row records the scenario, damping ratios, time span, output resolution and seed grid. Regression tests check the 50-point grid and ensure positive offsets start below $\Phi_c$ on the tachyonic side. This remains a homogeneous post-threshold sensitivity scan, not a quantum-vacuum seed distribution or a simulation of the threshold crossing itself. The new CI run 43393188155 has passed all **25 regression tests**. Its 100 high-resolution integrations and LaTeX build are still in progress.
+It runs 50 initial conditions at each energy scale (100 total), with 4001 output points over $20\mu^{-1}$ per trajectory. Each JSON row records the scenario, damping ratios, time span, output resolution and seed grid. Regression tests check the 50-point grid and ensure positive offsets start below $\Phi_c$ on the tachyonic side. This remains a homogeneous post-threshold sensitivity scan, not a quantum-vacuum seed distribution or a simulation of the threshold crossing itself. The pre-exact-endpoint revision passed **25 regression tests** in run 43393188155. After the exact $\epsilon_H=1$ threshold update, a new regression test brings the suite to 26; the fresh 26-test run, 100 high-resolution integrations, and LaTeX build are pending.
 
 
 ## 23. Exact inflation endpoint replaces the potential slow-roll endpoint
