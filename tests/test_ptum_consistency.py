@@ -572,3 +572,41 @@ def test_high_resolution_scan_validation_fails_closed():
     }
     with pytest.raises(RuntimeError, match="integrations failed"):
         validate_scan_results(failed_rows)
+
+
+
+def test_post_inflation_threshold_state_uses_exact_background_velocity():
+    from ptum_inflation_background import (
+        compute_observables,
+        state_at_field_value,
+    )
+
+    benchmark = compute_observables(0.02, n_target=60.0, n_star=55.0)
+    x_end = benchmark["x_end_hubble_flow"]
+    endpoint = state_at_field_value(
+        0.02, x_end, V0=1.0e64
+    )
+    assert endpoint["x"] == pytest.approx(x_end, rel=1.0e-9)
+    assert endpoint["epsilon_H"] == pytest.approx(1.0, abs=2.0e-7)
+    assert endpoint["X"] == pytest.approx(-1.0 / np.sqrt(3.0), abs=2.0e-7)
+    assert endpoint["Phi_dot"] < 0.0
+
+    post_threshold = state_at_field_value(
+        0.02, 0.9 * x_end, V0=1.0e64
+    )
+    assert post_threshold["N"] > endpoint["N"]
+    assert post_threshold["x"] == pytest.approx(0.9 * x_end, rel=1.0e-9)
+    assert post_threshold["Phi_dot"] < 0.0
+    assert post_threshold["epsilon_H"] > 1.0
+
+
+def test_scan_initial_conditions_accept_integrated_fuel_velocity():
+    p = PTUMParameters()
+    expected_phi_dot = -2.5e30
+    ic = create_initial_conditions(
+        p,
+        psi_init=0.1 * p.psi_0,
+        phi_offset=0.01 * p.Phi_c,
+        Phi_dot_override=expected_phi_dot,
+    )
+    assert ic.Phi_dot == expected_phi_dot
