@@ -536,3 +536,13 @@ The scan runner now validates that all 100 expected trajectories are present and
 The simulation module's top-level equation documentation was also aligned with the revised hybrid-waterfall mass and interaction signs. The conservation subsection in the manuscript no longer assumes $\Delta t\ll H^{-1}$ or that all transfer terms vanish immediately after the transition; it now distinguishes the microscopic field sectors from the later effective four-fluid regrouping and states that spatial transfer components need not vanish in generic inhomogeneous configurations.
 
 The updated regression suite and 100-trajectory scan have not yet been confirmed by a completed GitHub Actions run. These changes therefore remain pending CI verification.
+
+
+## 34. Exact-endpoint damping regression and CI failure diagnosis
+
+The latest GitHub Actions run executed 35 tests and reported 34 passed, one failed. The failure was isolated to the damping-ratio regression: the implementation correctly used
+$H_{c,\rm exact}=\sqrt{3/2}\,H_{c,V}$ for a canonical single-field endpoint at $\epsilon_H=1$, while the test still expected the older potential-only value $H_{c,V}$. The implementation was not reverted. The test now checks both estimates separately, verifies the exact-endpoint relation, and compares the exact damping ratio against the exact Hubble scale.
+
+The workflow's scan-artifact upload also produced a secondary error because pytest stopped the job before the scan output file existed. The upload step now uses `if: always()` with `if-no-files-found: ignore`: it preserves an artifact when the scan ran, without masking an earlier test failure with a second missing-file failure.
+
+These are corrective changes after the failed run. A new CI run is required; the latest suite and scan are not yet claimed to pass.
