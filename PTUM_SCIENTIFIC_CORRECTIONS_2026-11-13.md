@@ -330,3 +330,40 @@ GitHub Actions run 43392067477 completed **24 tests successfully**. Both 18-poin
 In the measurable high-scale cases, $R_2=\langle K\rangle/\langle V_2\rangle$ is approximately 0.75--0.79, outside the required $|R_2-1|<0.2$ quadratic-candidate window. The quartic ratio $Q/2$ is many orders of magnitude below one. The prior high-scale quadratic-candidate label is withdrawn under the stricter criterion.
 
 The newest scan artifact (run 43392067477, artifact 14021905273) was downloaded and parsed independently. It contains 36 strict-JSON rows with both scenario names and damping metadata. The Python and scan jobs are green. The LaTeX job for this run was still running when this section was written. The earlier completed LaTeX run on the same manuscript before the newest diagnostic-only code change produced a 38-page PDF.
+
+
+## 21. Superseding activation-sign revision: hybrid waterfall chronology
+
+Sections 1--20 record the first consistency pass under the manuscript's original activation sign. Their kinetic-sign, stress-tensor, energy-accounting, Mathieu-reduction, numerical-diagnostic, and claim-boundary findings remain applicable, but the earlier $Phi$--$psi$ interaction and transfer-current signs are superseded here.
+
+The original mass $m_{\rm eff}^2=m_\psi^2(1-\Phi^2/\Phi_c^2)$ made the proxy tachyonic for $|\Phi|>\Phi_c$. The adopted fuel potential has $V_{,\Phi}>0$ for positive $Phi$, so slow roll moves downward from $\Phi_*>\Phi_c$ toward $\Phi_{\rm end}\simeq\Phi_c$. That old sign therefore made the proxy tachyonic during inflation and stable after the end, opposite to the manuscript's dormant-pre-discharge / waterfall-after-threshold chronology.
+
+The mass has now been revised to the hybrid/waterfall form
+\[
+m_{\rm eff}^2(\Phi)=m_\psi^2\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)
+=m_\psi^2\left(\frac{\Phi^2}{\Phi_c^2}-1\right).
+\]
+It is positive for $|\Phi|>\Phi_c$ and negative for $|\Phi|<\Phi_c$. This makes the proxy stable during the observable slow-roll interval and tachyonic after the field rolls below the threshold. The sign is selected from the intended phase chronology and the computed direction of the slow-roll solution, not as an arbitrary fit.
+
+The activation potential is now
+\[
+U_{\Phi\psi}=\frac12\frac{\alpha m_\psi^2}{E_{\rm th}^2}\Phi^2\psi^2
+-\frac12m_\psi^2\psi^2+\frac{\lambda_\psi}{4}\psi^4.
+\]
+With the interaction assigned to $T_\psi^{\mu\nu}$, the interaction-only currents become
+\[
+Q_\psi^\nu=-\frac{\alpha m_\psi^2}{E_{\rm th}^2}
+\Phi\psi^2\nabla^\nu\Phi,\qquad
+Q_\Phi^\nu=+\frac{\alpha m_\psi^2}{E_{\rm th}^2}
+\Phi\psi^2\nabla^\nu\Phi,
+\]
+and
+\[
+Q_\psi^0=+\frac{\alpha m_\psi^2}{E_{\rm th}^2}
+\Phi\psi^2\dot\Phi,\qquad Q_\Phi^0=-Q_\psi^0.
+\]
+For the slow-roll direction $\dot\Phi<0$, the assigned $\psi$-sector source is negative. The manuscript now explicitly avoids describing this convention-dependent signed source as positive fuel-to-proxy energy transfer.
+
+The Python model has been updated consistently: $m_{\rm eff}^2$, $\partial m_{\rm eff}^2/\partial\Phi$, the $\Phi$ acceleration, the chain-rule continuity diagnostic, the local tachyonic scale, and initial conditions are all aligned with the revised sign. Positive $\phi$ offsets now place the initial field below $\Phi_c$, on the tachyonic side. Baseline tests and sign-characterization tests have been updated.
+
+The previous 36-point scan (run 43392067477) used the old sign and is now historical only. It must not be cited as a result for the revised model. A fresh CI run must verify the revised equations, 24-plus regression tests, both benchmark scans, and LaTeX build. Even after that, the current two-field scan begins below threshold and does not resolve the onset itself; coupled quantum seeds, inhomogeneous waterfall growth, and backreaction remain necessary.
