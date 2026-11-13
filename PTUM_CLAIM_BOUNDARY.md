@@ -66,16 +66,21 @@ PTUM does not claim to be:
 All external cross-project terminology has been removed from the PTUM manuscript. The paper now stands as a self-contained effective cosmology model.
 
 
-## v1.2 corrected code-availability update
+## v1.2 historical code-availability statement (superseded)
 
-The exact public repository is:
+An earlier version of this document stated that
+`https://github.com/ErdemEsa/ptum-cosmology.git` publicly contained
+a CLASS v3.2.0 patch and that its clean-tree apply check had passed.
+That statement is retained here only as a historical author-reported
+claim. The URL returned HTTP 404 through the current GitHub API review,
+and the current canonical repository does not expose the patch as an
+individually reviewable tracked source file. The claim of public patch
+availability and reproducible application is therefore **UNVERIFIED**.
+See `PTUM_REPRODUCIBILITY_NOTES.md` for the current evidence boundary.
 
-```text
-https://github.com/ErdemEsa/ptum-cosmology.git
-```
-
-The repository contains the public PTUM `CLASS v3.2.0` patch. This supports a code-availability claim for the core Boltzmann-code implementation. It does not by itself complete the full public Bayesian pipeline, because production Cobaya YAML files and full MCMC chains remain pending or external-archive items.
-
+The existence of an archive named `PTUM.zip` is not, by itself,
+evidence that it contains the claimed patch or that the patch applies
+to a clean CLASS v3.2.0 tree.
 
 ## 2026-11-13 scientific correction addendum
 
