@@ -10,12 +10,17 @@ backreaction are NOT integrated here. It therefore tests the local
 two-field tachyonic-to-quartic dynamics, not the complete cosmological
 history or the post-discharge relic abundance.
 
-Equations (from main.tex Sec. 3.5.6):
+Equations (from the revised hybrid-waterfall action in main.tex):
   Phi_ddot + 3H Phi_dot + dV_eff/dPhi
-      - (alpha m^2/E_th^2) Phi psi^2 = 0
-  psi_ddot + 3H psi_dot + m^2(1-alpha Phi^2/E_th^2)psi
+      + (alpha m_psi^2/E_th^2) Phi psi^2 = 0
+  psi_ddot + 3H psi_dot
+      + m_psi^2(alpha Phi^2/E_th^2 - 1)psi
       + lambda_psi psi^3 = 0
   H^2 = (rho_Phi + rho_psi)/(3 M_Pl^2)
+
+The waterfall mass is positive for |Phi| > Phi_c and tachyonic for
+|Phi| < Phi_c. The interaction potential is
+U_int = +alpha*m_psi^2*Phi^2*psi^2/(2 E_th^2), assigned once to rho_psi.
 
 Energy densities (interaction potential assigned once, to psi):
   rho_Phi = 1/2 Phi_dot^2 + V_eff(Phi)
