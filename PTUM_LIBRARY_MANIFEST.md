@@ -21,22 +21,28 @@ PTUM_FINAL_AUDIT.json
 compile logs
 ```
 
-## Public repository
+## Legacy repository reference and current verification status
+
+Historical package metadata points to:
 
 ```text
 https://github.com/ErdemEsa/ptum-cosmology.git
 ```
 
-## v1.2 correction
+The repository API returned HTTP 404 during the 2026-11-13 review. This
+does not establish whether the repository is private, renamed, or
+otherwise inaccessible, but its contents could not be verified.
 
-The `Code availability` subsection in `main.tex` now points to the exact repository URL above and states the current code status precisely:
-
-```text
-CLASS v3.2.0 PTUM patch: public and apply-check verified
-Cobaya production YAML files: pending
-Full MCMC chains: pending or external archive
-```
+The current canonical PTUM repository contains `PTUM.zip`, but the
+CLASS patch is not exposed as an individually reviewable file in the
+tracked root inventory, and the archive was not inspected. Therefore
+the earlier statement that the CLASS v3.2.0 patch is publicly available
+and apply-check verified is **UNVERIFIED** in the current audit.
 
 ## Reproducibility boundary
 
-The public repository now includes the manuscript archive and PTUM `CLASS v3.2.0` patch. Production `Cobaya` YAML files and full MCMC chains remain pending or external-archive items.
+Until the patch source, target CLASS version, checksum, apply command,
+and clean-tree apply log are available in an accessible location, the
+CLASS code-availability claim must remain unverified. Production
+`Cobaya` YAML files and full MCMC chains also remain pending or
+external-archive items.
