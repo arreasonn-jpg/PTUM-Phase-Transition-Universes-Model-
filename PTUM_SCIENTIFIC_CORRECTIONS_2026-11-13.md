@@ -658,3 +658,24 @@ not establish that the overdamped PTUM benchmark develops the
 oscillatory (Phi_{\\rm res}) background required for resonance.
 The branch now contains 49 regression tests; the latest tests and
 manuscript updates still await a fresh GitHub Actions run.
+
+
+
+## 39. FRW background consistency guard for mode evolution
+
+The expanding-mode solver now independently checks that the supplied
+scale factor and Hubble history satisfy (H=\\dot a/a), using a
+cubic-spline derivative and a declared relative tolerance (default
+(5\\times10^{-2})). Inconsistent histories are rejected before
+the mode equation is integrated. The maximum consistency residual is
+returned with the mode diagnostics. A regression test verifies both
+the de Sitter consistency control and fail-closed rejection of an
+inconsistent (a(t),H(t)) pair.
+
+This prevents a subtle but serious bookkeeping error: the friction
+term uses (H), while the canonical rescaling (X=a^{3/2}\\chi)
+requires the same (H) to be (dot a/a). Using unrelated histories
+would make the stated canonical frequency and the integrated physical
+mode equation mathematically inconsistent. The branch now contains
+50 regression tests; the newest changes remain unverified by a fresh
+CI run.
