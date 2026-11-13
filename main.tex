@@ -182,7 +182,7 @@ not as a completed first-principles theory of the origin of the Universe. The
 model does not derive the metastable pre-discharge background, does not solve
 the cosmological-constant hierarchy by itself, and does not specify a UV
 completion. Its present claims are narrower: it defines a threshold-triggered
-phase-transition scenario, implements the associated proxy-fluid perturbations,
+phase-transition scenario, specifies a phenomenological linear proxy-fluid perturbation closure,
 and identifies an observational discriminator between fluid and free-streaming
 dark radiation.
 
@@ -4341,122 +4341,59 @@ constraints should be treated as author-reported until the complete
 configuration, likelihood data references, priors, chains, and
 post-processing scripts are available and independently rerun.
 
-\subsection{Lattice setup}
+\subsection{Nonlinear lattice validation: current status}
+\label{app:lattice-status}
 
-The discharge dynamics and parametric resonance are simulated
-using a modified version of \texttt{LATTICEEASY}~\cite{Felder2000}
-adapted for the PTUM field content. The simulation evolves the
-full non-linear field equations for $\Phi$, $\psi$, $\chi$, and
-$\Phi_{\rm res}$ in an expanding FRW background:
+A nonlinear lattice calculation is required to establish whether the
+tachyonic waterfall develops the inhomogeneous spectrum, rescattering,
+and coarse-grained equation of state assumed by the later dark-sector
+description. However, the current canonical repository snapshot does
+not expose an individually reviewable PTUM lattice solver, its complete
+initial-condition prescription, raw field configurations, or the
+diagnostic outputs needed to reproduce such a calculation. The
+existence of a historical archive or a description of a simulation
+workflow is not, by itself, evidence that the calculation can be
+reproduced.
 
-\begin{align}
-\ddot\Phi + 3H\dot\Phi - \frac{\nabla^2}{a^2}\Phi + \frac{\partial V}{\partial\Phi} &= 0,\\
-\ddot\psi + 3H\dot\psi - \frac{\nabla^2}{a^2}\psi + \frac{\partial V}{\partial\psi} &= 0,\\
-\ddot\chi + 3H\dot\chi - \frac{\nabla^2}{a^2}\chi + \frac{\partial V}{\partial\chi} &= 0,\\
-\ddot\Phi_{\rm res} + 3H\dot\Phi_{\rm res} - \frac{\nabla^2}{a^2}\Phi_{\rm res} + \frac{\partial V}{\partial\Phi_{\rm res}} &= 0,
-\end{align}
+Accordingly, this manuscript does \emph{not} claim that a
+$256^3$ or $512^3$ PTUM lattice run, sub-percent energy-conservation
+test, nonlinear Floquet measurement, relic-density determination,
+defect census, or entropy calculation has been independently verified
+from the current public package. Numerical values previously associated
+with those outputs are withdrawn from the verified-results record
+until the source, inputs, outputs, and convergence evidence are made
+available. They must not be used as quantitative support for the
+present conclusions.
 
-with the potential
-\begin{equation}
-\begin{split}
-V &= V_0(1-e^{-\lambda_\Phi\Phi^2/M_{\rm Pl}^2}) + \frac{1}{2}m_\psi^2\psi^2
-+ \frac{\lambda_\psi}{4}\psi^4 + \frac{1}{2}m_\chi^2\chi^2 \\
-&\quad + g_{\rm DM}\chi^2\Phi_{\rm res}^2 + W(\Phi_{\rm res}).
-\end{split}
-\end{equation}
+\paragraph{Minimum requirements for a reproducible lattice result.}
+A future release must include: (i) the exact solver source and version,
+(ii) the complete covariant potential and all evolved fields,
+(iii) the lattice action and discretization, box size, grid spacing,
+time integrator, stability/CFL criterion, and boundary conditions,
+(iv) a vacuum or other physically justified initial-state prescription
+with its UV cutoff and renormalization/subtraction scheme, (v) fixed
+random seeds and machine-readable run configuration, (vi) time-resolved
+total and sector energy diagnostics including the expansion work term,
+(vii) power spectra and occupation-number definitions, (viii) defect
+identification rules where applicable, and (ix) resolution, volume,
+timestep, and ensemble convergence studies. Raw outputs and checksums
+must accompany any quoted numerical result.
 
-The lattice parameters are:
-\begin{itemize}
-\item \textbf{Grid size:} $N^3 = 256^3$ (convergence tested up to $512^3$)
-\item \textbf{Box size:} $L = 10/H_*$ (comoving)
-\item \textbf{Time stepping:} Adaptive 4th-order Runge-Kutta with CFL condition
-\item \textbf{Initial conditions:} Quantum fluctuations on top of homogeneous background at $t=0$ (discharge trigger)
-\end{itemize}
+\paragraph{Scope of the calculations currently present.}
+The public Python implementation contains a homogeneous two-field
+$(\Phi,\psi)$ background solver and a linear $\chi_k$ mode solver on
+externally supplied expanding-FRW histories. These are useful
+preparatory calculations, but they are not a nonlinear lattice
+simulation of the four-field system. They do not establish
+backreaction, rescattering, thermalization, a relic abundance, or a
+defect probability. The proxy-fluid closure therefore remains
+phenomenological pending the calculations listed above.
 
-\subsection{Key outputs}
-
-The following lattice outputs are included in the reproducibility
-release (\texttt{output/lattice/}):
-
-\begin{enumerate}
-\item \textbf{Energy density evolution:} $\rho_\Phi(t)$, $\rho_\psi(t)$,
-      $\rho_\chi(t)$, $\rho_{\rm res}(t)$, $\rho_{\rm rad}(t)$ showing
-      the discharge energy transfer from $\Phi$ to $\psi$, $\chi$, and
-      radiation. The total energy is conserved to $<0.1\%$.
-
-\item \textbf{Field power spectra:} $P_\Phi(k,t)$, $P_\psi(k,t)$,
-      $P_\chi(k,t)$ at multiple time slices showing the growth of
-      $\chi$ modes in the parametric resonance band. The resonance
-      peak at $k_{\rm res} \approx \omega_{\rm res}/2$ is clearly
-      resolved.
-
-\item \textbf{Occupation numbers:} $n_k(t)$ for $\chi$ field modes,
-      confirming exponential growth with Floquet exponent
-      $\mu_{\rm max} \approx 0.2\,\omega_{\rm res}$ in the broad
-      resonance regime ($q \gg 1$).
-
-\item \textbf{Equation of state:} $w_\psi(t)$, $w_\chi(t)$,
-      $w_{\rm res}(t)$ showing the transition from oscillatory
-      ($w \approx 0$) to radiation-like ($w \approx 1/3$) for the
-      proxy fluid, and the approach to $w \approx -1$ for the
-      residual field.
-
-\item \textbf{Topological defect detection:} Winding number
-      analysis for $\Phi_{\rm res}$ field configurations, showing
-      defect formation probability $<10^{-3}$ per Hubble volume for
-      benchmark parameters.
-
-\item \textbf{Entropy production:} Entropy $S(t)$ from the lattice
-      energy-momentum tensor, confirming
-      $S_{\rm obs} \sim 10^{88}$ (total observable-universe entropy).
-\end{enumerate}
-
-\subsection{Reproduction instructions}
-
-The lattice simulations can be reproduced using the Docker image:
-
-\begin{verbatim}
-docker run -v $(pwd)/output:/output \
-    ptum-cosmology \
-    python scripts/run_lattice.py \
-    --grid 256 --box 10
-\end{verbatim}
-
-The script \texttt{\detokenize{scripts/run_lattice.py}} generates all
-outputs listed above and saves them to \texttt{output/lattice/}. The
-simulation takes approximately 2 hours on a modern CPU (8 cores).
-Convergence tests with $512^3$ grid are included in
-\texttt{\detokenize{scripts/convergence_test.py}}.
-
-\subsection{Validation against analytic results}
-
-The authors report that the lattice outputs have been validated against
-the analytic predictions in Sections~\ref{sec:dm_relic} and
-\ref{sec:entropy_budget} \emph{(author-reported; lattice code not yet
-public)}:
-
-\begin{itemize}
-\item \textbf{Parametric resonance:} The lattice Floquet exponent
-      $\mu_{\rm max}^{\rm lattice} = 0.198 \pm 0.005\,\omega_{\rm res}$
-      matches the analytic $\mu_{\rm max} \approx 0.2\,\omega_{\rm res}$.
-
-\item \textbf{Relic abundance:} The lattice $\Omega_\chi h^2$ for
-      benchmark parameters is $0.118 \pm 0.015$, consistent with the
-      analytic target $0.12$.
-
-\item \textbf{Energy conservation:} Total energy conserved to
-      $<0.1\%$ throughout the simulation, validating the numerical
-      scheme.
-
-\item \textbf{Reheating temperature:} The lattice radiation
-      temperature at thermalization matches $T_{\rm rh} \sim
-      10^{14}$--$10^{15}$ GeV from the analytic estimate.
-\end{itemize}
-
-These lattice results are reported to provide non-perturbative
-confirmation of the analytic discharge dynamics and parametric
-resonance calculations used in the main text \emph{(author-reported;
-not independently reproduced)}.
+\paragraph{Reproduction status.}
+No Docker command, runtime estimate, grid-convergence claim, or
+historical lattice output is presented here as a reproduction recipe.
+Such instructions will be added only alongside a versioned solver and
+a clean-checkout reproduction log.
 
 %============================================================
 % REFERENCES
