@@ -10,7 +10,7 @@ The sharp observational discriminator is the difference between fluid-like dark 
 w = 1/3, c_s^2 = 1/3, sigma = 0
 ```
 
-and therefore does not produce the neutrino-like CMB acoustic phase shift associated with free-streaming radiation.
+and therefore does not generate the characteristic free-streaming anisotropic-stress phase-shift contribution. This does not imply that all acoustic peak locations are unchanged: background and coupled-perturbation effects must still be computed in the full Boltzmann hierarchy.
 
 ## Current-data status
 
@@ -55,7 +55,7 @@ The old 36-point scan used the opposite sign and is historical only.
 The revised code, manuscript, and tests must pass a fresh CI scan
 before any new regime conclusion is accepted. The onset itself still
 requires coupled quantum/inhomogeneous evolution and backreaction.
-The pre-exact-endpoint revised-sign revision passed 25 regression tests in run 43393188155. The current branch additionally matches the threshold to the exact $\epsilon_H=1$ endpoint and adds an inflation-end regression test; its fresh 32-test suite, 100-point high-resolution scan, and LaTeX build are pending. The latest regression also checks that the revised numerical Q_psi^0 and Q_Phi^0 sources have opposite signs and cancel exactly. New tests also verify the positive excitation-energy split around the moving minimum and its pairwise transfer bookkeeping. The raw instantaneous w_psi diagnostic now returns NaN when its density vanishes. No scan conclusion is claimed until that run completes.
+The scientific-consistency branch's 35-test regression suite passed in the latest completed Python test step, and its LaTeX build passed. The 100-trajectory high-resolution scan was still running at the last check; no scan conclusion is claimed until every integration completes, the strict-JSON artifact is inspected, and all rows pass validation. The branch now also initializes each post-threshold fuel velocity from the integrated single-field FRW trajectory rather than applying potential slow roll at a displaced post-end field value. The separate dependent claim/EFT audit branch adds residual-potential and radiation-budget implementations, explicit curved-space SM action/tensors, and a Wronskian-preserving linear quantum waterfall-mode solver; its 46-test suite is pending CI.
 
 ## Task 1 baseline under the previous activation sign (historical)
 
@@ -111,7 +111,7 @@ PTUM does not claim to be:
 - a solution of the cosmological low-entropy initial-condition problem or a derivation of the thermodynamic arrow of time,
 
 - a UV-complete derivation of the pre-discharge background,
-- a complete gauge-invariant chiral Standard Model reheating interaction or full SM Hilbert-tensor derivation; the displayed Dirac coupling is generic EFT shorthand pending specification,
+- a fully benchmarked flavour-specific reheating interaction or a complete line-by-line derivation of every interacting Higgs/chiral-fermion Hilbert-tensor divergence; the minimal curved-space SM action, gauge-invariant operator basis and standard Hilbert tensors are now displayed, but the transfer-current proof remains incomplete,
 - a fully dynamical coupled inflation-to-waterfall calculation including quantum seeds, inhomogeneous growth, and backreaction; the corrected mass sign gives the intended stable-above/tachyonic-below threshold ordering, but the current single-field inflation and post-trigger homogeneous scan do not yet evolve the onset,
 - a solution of the cosmological-constant problem,
 - a unique microscopic theory of the dark sector,
@@ -153,3 +153,12 @@ to a clean CLASS v3.2.0 tree.
   the full $V_0$ is available at the threshold is withdrawn.
 - The local Floquet monodromy solver is now available, but it is a frozen-background diagnostic. It does not calculate the expanding-background relic abundance.
 - The full Standard Model Hilbert tensor, complete pre-CLASS dark-matter production, and the observational MCMC pipeline remain open verification items.
+
+
+## Additional scientific claim boundaries (2026-11-13)
+
+- The residual dark-energy potential is now written with dimensionless Planck-normalized exponentials. The old parameter-space percentages remain author-reported until the scan script and exact dimensionless parameter grid are publicly reproduced.
+- The pfd-to-standard-neutrino-equivalent ratio is 3.3--10.2% for the quoted Delta N interval, while its share of total radiation including itself is about 1.3--4.0%. These are distinct denominators.
+- The quartic scalar coupling does not establish a numerical Wilsonian cutoff. The previously quoted 4 pi psi_0/sqrt(lambda_psi) energy cutoff is withdrawn; Lambda_EFT remains UV-dependent and the dimension-five reheating operator requires coupled-channel unitarity bounds.
+- The linear waterfall-mode solver evolves adiabatic vacuum modes and tachyonic amplification on a supplied background. It is not a nonlinear lattice calculation and does not establish backreaction, rescattering, defect avoidance or relic abundance.
+- The minimal curved-space Standard Model action and standard gauge/Higgs/on-shell fermion Hilbert tensors are now explicit. A complete interacting-sector divergence proof and flavour benchmark remain open.
