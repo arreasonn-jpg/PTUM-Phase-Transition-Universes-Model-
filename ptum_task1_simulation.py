@@ -89,14 +89,27 @@ class PTUMParameters:
         return np.sqrt(V_c / (3.0 * M_PL**2))
 
     @property
+    def H_threshold_exact_end(self) -> float:
+        """H at epsilon_H=1 when Phi_c is matched to the exact inflation endpoint.
+
+        At epsilon_H=1 for a canonical scalar, X^2=1/3 and rho=3V/2.
+        """
+        return np.sqrt(1.5) * self.H_threshold_potential
+
+    @property
+    def damping_ratio_potential(self) -> float:
+        """Potential-only estimate 3 H_V(Phi_c)/(2 mu)."""
+        return 3.0 * self.H_threshold_potential / (2.0 * self.mu)
+
+    @property
     def damping_ratio_plateau(self) -> float:
         """3 H_star/(2 mu), a plateau-scale estimate, not the local trigger value."""
         return 3.0 * self.H_star / (2.0 * self.mu)
 
     @property
     def damping_ratio(self) -> float:
-        """Potential-dominated 3 H(Phi_c)/(2 mu) at the discharge threshold."""
-        return 3.0 * self.H_threshold_potential / (2.0 * self.mu)
+        """Exact-endpoint 3 H_c/(2 mu), assuming Phi_c is epsilon_H=1."""
+        return 3.0 * self.H_threshold_exact_end / (2.0 * self.mu)
 
 
 @dataclass
