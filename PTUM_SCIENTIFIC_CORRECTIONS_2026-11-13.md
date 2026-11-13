@@ -584,3 +584,12 @@ The initial mode is the leading adiabatic vacuum. The solver computes the WKB ad
 Three regression tests cover a static stable vacuum (no spurious particle production and Wronskian preservation), tachyonic growth (large mode amplification but no invalid final particle number), and rejection of an initially tachyonic state.
 
 This is a linear mode calculation on a prescribed background. It does not yet evolve a self-consistent coupled background with mode backreaction, integrate the full momentum spectrum, renormalize the fluctuation stress tensor, include rescattering, or resolve the real-$\psi$ domain-wall network. It is therefore a meaningful step toward the inhomogeneous waterfall gate, not a relic-abundance or nonlinear-lattice result. The branch now contains 44 tests, including an explicit regression for the FRW rescaling terms; CI verification is pending.
+
+
+## 37. Explicit curved-space Standard Model action and Hilbert tensors
+
+The microscopic-transfer section previously admitted that the uncoupled Standard Model action and its Hilbert tensor were not explicitly specified. The manuscript now writes the minimal three-generation Standard Model action on a torsion-free curved spacetime, including the $SU(3)_c$, $SU(2)_L$ and $U(1)_Y$ gauge kinetic terms, the Higgs kinetic term and potential, chiral fermion kinetic terms, and the three SM Yukawa structures. It lists the gauge representations and gives the spin-plus-gauge covariant derivative with tetrad gamma matrices.
+
+The corresponding gauge, Higgs and on-shell symmetric fermion Hilbert/Belinfante tensors are displayed explicitly, with the standard SM Yukawa potential contribution included in $T_{\rm SM,0}^{\mu\nu}$. The PTUM dimension-five operator remains a separate interaction assigned to the SM sector under the declared split.
+
+This closes the earlier omission of the minimal uncoupled SM field content and its standard Hilbert tensor at the displayed EFT order. It does **not** yet constitute the complete interacting-sector proof: the covariant divergences of the full Higgs and chiral-fermion tensors with the PTUM reheating operators must still be derived line by line, including the gauge-current and flavour-matrix terms. Gate 3 therefore remains partial.
