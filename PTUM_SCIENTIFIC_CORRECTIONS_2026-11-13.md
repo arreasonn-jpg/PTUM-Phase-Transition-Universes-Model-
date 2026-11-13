@@ -117,19 +117,40 @@ The code now exposes two distinct diagnostics. The primary `continuity_residual`
 
 The quartic-dominance diagnostic now uses the actual Phi(t) history and local |m_eff^2(Phi(t))| over each half-cycle. It returns NaN when no complete oscillation interval exists rather than reporting a misleading zero. The quartic virial ratio is evaluated as <K>/(2<V4>), which tends to unity for a quartic oscillator. Classification returns insufficient_oscillation_data when required diagnostics are unavailable.
 
-## 7. Regression tests and verification boundary
+## 7. Additional DM-DE transfer correction
 
-A pytest regression file is maintained at `tests/test_ptum_consistency.py`. The initial six-test suite passed in GitHub Actions on commit `c2007f455f4cdfc0eee7221aef350ea2ad811659` (`6 passed in 0.42s`). The subsequently added static de Sitter test failed: finite-differencing an almost exactly constant vacuum-dominated density produced round-off-sized derivatives, while normalizing by the same near-zero derivative scale generated spurious relative values of 1.
+The former DM-DE estimate contained two independent problems. First, the homogeneous transfer sign was inconsistent with the covariant current under the (-+++) convention. The correct source is
+\[
+Q_{\\rm DM}^{0}=+2g_{\\rm DM}\\chi^2\\Phi_{\\rm res}\\dot\\Phi_{\\rm res},
+\\qquad Q_{\\rm DE}^{0}=-Q_{\\rm DM}^{0}.
+\]
+Second, the estimate used \(\\rho_{\\rm DM}\\simeq m_\\chi\\chi^2\), which has mass dimension three rather than four for a scalar field of mass dimension one. For a coherently oscillating quadratic scalar,
+\[
+\\rho_{\\rm DM}\\simeq m_\\chi^2\\langle\\chi^2\\rangle_\\chi,
+\qquad
+\\frac{|\\langle Q_{\\rm DM}^{0}\\rangle_\\chi|}
+{H\\rho_{\\rm DM}}
+\\simeq
+\\frac{2g_{\\rm DM}|\\Phi_{\\rm res}\\dot\\Phi_{\\rm res}|}
+{H m_\\chi^2},
+\]
+provided the residual field varies slowly over a chi oscillation. The previous claimed \(3\\times10^{-6}\) decoupling bound did not follow from the stated parameter ranges and has been withdrawn. A numerical bound requires explicit background histories and a defined averaging window.
 
-The diagnostic has now been split:
-- `continuity_residual` and `continuity_residual_relative`: chain-rule evaluation using the field accelerations from the background RHS. This is an equation-consistency diagnostic, not an independent solver validation.
-- `continuity_residual_finite_difference` and its relative counterpart: sampled `numpy.gradient` diagnostic retained separately for timestep/output-grid convergence studies. It is not expected to be well-conditioned for an exactly static, vacuum-dominated solution.
+## 8. Regression tests and verification boundary
 
-The expansion term is evaluated as (3H(\\dot\\Phi^2+\\dot\\psi^2)), algebraically equivalent to (3H(\\rho+p)) for the two canonical homogeneous scalar fields, but numerically avoids subtracting vacuum-sized density and pressure terms.
+The pytest regression file is maintained at `tests/test_ptum_consistency.py`. The initial six-test suite passed in GitHub Actions on commit `c2007f455f4cdfc0eee7221aef350ea2ad811659` (`6 passed in 0.42s`). The subsequently added static de Sitter test failed because finite-differencing an almost constant vacuum-dominated density and normalizing by a near-zero scale generated spurious relative values of 1.
 
-An independent local numerical reproduction of the static and evolving test setups gave a zero normalized chain-rule residual for the static case and a maximum relative residual of approximately (1.44\\times10^{-16}) for the evolving two-field case. This was a calculation of the diagnostic equations, not execution of the repository's full pytest suite. The current branch contains eight tests; no GitHub Actions run or combined status was visible for the latest commit at the time of this note. Therefore the latest full CI suite is still **pending verification**, not claimed as passing.
+The diagnostic is now split:
+- `continuity_residual` and `continuity_residual_relative`: chain-rule evaluation using accelerations from the background RHS. This is an equation-consistency diagnostic, not independent solver validation.
+- `continuity_residual_finite_difference` and its relative counterpart: sampled `numpy.gradient` diagnostic retained for timestep/output-grid convergence studies. It is not expected to be well-conditioned for a static vacuum-dominated solution.
 
-The tests and local checks cover homogeneous bookkeeping and internal equation consistency only. They do not establish the full PTUM scenario, reproduce CLASS/Cobaya, or calculate a physical dark-matter relic abundance.
+The expansion term is evaluated as \(3H(\\dot\\Phi^2+\\dot\\psi^2)\), algebraically equivalent to \(3H(\\rho+p)\) for the two canonical homogeneous scalar fields, while avoiding subtraction of vacuum-sized density and pressure terms.
+
+The cycle-averaged equation of state is now computed as \(\\langle p\\rangle/\\langle\\rho\\rangle\), not as \(\\langle p/\\rho\\rangle\). The regime classifier now evaluates the final 20% of the trajectory rather than inadvertently averaging the entire run. Regression tests cover both behaviours.
+
+The current branch contains ten tests. No GitHub Actions run or combined status was visible for the latest commit at the time of this note. Therefore the latest full CI suite remains **pending verification**. No claim is made that the full repository pytest suite has passed.
+
+These tests cover homogeneous bookkeeping and internal equation consistency only. They do not establish the full PTUM scenario, reproduce CLASS/Cobaya, or calculate a physical dark-matter relic abundance.
 
 ## 8. Still open
 
