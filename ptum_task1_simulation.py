@@ -247,7 +247,7 @@ def run_simulation(params: PTUMParameters,
     
     # Quartic dominance parameter Q = λ⟨ψ⁴⟩ / μ²⟨ψ²⟩
     # Compute over oscillation periods (using zero crossings of psi_dot)
-    Q_arr = compute_quartic_dominance(t, psi, psi_dot, params)
+    Q_arr = compute_quartic_dominance(t, psi, psi_dot, params, Phi)
     
     # Time-averaged w_psi over oscillation periods
     w_avg, t_avg = compute_time_averaged_w(t, w_psi_arr, psi_dot)
@@ -279,35 +279,31 @@ def run_simulation(params: PTUMParameters,
     }
 
 
-def compute_quartic_dominance(t: np.ndarray, psi: np.ndarray, 
-                              psi_dot: np.ndarray, params: PTUMParameters) -> np.ndarray:
-    """Compute quartic dominance parameter Q = λ⟨ψ⁴⟩/μ²⟨ψ²⟩ over oscillation periods."""
-    Q = np.zeros_like(t)
-    mu_sq = abs(params.mu_sq)
-    
-    # Find zero crossings of psi_dot (oscillation boundaries)
-    zero_crossings = np.where(np.diff(np.sign(psi_dot)))[0]
-    
-    if len(zero_crossings) < 2:
+def compute_quartic_dominance(t: np.ndarray, psi: np.ndarray,
+                              psi_dot: np.ndarray, params: PTUMParameters,
+                              Phi: Optional[np.ndarray] = None) -> np.ndarray:
+    """Return half-cycle Q = λ<ψ⁴>/<|m_eff²(Φ)| ψ²>; NaN means not measurable."""
+    Q = np.full_like(t, np.nan, dtype=float)
+    if Phi is None:
+        raise ValueError("Phi history is required for a time-local quartic diagnostic")
+    if len(Phi) != len(t):
+        raise ValueError("Phi and t must have the same length")
+
+    # Turning points delimit half-oscillations; signbit handles exact zeros robustly.
+    turning_points = np.where(np.diff(np.signbit(psi_dot)))[0]
+    if len(turning_points) < 2:
         return Q
-    
-    for i in range(len(zero_crossings) - 1):
-        start = zero_crossings[i]
-        end = zero_crossings[i + 1]
-        if end - start < 2:
+
+    for i in range(len(turning_points) - 1):
+        start, end = turning_points[i], turning_points[i + 1] + 1
+        if end - start < 3:
             continue
         psi_seg = psi[start:end]
-        psi4_avg = np.mean(psi_seg**4)
-        psi2_avg = np.mean(psi_seg**2)
-        if psi2_avg > 0:
-            Q_val = params.lambda_psi * psi4_avg / (mu_sq * psi2_avg)
-            Q[start:end] = Q_val
-    
-    # Fill remaining with last value
-    if len(zero_crossings) > 0:
-        last_idx = zero_crossings[-1]
-        Q[last_idx:] = Q[last_idx]
-    
+        mass_sq_seg = np.abs(meff_sq_psi(Phi[start:end], params))
+        numerator = params.lambda_psi * np.mean(psi_seg**4)
+        denominator = np.mean(mass_sq_seg * psi_seg**2)
+        if denominator > 0.0 and np.isfinite(denominator):
+            Q[start:end] = numerator / denominator
     return Q
 
 
