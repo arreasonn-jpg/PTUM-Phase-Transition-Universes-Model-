@@ -195,10 +195,71 @@ def pressure_psi(Phi: float, psi: float, psi_dot: float, params: PTUMParameters)
     return 0.5 * psi_dot**2 - 0.5 * m_eff_sq * psi**2 - 0.25 * params.lambda_psi * psi**4
 
 
-def shifted_potential_psi(psi: float, params: PTUMParameters) -> float:
-    """U(ψ) = ¼λ_ψ(ψ² - ψ₀²)² - energy measured from minimum"""
-    psi_0 = params.psi_0
-    return 0.25 * params.lambda_psi * (psi**2 - psi_0**2)**2
+def psi_minimum_squared(Phi: np.ndarray | float, params: PTUMParameters):
+    """Instantaneous |psi_min(Phi)|^2, zero in the unbroken phase."""
+    m_eff_sq = meff_sq_psi(Phi, params)
+    return np.maximum(-np.asarray(m_eff_sq), 0.0) / params.lambda_psi
+
+
+def psi_minimum_potential(Phi: np.ndarray | float, params: PTUMParameters):
+    """Potential value at the instantaneous global minimum of V_psi."""
+    m_eff_sq = np.asarray(meff_sq_psi(Phi, params))
+    return -(np.maximum(-m_eff_sq, 0.0) ** 2) / (4.0 * params.lambda_psi)
+
+
+def psi_excitation_potential(
+    Phi: np.ndarray | float,
+    psi: np.ndarray | float,
+    params: PTUMParameters,
+):
+    """V_psi(Phi,psi)-V_psi(Phi,psi_min(Phi)); non-negative by construction."""
+    m_eff_sq = np.asarray(meff_sq_psi(Phi, params))
+    psi_arr = np.asarray(psi)
+    raw_potential = 0.5 * m_eff_sq * psi_arr**2 + 0.25 * params.lambda_psi * psi_arr**4
+    return raw_potential - psi_minimum_potential(Phi, params)
+
+
+def psi_excitation_energy(
+    Phi: np.ndarray | float,
+    psi: np.ndarray | float,
+    psi_dot: np.ndarray | float,
+    params: PTUMParameters,
+):
+    return 0.5 * np.asarray(psi_dot)**2 + psi_excitation_potential(Phi, psi, params)
+
+
+def psi_excitation_pressure(
+    Phi: np.ndarray | float,
+    psi: np.ndarray | float,
+    psi_dot: np.ndarray | float,
+    params: PTUMParameters,
+):
+    return 0.5 * np.asarray(psi_dot)**2 - psi_excitation_potential(Phi, psi, params)
+
+
+def waterfall_excitation_transfer_rate(
+    Phi: np.ndarray | float,
+    psi: np.ndarray | float,
+    Phi_dot: np.ndarray | float,
+    params: PTUMParameters,
+):
+    """Q_psi^0 after moving V_min(Phi) from the psi sector to the Phi sector."""
+    Phi_arr = np.asarray(Phi)
+    psi_arr = np.asarray(psi)
+    Phi_dot_arr = np.asarray(Phi_dot)
+    m_eff_sq = np.asarray(meff_sq_psi(Phi_arr, params))
+    coupling = params.alpha * params.m_psi**2 / params.E_th**2
+    q_raw, _ = waterfall_transfer_rate(Phi_arr, psi_arr, Phi_dot_arr, params)
+    dVmin_dPhi = np.where(
+        m_eff_sq < 0.0,
+        -m_eff_sq * coupling * Phi_arr / params.lambda_psi,
+        0.0,
+    )
+    q_exc = np.asarray(q_raw) - dVmin_dPhi * Phi_dot_arr
+    q_phi = -q_exc
+    if np.ndim(q_exc) == 0:
+        return float(q_exc), float(q_phi)
+    return q_exc, q_phi
 
 
 def w_psi(Phi: float, psi: float, psi_dot: float, params: PTUMParameters) -> float:
