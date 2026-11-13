@@ -738,6 +738,8 @@ def test_linear_waterfall_mode_detects_tachyonic_growth_without_false_particle_c
     assert result["omega_sq"][-1] < 0.0
     assert result["tachyonic_time_fraction"] > 0.8
     assert result["amplification"] > 1.0e20
+    assert result["log_amplification"] > 40.0
+    assert result["wronskian_error"] < 1.0e-12
     assert result["final_particle_number"] is None
     assert not result["particle_number_is_adiabatic"]
 
