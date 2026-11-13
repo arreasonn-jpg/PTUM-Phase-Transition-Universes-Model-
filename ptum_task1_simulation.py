@@ -567,7 +567,12 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
 
     # Do not classify a regime when the required diagnostics are unavailable.
     diagnostics_valid = np.isfinite([w_final, Q_final, virial_final]).all()
-    quartic_achieved = (diagnostics_valid and Q_final > 5 and
+    # Q = lambda <psi^4>/<|m_eff^2| psi^2> is twice the
+    # quartic-to-tachyonic-quadratic potential-energy ratio:
+    # <V4>/<|V2|> = Q/2. Thus Q>2 is the energy-dominance boundary.
+    quartic_to_tachyonic_potential_ratio = 0.5 * Q_final
+    quartic_achieved = (diagnostics_valid and
+                        quartic_to_tachyonic_potential_ratio > 1.0 and
                         abs(w_final - 1/3) < 0.05 and
                         abs(virial_final - 1) < 0.2)
     
@@ -589,6 +594,7 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
         'quartic_achieved': quartic_achieved,
         'w_final': float(w_final),
         'Q_final': float(Q_final),
+        'quartic_to_tachyonic_potential_ratio': float(quartic_to_tachyonic_potential_ratio),
         'virial_final': float(virial_final),
         'n_oscillations': len(w_avg)
     }
