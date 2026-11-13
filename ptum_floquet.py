@@ -12,6 +12,7 @@ from typing import Iterable
 
 import numpy as np
 from scipy.integrate import solve_ivp
+from scipy.interpolate import CubicSpline
 
 
 def mathieu_parameters(
@@ -196,7 +197,10 @@ def integrate_expanding_mode(
     if rtol <= 0.0 or atol <= 0.0 or max_initial_adiabaticity <= 0.0:
         raise ValueError("solver tolerances and adiabaticity threshold must be positive")
 
-    h_dot_arr = np.gradient(h_arr, t_arr, edge_order=2)
+    a_spline = CubicSpline(t_arr, a_arr, extrapolate=False)
+    h_spline = CubicSpline(t_arr, h_arr, extrapolate=False)
+    phi_spline = CubicSpline(t_arr, phi_arr, extrapolate=False)
+    h_dot_arr = h_spline.derivative()(t_arr)
     omega_chi_sq = (
         (k_comoving / a_arr) ** 2
         + m_chi**2
@@ -209,7 +213,8 @@ def integrate_expanding_mode(
         raise ValueError("initial canonical mode frequency is not real and positive")
 
     omega_arr = np.sqrt(omega_canonical_sq)
-    omega_dot_arr = np.gradient(omega_arr, t_arr, edge_order=2)
+    omega_spline = CubicSpline(t_arr, omega_arr, extrapolate=False)
+    omega_dot_arr = omega_spline.derivative()(t_arr)
     initial_adiabaticity = float(
         abs(omega_dot_arr[0]) / max(omega_arr[0] ** 2, np.finfo(float).tiny)
     )
@@ -232,9 +237,9 @@ def integrate_expanding_mode(
 
     def background_at(time: float) -> tuple[float, float, float]:
         return (
-            float(np.interp(time, t_arr, a_arr)),
-            float(np.interp(time, t_arr, h_arr)),
-            float(np.interp(time, t_arr, phi_arr)),
+            float(a_spline(time)),
+            float(h_spline(time)),
+            float(phi_spline(time)),
         )
 
     def rhs(time: float, state: np.ndarray) -> np.ndarray:
