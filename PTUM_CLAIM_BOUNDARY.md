@@ -32,7 +32,7 @@ It should not be framed as positive evidence that current data prefer PTUM.
 
 ## Current Task 1 status
 
-**The quartic-dominated regime is not demonstrated in either current homogeneous scan.** GitHub Actions run 43391427434 completed 36/36 integrations successfully:
+**The quartic-dominated regime is not demonstrated in either current homogeneous scan.** GitHub Actions run 43392067477 completed 24 regression tests and 36/36 integrations successfully:
 - High-scale threshold-matched benchmark ($V_0=10^{64}\,\mathrm{GeV}^4$, $\Phi_c=1.387M_{\rm Pl}$, local damping ratio $3H_c/(2\mu)\simeq4.87$): 16 non-quartic and two insufficient-oscillation-data trajectories; zero quartic or quadratic-candidate trajectories.
 - Low-scale underdamped control ($V_0=10^{56}\,\mathrm{GeV}^4$): 16 non-quartic and two insufficient-oscillation-data trajectories; zero quartic or quadratic-candidate trajectories.
 
