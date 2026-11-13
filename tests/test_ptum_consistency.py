@@ -974,6 +974,36 @@ def test_waterfall_finite_band_spectrum_reports_units_and_wronskian_status():
     assert np.isfinite(spectrum["n_comoving_finite_band"])
 
 
+
+def test_waterfall_band_resolution_helper_never_claims_uv_ir_convergence():
+    from ptum_waterfall_modes import (
+        build_waterfall_background,
+        converge_waterfall_band_resolution,
+    )
+
+    background = build_waterfall_background(
+        PTUMParameters(V0=1.0e64),
+        start_fraction=0.05,
+        t_end_mu=1.0,
+        n_points=1001,
+    )
+    result = converge_waterfall_band_resolution(
+        background,
+        k_min_over_mu=60.0,
+        k_max_over_mu=100.0,
+        resolutions=(4, 8),
+        relative_tolerance=0.5,
+    )
+    assert result["resolution_counts"] == [4, 8]
+    assert result["finite_band_only"]
+    assert result["all_wronskians_valid"]
+    assert result["uv_ir_tail_converged"] is False
+    assert len(result["n_comoving_finite_band_estimates"]) == 2
+    assert result["band_resolution_converged"] == (
+        result["relative_changes"][-1] <= result["relative_tolerance"]
+    )
+
+
 def test_deep_tachyonic_growth_with_wronskian_drift_withholds_particle_number():
     from ptum_waterfall_modes import build_waterfall_background, integrate_waterfall_mode
 

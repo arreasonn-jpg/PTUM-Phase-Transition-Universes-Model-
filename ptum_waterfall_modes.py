@@ -203,3 +203,87 @@ def integrate_waterfall_spectrum(
     result["momentum_unit"] = "mu"
     result["number_density_unit"] = "mu^3"
     return result
+
+
+def converge_waterfall_band_resolution(
+    background: dict[str, object],
+    *,
+    k_min_over_mu: float,
+    k_max_over_mu: float,
+    resolutions: Iterable[int] = (8, 16, 32),
+    relative_tolerance: float = 0.05,
+    rtol: float = 1.0e-9,
+    atol: float = 1.0e-12,
+    max_initial_adiabaticity: float = 0.1,
+    wronskian_tolerance: float = 1.0e-7,
+) -> dict[str, object]:
+    """Check quadrature resolution on a fixed finite momentum band.
+
+    This compares trapezoidal estimates at increasing log-spaced k-grid
+    resolutions. It does not test convergence of the omitted infrared or
+    ultraviolet tails and therefore never labels the full spectrum converged.
+    """
+    counts = tuple(int(value) for value in resolutions)
+    if (len(counts) < 2 or any(value < 4 for value in counts)
+            or any(b <= a for a, b in zip(counts[:-1], counts[1:]))):
+        raise ValueError("resolutions must be at least two strictly increasing integers >= 4")
+    scalars = np.asarray(
+        [k_min_over_mu, k_max_over_mu, relative_tolerance, rtol, atol,
+         max_initial_adiabaticity, wronskian_tolerance],
+        dtype=float,
+    )
+    if not np.all(np.isfinite(scalars)):
+        raise ValueError("band limits and tolerances must be finite")
+    if (k_min_over_mu <= 0.0 or k_max_over_mu <= k_min_over_mu
+            or relative_tolerance <= 0.0 or rtol <= 0.0 or atol <= 0.0):
+        raise ValueError("require 0<k_min<k_max and positive tolerances")
+
+    estimates = []
+    all_wronskians_valid = True
+    all_final_frequencies_valid = True
+    for count in counts:
+        k_values = np.geomspace(k_min_over_mu, k_max_over_mu, count)
+        spectrum = integrate_waterfall_spectrum(
+            background,
+            k_values,
+            rtol=rtol,
+            atol=atol,
+            max_initial_adiabaticity=max_initial_adiabaticity,
+            wronskian_tolerance=wronskian_tolerance,
+        )
+        all_wronskians_valid = (
+            all_wronskians_valid and bool(spectrum["all_wronskians_valid"])
+        )
+        all_final_frequencies_valid = (
+            all_final_frequencies_valid
+            and bool(spectrum["all_final_frequencies_valid"])
+        )
+        estimates.append(float(spectrum["n_comoving_finite_band"]))
+
+    relative_changes = []
+    for previous, current in zip(estimates[:-1], estimates[1:]):
+        scale = max(abs(previous), abs(current), np.finfo(float).tiny)
+        relative_changes.append(float(abs(current - previous) / scale))
+
+    finite_estimates = bool(np.all(np.isfinite(estimates)))
+    band_resolution_converged = bool(
+        finite_estimates
+        and all_wronskians_valid
+        and all_final_frequencies_valid
+        and relative_changes
+        and relative_changes[-1] <= relative_tolerance
+    )
+    return {
+        "resolution_counts": list(counts),
+        "n_comoving_finite_band_estimates": estimates,
+        "relative_changes": relative_changes,
+        "relative_tolerance": float(relative_tolerance),
+        "k_min_over_mu": float(k_min_over_mu),
+        "k_max_over_mu": float(k_max_over_mu),
+        "band_resolution_converged": band_resolution_converged,
+        "all_wronskians_valid": all_wronskians_valid,
+        "all_final_frequencies_valid": all_final_frequencies_valid,
+        "uv_ir_tail_converged": False,
+        "finite_band_only": True,
+        "number_density_unit": "mu^3",
+    }
