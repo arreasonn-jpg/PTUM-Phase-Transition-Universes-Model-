@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Run matched high-scale and low-scale PTUM two-field diagnostic scans.
+"""Run high-resolution PTUM waterfall scans at two energy scales.
 
-The high-scale scenario uses the threshold-matched inflationary benchmark.
-The low-scale scenario is an underdamped control. Neither scan is a full
-inhomogeneous cosmological evolution or a dark-matter relic calculation.
+These homogeneous post-threshold scans probe initial-condition sensitivity.
+They are not a quantum-seeded inhomogeneous calculation or a relic-density
+prediction.
 """
 from __future__ import annotations
 
@@ -16,6 +16,12 @@ from ptum_task1_simulation import (
     run_parameter_scan,
     save_results,
 )
+
+SEED_SCALES = (0.0, 0.1, 1.0, 2.0, 5.0)
+VELOCITY_SCALES = (0.0, 0.1, 1.0, 2.0, 5.0)
+PHI_OFFSETS = (0.01, 0.1)
+DEFAULT_T_MAX = 20.0
+DEFAULT_N_POINTS = 4001
 
 
 def build_scan_scenarios():
@@ -39,18 +45,24 @@ def build_scan_scenarios():
     ]
 
 
-def run_scan_suite(*, t_max: float = 20.0, n_points: int = 200):
-    """Run the same 18 initial-condition combinations in both scenarios."""
+def build_initial_condition_grid(params: PTUMParameters):
+    """Build a 5x5x2 grid in field seed, velocity seed and threshold offset."""
+    psi_init_range = [scale * params.psi_0 for scale in SEED_SCALES]
+    psi_dot_init_range = [
+        scale * params.mu * params.psi_0 for scale in VELOCITY_SCALES
+    ]
+    phi_offset_range = [scale * params.Phi_c for scale in PHI_OFFSETS]
+    return psi_init_range, psi_dot_init_range, phi_offset_range
+
+
+def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
+                   n_points: int = DEFAULT_N_POINTS):
+    """Run 50 initial-condition combinations in each of the two scenarios."""
     all_results = []
     for scenario_name, params in build_scan_scenarios():
-        psi_init_range = [0.0, 0.01 * params.psi_0, 0.1 * params.psi_0]
-        psi_dot_init_range = [
-            0.0,
-            0.1 * params.mu * params.psi_0,
-            params.mu * params.psi_0,
-        ]
-        phi_offset_range = [0.01 * params.Phi_c, 0.1 * params.Phi_c]
-
+        psi_init_range, psi_dot_init_range, phi_offset_range = (
+            build_initial_condition_grid(params)
+        )
         rows = run_parameter_scan(
             params,
             psi_init_range,
@@ -66,6 +78,11 @@ def run_scan_suite(*, t_max: float = 20.0, n_points: int = 200):
                 "Phi_c_over_Mpl": params.Phi_c / M_PL,
                 "local_damping_ratio": params.damping_ratio,
                 "plateau_damping_ratio": params.damping_ratio_plateau,
+                "t_max_over_mu_inverse": t_max,
+                "n_output_points": n_points,
+                "psi_seed_scales": list(SEED_SCALES),
+                "psi_velocity_scales": list(VELOCITY_SCALES),
+                "phi_offset_scales": list(PHI_OFFSETS),
             }
         all_results.extend(rows)
     return all_results
@@ -78,8 +95,8 @@ def main() -> None:
         default="task1_parameter_scan_results.json",
         help="Path for the compact strict-JSON summary",
     )
-    parser.add_argument("--t-max", type=float, default=20.0)
-    parser.add_argument("--n-points", type=int, default=200)
+    parser.add_argument("--t-max", type=float, default=DEFAULT_T_MAX)
+    parser.add_argument("--n-points", type=int, default=DEFAULT_N_POINTS)
     args = parser.parse_args()
 
     results = run_scan_suite(t_max=args.t_max, n_points=args.n_points)
