@@ -528,7 +528,7 @@ S = \int d^4x\,\sqrt{-g}\,\mathcal{L}_{\rm PTUM},
 \end{equation}
 with $\sqrt{-g} = a^3(t)$ in FRW.
 For a scalar field \(\phi\) with Lagrangian
-\(\mathcal{L} = \tfrac{1}{2}g^{\mu\nu}\partial_\mu\phi\partial_\nu\phi
+\(\mathcal{L} = -\tfrac{1}{2}g^{\mu\nu}\partial_\mu\phi\partial_\nu\phi
 - V(\phi)\), the Euler--Lagrange equation is
 \begin{equation}
 \frac{1}{\sqrt{-g}}\partial_\mu\left(\sqrt{-g}\,g^{\mu\nu}
@@ -1675,7 +1675,15 @@ where the interaction terms are:
 \mathcal{L}_{\rm rh} &= -y_\psi \psi \bar{f} f - \frac{1}{2} g_\psi \psi^2 \phi_{\rm SM}^2.
 \end{align}
 
-The energy-momentum tensor for each sector is $T_i^{\mu\nu} = \frac{2}{\sqrt{-g}}\frac{\delta(\sqrt{-g}\mathcal{L}_i)}{\delta g_{\mu\nu}}$. The covariant divergence gives the transfer vectors. Each interaction term in the total Lagrangian contributes once to the divergence of the total tensor; assigning each contribution with opposite signs to the two exchanging sectors yields the closed system:
+The energy-momentum tensor for each sector is
+$T_i^{\mu\nu}=2(\sqrt{-g})^{-1}\delta S_i/\delta g_{\mu\nu}$.
+We assign the $Phi$--$psi$ interaction potential to $T_\psi^{\mu\nu}$
+and the $chi$--$Phi_{\rm res}$ interaction potential to
+$T_{\rm DM}^{\mu\nu}$. For the Yukawa term, the scalar equation contains
+the source $y_\psi\bar f f$, so the scalar-sector divergence contains
+$y_\psi\bar f f\nabla^\nu\psi$. Its mass dimension is
+$3+2=5$, as required. The fermion-sector contribution is its negative.
+With these explicit assignments the transfer vectors are:
 \begin{align}
 Q_\psi^\nu &= +\alpha m^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi
  + y_\psi \bar f f\,\nabla^\nu\psi
@@ -3109,11 +3117,19 @@ $\sqrt{k^2/a^2+m_\chi^2+g_{\rm DM}\mathcal A_{\rm res}^2}
 The equation of motion for the $\chi$ field modes in an FRW
 background is
 \begin{equation}
-\ddot\chi_k + 3H\dot\chi_k + \left(\frac{k^2}{a^2} + m_\chi^2(t)\right)\chi_k = 0.
+\ddot\chi_k + 3H\dot\chi_k +
+\left(\frac{k^2}{a^2}+m_\chi^2+
+2g_{\rm DM}\Phi_{\rm res}^2(t)\right)\chi_k=0.
 \end{equation}
-During the short discharge phase ($\Delta t \ll H^{-1}$), Hubble
-expansion can be neglected and the equation reduces to the
-Mathieu equation. The Floquet exponent $\mu_k$ determines the
+For $X_k=a^{3/2}\chi_k$ this becomes
+\begin{equation}
+\ddot X_k+\left[\frac{k^2}{a^2}+m_\chi^2+
+2g_{\rm DM}\Phi_{\rm res}^2
+-\frac{3}{2}\dot H-\frac{9}{4}H^2\right]X_k=0.
+\end{equation}
+Only when $H/\omega_{\rm res}\ll1$ and the background parameters
+vary slowly over an oscillation can the expansion terms be neglected
+and the equation be reduced to a Mathieu equation. The Floquet exponent $\mu_k$ determines the
 exponential growth of modes within the resonance band:
 \begin{equation}
 \chi_k(t) \propto \exp(\mu_k t).
@@ -3126,7 +3142,7 @@ must be computed from the monodromy matrix for the actual $(A_k,q)$,
 then checked against expansion and backreaction. The occupation number of produced
 $\chi$ particles after $N$ oscillation periods is
 \begin{equation}
-n_k \approx \exp(2\mu_k N\,\omega_{\rm res}^{-1}),
+n_k \propto \exp(4\pi\mu_k^{(z)}N),
 \end{equation}
 where $N\,\omega_{\rm res}^{-1}$ is the duration of the resonant phase.
 
