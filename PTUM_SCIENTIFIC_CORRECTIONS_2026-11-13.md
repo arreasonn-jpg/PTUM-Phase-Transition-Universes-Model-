@@ -579,7 +579,7 @@ A first linear inhomogeneous stage has been added in `ptum_waterfall_modes.py`. 
 +3\lambda_\psi\bar\psi^2
 -\frac32\dot H-\frac94H^2.
 \]
-The initial mode is the leading adiabatic vacuum. The solver computes the WKB adiabaticity parameter and rejects an initial state outside the declared adiabatic threshold. It monitors the canonical Wronskian, reports tachyonic time fraction and amplification, and only returns a final particle number when the final frequency is positive and adiabatic. If the final mode remains tachyonic or non-adiabatic, particle number is explicitly unavailable.
+The initial mode is the leading adiabatic vacuum. The solver computes the WKB adiabaticity parameter and rejects an initial state outside the declared adiabatic threshold. It evolves the Ermakov-Pinney amplitude and phase, which preserves the canonical Wronskian even through the tested tachyonic interval, and reports tachyonic time fraction and amplification. It only returns a final particle number when the final frequency is positive and adiabatic; if the final mode remains tachyonic or non-adiabatic, particle number is explicitly unavailable.
 
 Three regression tests cover a static stable vacuum (no spurious particle production and Wronskian preservation), tachyonic growth (large mode amplification but no invalid final particle number), and rejection of an initially tachyonic state.
 
