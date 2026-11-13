@@ -1770,65 +1770,81 @@ The following lines identify the interaction terms already included in the scala
 \begin{align}
 \mathcal{L}_{\rm int}^{\psi\Phi} &= -\frac{1}{2}\alpha m^2 \frac{\Phi^2}{E_{\rm th}^2} \psi^2, \\
 \mathcal{L}_{\rm int}^{\chi\Phi_{\rm res}} &= -g_{\rm DM} \chi^2 \Phi_{\rm res}^2, \\
-\mathcal{L}_{\rm rh} &= -y_\psi \psi \bar{f} f - \frac{1}{2} g_\psi \psi^2 \phi_{\rm SM}^2.
+\mathcal{L}_{\rm rh} &= -\frac{\psi}{\Lambda}\mathcal{O}_{\rm SM}
+-\frac{1}{2}g_{\psi H}\psi^2 H^\dagger H,
 \end{align}
 
 \paragraph{Gauge-invariance scope of the reheating operators.}
-The shorthand interaction $-y_\psi\psi\bar f f$ is a renormalizable
-dimension-four coupling when $f$ is a gauge-singlet Dirac field or a
-vector-like Dirac representation whose left- and right-handed
-components transform identically. It is not, by itself, a
-gauge-invariant Yukawa operator for the chiral Standard Model
-fermions. If the intended final states are chiral SM fields, a
-gauge-invariant effective interaction instead has the schematic
-dimension-five form
-\begin{equation}
-\mathcal{L}_{\psi{\rm SM}}^{(5)}
-=-\frac{\psi}{\Lambda}\left[
+Assume $\psi$ is a real Standard Model gauge singlet and $H$
+is the Standard Model Higgs doublet. The chiral-fermion interaction
+is written with the gauge-invariant dimension-five operator
+\begin{align}
+\mathcal{O}_{\rm SM}={}&
 \bar Q_L C_d H d_R
 +\bar Q_L C_u\widetilde H u_R
-+\bar L_L C_e H e_R
-\right]+\mathrm{h.c.},
-\end{equation}
++\bar L_L C_e H e_R+\mathrm{h.c.},
+\\
+\mathcal{L}_{\psi{\rm SM}}^{(5)}
+={}&-\frac{\psi}{\Lambda}\mathcal{O}_{\rm SM},
+\end{align}
 where $C_{u,d,e}$ are dimensionless flavour matrices and
-$\widetilde H=i\sigma_2 H^*$. After electroweak symmetry breaking,
-this produces effective scalar-fermion couplings proportional to
-$C_f v/(\sqrt{2}\Lambda)$. In that case the Yukawa source
-$y_\psi\bar f f$ in the transfer current must be replaced by the
-corresponding gauge-invariant fermion-Higgs operator divided by
-$\Lambda$, and the decay widths must be recalculated for the
-resulting EFT.
+$\widetilde H=i\sigma_2H^*$. After electroweak symmetry breaking,
+the effective scalar couplings are
+$y_{\psi f}^{\rm eff}=C_f v/(\sqrt{2}\Lambda)$, in a
+single-flavour mass basis. The shorthand $-y_\psi\psi\bar f f$
+is therefore only the broken-phase limit of this EFT, not a
+renormalizable chiral-SM interaction.
 
-Likewise, $\phi_{\rm SM}^2$ in the schematic quartic reheating term
-must be understood as a gauge-invariant Higgs bilinear such as
-$H^\dagger H$, with normalization fixed by the chosen Higgs-field
-convention. Until the Wilson coefficients, flavour structure,
-electroweak normalization, and complete gauge/Higgs action are
-specified, the displayed reheating currents are a generic Dirac/EFT
-bookkeeping model, not a complete Standard Model derivation.
+The scalar portal is specified as the gauge-invariant operator
+$-\tfrac12g_{\psi H}\psi^2H^\dagger H$. It allows Higgs-pair
+production and coherent Higgs-mode excitation; by itself, an exact
+$\psi\mapsto-\psi$ symmetry forbids a single-$\psi$ decay. The
+dimension-five fermion operator is odd in $\psi$ and generally
+breaks that symmetry unless an additional discrete charge
+assignment is supplied. Its effect on the two-vacuum bias and
+domain-wall evolution must therefore be calculated rather than
+assumed.
+
+For small oscillations about a fixed broken-phase minimum,
+$\psi_{\min}=\pm\sqrt{-m_{\rm eff}^2/\lambda_\psi}$, the local
+curvature mass is $m_{\rm osc}^2=-2m_{\rm eff}^2$. If the EFT
+operator is treated perturbatively and $m_{\rm osc}>2m_f$, the
+conditional vacuum decay width is
+\begin{equation}
+\Gamma_{\psi\to f\bar f}=
+\frac{N_c|y_{\psi f}^{\rm eff}|^2m_{\rm osc}}{8\pi}
+\left(1-\frac{4m_f^2}{m_{\rm osc}^2}\right)^{3/2}.
+\end{equation}
+This formula is not a reheating prediction until $\Lambda$, the
+flavour matrices, the post-waterfall mass history, and competing
+Higgs-portal channels are fixed.
 
 The energy-momentum tensor for each sector is
 $T_i^{\mu\nu}=2(\sqrt{-g})^{-1}\delta S_i/\delta g_{\mu\nu}$.
 We define the sector split explicitly: the $\Phi$--$\psi$ interaction
-potential and the $\psi^2\phi_{\rm SM}^2$ interaction are assigned to
+potential and the $\psi^2H^\dagger H$ portal are assigned to
 $T_\psi^{\mu\nu}$; the $\chi^2\Phi_{\rm res}^2$ interaction is
-assigned to $T_{\rm DM}^{\mu\nu}$; and the Yukawa interaction is
-assigned to $T_{\rm SM}^{\mu\nu}$. Under this convention the
-$\psi$ equation contains the Yukawa source $y_\psi\bar f f$, so
-$Q_\psi^\nu$ contains $y_\psi\bar f f\nabla^\nu\psi$ and
-$Q_{\rm SM}^\nu$ contains its negative. The current has mass
-dimension $3+2=5$, as required for $\nabla_\mu T^{\mu\nu}$.
+assigned to $T_{\rm DM}^{\mu\nu}$; and the dimension-five
+fermion-Higgs operator is assigned to $T_{\rm SM}^{\mu\nu}$.
+Under this convention $Q_\psi^\nu$ contains
+$\Lambda^{-1}\mathcal{O}_{\rm SM}\nabla^\nu\psi$, while
+$Q_{\rm SM}^\nu$ contains its negative. This current has mass
+dimension $4-1+2=5$, as required for
+$\nabla_\mu T^{\mu\nu}$.
 The individual $Q_i^\nu$ depend on this bookkeeping convention;
 the total tensor and its conservation law do not.
 With these explicit assignments the transfer vectors are:
 \begin{align}
 Q_\psi^\nu &= -\alpha m^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi
- + y_\psi \bar f f\,\nabla^\nu\psi
- - g_\psi \psi^2 \phi_{\rm SM} \nabla^\nu\phi_{\rm SM}, \\
+ + \frac{\mathcal{O}_{\rm SM}}{\Lambda}\nabla^\nu\psi
+ - \frac{g_{\psi H}}{2}\psi^2
+ \left[H^\dagger D^\nu H+(D^\nu H)^\dagger H\right], \\
 Q_\Phi^\nu &= +\alpha m^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi, \\
 Q_{\rm DM}^\nu &= -2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
 Q_{\rm DE}^\nu &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
-Q_{\rm SM}^\nu &= -y_\psi \bar f f\,\nabla^\nu\psi + g_\psi \psi^2 \phi_{\rm SM} \nabla^\nu\phi_{\rm SM}.
+Q_{\rm SM}^\nu &= -\frac{\mathcal{O}_{\rm SM}}{\Lambda}\nabla^\nu\psi
+ + \frac{g_{\psi H}}{2}\psi^2
+ \left[H^\dagger D^\nu H+(D^\nu H)^\dagger H\right].
 \end{align}
 The signs can be checked directly from the assigned interaction
 potentials. For
