@@ -1,0 +1,23 @@
+name: PTUM scientific regression tests
+
+on:
+  push:
+    branches:
+      - main
+      - ptum/scientific-consistency-fixes-2026-11-13
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  python-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install test dependencies
+        run: python -m pip install --upgrade pip numpy scipy pytest
+      - name: Run PTUM regression tests
+        run: python -m pytest -q tests/test_ptum_consistency.py
