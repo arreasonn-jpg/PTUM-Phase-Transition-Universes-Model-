@@ -215,8 +215,10 @@ def psi_excitation_potential(
     """V_psi(Phi,psi)-V_psi(Phi,psi_min(Phi)); non-negative by construction."""
     m_eff_sq = np.asarray(meff_sq_psi(Phi, params))
     psi_arr = np.asarray(psi)
+    psi_min_sq = psi_minimum_squared(Phi, params)
     raw_potential = 0.5 * m_eff_sq * psi_arr**2 + 0.25 * params.lambda_psi * psi_arr**4
-    return raw_potential - psi_minimum_potential(Phi, params)
+    shifted_double_well = 0.25 * params.lambda_psi * (psi_arr**2 - psi_min_sq)**2
+    return np.where(m_eff_sq < 0.0, shifted_double_well, raw_potential)
 
 
 def psi_excitation_energy(
@@ -351,8 +353,8 @@ def run_simulation(params: PTUMParameters,
     # Diagnostic split around the instantaneous broken-phase minimum:
     # move V_min(Phi) from the psi excitation sector into the Phi sector.
     V_psi_min_arr = np.asarray(psi_minimum_potential(Phi, params), dtype=float)
-    rho_psi_exc_arr = rho_psi_arr - V_psi_min_arr
-    p_psi_exc_arr = p_psi_arr + V_psi_min_arr
+    rho_psi_exc_arr = 0.5 * psi_dot**2 + psi_excitation_potential(Phi, psi, params)
+    p_psi_exc_arr = 0.5 * psi_dot**2 - psi_excitation_potential(Phi, psi, params)
     rho_phi_split_arr = rho_phi_arr + V_psi_min_arr
     p_phi_split_arr = p_phi_arr - V_psi_min_arr
     w_psi_exc_arr = np.divide(
