@@ -1753,6 +1753,45 @@ the tetrad and spin-connection contributions of the chiral
 fermions, remains a required derivation before the full SM
 sector can be called independently completed.
 
+For late-time excitation diagnostics it is useful to introduce a
+second, purely bookkeeping split around the instantaneous minimum
+of the real $\psi$ potential. Define
+\begin{equation}
+V_{\min}(\Phi)=
+-\frac{\left[\max(-m_{\rm eff}^2(\Phi),0)\right]^2}
+{4\lambda_\psi},
+\qquad
+V_{\rm exc}(\Phi,\psi)=V_\psi(\Phi,\psi)-V_{\min}(\Phi)\ge0.
+\end{equation}
+The shifted tensors are
+\begin{equation}
+T_{\psi,\rm exc}^{\mu\nu}
+=T_\psi^{\mu\nu}+g^{\mu\nu}V_{\min},
+\qquad
+T_{\Phi,\rm split}^{\mu\nu}
+=T_\Phi^{\mu\nu}-g^{\mu\nu}V_{\min}.
+\end{equation}
+Their sum is exactly the original $T_\psi^{\mu\nu}+T_\Phi^{\mu\nu}$;
+the field equations and total stress tensor are unchanged. The
+corresponding shifted transfer vector is
+\begin{equation}
+Q_{\psi,\rm exc}^{\nu}
+=Q_\psi^\nu+\nabla^\nu V_{\min},
+\qquad
+Q_{\Phi,\rm split}^{\nu}
+=Q_\Phi^\nu-\nabla^\nu V_{\min}.
+\end{equation}
+In homogeneous FRW,
+$Q_{\psi,\rm exc}^{0}=Q_\psi^0-\dot V_{\min}$ and
+$Q_{\Phi,\rm split}^{0}=-Q_{\psi,\rm exc}^{0}$ for the
+$\Phi$--$\psi$ exchange. This shifted source vanishes when
+$\psi$ follows the instantaneous minimum. The numerical code
+reports both the original Hilbert-sector sources and this
+excitation-energy bookkeeping split; only the latter is used for
+the cycle-averaged excitation equation of state. It must not be
+confused with a new interaction or with the full reheating energy
+partition.
+
 The individual $Q_i^\nu$ depend on this bookkeeping convention;
 the total tensor and its conservation law do not.
 With these explicit assignments the transfer vectors are:
