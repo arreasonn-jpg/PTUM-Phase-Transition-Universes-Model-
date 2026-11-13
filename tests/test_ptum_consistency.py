@@ -217,3 +217,18 @@ def test_mathieu_primary_resonance_matches_narrow_band_limit():
     # For |q| << 1, the primary-band exponent at A=1 is mu_z ~ |q|/2.
     assert result["mu_z"] == pytest.approx(abs(q) / 2.0, rel=2.0e-3)
     assert result["det_monodromy"] == pytest.approx(1.0, abs=1.0e-8)
+
+
+
+def test_damping_ratio_uses_local_threshold_hubble_scale():
+    p = PTUMParameters(
+        V0=1.0e64,
+        lambda_phi=0.02,
+        Phi_c=1.4 * M_PL,
+        m_psi=1.0e13,
+        E_th=1.0e16,
+    )
+    expected_hc = np.sqrt(veff_phi(p.Phi_c, p) / (3.0 * M_PL**2))
+    assert p.H_threshold_potential == pytest.approx(expected_hc)
+    assert p.damping_ratio == pytest.approx(3.0 * expected_hc / (2.0 * p.mu))
+    assert p.damping_ratio < p.damping_ratio_plateau
