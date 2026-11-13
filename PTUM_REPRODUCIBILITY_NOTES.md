@@ -3,7 +3,7 @@
 ## Public repository
 
 ```text
-https://github.com/ErdemEsa/ptum-cosmology.git
+https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-
 ```
 
 ## Current public code status
@@ -49,3 +49,18 @@ verifiable accessible archive/repository location.
 ## Claim boundary
 
 The CLASS implementation side is now publicly inspectable through the patch. The full Bayesian pipeline should not yet be described as completely end-to-end public until the production Cobaya configuration files and MCMC chains are released.
+
+
+## Current correction branches
+
+- Scientific consistency and simulation corrections: PR #2
+  https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/pull/2
+- Dependent claims, EFT, residual-potential and linear-mode corrections: PR #3
+  https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/pull/3
+
+The latest completed test step on the PR #2 branch passed 35 tests and
+the LaTeX build passed; the 100-trajectory scan was still running at
+the last check. PR #3 currently contains 46 tests, but its full CI run
+is pending because it is based on the PR #2 branch. Do not describe
+either branch as fully CI-green until the 100-trajectory artifact and
+the PR #3 suite are completed and inspected.
