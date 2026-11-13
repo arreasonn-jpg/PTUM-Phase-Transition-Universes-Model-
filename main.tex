@@ -3700,7 +3700,8 @@ limit \(\mu_z\simeq |q|/2\) near \(A_k=1\).
 
 The same module now provides a linear expanding-background mode
 integrator, \texttt{integrate\_expanding\_mode}, which accepts sampled
-histories \(a(t)\), \(H(t)\), and \(\Phi_{\rm res}(t)\) and solves
+histories \(a(t)\), \(H(t)\), and \(\Phi_{\rm res}(t)\), checks
+their FRW consistency \(H=\dot a/a\) within a declared tolerance, and solves
 \[
 \ddot\chi_k+3H\dot\chi_k+
 \left[k^2/a^2+m_\chi^2+
