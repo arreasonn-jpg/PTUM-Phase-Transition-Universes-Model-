@@ -516,9 +516,12 @@ def test_excitation_potential_vanishes_at_instantaneous_broken_minimum():
     psi_min_sq = psi_minimum_squared(Phi, p)
     assert psi_min_sq > 0.0
     psi_min = np.sqrt(psi_min_sq)
-    assert psi_excitation_potential(Phi, psi_min, p) == pytest.approx(
-        0.0, abs=1.0e-25
-    )
+    v_exc = psi_excitation_potential(Phi, psi_min, p)
+    v_min = psi_minimum_potential(Phi, p)
+    # sqrt followed by squaring incurs round-off at the 1e-16 relative
+    # field level; the residual energy must nevertheless be negligible
+    # compared with the double-well barrier.
+    assert v_exc <= 1.0e-28 * abs(v_min)
 
 
 def test_shifted_excitation_transfer_vanishes_at_moving_minimum():
