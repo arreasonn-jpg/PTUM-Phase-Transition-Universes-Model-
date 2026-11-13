@@ -165,7 +165,11 @@ def compute_observables(
 
     n_end = float(sol.t_events[0][0])
     x_end_hubble_flow = float(sol.y[0, -1])
+    X_end = float(sol.y[1, -1])
     epsilon_v_end = epsilon_potential(x_end_hubble_flow, lambda_phi)
+    V_end_over_V0 = float(potential_ratio(x_end_hubble_flow, lambda_phi))
+    rho_end_over_V0 = V_end_over_V0 / (1.0 - X_end**2)
+    kinetic_end_over_V0 = rho_end_over_V0 * X_end**2
     # Compare the potential slow-roll end estimate with the exact epsilon_H=1
     # event. This also quantifies when an older Phi_c=x_end_SR match crosses.
     n_old_threshold = brentq(
@@ -195,6 +199,10 @@ def compute_observables(
         "x_end_slow_roll": x_end_sr,
         "x_end_hubble_flow": x_end_hubble_flow,
         "epsilon_V_at_hubble_end": float(epsilon_v_end),
+        "X_end": float(X_end),
+        "V_end_over_V0": float(V_end_over_V0),
+        "kinetic_end_over_V0": float(kinetic_end_over_V0),
+        "rho_end_over_V0": float(rho_end_over_V0),
         "old_potential_end_threshold_lead_efolds": float(old_threshold_lead_efolds),
         "n_end": n_end,
         "x_star": float(x_star),
