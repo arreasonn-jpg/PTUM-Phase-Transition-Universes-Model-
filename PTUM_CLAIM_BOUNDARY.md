@@ -41,12 +41,15 @@ m_{\rm eff}^2(\Phi)=m_\psi^2\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right),
 Thus the proxy is stable for $|\Phi|>\Phi_c$ and tachyonic for
 $|\Phi|<\Phi_c$. This sign is selected to match the stated chronology:
 the positive-$\Phi$ slow-roll solution moves downward from
-$\Phi_*\simeq10.5M_{\rm Pl}$ to $\Phi_{\rm end}\simeq1.387M_{\rm Pl}$,
+$\Phi_*\simeq10.715M_{\rm Pl}$ to the exact $\epsilon_H=1$ endpoint
+$\Phi_{\rm end}\simeq0.986228M_{\rm Pl}$,
 so the waterfall instability turns on as the field crosses below
 $\Phi_c\simeq\Phi_{\rm end}$. The associated interaction potential is
 $U_{\Phi\psi}=+\tfrac12(\alpha m_\psi^2/E_{\rm th}^2)\Phi^2\psi^2$;
 the scalar equation and sector transfer-current signs have been
 rederived accordingly.
+
+The threshold-matched scan now sets $\Phi_c$ from the exact Hubble-flow endpoint, not the older potential slow-roll estimate $\Phi_{\epsilon_V=1}\simeq1.387M_{\rm Pl}$. For $\lambda_\Phi=0.02$, the exact endpoint is $0.986228M_{\rm Pl}$ and the updated local damping ratio is about $3.48$.
 
 The old 36-point scan used the opposite sign and is historical only.
 The revised code, manuscript, and tests must pass a fresh CI scan
