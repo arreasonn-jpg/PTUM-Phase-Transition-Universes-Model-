@@ -520,3 +520,19 @@ $Q_{\psi,\rm exc}^0=Q_\psi^0-\dot V_{\min}$ and
 $Q_{\Phi,\rm split}^0=-Q_{\psi,\rm exc}^0$; it vanishes at the instantaneous moving minimum. The original Hilbert-sector source $Q_\psi^0$ remains available separately.
 
 The cycle-averaged $w_\psi$ diagnostic now uses the positive excitation energy, with the raw unshifted average retained separately. The regression suite covers positivity, zero excitation potential at the instantaneous minimum up to floating-point precision, unbroken-phase behavior, conservation of the split totals, vanishing shifted transfer at the moving minimum, and NaN handling for undefined raw w. This is a diagnostic bookkeeping improvement, not a calculation of reheating or a microscopic radiation-fluid realization. It applies to the pre-reheating two-field truncation; once the Higgs background is active, the portal contribution must enter the instantaneous minimum and the shifted split must be rederived.
+
+
+
+## 33. Post-inflation trajectory matching and fail-closed scan validation
+
+A further initial-condition audit found that the homogeneous waterfall scan had been assigning $\dot\Phi$ from the potential slow-roll expression at displaced post-threshold field values. This is inconsistent with the exact inflation calculation, which terminates at $\epsilon_H=1$ and is already outside the potential slow-roll regime at the endpoint.
+
+The inflation module now provides `state_at_field_value`. It starts from the calibrated 60-e-fold attractor and integrates the canonical single-field FRW equations through the exact $\epsilon_H=1$ endpoint until each requested post-threshold field value is reached. It returns $N$, $x$, $X$, $H$, $\dot\Phi$, $\rho$ and $\epsilon_H$. The two-field scan now initializes $\dot\Phi$ from this trajectory separately for each threshold offset and records the velocity source in its metadata. The potential-slow-roll initializer remains available only as an explicit fallback for exploratory calls.
+
+This is a better-matched initial state, but it is still a staged approximation: the single-field trajectory is integrated with $\psi=0$ up to the selected post-threshold offset, and the seeded two-field evolution begins there. It does not yet resolve the coupled threshold crossing, quantum fluctuations, or backreaction during the onset.
+
+The scan runner now validates that all 100 expected trajectories are present and that every integration succeeded. It writes the strict-JSON diagnostic summary before enforcing this gate, and CI attempts to upload the artifact even if validation fails. A regression test checks the exact endpoint ($\epsilon_H=1$, $X=-1/\sqrt3$), the post-end field trajectory, and the explicit velocity override. Another test verifies that incomplete or failed scans are rejected. Zero-$\psi$ entries are explicitly identified as exact classical invariant controls, not quantum-vacuum-seeded trajectories.
+
+The simulation module's top-level equation documentation was also aligned with the revised hybrid-waterfall mass and interaction signs. The conservation subsection in the manuscript no longer assumes $\Delta t\ll H^{-1}$ or that all transfer terms vanish immediately after the transition; it now distinguishes the microscopic field sectors from the later effective four-fluid regrouping and states that spatial transfer components need not vanish in generic inhomogeneous configurations.
+
+The updated regression suite and 100-trajectory scan have not yet been confirmed by a completed GitHub Actions run. These changes therefore remain pending CI verification.
