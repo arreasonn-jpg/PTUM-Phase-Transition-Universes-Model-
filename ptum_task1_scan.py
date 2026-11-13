@@ -78,6 +78,10 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
             )
             phi_dot_init_by_offset[offset] = state["Phi_dot"]
 
+        print(
+            f"[scan] starting {scenario_name}: {len(psi_init_range) * len(psi_dot_init_range) * len(phi_offset_range)} trajectories",
+            flush=True,
+        )
         rows = run_parameter_scan(
             params,
             psi_init_range,
@@ -86,7 +90,10 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
             t_max=t_max,
             n_points=n_points,
             phi_dot_init_by_offset=phi_dot_init_by_offset,
+            progress_interval=10,
+            progress_label=scenario_name,
         )
+        print(f"[scan] finished {scenario_name}", flush=True)
         for row in rows:
             row["scan_metadata"] = {
                 "scenario": scenario_name,
