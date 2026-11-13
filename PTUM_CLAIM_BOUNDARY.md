@@ -32,7 +32,7 @@ It should not be framed as positive evidence that current data prefer PTUM.
 
 ## Current Task 1 status
 
-**The quartic-dominated regime is not demonstrated by the completed low-scale control scan.** GitHub Actions run 43390565834 completed all 18 low-scale ($V_0=10^{56}\,\mathrm{GeV}^4$) integrations successfully, but classified 16 trajectories as non-quartic and two zero-seed trajectories as having insufficient oscillation data. No trajectory met the combined quartic criteria ($Q_{\rm final}>5$, $w_{\rm final}\simeq1/3$, and virial ratio near one). This earlier 18-point scan was an underdamped control and did **not** test the threshold-matched high-scale benchmark ($V_0\sim10^{64}\,\mathrm{GeV}^4$).
+**The quartic-dominated regime is not demonstrated by the completed low-scale control scan.** GitHub Actions run 43390565834 completed all 18 low-scale ($V_0=10^{56}\,\mathrm{GeV}^4$) integrations successfully, but classified 16 trajectories as non-quartic and two zero-seed trajectories as having insufficient oscillation data. No trajectory met the combined quartic criteria ($Q_{\rm final}>2$, $w_{\rm final}\simeq1/3$, and virial ratio near one). This earlier 18-point scan was an underdamped control and did **not** test the threshold-matched high-scale benchmark ($V_0\sim10^{64}\,\mathrm{GeV}^4$).
 
 The two exactly zero-seed solutions remain at $\psi=0$ in the deterministic homogeneous equations; this is an invariant solution, not evidence that quantum fluctuations are absent physically. A fluctuation-seeded or inhomogeneous treatment is required to model tachyonic growth from vacuum fluctuations.
 
