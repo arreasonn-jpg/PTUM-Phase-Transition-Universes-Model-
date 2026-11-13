@@ -238,3 +238,17 @@ The previous claim $H_*\Delta t\sim10^{-3}$ and negligible expansion during disc
 A coherent homogeneous scalar may have low coarse-grained matter entropy, but this does not determine gravitational entropy or explain the low-entropy initial condition of the Universe. The manuscript now explicitly withdraws any claim that PTUM replaces the Past Hypothesis or derives the thermodynamic arrow of time.
 
 Finally, the former list of energy-partition ratios was not produced by the homogeneous simulation or the CLASS perturbation code. It has been reframed as phenomenological/observational target quantities: $\Delta N_{\rm fluid}$, the observed dark-matter abundance, the present dark-energy density, and the SM radiation fraction. The paper now states that their microscopic production and partition have not been computed self-consistently.
+
+
+## 14. Gauge invariance of the reheating fermion coupling
+
+The schematic renormalizable operator $-y_\psi\psi\bar f f$ is gauge invariant for a gauge-singlet Dirac field or a vector-like Dirac representation with matching left/right gauge representations. It is not by itself a gauge-invariant Yukawa interaction for the chiral Standard Model fermions. The manuscript now states this limitation and displays the schematic gauge-invariant dimension-five alternatives
+\[
+-\frac{\psi}{\Lambda}
+\left(\bar Q_L C_d H d_R+
+\bar Q_L C_u\widetilde H u_R+
+\bar L_L C_e H e_R\right)+\mathrm{h.c.}
+\]
+with the appropriate flavour matrices and Higgs doublet. After electroweak symmetry breaking these generate effective couplings proportional to $C_f v/(\sqrt2\Lambda)$. The transfer source and decay widths must be recomputed for this EFT realization. The shorthand $\phi_{\rm SM}^2$ in the scalar reheating operator must likewise denote a gauge-invariant Higgs bilinear such as $H^\dagger H$, with an explicit normalization convention.
+
+This does not complete the SM action or Hilbert tensor. It prevents the current generic Dirac bookkeeping formula from being misrepresented as a full chiral-SM derivation.
