@@ -699,14 +699,15 @@ neglected, the zero-field solution remains an exact classical solution
 even after the effective mass changes sign. The instability is then
 carried by Fourier fluctuations rather than represented by an arbitrary
 homogeneous classical seed. Linearizing about this background gives
-\begin{equation}
+\begin{align}
 \delta\ddot\psi_k+3H\delta\dot\psi_k+
-\left(\frac{k^2}{a^2}+m_{\rm eff}^2(\Phi(t))\right)\delta\psi_k=0,
-\qquad
-m_{\rm eff}^2(\Phi)=m_\psi^2
+\left(\frac{k^2}{a^2}+m_{\rm eff}^2(\Phi(t))\right)\delta\psi_k
+&=0,\nonumber\\
+m_{\rm eff}^2(\Phi)
+&=m_\psi^2
 \left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right).
 \label{eq:waterfall_mode_eom}
-\end{equation}
+\end{align}
 With the canonical variable \(X_k=a^{3/2}\delta\psi_k\), the equation is
 \begin{equation}
 \ddot X_k+\Omega_k^2 X_k=0,\qquad
@@ -723,10 +724,12 @@ for which \(\Omega_{k,i}^2>0\) and the first-order adiabaticity measure
 \(|\dot\Omega_{k,i}/\Omega_{k,i}^2|\) is below the chosen numerical
 acceptance threshold. The first-order WKB vacuum is
 \begin{equation}
-X_k(t_i)=\frac{1}{\sqrt{2\Omega_{k,i}}},\qquad
-\dot X_k(t_i)=
+\begin{aligned}
+X_k(t_i)&=\frac{1}{\sqrt{2\Omega_{k,i}}},\\
+\dot X_k(t_i)&=
 \left(-i\Omega_{k,i}
--\frac{\dot\Omega_{k,i}}{2\Omega_{k,i}}\right)X_k(t_i),
+-\frac{\dot\Omega_{k,i}}{2\Omega_{k,i}}\right)X_k(t_i).
+\end{aligned}
 \label{eq:waterfall_wkb_initial}
 \end{equation}
 with canonical Wronskian
@@ -1808,11 +1811,12 @@ With \(\gamma^{ab}=\tfrac12[\gamma^a,\gamma^b]\), the spinor
 derivative contains the torsion-free spin connection and the
 appropriate gauge connection,
 \begin{equation}
-\mathscr D_\mu f =
-\left(\partial_\mu-\frac14\omega_{\mu ab}\gamma^{ab}
--i g_s G_\mu^A T^A
--i g W_\mu^I t^I
--i g'Y_f B_\mu\right)f ,
+\begin{split}
+\mathscr D_\mu f
+=\Bigl(&\partial_\mu-\frac14\omega_{\mu ab}\gamma^{ab}
+-i g_s G_\mu^A T^A\\
+&-i g W_\mu^I t^I-i g'Y_f B_\mu\Bigr)f,
+\end{split}
 \label{eq:sm_spinor_derivative}
 \end{equation}
 where \(t^I=\tau^I/2\) on weak doublets and vanishes on singlets.
@@ -1849,9 +1853,8 @@ flavour matrices. The curved-spacetime SM matter Lagrangian is
 \mathcal L_{\rm SM}^{(0)}={}&
 -\frac14G_{\mu\nu}^AG_A^{\mu\nu}
 -\frac14W_{\mu\nu}^IW_I^{\mu\nu}
--\frac14B_{\mu\nu}B^{\mu\nu}
--(D_\mu H)^\dagger D^\mu H
--V_H(H)\nonumber\\
+-\frac14B_{\mu\nu}B^{\mu\nu}\nonumber\\
+&-(D_\mu H)^\dagger D^\mu H-V_H(H)\nonumber\\
 &+\frac{i}{2}\sum_{\text{generations},\,f}
 \bar f\gamma^\mu\overleftrightarrow{\mathscr D}_\mu f
 -U_{{\rm SM},Y}.
@@ -1867,16 +1870,15 @@ fermion kinetic term compatible with the \((-+++)\) metric.
 
 The complete classical matter action used to define the transfer
 bookkeeping is therefore
-\begin{equation}
-S_{\rm matter}=\int d^4x\sqrt{-g}\,
+\begin{align}
+S_{\rm matter}&=\int d^4x\sqrt{-g}\,
 \left[
 \mathcal L_{\rm PTUM}^{(0)}
 +\mathcal L_{\rm SM}^{(0)}
 -U_Y-U_{\psi H}
-\right],
-\qquad
-S_{\rm tot}=S_{\rm EH}+S_{\rm matter},
-\end{equation}
+\right],\nonumber\\
+S_{\rm tot}&=S_{\rm EH}+S_{\rm matter}.
+\end{align}
 where
 \(S_{\rm EH}=\tfrac12M_{\rm Pl}^2\int d^4x\sqrt{-g}\,R\),
 \(U_Y=\psi\mathcal O_{\rm SM}/\Lambda\), and
@@ -1936,6 +1938,8 @@ T_{f,\mathrm{kin}}^{\mu\nu}={}&
 -\frac{i}{4}\sum_{\text{generations},\,f}
 \left[
 \bar f\gamma^\mu\overleftrightarrow{\mathscr D}^{\,\nu}f
+\nonumber\\
+&\hspace{2.0em}
 +\bar f\gamma^\nu\overleftrightarrow{\mathscr D}^{\,\mu}f
 \right],\nonumber\\
 \mathcal K_f={}&
@@ -2031,11 +2035,11 @@ dimension $4-1+2=5$, as required for
 $\nabla_\mu T^{\mu\nu}$.
 For clarity, define
 \[
-U_{\Phi\psi}=\frac{\alpha m_\psi^2}{2E_{\rm th}^2}\Phi^2\psi^2,
-\qquad
-U_{\psi H}=\frac12g_{\psi H}\psi^2H^\dagger H,
-\qquad
-U_Y=\frac{\psi}{\Lambda}\mathcal O_{\rm SM},
+\begin{aligned}
+U_{\Phi\psi}&=\frac{\alpha m_\psi^2}{2E_{\rm th}^2}\Phi^2\psi^2,\\
+U_{\psi H}&=\frac12g_{\psi H}\psi^2H^\dagger H,\\
+U_Y&=\frac{\psi}{\Lambda}\mathcal O_{\rm SM}.
+\end{aligned}
 \]
 and $V_\psi^{(0)}=-\tfrac12m_\psi^2\psi^2+
 \tfrac14\lambda_\psi\psi^4$. The scalar Hilbert tensors under
@@ -2073,13 +2077,12 @@ remain outstanding.
 For late-time excitation diagnostics it is useful to introduce a
 second, purely bookkeeping split around the instantaneous minimum
 of the real $\psi$ potential. Define
-\begin{equation}
-V_{\min}(\Phi)=
+\begin{align}
+V_{\min}(\Phi)&=
 -\frac{\left[\max(-m_{\rm eff}^2(\Phi),0)\right]^2}
-{4\lambda_\psi},
-\qquad
-V_{\rm exc}(\Phi,\psi)=V_\psi(\Phi,\psi)-V_{\min}(\Phi)\ge0.
-\end{equation}
+{4\lambda_\psi},\nonumber\\
+V_{\rm exc}(\Phi,\psi)&=V_\psi(\Phi,\psi)-V_{\min}(\Phi)\ge0.
+\end{align}
 The shifted tensors are
 \begin{equation}
 T_{\psi,\rm exc}^{\mu\nu}
@@ -2118,14 +2121,14 @@ the total tensor and its conservation law do not.
 With these explicit assignments the transfer vectors are:
 \begin{align}
 Q_\psi^\nu &= -\alpha m_\psi^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi
- + \frac{\mathcal{O}_{\rm SM}}{\Lambda}\nabla^\nu\psi
- - \frac{g_{\psi H}}{2}\psi^2
+ + \frac{\mathcal{O}_{\rm SM}}{\Lambda}\nabla^\nu\psi\nonumber\\
+&\quad - \frac{g_{\psi H}}{2}\psi^2
  \left[H^\dagger D^\nu H+(D^\nu H)^\dagger H\right], \\
 Q_\Phi^\nu &= +\alpha m_\psi^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi, \\
 Q_{\rm DM}^\nu &= -2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
 Q_{\rm DE}^\nu &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
-Q_{\rm SM}^\nu &= -\frac{\mathcal{O}_{\rm SM}}{\Lambda}\nabla^\nu\psi
- + \frac{g_{\psi H}}{2}\psi^2
+Q_{\rm SM}^\nu &= -\frac{\mathcal{O}_{\rm SM}}{\Lambda}\nabla^\nu\psi\nonumber\\
+&\quad + \frac{g_{\psi H}}{2}\psi^2
  \left[H^\dagger D^\nu H+(D^\nu H)^\dagger H\right].
 \end{align}
 The signs can be checked directly from the assigned interaction
@@ -2173,14 +2176,13 @@ Q_{{\rm SM},Y}^{\nu}
 For the scalar reheating interaction
 \(U_{\rm rh}=\tfrac12g_\psi\psi^2\phi_{\rm SM}^2\), assigned to
 the \(\psi\) tensor, the external-field derivative gives
-\begin{equation}
+\begin{align}
 Q_{\psi,{\rm rh}}^\nu
-=-\frac{\partial U_{\rm rh}}{\partial\phi_{\rm SM}}
-\nabla^\nu\phi_{\rm SM}
-=-g_\psi\psi^2\phi_{\rm SM}\nabla^\nu\phi_{\rm SM},
-\qquad
+&=-\frac{\partial U_{\rm rh}}{\partial\phi_{\rm SM}}
+\nabla^\nu\phi_{\rm SM}\nonumber\\
+&=-g_\psi\psi^2\phi_{\rm SM}\nabla^\nu\phi_{\rm SM},\qquad
 Q_{{\rm SM},{\rm rh}}^\nu=-Q_{\psi,{\rm rh}}^\nu.
-\end{equation}
+\end{align}
 For dimensionless \(y_\psi\) and \(g_\psi\), both currents have
 mass dimension five, as required. These pairwise cancellations
 establish the interaction-current bookkeeping algebraically. They
@@ -2196,8 +2198,7 @@ Q_{\psi,Y}^0&=-\frac{\mathcal O_{\rm SM}}{\Lambda}\dot\psi,
 Q_{{\rm SM},Y}^0&=+\frac{\mathcal O_{\rm SM}}{\Lambda}\dot\psi,
 \\
 Q_{\psi,H}^0&=+\frac{g_{\psi H}}{2}\psi^2
-\frac{d}{dt}(H^\dagger H),
-&
+\frac{d}{dt}(H^\dagger H),\nonumber\\
 Q_{{\rm SM},H}^0&=-\frac{g_{\psi H}}{2}\psi^2
 \frac{d}{dt}(H^\dagger H).
 \end{align}
@@ -2345,14 +2346,18 @@ s_{\rm rh}=\frac{2\pi^2}{45}g_{*s}T_{\rm rh}^3,
 \simeq\rho_{\rm end}.
 \end{equation}
 For $g_*=100$ this gives
-\begin{equation}
-T_{\rm rh}^{\rm ideal}\simeq
+\begin{align}
+T_{\rm rh}^{\rm ideal}
+&\simeq
 \left(\frac{30\rho_{\rm end}}{\pi^2g_*}\right)^{1/4}
-\simeq1.72\times10^{15}\,\mathrm{GeV}
+\nonumber\\
+&\simeq1.72\times10^{15}\,\mathrm{GeV}
 \left(\frac{V_0^{1/4}}{10^{16}\,\mathrm{GeV}}\right)
+\nonumber\\
+&\quad\times
 \left(\frac{g_*}{100}\right)^{-1/4}
 \left(\frac{\rho_{\rm end}}{0.02889739V_0}\right)^{1/4}.
-\end{equation}
+\end{align}
 If only the potential contribution $V(\Phi_c)$ were converted,
 the corresponding idealized estimate would be
 $T_{\rm rh}^{(V)}\simeq1.56\times10^{15}\,\mathrm{GeV}$ at the same
@@ -3748,13 +3753,15 @@ the mode equation becomes a Mathieu equation with
 \qquad z=\omega_{\rm res}t,
 \end{equation}
 with
-\begin{equation}
-q = -\frac{g_{\rm DM}\mathcal{A}_{\rm res}^2}{2\omega_{\rm res}^2},
-\qquad
-A_k = \frac{k^2/a^2+m_\chi^2+g_{\rm DM}\mathcal{A}_{\rm res}^2
--\frac{3}{2}\dot H-\frac{9}{4}H^2}
-{\omega_{\rm res}^2}.
-\end{equation}
+\begin{align}
+q&=-\frac{g_{\rm DM}\mathcal{A}_{\rm res}^2}
+{2\omega_{\rm res}^2},\nonumber\\
+A_k&=\frac{1}{\omega_{\rm res}^2}
+\left[
+\frac{k^2}{a^2}+m_\chi^2+g_{\rm DM}\mathcal{A}_{\rm res}^2
+-\frac{3}{2}\dot H-\frac{9}{4}H^2
+\right].
+\end{align}
 The $\chi$ field experiences parametric resonance when the Mathieu
 parameters place the mode in an instability band. The narrow primary
 band is centered near $A_k\simeq1$. In the short-time limit where the
@@ -3826,20 +3833,22 @@ their FRW consistency \(H=\dot a/a\) within a declared tolerance, and solves
 It initializes the canonical mode \(X_k=a^{3/2}\chi_k\) with a
 first-order adiabatic vacuum only when
 \[
-\Omega_k^2=k^2/a^2+m_\chi^2+
+\begin{aligned}
+\Omega_k^2&=k^2/a^2+m_\chi^2+
 2g_{\rm DM}\Phi_{\rm res}^2
--\frac32\dot H-\frac94H^2>0,
-\qquad
+-\frac32\dot H-\frac94H^2>0,\\
 \left|\dot\Omega_k/\Omega_k^2\right|_{t_0}
-\leq \varepsilon_{\rm ad}.
+&\leq \varepsilon_{\rm ad}.
+\end{aligned}
 \]
 The initial data are
 \[
-X_k(t_0)=\frac{1}{\sqrt{2\Omega_{k,0}}},
-\qquad
-\dot X_k(t_0)=
+\begin{aligned}
+X_k(t_0)&=\frac{1}{\sqrt{2\Omega_{k,0}}},\\
+\dot X_k(t_0)&=
 \left(-i\Omega_{k,0}
 -\frac{\dot\Omega_{k,0}}{2\Omega_{k,0}}\right)X_k(t_0).
+\end{aligned}
 \]
 Only the initial time must admit a real adiabatic vacuum. The
 integrator can evolve through intermediate intervals with
@@ -3859,12 +3868,13 @@ rejection of a deliberately non-adiabatic initial state.
 For a strictly increasing finite momentum grid, the module also
 evaluates the finite-band estimate
 \[
+\begin{aligned}
 n_{\chi,\,\rm com}^{[k_{\min},k_{\max}]}
-=\frac{1}{2\pi^2}
-\int_{k_{\min}}^{k_{\max}}dk\,k^2n_k,
-\qquad
+&=\frac{1}{2\pi^2}
+\int_{k_{\min}}^{k_{\max}}dk\,k^2n_k,\\
 n_{\chi,\,\rm phys}^{[k_{\min},k_{\max}]}
-=\frac{n_{\chi,\,\rm com}^{[k_{\min},k_{\max}]}}{a_f^3},
+&=\frac{n_{\chi,\,\rm com}^{[k_{\min},k_{\max}]}}{a_f^3}.
+\end{aligned}
 \]
 using trapezoidal quadrature. The implementation deliberately does
 not extrapolate the infrared or ultraviolet tails. Momentum-range
@@ -3883,10 +3893,11 @@ The comoving number density must be obtained from the momentum
 distribution rather than from a universal \(\omega_{\rm res}^3\)
 prefactor:
 \begin{equation}
+\begin{aligned}
 n_\chi^{\rm com}(t)
-=\frac{1}{2\pi^2}\int_0^\infty dk\,k^2 n_k(t),
-\qquad
-n_\chi^{\rm phys}(t)=\frac{n_\chi^{\rm com}(t)}{a^3(t)}.
+&=\frac{1}{2\pi^2}\int_0^\infty dk\,k^2 n_k(t),\\
+n_\chi^{\rm phys}(t)&=\frac{n_\chi^{\rm com}(t)}{a^3(t)}.
+\end{aligned}
 \end{equation}
 The present abundance then requires the post-production expansion
 and entropy history. No numerical \(\Omega_\chi h^2\) follows from
