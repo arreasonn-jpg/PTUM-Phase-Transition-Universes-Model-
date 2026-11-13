@@ -647,3 +647,57 @@ def test_delta_neff_radiation_fraction_rejects_invalid_inputs():
         radiation_fractions(0.1, 0.0)
     with pytest.raises(ValueError):
         radiation_fractions(float("nan"))
+
+
+
+def test_residual_dark_energy_potential_derivatives_match_finite_differences():
+    from ptum_dark_energy import (
+        M_PL_GEV,
+        residual_potential,
+        residual_potential_prime,
+        residual_potential_second,
+    )
+
+    args = {
+        "W0": 1.0e40,
+        "kappa": 0.4,
+        "lambda_res": 0.2,
+        "Lambda_np4": 1.0e39,
+        "S_E": 3.0,
+        "f_res": 0.8 * M_PL_GEV,
+    }
+    phi = 0.7 * M_PL_GEV
+    h = 1.0e-4 * M_PL_GEV
+    d1_fd = (
+        residual_potential(phi + h, **args)
+        - residual_potential(phi - h, **args)
+    ) / (2.0 * h)
+    d2_fd = (
+        residual_potential_prime(phi + h, **args)
+        - residual_potential_prime(phi - h, **args)
+    ) / (2.0 * h)
+    assert residual_potential_prime(phi, **args) == pytest.approx(d1_fd, rel=2.0e-7)
+    assert residual_potential_second(phi, **args) == pytest.approx(d2_fd, rel=2.0e-7)
+
+
+def test_residual_dark_energy_potential_has_dimensionally_consistent_origin():
+    from ptum_dark_energy import residual_potential, residual_potential_prime
+
+    value = residual_potential(
+        0.0, W0=1.0e40, kappa=0.4, lambda_res=0.2,
+        Lambda_np4=1.0e39, S_E=3.0, f_res=1.0e18,
+    )
+    assert value == pytest.approx(1.0e39 * np.exp(-3.0))
+    assert residual_potential_prime(
+        0.0, W0=1.0e40, kappa=0.4, lambda_res=0.2,
+        Lambda_np4=1.0e39, S_E=3.0, f_res=1.0e18,
+    ) == pytest.approx(0.0, abs=1.0e-30)
+
+
+def test_residual_dark_energy_potential_rejects_nonphysical_scales():
+    from ptum_dark_energy import residual_potential
+
+    with pytest.raises(ValueError):
+        residual_potential(1.0, 1.0, -0.1, 0.2)
+    with pytest.raises(ValueError):
+        residual_potential(1.0, 1.0, 0.1, 0.2, f_res=0.0)
