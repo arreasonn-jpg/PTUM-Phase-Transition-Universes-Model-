@@ -535,10 +535,12 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     Q = result['Q']
     virial = result['virial_ratio']
     
-    # Use last few oscillation averages
-    n_tail = max(10, len(w_avg) * 10)
-    q_tail = Q[-n_tail:] if len(Q) else np.array([])
-    v_tail = virial[-n_tail:] if len(virial) else np.array([])
+    # Classify the late-time regime, not the whole trajectory.
+    # Q and virial are sampled diagnostics; use the final 20% of the run.
+    tail_start_q = int(0.8 * len(Q))
+    tail_start_v = int(0.8 * len(virial))
+    q_tail = Q[tail_start_q:] if len(Q) else np.array([])
+    v_tail = virial[tail_start_v:] if len(virial) else np.array([])
     q_valid = q_tail[np.isfinite(q_tail)]
     v_valid = v_tail[np.isfinite(v_tail)]
     w_final = float(np.mean(w_avg[-3:])) if len(w_avg) >= 3 else (
