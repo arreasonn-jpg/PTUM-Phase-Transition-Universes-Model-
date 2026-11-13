@@ -319,3 +319,14 @@ R_2=\frac{\langle K\rangle}
 V_2=\frac12m_{\rm eff}^2(\Phi)\psi^2,
 \]
 and is defined only on complete half-cycles where $m_{\rm eff}^2>0$. A harmonic oscillator with slowly varying positive mass approaches $R_2=1$. The classifier now requires $|w|<0.1$, $Q<1$, and $|R_2-1|<0.2$ before assigning `quadratic_candidate`. Two new tests check the harmonic limit and reject tachyonic intervals; another verifies the classifier gate. The updated suite contains 24 tests. GitHub Actions run 43392067477 has completed the Python regression step successfully; the scan and LaTeX jobs were still running when this note was updated.
+
+
+## 20. Latest regression and reclassified two-scale scan
+
+GitHub Actions run 43392067477 completed **24 tests successfully**. Both 18-point scans also completed all 36 integrations with zero numerical integration failures. After adding the independent positive-mass quadratic virial diagnostic, the final classifications are:
+- High-scale threshold-matched benchmark: 16 non-quartic, two insufficient-oscillation-data; no quartic or quadratic-candidate trajectories.
+- Low-scale underdamped control: 16 non-quartic, two insufficient-oscillation-data; no quartic or quadratic-candidate trajectories.
+
+In the measurable high-scale cases, $R_2=\langle K\rangle/\langle V_2\rangle$ is approximately 0.75--0.79, outside the required $|R_2-1|<0.2$ quadratic-candidate window. The quartic ratio $Q/2$ is many orders of magnitude below one. The prior high-scale quadratic-candidate label is withdrawn under the stricter criterion.
+
+The newest scan artifact (run 43392067477, artifact 14021905273) was downloaded and parsed independently. It contains 36 strict-JSON rows with both scenario names and damping metadata. The Python and scan jobs are green. The LaTeX job for this run was still running when this section was written. The earlier completed LaTeX run on the same manuscript before the newest diagnostic-only code change produced a 38-page PDF.
