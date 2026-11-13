@@ -59,6 +59,7 @@ PTUM does not claim to be:
 
 - a UV-complete derivation of the pre-discharge background,
 - a complete gauge-invariant chiral Standard Model reheating interaction or full SM Hilbert-tensor derivation; the displayed Dirac coupling is generic EFT shorthand pending specification,
+- a dynamically demonstrated dormant-to-tachyonic trigger at the end of inflation; with the current $m_{\\rm eff}^2$ sign and monotonic slow-roll potential, the matched trajectory is tachyonic before threshold crossing and stabilizes afterward,
 - a solution of the cosmological-constant problem,
 - a unique microscopic theory of the dark sector,
 - a replacement for LambdaCDM already favored by current data,
