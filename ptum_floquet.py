@@ -203,9 +203,12 @@ def integrate_expanding_mode(
             or background_consistency_tolerance <= 0.0):
         raise ValueError("solver tolerances and consistency thresholds must be positive")
 
-    a_spline = CubicSpline(t_arr, a_arr, extrapolate=False)
+    # Interpolate ln(a), not a itself. This makes H=d ln(a)/dt and
+    # Hdot=d^2 ln(a)/dt^2 internally consistent and exactly preserves
+    # exponential/de Sitter expansion under cubic interpolation.
+    log_a_spline = CubicSpline(t_arr, np.log(a_arr), extrapolate=False)
     phi_spline = CubicSpline(t_arr, phi_arr, extrapolate=False)
-    hubble_from_scale_factor = a_spline.derivative()(t_arr) / a_arr
+    hubble_from_scale_factor = log_a_spline.derivative()(t_arr)
     # Use a tiny interval-based floor so a nearly static background
     # does not acquire an O(1) relative mismatch from round-off in a_dot.
     interval_hubble_floor = 1.0e-12 / (t_arr[-1] - t_arr[0])
@@ -224,10 +227,7 @@ def integrate_expanding_mode(
             f"{max_hubble_consistency_error:.6g} exceeds "
             f"{background_consistency_tolerance:.6g}"
         )
-    hubble_dot_from_scale_factor = (
-        a_spline.derivative(2)(t_arr) / a_arr
-        - hubble_from_scale_factor**2
-    )
+    hubble_dot_from_scale_factor = log_a_spline.derivative(2)(t_arr)
     omega_chi_sq = (
         (k_comoving / a_arr) ** 2
         + m_chi**2
@@ -267,8 +267,8 @@ def integrate_expanding_mode(
     ) / a_arr[0] ** 1.5
 
     def background_at(time: float) -> tuple[float, float, float]:
-        a_now = float(a_spline(time))
-        h_now = float(a_spline.derivative()(time) / a_now)
+        a_now = float(np.exp(log_a_spline(time)))
+        h_now = float(log_a_spline.derivative()(time))
         phi_now = float(phi_spline(time))
         return a_now, h_now, phi_now
 
