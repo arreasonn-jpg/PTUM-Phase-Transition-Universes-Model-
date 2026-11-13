@@ -873,6 +873,8 @@ def test_expanding_mode_solver_accepts_tachyonic_effective_mass_history():
     assert np.min(result["canonical_frequency_sq"]) < 0.0
     assert result["final_frequency_valid"]
     assert np.isfinite(result["particle_number"])
+    assert result["wronskian_valid"]
+    assert result["particle_number_valid"]
     assert result["wronskian_relative_error"] < 1.0e-7
 
 
@@ -924,7 +926,29 @@ def test_waterfall_mode_uses_adiabatic_vacuum_and_preserves_wronskian():
     assert mode["integration_success"]
     assert mode["initial_adiabatic_vacuum"]
     assert mode["tachyonic_mass_interval"]
+    assert mode["wronskian_valid"]
+    assert mode["particle_number_valid"]
     assert mode["wronskian_relative_error"] < 1.0e-7
+
+
+
+def test_deep_tachyonic_growth_with_wronskian_drift_withholds_particle_number():
+    from ptum_waterfall_modes import build_waterfall_background, integrate_waterfall_mode
+
+    background = build_waterfall_background(
+        PTUMParameters(V0=1.0e64),
+        start_fraction=0.05,
+        t_end_mu=10.0,
+        n_points=2001,
+    )
+    mode = integrate_waterfall_mode(
+        background, k_over_mu=60.0, wronskian_tolerance=1.0e-7
+    )
+    assert mode["integration_success"]
+    assert mode["tachyonic_mass_interval"]
+    assert not mode["wronskian_valid"]
+    assert not mode["particle_number_valid"]
+    assert np.isnan(mode["particle_number"])
 
 
 def test_expanding_mode_solver_preserves_adiabatic_vacuum_in_de_sitter():

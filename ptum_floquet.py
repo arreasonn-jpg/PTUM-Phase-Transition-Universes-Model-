@@ -151,6 +151,7 @@ def integrate_expanding_mode(
     max_initial_adiabaticity: float = 0.1,
     background_consistency_tolerance: float = 5.0e-2,
     effective_mass_sq: Iterable[float] | None = None,
+    wronskian_tolerance: float = 1.0e-7,
 ) -> dict[str, object]:
     """Evolve one chi_k mode on a supplied expanding-FRW background.
 
@@ -209,7 +210,8 @@ def integrate_expanding_mode(
     if k_comoving < 0.0 or m_chi < 0.0:
         raise ValueError("wavenumber and mass must be non-negative")
     if (rtol <= 0.0 or atol <= 0.0 or max_initial_adiabaticity <= 0.0
-            or background_consistency_tolerance <= 0.0):
+            or background_consistency_tolerance <= 0.0
+            or wronskian_tolerance <= 0.0):
         raise ValueError("solver tolerances and consistency thresholds must be positive")
 
     # Interpolate ln(a), not a itself. This makes H=d ln(a)/dt and
@@ -321,21 +323,28 @@ def integrate_expanding_mode(
     wronskian_relative_error = float(
         abs(wronskian[-1] - 1j) / max(abs(wronskian[0]), np.finfo(float).tiny)
     )
+    wronskian_valid = wronskian_relative_error <= wronskian_tolerance
 
     final_omega_sq = float(omega_canonical_sq[-1])
     if final_omega_sq > 0.0:
         final_omega = float(np.sqrt(final_omega_sq))
-        occupation = float(
-            (abs(X_dot[-1]) ** 2 + final_omega_sq * abs(X[-1]) ** 2)
-            / (2.0 * final_omega)
-            - 0.5
-        )
-        occupation = max(occupation, 0.0) if occupation > -1.0e-10 else occupation
         final_frequency_valid = True
+        if wronskian_valid:
+            occupation = float(
+                (abs(X_dot[-1]) ** 2 + final_omega_sq * abs(X[-1]) ** 2)
+                / (2.0 * final_omega)
+                - 0.5
+            )
+            occupation = max(occupation, 0.0) if occupation > -1.0e-10 else occupation
+            particle_number_valid = True
+        else:
+            occupation = float("nan")
+            particle_number_valid = False
     else:
         final_omega = float("nan")
         occupation = float("nan")
         final_frequency_valid = False
+        particle_number_valid = False
 
     return {
         "t": t_arr,
@@ -348,7 +357,10 @@ def integrate_expanding_mode(
         "initial_adiabaticity": initial_adiabaticity,
         "background_hubble_consistency_max_relative": max_hubble_consistency_error,
         "wronskian_relative_error": wronskian_relative_error,
+        "wronskian_valid": bool(wronskian_valid),
+        "wronskian_tolerance": float(wronskian_tolerance),
         "final_frequency_valid": final_frequency_valid,
+        "particle_number_valid": bool(particle_number_valid),
         "final_omega": final_omega,
         "particle_number": occupation,
         "integration_success": bool(solution.success),
@@ -368,6 +380,7 @@ def integrate_expanding_spectrum(
     atol: float = 1.0e-12,
     max_initial_adiabaticity: float = 0.1,
     effective_mass_sq: Iterable[float] | None = None,
+    wronskian_tolerance: float = 1.0e-7,
 ) -> dict[str, object]:
     """Integrate a finite k-grid and estimate the produced comoving number.
 
@@ -406,6 +419,7 @@ def integrate_expanding_spectrum(
             atol=atol,
             max_initial_adiabaticity=max_initial_adiabaticity,
             effective_mass_sq=effective_mass_sq,
+            wronskian_tolerance=wronskian_tolerance,
         )
         for k in k_arr
     ]
@@ -415,7 +429,11 @@ def integrate_expanding_spectrum(
     all_final_frequencies_valid = all(
         bool(mode["final_frequency_valid"]) for mode in mode_results
     )
-    if all_final_frequencies_valid and np.all(np.isfinite(occupations)):
+    all_wronskians_valid = all(
+        bool(mode["wronskian_valid"]) for mode in mode_results
+    )
+    if (all_final_frequencies_valid and all_wronskians_valid
+            and np.all(np.isfinite(occupations))):
         n_comoving = float(
             np.trapezoid(k_arr**2 * occupations, x=k_arr) / (2.0 * np.pi**2)
         )
@@ -431,6 +449,7 @@ def integrate_expanding_spectrum(
         "n_comoving_finite_band": n_comoving,
         "n_physical_finite_band": n_physical,
         "all_final_frequencies_valid": all_final_frequencies_valid,
+        "all_wronskians_valid": all_wronskians_valid,
         "finite_band_only": True,
         "momentum_range": (float(k_arr[0]), float(k_arr[-1])),
     }

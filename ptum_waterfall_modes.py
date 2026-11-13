@@ -140,6 +140,7 @@ def integrate_waterfall_mode(
     rtol: float = 1.0e-9,
     atol: float = 1.0e-12,
     max_initial_adiabaticity: float = 0.1,
+    wronskian_tolerance: float = 1.0e-7,
 ) -> dict[str, object]:
     """Evolve one linear psi_k mode, allowing a tachyonic mass interval."""
     tau = np.asarray(background["tau"], dtype=float)
@@ -158,6 +159,7 @@ def integrate_waterfall_mode(
         atol=atol,
         max_initial_adiabaticity=max_initial_adiabaticity,
         effective_mass_sq=mass_sq,
+        wronskian_tolerance=wronskian_tolerance,
     )
     result["psi_k"] = result["chi"]
     result["psi_k_dot"] = result["chi_dot"]
@@ -174,6 +176,7 @@ def integrate_waterfall_spectrum(
     rtol: float = 1.0e-9,
     atol: float = 1.0e-12,
     max_initial_adiabaticity: float = 0.1,
+    wronskian_tolerance: float = 1.0e-7,
 ) -> dict[str, object]:
     """Integrate a finite dimensionless momentum band of linear waterfall modes."""
     tau = np.asarray(background["tau"], dtype=float)
@@ -192,8 +195,11 @@ def integrate_waterfall_spectrum(
         atol=atol,
         max_initial_adiabaticity=max_initial_adiabaticity,
         effective_mass_sq=mass_sq,
+        wronskian_tolerance=wronskian_tolerance,
     )
     result["k_over_mu"] = result["k_comoving"]
     result["tachyonic_mass_interval"] = bool(np.any(mass_sq < 0.0))
     result["finite_band_only"] = True
+    result["momentum_unit"] = "mu"
+    result["number_density_unit"] = "mu^3"
     return result
