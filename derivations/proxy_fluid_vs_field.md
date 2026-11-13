@@ -324,3 +324,34 @@ SPRINT 4 tamamlandı. **`main.tex` değiştirilmedi.**
 
 Onayınızla SPRINT 5'e (sayısal yeniden üretilebilirlik: çift sayma, FRW
 kalıntıları, yakınsama, CLASS/Cobaya/lattice artefaktları) geçebilirim.
+
+---
+
+## 12. UYGULANDI — §11 dil düzeltmeleri (onay sonrası)
+
+**Onay:** kullanıcı, "§11'deki dil düzeltmelere ve SPRINT 5'e onay veriyorum."
+
+**Uygulanan:** yalnızca onaylanan **üç** madde. §4.4'e (satır 700–890)
+**dokunulmadı** — rapor §3'teki "korunmalı" önerisi geçerli.
+
+| # | Konum | Önce | Sonra |
+|---|---|---|---|
+| 1 | satır 48 (soyut) | "A falsifiable prediction of PTUM is that … carries w=1/3" | "… is *assigned* … as a phenomenological closure; this closure is a falsifiable hypothesis … not a prediction of the PTUM field theory" |
+| 2 | satır 634 (§4.2) | "A key result is that coherent oscillations …" | "A standard result for a canonical scalar is that … *provided* the quartic term dominates the orbit" |
+| 3 | satır 649 (kutu) | `\boxed{w=1/3, c_s²=1/3, σ=0}` | aynı kutu + `\quad\text{(phenomenological closure, not a first-principles result)}` |
+
+**Doğrulama:**
+
+- Yanlış eşleşme koruması: her üç hedef için `count == 1` assert edildi.
+- Küme parantezi dengesi: `3161 / 3161`, fark **0**.
+- `\begin{equation}` / `\end{equation}`: `117 / 117`.
+- Satır sayısı: 4460 → 4462 (+2, yalnızca eklenen metin).
+- `main.tex` `sha256[:16]`: `ba1a630914b809ae` → **`f708176f286e0972`**.
+
+**Derleme yapılmadı:** sandbox'ta TeX binary'si yok (`pdflatex`, `latexmk`
+bulunamadı). Bu bir *derleme doğrulaması değildir*; yalnızca LaTeX yapısal
+tutarlılığı (parantez/ortam dengesi) kontrol edildi. Gerçek derleme
+kullanıcının kendi ortamında yapılmalı.
+
+**Düzeltme notu:** kutuya ilk yazışta yanlışlıkla İndonezce "bukan" kelimesi
+girdi; "not" ile değiştirildi. Yazım hatası, fiziksel içerik etkilenmedi.
