@@ -844,19 +844,19 @@ def test_manuscript_withdraws_unverified_lattice_outputs_and_reproduction_claims
     from pathlib import Path
 
     source = Path("main.tex").read_text(encoding="utf-8")
-    start = source.index(r"\\subsection{Nonlinear lattice validation: current status}")
-    end = source.index("%============================================================\\n% REFERENCES", start)
+    start = source.index(r"\subsection{Nonlinear lattice validation: current status}")
+    end = source.index("%============================================================\n% REFERENCES", start)
     section = source[start:end]
     assert "does not expose an individually reviewable PTUM lattice solver" in section
-    assert "does \\emph{not} claim" in section
+    assert "does \emph{not} claim" in section
     assert "sub-percent energy-conservation" in section
     assert "raw outputs and checksums" in section
     for unsupported_claim in (
         "The following lattice outputs are included",
         "convergence tested up to",
-        r"0.198 \\pm 0.005",
-        r"0.118 \\pm 0.015",
-        r"S_{\\rm obs} \\sim 10^{88}",
+        r"0.198 \pm 0.005",
+        r"0.118 \pm 0.015",
+        r"S_{\rm obs} \sim 10^{88}",
         "docker run -v",
     ):
         assert unsupported_claim not in section
