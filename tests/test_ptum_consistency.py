@@ -345,6 +345,8 @@ def test_task1_scan_includes_threshold_matched_high_scale_and_low_scale_control(
     assert low.V0 == pytest.approx(1.0e56)
     assert high.damping_ratio > 1.0
     assert low.damping_ratio < 1.0
+    assert high.damping_ratio == pytest.approx(4.2858253624, rel=1.0e-8)
+    assert high.damping_ratio_potential == pytest.approx(3.4993617549, rel=1.0e-8)
     assert high.damping_ratio == pytest.approx(
         np.sqrt(1.5) * high.damping_ratio_potential
     )
