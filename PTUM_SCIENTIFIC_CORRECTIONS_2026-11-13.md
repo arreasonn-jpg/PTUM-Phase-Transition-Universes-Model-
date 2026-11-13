@@ -296,3 +296,14 @@ is negative for $|\Phi|>\Phi_c$. If $\Phi_c\simeq\Phi_{\rm end}$, the proxy mode
 The current inflation module omits $\psi$ and does not track its stability during inflation. The homogeneous two-field scan starts at $\Phi>\Phi_c$, already on the tachyonic side, so it does not simulate the onset from a dormant state. The manuscript and claim boundary now state this explicitly. A characterization regression test verifies the sign ordering. No arbitrary sign flip has been applied: the model must derive either a different activation function or a physically motivated fuel trajectory from one consistent action before the threshold-trigger narrative can be claimed.
 
 This is a **critical unresolved model-structure issue**, not a cosmetic wording issue. It blocks a 10/10 scientific-readiness claim until resolved and re-tested in the coupled background.
+
+
+## 18. Two-scale scan result
+
+GitHub Actions run 43391427434 on the current scientific branch completed **21 tests successfully** and ran both 18-point scenarios, for 36 successful integrations and zero integration failures.
+
+The threshold-matched high-scale benchmark ($V_0=10^{64}\,\mathrm{GeV}^4$, $\Phi_c=1.387M_{\rm Pl}$, local damping ratio $\simeq4.87$) produced 15 non-quartic cases, two insufficient-oscillation-data cases, and one quadratic-candidate case; it produced no quartic cases. The low-scale underdamped control ($V_0=10^{56}\,\mathrm{GeV}^4$) produced 16 non-quartic and two insufficient-data cases, again with no quartic cases. The high-scale quadratic candidate is not a demonstrated quadratic attractor: its virial diagnostic is far from the quartic limit and the label is only a coarse classification based on $w$ and the small quartic-to-quadratic ratio.
+
+For the high-scale cases with measurable oscillations, $Q$ is many orders of magnitude below two, so the quartic potential is negligible relative to the tachyonic quadratic contribution. This strengthens the conclusion that the stated high-scale benchmark does not realize the proxy-fluid quartic regime in the present homogeneous truncation. It does not prove that no parameter choice or inhomogeneous evolution can realize it.
+
+The scan artifact was downloaded and parsed independently. It contains 36 rows, includes the scenario and damping metadata, and is strict JSON. The CI LaTeX job for this run was still in progress at the time this result was recorded; the final build and reference warnings must be checked separately.
