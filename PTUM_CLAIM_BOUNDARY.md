@@ -83,6 +83,24 @@ A conservative sufficient low-scale regime is:
 
 The proxy-fluid closure $w=1/3$, $c_s^2=1/3$, $\sigma=0$ is therefore a **phenomenological ansatz conditional on parameters not realized in the stated benchmark**. The observational discriminator applies *if* the quartic regime is realized; it is not a prediction of the benchmark parameters alone. The Bayesian constraints on $\Delta N_{\rm fluid}$ should be interpreted as constraints on the *phenomenological proxy-fluid model*, not as constraints on the microscopic PTUM discharge dynamics with the stated benchmark parameters.
 
+## Waterfall defect topology
+
+The current $\psi$ truncation is a real scalar with an even potential. For
+$m_{\rm eff}^2<0$ it has two degenerate minima
+\[
+\psi_{\min}=\pm\sqrt{-m_{\rm eff}^2/\lambda_\psi},
+\]
+so a spatially inhomogeneous transition can spontaneously break a
+$Z_2$ symmetry and form domain walls. This model does not, by itself,
+derive cosmic strings. The string-tachyon discussion is only a
+structural analogy, and the separately reported winding analysis of
+$\Phi_{\rm res}$ does not establish the absence of $\psi$ domain walls.
+A defect-safe completion requires specifying whether $\psi$ is real,
+complex, or gauge charged, choosing the relevant symmetry-breaking
+potential, and simulating the resulting inhomogeneous defect network.
+Until then, no defect-free or cosmic-string claim is made for the
+real-$\psi$ truncation.
+
 ## Claims intentionally not made
 
 PTUM does not claim to be:
