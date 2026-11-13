@@ -694,3 +694,25 @@ def test_manuscript_does_not_overstate_psi_z2_or_phi_res_shift_symmetry():
     source = Path("main.tex").read_text(encoding="utf-8")
     assert "explicitly broken when any" in source
     assert "No exact or technically protected shift symmetry" in source
+
+
+
+def test_manuscript_loads_mathrsfs_for_covariant_spinor_derivative():
+    from pathlib import Path
+
+    source = Path("main.tex").read_text(encoding="utf-8")
+    assert r"\usepackage{mathrsfs}" in source
+    assert r"\mathscr D_\mu" in source
+
+
+def test_on_shell_sm_hilbert_tensor_does_not_double_count_ordinary_yukawa():
+    from pathlib import Path
+
+    source = Path("main.tex").read_text(encoding="utf-8")
+    start = source.index(r"T_{{\rm SM},0}^{\mu\nu}={}&")
+    end = source.index(r"\label{eq:sm_hilbert_tensor}", start)
+    tensor_definition = source[start:end]
+    assert r"T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}+T_f^{\mu\nu}." in tensor_definition
+    assert r"-g^{\mu\nu}U_{{\rm SM},Y}" not in tensor_definition
+    assert "must not be added again" in source
+    assert r"T_{{\rm SM},0}^{\mu\nu}-g^{\mu\nu}U_Y" in source
