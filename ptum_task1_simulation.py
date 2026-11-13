@@ -604,7 +604,8 @@ def compute_time_averaged_w(t: np.ndarray, pressure: np.ndarray,
 def create_initial_conditions(params: PTUMParameters,
                               psi_init: float = 0.0,
                               psi_dot_init: float = 0.0,
-                              phi_offset: float = 0.0) -> InitialConditions:
+                              phi_offset: float = 0.0,
+                              Phi_dot_override: Optional[float] = None) -> InitialConditions:
     """
     Create post-threshold initial conditions for the homogeneous evolution.
     
@@ -621,13 +622,19 @@ def create_initial_conditions(params: PTUMParameters,
     # Positive offset means the field has rolled below the threshold.
     Phi = Phi_c - phi_offset
     
-    # Slow-roll Φ̇ at threshold: Φ̇ ≈ -√(2ε_V) H M_Pl
-    # ε_V = ½(V'/V)²
-    V = veff_phi(Phi, params)
-    V_prime = dveff_dphi(Phi, params)
-    epsilon_V = 0.5 * (M_PL * V_prime / V)**2 if V > 0 else 0.01
-    H = np.sqrt(V / (3.0 * M_PL**2)) if V > 0 else params.H_star
-    Phi_dot = -np.sqrt(2 * epsilon_V) * H * M_PL
+    if Phi_dot_override is None:
+        # Fallback for exploratory runs only. Production threshold scans
+        # should supply the velocity from the integrated inflationary
+        # background via ptum_inflation_background.state_at_field_value.
+        V = veff_phi(Phi, params)
+        V_prime = dveff_dphi(Phi, params)
+        epsilon_V = 0.5 * (M_PL * V_prime / V)**2 if V > 0 else 0.01
+        H = np.sqrt(V / (3.0 * M_PL**2)) if V > 0 else params.H_star
+        Phi_dot = -np.sqrt(2.0 * epsilon_V) * H * M_PL
+    else:
+        Phi_dot = float(Phi_dot_override)
+        if not np.isfinite(Phi_dot):
+            raise ValueError("Phi_dot_override must be finite")
     
     return InitialConditions(
         Phi=Phi,
@@ -675,7 +682,8 @@ def run_parameter_scan(params: PTUMParameters,
                        psi_dot_init_range: List[float],
                        phi_offset_range: List[float],
                        t_max: float = 50.0,
-                       n_points: int = 500) -> List[Dict]:
+                       n_points: int = 500,
+                       phi_dot_init_by_offset: Optional[Dict[float, float]] = None) -> List[Dict]:
     """
     Run parameter scan over initial conditions.
     
@@ -691,7 +699,15 @@ def run_parameter_scan(params: PTUMParameters,
     for psi_init in psi_init_range:
         for psi_dot_init in psi_dot_init_range:
             for phi_offset in phi_offset_range:
-                ic = create_initial_conditions(params, psi_init, psi_dot_init, phi_offset)
+                phi_dot_override = (
+                    phi_dot_init_by_offset[phi_offset]
+                    if phi_dot_init_by_offset is not None
+                    else None
+                )
+                ic = create_initial_conditions(
+                    params, psi_init, psi_dot_init, phi_offset,
+                    Phi_dot_override=phi_dot_override
+                )
                 
                 try:
                     result = run_simulation(params, ic, t_span, t_eval)
