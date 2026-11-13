@@ -22,7 +22,7 @@ jobs:
         run: python -m pip install --upgrade pip numpy scipy pytest
       - name: Run PTUM regression tests
         run: python -m pytest -q tests/test_ptum_consistency.py
-      - name: Run corrected 18-point two-field scan
+      - name: Run 36-point high-scale and low-scale two-field scans
         run: python ptum_task1_scan.py
       - name: Upload two-field scan summary
         uses: actions/upload-artifact@v4
