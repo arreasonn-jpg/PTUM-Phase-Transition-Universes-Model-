@@ -241,12 +241,10 @@ def run_simulation(params: PTUMParameters,
     continuity_residual_relative = continuity_residual / continuity_scale
     w_psi_arr = np.array([w_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
     
-    # Shifted potential and virial diagnostics
-    U_psi = np.array([shifted_potential_psi(psi[i], params) for i in range(len(t))])
-    virial_ratio = np.where(U_psi > 0, 0.5 * psi_dot**2 / U_psi, 0)
-    
-    # Quartic dominance parameter Q = λ⟨ψ⁴⟩ / μ²⟨ψ²⟩
-    # Compute over oscillation periods (using zero crossings of psi_dot)
+    # Quartic diagnostics are evaluated over complete half-cycles.
+    # NaN denotes that no valid oscillation interval was available.
+    U_psi = 0.25 * params.lambda_psi * psi**4
+    virial_ratio = compute_quartic_virial_ratio(t, psi, psi_dot, params)
     Q_arr = compute_quartic_dominance(t, psi, psi_dot, params, Phi)
     
     # Time-averaged w_psi over oscillation periods
@@ -305,6 +303,23 @@ def compute_quartic_dominance(t: np.ndarray, psi: np.ndarray,
         if denominator > 0.0 and np.isfinite(denominator):
             Q[start:end] = numerator / denominator
     return Q
+
+
+def compute_quartic_virial_ratio(t: np.ndarray, psi: np.ndarray,
+                                psi_dot: np.ndarray,
+                                params: PTUMParameters) -> np.ndarray:
+    """Half-cycle <K>/(2<V4>) for a quartic oscillator; NaN if undefined."""
+    ratio = np.full_like(t, np.nan, dtype=float)
+    turning_points = np.where(np.diff(np.signbit(psi_dot)))[0]
+    for i in range(len(turning_points) - 1):
+        start, end = turning_points[i], turning_points[i + 1] + 1
+        if end - start < 3:
+            continue
+        kinetic_avg = 0.5 * np.mean(psi_dot[start:end]**2)
+        twice_potential_avg = 0.5 * params.lambda_psi * np.mean(psi[start:end]**4)
+        if twice_potential_avg > 0.0:
+            ratio[start:end] = kinetic_avg / twice_potential_avg
+    return ratio
 
 
 def compute_time_averaged_w(t: np.ndarray, w: np.ndarray, 
@@ -466,21 +481,25 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     virial = result['virial_ratio']
     
     # Use last few oscillation averages
-    if len(w_avg) >= 3:
-        w_final = np.mean(w_avg[-3:])
-        Q_final = np.mean(Q[-len(w_avg)*10:]) if len(Q) > 0 else 0
-        virial_final = np.mean(virial[-len(w_avg)*10:]) if len(virial) > 0 else 0
-    else:
-        w_final = w_avg[-1] if len(w_avg) > 0 else 0
-        Q_final = Q[-1] if len(Q) > 0 else 0
-        virial_final = virial[-1] if len(virial) > 0 else 0
-    
-    # Classification criteria
-    quartic_achieved = (Q_final > 5 and 
-                        abs(w_final - 1/3) < 0.05 and 
+    n_tail = max(10, len(w_avg) * 10)
+    q_tail = Q[-n_tail:] if len(Q) else np.array([])
+    v_tail = virial[-n_tail:] if len(virial) else np.array([])
+    q_valid = q_tail[np.isfinite(q_tail)]
+    v_valid = v_tail[np.isfinite(v_tail)]
+    w_final = float(np.mean(w_avg[-3:])) if len(w_avg) >= 3 else (
+        float(w_avg[-1]) if len(w_avg) else float("nan"))
+    Q_final = float(np.mean(q_valid)) if len(q_valid) else float("nan")
+    virial_final = float(np.mean(v_valid)) if len(v_valid) else float("nan")
+
+    # Do not classify a regime when the required diagnostics are unavailable.
+    diagnostics_valid = np.isfinite([w_final, Q_final, virial_final]).all()
+    quartic_achieved = (diagnostics_valid and Q_final > 5 and
+                        abs(w_final - 1/3) < 0.05 and
                         abs(virial_final - 1) < 0.2)
     
-    if quartic_achieved:
+    if not diagnostics_valid:
+        regime = 'insufficient_oscillation_data'
+    elif quartic_achieved:
         regime = 'quartic'
     elif abs(w_final) < 0.1 and Q_final < 1:
         regime = 'quadratic'
@@ -519,9 +538,9 @@ def save_results(results: List[Dict], filepath: str):
                 'ic_params': r['ic_params'],
                 'final_psi_amplitude': float(np.max(np.abs(r['psi']))),
                 'final_Phi': float(r['Phi'][-1]),
-                'energy_conservation': float(np.max(np.abs(
-                    r['rho_phi'] + r['rho_psi'] - r['rho_phi'][0] - r['rho_psi'][0]
-                )))
+                'max_abs_relative_frw_continuity_residual': float(np.nanmax(
+                    np.abs(r['continuity_residual_relative'])
+                ))
             })
         else:
             summary.append({
