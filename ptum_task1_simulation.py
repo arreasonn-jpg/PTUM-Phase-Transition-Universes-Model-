@@ -624,6 +624,7 @@ def save_results(results: List[Dict], filepath: str):
             
             summary.append({
                 'classification': class_dict,
+                'scan_metadata': _json_safe(r.get('scan_metadata', {})),
                 'ic_params': r['ic_params'],
                 'max_abs_psi_over_trajectory': float(np.max(np.abs(r['psi']))),
                 'final_Phi': float(r['Phi'][-1]),
@@ -635,6 +636,7 @@ def save_results(results: List[Dict], filepath: str):
             summary.append({
                 'success': False,
                 'error': r.get('error', 'Unknown'),
+                'scan_metadata': _json_safe(r.get('scan_metadata', {})),
                 'ic_params': r['ic_params']
             })
     
