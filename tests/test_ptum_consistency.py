@@ -716,3 +716,45 @@ def test_on_shell_sm_hilbert_tensor_does_not_double_count_ordinary_yukawa():
     assert r"-g^{\mu\nu}U_{{\rm SM},Y}" not in tensor_definition
     assert "must not be added again" in source
     assert r"T_{{\rm SM},0}^{\mu\nu}-g^{\mu\nu}U_Y" in source
+
+
+
+def test_expanding_mode_solver_preserves_adiabatic_vacuum_in_de_sitter():
+    from ptum_floquet import integrate_expanding_mode
+
+    t = np.linspace(0.0, 10.0, 501)
+    H0 = 0.1
+    result = integrate_expanding_mode(
+        t=t,
+        scale_factor=np.exp(H0 * t),
+        hubble=np.full_like(t, H0),
+        phi_res=np.zeros_like(t),
+        k_comoving=0.0,
+        m_chi=1.0,
+        g_dm=0.0,
+    )
+    assert result["integration_success"]
+    assert result["final_frequency_valid"]
+    assert result["initial_adiabaticity"] < 1.0e-10
+    assert result["particle_number"] == pytest.approx(0.0, abs=2.0e-8)
+    assert result["wronskian_relative_error"] < 2.0e-8
+
+
+def test_expanding_mode_solver_rejects_non_adiabatic_initial_vacuum():
+    from ptum_floquet import integrate_expanding_mode
+
+    t = np.linspace(0.0, 1.0, 101)
+    phi_res = np.zeros_like(t)
+    phi_res[0] = 0.0
+    phi_res[1:] = np.linspace(0.0, 1.0e4, len(t) - 1)
+    with pytest.raises(ValueError, match="not sufficiently adiabatic"):
+        integrate_expanding_mode(
+            t=t,
+            scale_factor=np.ones_like(t),
+            hubble=np.zeros_like(t),
+            phi_res=phi_res,
+            k_comoving=0.0,
+            m_chi=1.0,
+            g_dm=1.0,
+            max_initial_adiabaticity=1.0e-12,
+        )
