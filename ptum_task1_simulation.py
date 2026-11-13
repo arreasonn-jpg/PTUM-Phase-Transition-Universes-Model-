@@ -47,7 +47,7 @@ class PTUMParameters:
     # Inflation/discharge parameters
     V0: float = 1e56          # GeV^4, plateau height ~ (10^14 GeV)^4
     lambda_phi: float = 0.02  # Dimensionless plateau-shape parameter
-    Phi_c: float = 1.4 * M_PL # GeV, independent critical field; match to Phi_end
+    Phi_c: float = 0.9862280831209068 * M_PL # GeV, independent critical field; match to Phi_end
 
     # Activation sector parameters
     m_psi: float = 1e13       # GeV, bare mass of ψ
