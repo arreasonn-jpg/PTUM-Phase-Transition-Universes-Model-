@@ -2038,40 +2038,49 @@ coupling $g_{\psi H}$, condensate history, and competing
 non-perturbative channels are not fixed, so this formula is not
 assigned a numerical value here.
 
-The available energy from the fuel potential is not generically
-$V_0$. In the potential-dominated, threshold-matched single-field
-estimate, with $\Phi_c\simeq\Phi_{\rm end}^{(H)}
-\simeq0.986228M_{\rm Pl}$ for $\lambda_\Phi=0.02$ and $V(0)=0$,
-the available fuel-potential difference is
+The energy density at the exact single-field endpoint is not
+$V_0$. For $\Phi_c=\Phi_{\rm end}^{(H)}
+\simeq0.986228M_{\rm Pl}$ and $\lambda_\Phi=0.02$, the potential
+contribution is
 \begin{equation}
-\rho_{\rm dis}\simeq V(\Phi_c)-V(0)
-\simeq0.0192649V_0,
+V(\Phi_c)/V_0\simeq0.01926493.
 \end{equation}
-provided initial kinetic and proxy-field contributions are
-negligible. This is a conditional estimate, not the energy release
-computed by the full interacting system.
+The exact background terminates at $\epsilon_H=1$, for which
+$X_{\rm end}^2=1/3$ and
+$\rho_{\rm end}=V(\Phi_c)/(1-X_{\rm end}^2)=3V(\Phi_c)/2$.
+Consequently,
+\begin{equation}
+K_{\rm end}/V_0\simeq0.00963246,\qquad
+\rho_{\rm end}/V_0\simeq0.02889739.
+\end{equation}
+These are single-field endpoint values. The fraction actually
+transferred to radiation, $\psi$, $\chi$, or residual $\Phi$ is not
+determined until the coupled waterfall and reheating dynamics are
+solved.
 
-Assuming instantaneous thermalization, the entropy density and
-radiation energy density are
+Assuming, as an idealized upper-limit benchmark, that all of
+$\rho_{\rm end}$ thermalizes instantaneously into radiation,
 \begin{equation}
 s_{\rm rh}=\frac{2\pi^2}{45}g_{*s}T_{\rm rh}^3,
 \qquad
 \rho_{\rm rad}=\frac{\pi^2}{30}g_*T_{\rm rh}^4
-\simeq\rho_{\rm dis}.
+\simeq\rho_{\rm end}.
 \end{equation}
-For $g_*=100$ and the threshold-matched potential estimate this gives
+For $g_*=100$ this gives
 \begin{equation}
-T_{\rm rh}\simeq
-\left(\frac{30\rho_{\rm dis}}{\pi^2g_*}\right)^{1/4}
-\simeq1.56\times10^{15}\,\mathrm{GeV}
+T_{\rm rh}^{\rm ideal}\simeq
+\left(\frac{30\rho_{\rm end}}{\pi^2g_*}\right)^{1/4}
+\simeq1.72\times10^{15}\,\mathrm{GeV}
 \left(\frac{V_0^{1/4}}{10^{16}\,\mathrm{GeV}}\right)
 \left(\frac{g_*}{100}\right)^{-1/4}
-\left(\frac{\rho_{\rm dis}}{0.0192649V_0}\right)^{1/4}.
+\left(\frac{\rho_{\rm end}}{0.02889739V_0}\right)^{1/4}.
 \end{equation}
-The result changes if the coupled fields carry appreciable kinetic
-or interaction energy at discharge, or if thermalization is
-delayed. The displayed number is therefore only a
-potential-dominated instantaneous-thermalization estimate.
+If only the potential contribution $V(\Phi_c)$ were converted,
+the corresponding idealized estimate would be
+$T_{\rm rh}^{(V)}\simeq1.56\times10^{15}\,\mathrm{GeV}$ at the same
+$V_0$ and $g_*$. Neither value is a prediction of the full PTUM
+reheating process: the energy partition, decay rates, competing
+Higgs channels and thermalization delay remain to be computed.
 
 The comoving entropy density after reheating is
 \begin{equation}
@@ -2094,9 +2103,10 @@ The expansion during discharge is governed by
 =\exp\!\left(\int_{t_{\rm start}}^{t_{\rm end}}H(t)\,dt\right).
 \end{equation}
 The previous estimate $H_*\Delta t\sim10^{-3}$ and the associated
-claim of negligible expansion are withdrawn. In the threshold-matched
-benchmark, the local potential-dominated damping ratio is
-$3H_c/(2\mu)\simeq4.9$, corresponding to $H_c/\mu\simeq3.27$.
+claim of negligible expansion are withdrawn. In the threshold-matched benchmark, the potential-only
+estimate gives $3H_{c,V}/(2\mu)\simeq3.48$. Including the exact
+kinetic contribution at $\epsilon_H=1$ raises the endpoint value to
+$3H_c/(2\mu)\simeq4.26$, corresponding to $H_c/\mu\simeq2.84$.
 Thus even the nominal interval $\mu^{-1}$ is not short compared with
 the Hubble time. The actual discharge duration and scale-factor growth
 must be obtained from the coupled background solution; the frozen
