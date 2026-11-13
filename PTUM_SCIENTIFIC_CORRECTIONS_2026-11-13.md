@@ -400,3 +400,12 @@ V(\Phi_{\rm end}^{(H)})/V_0\simeq0.0192649.
 The conditional instantaneous-thermalization estimate at $V_0^{1/4}=10^{16}\,\mathrm{GeV}$ and $g_*=100$ becomes $T_{\rm rh}\simeq1.56\times10^{15}\,\mathrm{GeV}$. The local potential-dominated damping ratio becomes $3H_c/(2\mu)\simeq3.48$, still overdamped. These values supersede the earlier $0.0378V_0$, $1.84\times10^{15}\,\mathrm{GeV}$, and $4.9$ estimates in Sections 13 and 21.
 
 The new regression test checks both end-field values and the $0.31852$ e-fold crossing offset. A fresh 100-point high-resolution scan must run with this exact threshold before its outcomes are accepted.
+
+
+## 24. Observational comparison sign convention
+
+The abstract reported $\Delta\chi^2=+0.26$, while the claim-boundary note previously displayed $-0.26$ for the same benchmark. The claim-boundary document has been aligned to the abstract and now explicitly defines
+\[
+\Delta\chi^2\equiv\chi^2_{\rm PTUM}-\chi^2_{\Lambda\rm CDM}.
+\]
+Thus the author-reported $+0.26$ indicates a slightly worse best-fit chi-square for PTUM under this convention, consistent with the reported $\Delta\mathrm{AIC}=+2.26$ preference for the simpler $\Lambda$CDM model. These numbers remain author-reported because the exact chains and likelihood configuration are not yet publicly reproducible.
