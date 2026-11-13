@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
       - name: Install test dependencies
@@ -25,7 +25,7 @@ jobs:
       - name: Run 36-point high-scale and low-scale two-field scans
         run: python ptum_task1_scan.py
       - name: Upload two-field scan summary
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ptum-two-field-scan
           path: task1_parameter_scan_results.json
@@ -35,7 +35,7 @@ jobs:
   latex-build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install LaTeX toolchain
         run: |
           sudo apt-get update
@@ -43,7 +43,7 @@ jobs:
       - name: Compile manuscript
         run: latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
       - name: Upload compiled manuscript
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ptum-manuscript-pdf
           path: main.pdf
