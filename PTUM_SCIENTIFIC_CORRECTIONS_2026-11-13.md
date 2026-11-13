@@ -437,3 +437,8 @@ The manuscript now distinguishes the scalar proxy from an actual string field. I
 A spatially inhomogeneous waterfall can therefore break a $Z_2$ symmetry and form domain walls. The string-tachyon comparison is explicitly labelled a structural analogy; it is not a derivation of cosmic strings. The previously reported winding analysis concerns $\Phi_{\rm res}$ and does not establish the absence of $\psi$ domain walls.
 
 The manuscript and claim-boundary document now state this limitation, and the 10/10 acceptance matrix requires a field-topology choice and an inhomogeneous defect-network calculation. A defect-safe completion may require a complex/gauged order parameter or a physically justified bias term, but no such modification is imposed without a model-level decision because it changes the symmetry and dynamics.
+
+
+## 28. Pinned scientific CI environment
+
+Added `requirements-ci.txt` with the Python 3.11 runner's verified direct dependency versions: NumPy 2.4.6, SciPy 1.17.1 and pytest 9.2.0. The workflow now installs this file, enables pip caching keyed to it, and records `pip freeze` in the job log. This removes the previous floating-dependency behavior for the direct scientific test stack. The Python patch release and GitHub-hosted Ubuntu image remain runner-managed and should be recorded in each CI run.
