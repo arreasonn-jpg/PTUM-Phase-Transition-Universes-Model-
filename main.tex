@@ -1868,15 +1868,20 @@ T_f^{\mu\nu}={}&
 +\bar f\gamma^\nu\overleftrightarrow{\mathscr D}^{\,\mu}f
 \right],\nonumber\\
 T_{{\rm SM},0}^{\mu\nu}={}&
-T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}+T_f^{\mu\nu}
--g^{\mu\nu}U_{{\rm SM},Y}.
+T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}+T_f^{\mu\nu}.
 \label{eq:sm_hilbert_tensor}
 \end{align}
 The fermion term is the on-shell symmetric tensor obtained after
-including the vierbein and spin-connection variations; it is not
-the canonical unsymmetrized flat-space tensor. The PTUM operator
-\(U_Y\) is assigned to the SM sector, so
-\(T_{\rm SM}^{\mu\nu}=T_{{\rm SM},0}^{\mu\nu}-g^{\mu\nu}U_Y\).
+including the vierbein and spin-connection variations, with the
+ordinary SM Yukawa equations of motion included; it is not the
+canonical unsymmetrized flat-space tensor. Consequently the
+ordinary Yukawa potential is already encoded in this on-shell
+fermion expression and must not be added again as a separate
+\(-g^{\mu\nu}U_{{\rm SM},Y}\) term. The distinct PTUM operator
+\(U_Y\), which is not part of \(S_{\rm SM}^{(0)}\), is assigned
+once to the SM sector, so
+\(T_{\rm SM}^{\mu\nu}=T_{{\rm SM},0}^{\mu\nu}
+-g^{\mu\nu}U_Y\).
 This is a classical tree-level EFT derivation. It does not include
 quantum trace anomalies, loop-induced curvature operators, or a
 renormalized in-in effective action, and the current homogeneous
@@ -1935,10 +1940,11 @@ T_{\rm SM}^{\mu\nu}
 =T_{{\rm SM},0}^{\mu\nu}-g^{\mu\nu}U_Y,
 \qquad
 T_{{\rm SM},0}^{\mu\nu}
-=\frac{2}{\sqrt{-g}}\frac{\delta S_{\rm SM}}{\delta g_{\mu\nu}},
+=\frac{2}{\sqrt{-g}}\frac{\delta S_{\rm SM}^{(0)}}{\delta g_{\mu\nu}},
 \]
-where $S_{\rm SM}$ is the curved-spacetime chiral Standard Model
-action including gauge, Higgs and fermion fields. The
+where $S_{\rm SM}^{(0)}$ is the curved-spacetime chiral Standard
+Model action including gauge, Higgs, fermion and ordinary Yukawa
+terms, but excluding the distinct PTUM operator $U_Y$. The
 $\chi^2\Phi_{\rm res}^2$ potential is assigned to $T_{\rm DM}$,
 as displayed above. Thus every non-derivative interaction
 potential appears exactly once in the total Hilbert tensor.
