@@ -103,13 +103,20 @@ class InitialConditions:
 
 
 def veff_phi(Phi: float, params: PTUMParameters) -> float:
-    """Effective potential for fuel field: V_eff(Φ) = V0(1 - exp(-λΦ²))"""
-    return params.V0 * (1 - np.exp(-params.lambda_phi * Phi**2))
+    """Tree-level fuel potential with dimensionless exponent.
+
+    lambda_phi is dimensionless and Phi_c = M_PL/sqrt(lambda_phi),
+    so the exponent is -lambda_phi * Phi**2 / M_PL**2.
+    """
+    x = params.lambda_phi * (Phi / M_PL)**2
+    return params.V0 * (-np.expm1(-x))
 
 
 def dveff_dphi(Phi: float, params: PTUMParameters) -> float:
-    """Derivative of V_eff wrt Φ"""
-    return params.V0 * 2 * params.lambda_phi * Phi * np.exp(-params.lambda_phi * Phi**2)
+    """Analytic derivative of the dimensionally consistent fuel potential."""
+    x = params.lambda_phi * (Phi / M_PL)**2
+    return (2.0 * params.V0 * params.lambda_phi * Phi / M_PL**2
+            * np.exp(-x))
 
 
 def meff_sq_psi(Phi: float, params: PTUMParameters) -> float:
