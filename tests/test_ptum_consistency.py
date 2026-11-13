@@ -919,7 +919,7 @@ def test_waterfall_mode_uses_adiabatic_vacuum_and_preserves_wronskian():
         n_points=2001,
     )
     mode = integrate_waterfall_mode(
-        background, k_over_mu=20.0, max_initial_adiabaticity=0.1
+        background, k_over_mu=60.0, max_initial_adiabaticity=0.1
     )
     assert mode["integration_success"]
     assert mode["initial_adiabatic_vacuum"]
