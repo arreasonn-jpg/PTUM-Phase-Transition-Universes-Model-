@@ -347,6 +347,24 @@ def run_simulation(params: PTUMParameters,
     p_psi_arr = np.array([pressure_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
     rho_total_arr = rho_phi_arr + rho_psi_arr
     p_total_arr = p_phi_arr + p_psi_arr
+
+    # Diagnostic split around the instantaneous broken-phase minimum:
+    # move V_min(Phi) from the psi excitation sector into the Phi sector.
+    V_psi_min_arr = np.asarray(psi_minimum_potential(Phi, params), dtype=float)
+    rho_psi_exc_arr = rho_psi_arr - V_psi_min_arr
+    p_psi_exc_arr = p_psi_arr + V_psi_min_arr
+    rho_phi_split_arr = rho_phi_arr + V_psi_min_arr
+    p_phi_split_arr = p_phi_arr - V_psi_min_arr
+    w_psi_exc_arr = np.divide(
+        p_psi_exc_arr,
+        rho_psi_exc_arr,
+        out=np.full_like(rho_psi_exc_arr, np.nan, dtype=float),
+        where=np.abs(rho_psi_exc_arr) > np.finfo(float).tiny,
+    )
+    Q_psi_exc0_arr, Q_Phi_split0_arr = waterfall_excitation_transfer_rate(
+        Phi, psi, Phi_dot, params
+    )
+
     # Evaluate d(rho)/dt by the chain rule using the same RHS that evolves
     # the fields. This avoids differencing a nearly constant, ~1e50 GeV^4
     # vacuum density and dividing round-off noise by an almost-zero scale.
@@ -417,8 +435,14 @@ def run_simulation(params: PTUMParameters,
     )
     Q_arr = compute_quartic_dominance(t, psi, psi_dot, params, Phi)
     
-    # Time-averaged w_psi over oscillation periods
-    w_avg, t_avg = compute_time_averaged_w(t, p_psi_arr, rho_psi_arr, psi_dot)
+    # Average the excitation-sector equation of state, not the raw
+    # potential density whose moving minimum can be negative.
+    w_avg, t_avg = compute_time_averaged_w(
+        t, p_psi_exc_arr, rho_psi_exc_arr, psi_dot
+    )
+    w_avg_raw, t_avg_raw = compute_time_averaged_w(
+        t, p_psi_arr, rho_psi_arr, psi_dot
+    )
     
     return {
         'success': True,
@@ -434,6 +458,13 @@ def run_simulation(params: PTUMParameters,
         'p_phi': p_phi_arr,
         'p_psi': p_psi_arr,
         'p_total': p_total_arr,
+        'V_psi_min': V_psi_min_arr,
+        'rho_phi_split': rho_phi_split_arr,
+        'p_phi_split': p_phi_split_arr,
+        'rho_psi_exc': rho_psi_exc_arr,
+        'p_psi_exc': p_psi_exc_arr,
+        'Q_psi_exc0': Q_psi_exc0_arr,
+        'Q_Phi_split0': Q_Phi_split0_arr,
         'continuity_residual': continuity_residual,
         'continuity_residual_relative': continuity_residual_relative,
         'continuity_residual_background_relative': continuity_residual_background_relative,
@@ -443,8 +474,11 @@ def run_simulation(params: PTUMParameters,
         'continuity_residual_finite_difference_relative': continuity_residual_finite_difference_relative,
         'continuity_residual_finite_difference_background_relative': continuity_residual_finite_difference_background_relative,
         'w_psi': w_psi_arr,
+        'w_psi_exc': w_psi_exc_arr,
         'w_psi_avg': w_avg,
+        'w_psi_avg_raw': w_avg_raw,
         't_avg': t_avg,
+        't_avg_raw': t_avg_raw,
         'U_psi': U_psi,
         'virial_ratio': virial_ratio,
         'quadratic_virial_ratio': quadratic_virial_ratio,
