@@ -252,7 +252,9 @@ def run_simulation(params: PTUMParameters,
         + 0.5 * dm_eff_sq_dPhi_arr * Phi_dot * psi**2
         + params.lambda_psi * psi**3 * psi_dot
     )
-    expansion_term = 3.0 * H * (rho_total_arr + p_total_arr)
+    # For canonical homogeneous scalars rho + p = Phi_dot^2 + psi_dot^2;
+    # evaluate this directly to avoid subtracting two vacuum-sized arrays.
+    expansion_term = 3.0 * H * (Phi_dot**2 + psi_dot**2)
     continuity_residual = rho_dot_chain_rule + expansion_term
     continuity_scale = np.abs(rho_dot_chain_rule) + np.abs(expansion_term)
     continuity_residual_relative = np.divide(
