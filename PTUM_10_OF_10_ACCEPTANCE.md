@@ -144,3 +144,20 @@ Gate 6 remains **NOT MET** because this solver still uses externally
 supplied histories and no self-consistent PTUM production/relic
 calculation has been performed. The current branch contains 51 tests;
 the latest full CI run is still pending.
+
+## 2026-11-13 claim-boundary correction: nonlinear lattice evidence
+
+The manuscript's former LATTICEEASY subsection described specific
+$256^3/512^3$ runs, sub-percent energy conservation, a lattice Floquet
+exponent, a dark-matter relic density, defect statistics, and entropy
+outputs. The current canonical repository does not expose the solver,
+complete run inputs, raw configurations, or machine-readable outputs
+needed to reproduce those numbers. The manuscript subsection has
+therefore been replaced by an explicit status statement and a
+reproduction checklist. Those historical numerical values are
+withdrawn from the verified-results record; they are not accepted
+evidence for Gates 5, 6, or 8.
+
+Two regression tests were added to ensure that the manuscript keeps
+this boundary explicit and describes the proxy-fluid as a
+phenomenological closure. The new tests are awaiting the next CI run.
