@@ -358,14 +358,20 @@ $\Delta N_{\rm fluid}$ & pfd abundance & maps proxy radiation to CMB/BBN observa
 
 \subsection{PTUM Lagrangian}
 
-The total effective Lagrangian is
+The scalar-sector Lagrangian used for the conservative
+pre-reheating homogeneous background is
 \begin{equation}
-\mathcal{L}_{\rm PTUM}
+\mathcal{L}_{\rm PTUM}^{(0)}
 =\mathcal{L}_{\rm fuel}
 +\mathcal{L}_{\rm activation}
 +\mathcal{L}_{\rm DM}
 +\mathcal{L}_{\rm DE}.
 \end{equation}
+The superscript \((0)\) denotes that the explicit Standard Model
+matter action and perturbative reheating interactions are not included
+in this background subsystem. Their role and the limitation of the
+present sector split are stated in
+Section~\ref{sec:microscopic_transfer}.
 
 The fuel sector is
 \begin{equation}
@@ -519,12 +525,12 @@ The field equations in a flat FRW universe,
 
 For completeness and internal consistency, we re-derive all
 equations of motion from the total Lagrangian
-\(\mathcal{L}_{\rm PTUM} = \mathcal{L}_{\rm fuel} +
+\(\mathcal{L}_{\rm PTUM}^{(0)} = \mathcal{L}_{\rm fuel} +
 \mathcal{L}_{\rm activation} + \mathcal{L}_{\rm DM} +
 \mathcal{L}_{\rm DE}\) using the Euler--Lagrange equations in a
 curved FRW background. The action is
 \begin{equation}
-S = \int d^4x\,\sqrt{-g}\,\mathcal{L}_{\rm PTUM},
+S = \int d^4x\,\sqrt{-g}\,\mathcal{L}_{\rm PTUM}^{(0)},
 \end{equation}
 with $\sqrt{-g} = a^3(t)$ in FRW.
 For a scalar field \(\phi\) with Lagrangian
@@ -619,7 +625,7 @@ Applying this to each sector:
 \end{enumerate}
 
 All four equations of motion are thus consistently derived from the
-total Lagrangian \(\mathcal{L}_{\rm PTUM}\). The energy-momentum
+total Lagrangian \(\mathcal{L}_{\rm PTUM}^{(0)}\). The energy-momentum
 tensor for each sector can be obtained via the standard variation
 \(T_{\mu\nu} = -\frac{2}{\sqrt{-g}}\frac{\delta(\sqrt{-g}\mathcal{L})}
 {\delta g^{\mu\nu}}\), and the covariant conservation
