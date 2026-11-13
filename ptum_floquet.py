@@ -149,6 +149,7 @@ def integrate_expanding_mode(
     rtol: float = 1.0e-9,
     atol: float = 1.0e-12,
     max_initial_adiabaticity: float = 0.1,
+    background_consistency_tolerance: float = 5.0e-2,
 ) -> dict[str, object]:
     """Evolve one chi_k mode on a supplied expanding-FRW background.
 
@@ -187,19 +188,36 @@ def integrate_expanding_mode(
     if np.any(a_arr <= 0.0):
         raise ValueError("scale factor must remain positive")
     scalar_parameters = np.asarray(
-        [k_comoving, m_chi, g_dm, rtol, atol, max_initial_adiabaticity],
+        [k_comoving, m_chi, g_dm, rtol, atol, max_initial_adiabaticity,
+         background_consistency_tolerance],
         dtype=float,
     )
     if not np.all(np.isfinite(scalar_parameters)):
         raise ValueError("mode parameters and solver tolerances must be finite")
     if k_comoving < 0.0 or m_chi < 0.0:
         raise ValueError("wavenumber and mass must be non-negative")
-    if rtol <= 0.0 or atol <= 0.0 or max_initial_adiabaticity <= 0.0:
-        raise ValueError("solver tolerances and adiabaticity threshold must be positive")
+    if (rtol <= 0.0 or atol <= 0.0 or max_initial_adiabaticity <= 0.0
+            or background_consistency_tolerance <= 0.0):
+        raise ValueError("solver tolerances and consistency thresholds must be positive")
 
     a_spline = CubicSpline(t_arr, a_arr, extrapolate=False)
     h_spline = CubicSpline(t_arr, h_arr, extrapolate=False)
     phi_spline = CubicSpline(t_arr, phi_arr, extrapolate=False)
+    hubble_from_scale_factor = a_spline.derivative()(t_arr) / a_arr
+    hubble_consistency_scale = np.maximum(
+        np.maximum(np.abs(hubble_from_scale_factor), np.abs(h_arr)),
+        np.finfo(float).tiny,
+    )
+    hubble_consistency_relative = np.abs(
+        hubble_from_scale_factor - h_arr
+    ) / hubble_consistency_scale
+    max_hubble_consistency_error = float(np.max(hubble_consistency_relative))
+    if max_hubble_consistency_error > background_consistency_tolerance:
+        raise ValueError(
+            "inconsistent background histories: max |a_dot/a-H|/max(|a_dot/a|,|H|)="
+            f"{max_hubble_consistency_error:.6g} exceeds "
+            f"{background_consistency_tolerance:.6g}"
+        )
     h_dot_arr = h_spline.derivative()(t_arr)
     omega_chi_sq = (
         (k_comoving / a_arr) ** 2
@@ -299,6 +317,7 @@ def integrate_expanding_mode(
         "canonical_mode_dot": X_dot,
         "canonical_frequency_sq": omega_canonical_sq,
         "initial_adiabaticity": initial_adiabaticity,
+        "background_hubble_consistency_max_relative": max_hubble_consistency_error,
         "wronskian_relative_error": wronskian_relative_error,
         "final_frequency_valid": final_frequency_valid,
         "final_omega": final_omega,
