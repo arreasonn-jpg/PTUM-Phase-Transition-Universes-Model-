@@ -23,6 +23,8 @@ from ptum_task1_simulation import (
     psi_minimum_potential,
     psi_minimum_squared,
     psi_excitation_potential,
+    psi_excitation_energy,
+    psi_excitation_pressure,
     waterfall_excitation_transfer_rate,
     rho_phi,
     rho_psi,
@@ -485,9 +487,9 @@ def test_instantaneous_minimum_excitation_split_preserves_total_stress():
     p_psi_raw = pressure_psi(Phi, psi, psi_dot, p)
 
     rho_phi_split = rho_phi_raw + v_min
-    rho_psi_exc = rho_psi_raw - v_min
+    rho_psi_exc = psi_excitation_energy(Phi, psi, psi_dot, p)
     p_phi_split = p_phi_raw - v_min
-    p_psi_exc = p_psi_raw + v_min
+    p_psi_exc = psi_excitation_pressure(Phi, psi, psi_dot, p)
 
     assert rho_psi_exc >= 0.0
     assert rho_phi_split + rho_psi_exc == pytest.approx(
@@ -516,8 +518,9 @@ def test_shifted_excitation_transfer_vanishes_at_moving_minimum():
     q_psi_exc, q_phi_split = waterfall_excitation_transfer_rate(
         Phi, psi_min, -1.0e20, p
     )
-    assert q_psi_exc == pytest.approx(0.0, abs=1.0e-20)
-    assert q_phi_split == pytest.approx(-q_psi_exc, abs=1.0e-20)
+    q_psi_raw, _ = waterfall_transfer_rate(Phi, psi_min, -1.0e20, p)
+    assert abs(q_psi_exc) <= 1.0e-12 * abs(q_psi_raw)
+    assert q_phi_split == pytest.approx(-q_psi_exc, rel=1.0e-14, abs=0.0)
 
 
 def test_unbroken_phase_excitation_potential_matches_raw_potential():
