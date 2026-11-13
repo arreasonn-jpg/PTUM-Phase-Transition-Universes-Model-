@@ -772,3 +772,43 @@ def test_linear_waterfall_mode_includes_frw_rescaling_terms():
     expected = 3.0 - 1.5 * H_dot - 2.25 * H**2
     assert result["omega_sq"] == pytest.approx(expected)
     assert result["wronskian_error"] < 1.0e-7
+
+
+
+def test_linear_waterfall_spectrum_keeps_modes_independent_and_vacuum_stable():
+    from ptum_waterfall_modes import integrate_waterfall_spectrum
+
+    t = np.linspace(0.0, 20.0, 401)
+    result = integrate_waterfall_spectrum(
+        t,
+        np.ones_like(t),
+        np.zeros_like(t),
+        np.full_like(t, 2.0),
+        k_comoving_values=[0.0, 0.5, 1.0],
+        m_psi=1.0,
+        Phi_c=1.0,
+        H_dot=np.zeros_like(t),
+    )
+    assert result["k_comoving"] == pytest.approx([0.0, 0.5, 1.0])
+    assert np.all(result["log_amplification"] == pytest.approx(0.0, abs=2.0e-7))
+    assert np.all(result["particle_number_is_adiabatic"])
+    assert all(n == pytest.approx(0.0, abs=1.0e-7) for n in result["final_particle_number"])
+
+
+def test_linear_waterfall_spectrum_rejects_unsorted_or_invalid_wavenumbers():
+    from ptum_waterfall_modes import integrate_waterfall_spectrum
+
+    t = np.linspace(0.0, 1.0, 11)
+    common = (
+        t, np.ones_like(t), np.zeros_like(t), np.full_like(t, 2.0)
+    )
+    with pytest.raises(ValueError, match="strictly increasing"):
+        integrate_waterfall_spectrum(
+            *common, [0.0, 1.0, 0.5], m_psi=1.0, Phi_c=1.0,
+            H_dot=np.zeros_like(t),
+        )
+    with pytest.raises(ValueError, match="non-negative"):
+        integrate_waterfall_spectrum(
+            *common, [-1.0, 0.5], m_psi=1.0, Phi_c=1.0,
+            H_dot=np.zeros_like(t),
+        )
