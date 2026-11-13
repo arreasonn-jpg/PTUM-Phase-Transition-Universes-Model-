@@ -92,6 +92,27 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
     return all_results
 
 
+def validate_scan_results(results):
+    """Fail closed unless the complete two-scenario scan integrates successfully."""
+    expected = 2 * len(SEED_SCALES) * len(VELOCITY_SCALES) * len(PHI_OFFSETS)
+    if len(results) != expected:
+        raise RuntimeError(
+            f"Incomplete scan: expected {expected} trajectories, received {len(results)}"
+        )
+    failures = [
+        (row.get("scan_metadata", {}).get("scenario", "unknown"),
+         row.get("ic_params", {}), row.get("error", "unspecified failure"))
+        for row in results if not row.get("success", False)
+    ]
+    if failures:
+        preview = failures[:5]
+        raise RuntimeError(
+            f"{len(failures)} of {expected} scan integrations failed; "
+            f"first failures: {preview}"
+        )
+    return expected
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -104,7 +125,10 @@ def main() -> None:
     args = parser.parse_args()
 
     results = run_scan_suite(t_max=args.t_max, n_points=args.n_points)
+    # Persist the complete diagnostic summary before enforcing the CI gate,
+    # so a failed run still leaves an inspectable artifact.
     save_results(results, args.output)
+    validate_scan_results(results)
 
     for scenario_name, _params in build_scan_scenarios():
         scenario_rows = [
