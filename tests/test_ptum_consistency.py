@@ -325,6 +325,9 @@ def test_task1_scan_includes_threshold_matched_high_scale_and_low_scale_control(
     assert low.V0 == pytest.approx(1.0e56)
     assert high.damping_ratio > 1.0
     assert low.damping_ratio < 1.0
+    assert high.damping_ratio == pytest.approx(
+        np.sqrt(1.5) * high.damping_ratio_potential
+    )
     assert DEFAULT_N_POINTS >= 4001
     psi, psi_dot, offsets = build_initial_condition_grid(high)
     assert len(psi) * len(psi_dot) * len(offsets) == 50
@@ -432,6 +435,10 @@ def test_threshold_matching_uses_exact_hubble_flow_end_not_epsilon_v_estimate():
     assert result["x_end_slow_roll"] == pytest.approx(1.3871750383, rel=1.0e-8)
     assert result["x_end_hubble_flow"] == pytest.approx(0.9862280831, rel=1.0e-8)
     assert result["epsilon_V_at_hubble_end"] > 2.0
+    assert result["X_end"] ** 2 == pytest.approx(1.0 / 3.0, rel=1.0e-8)
+    assert result["V_end_over_V0"] == pytest.approx(0.0192649296, rel=1.0e-8)
+    assert result["kinetic_end_over_V0"] == pytest.approx(0.0096324648, rel=1.0e-8)
+    assert result["rho_end_over_V0"] == pytest.approx(0.0288973944, rel=1.0e-8)
     assert result["old_potential_end_threshold_lead_efolds"] == pytest.approx(
         0.31852, rel=1.0e-3
     )
