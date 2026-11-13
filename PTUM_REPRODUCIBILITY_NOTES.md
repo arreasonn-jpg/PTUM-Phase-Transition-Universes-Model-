@@ -22,9 +22,11 @@ The repository includes a clean path-limited PTUM patch for `CLASS v3.2.0`. The 
 
 ## Verification status in the current repository review (2026-11-13)
 
-The legacy URL above, `https://github.com/ErdemEsa/ptum-cosmology.git`,
-returned HTTP 404 through the GitHub repository API during this review.
-This does not establish whether the repository is private, renamed, or
+The canonical repository for this review is
+`https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-`.
+The older `https://github.com/ErdemEsa/ptum-cosmology.git` reference
+returned HTTP 404 through the GitHub repository API. This does not
+establish whether the legacy repository is private, renamed, or
 otherwise inaccessible; it means its contents and public accessibility
 could not be verified from the present connection.
 
