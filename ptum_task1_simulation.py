@@ -43,23 +43,18 @@ GEV_TO_S = 6.582e-25  # 1 GeV^-1 = 6.582e-25 s
 class PTUMParameters:
     """PTUM model parameters for the discharge simulation."""
     # Inflation/discharge parameters
-    V0: float = 1e56          # GeV^4, plateau height ~ (10^14 GeV)^4 (for underdamped)
-    lambda_phi: float = 0.02  # Fuel potential parameter
-    
+    V0: float = 1e56          # GeV^4, plateau height ~ (10^14 GeV)^4
+    lambda_phi: float = 0.02  # Dimensionless plateau-shape parameter
+    Phi_c: float = 1.4 * M_PL # GeV, independent critical field; match to Phi_end
+
     # Activation sector parameters
     m_psi: float = 1e13       # GeV, bare mass of ψ
     lambda_psi: float = 0.1   # Quartic coupling
     E_th: float = 1e16        # GeV, threshold scale
-    
-    # Derived: alpha from Phi_c = M_Pl/sqrt(lambda_phi) ~ 1.7e19 GeV
-    @property
-    def Phi_c(self) -> float:
-        """Critical threshold Φ_c = M_Pl / sqrt(lambda_phi)"""
-        return M_PL / np.sqrt(self.lambda_phi)
-    
+
     @property
     def alpha(self) -> float:
-        """Threshold coupling α = (E_th/Φ_c)²"""
+        """Threshold coupling fixed by m_eff^2(Phi_c)=0: alpha=(E_th/Phi_c)^2."""
         return (self.E_th / self.Phi_c)**2
     
     @property
@@ -429,8 +424,8 @@ def create_initial_conditions(params: PTUMParameters,
     # ε_V = ½(V'/V)²
     V = veff_phi(Phi, params)
     V_prime = dveff_dphi(Phi, params)
-    epsilon_V = 0.5 * (V_prime / V)**2 if V > 0 else 0.01
-    H = params.H_star
+    epsilon_V = 0.5 * (M_PL * V_prime / V)**2 if V > 0 else 0.01
+    H = np.sqrt(V / (3.0 * M_PL**2)) if V > 0 else params.H_star
     Phi_dot = -np.sqrt(2 * epsilon_V) * H * M_PL
     
     return InitialConditions(
@@ -462,8 +457,8 @@ def create_initial_conditions_underdamped(params: PTUMParameters,
     # Slow-roll Φ̇
     V = veff_phi(Phi, params)
     V_prime = dveff_dphi(Phi, params)
-    epsilon_V = 0.5 * (V_prime / V)**2 if V > 0 else 0.01
-    H = params.H_star
+    epsilon_V = 0.5 * (M_PL * V_prime / V)**2 if V > 0 else 0.01
+    H = np.sqrt(V / (3.0 * M_PL**2)) if V > 0 else params.H_star
     Phi_dot = -np.sqrt(2 * epsilon_V) * H * M_PL
     
     return InitialConditions(
