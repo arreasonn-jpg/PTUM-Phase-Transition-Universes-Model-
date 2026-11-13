@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 
+from ptum_inflation_background import compute_observables
 from ptum_task1_simulation import (
     M_PL,
     PTUMParameters,
@@ -26,9 +27,11 @@ DEFAULT_N_POINTS = 4001
 
 def build_scan_scenarios():
     """Return the threshold-matched high-scale benchmark and low-scale control."""
+    inflation = compute_observables(0.02, n_target=60.0, n_star=55.0)
+    phi_c_exact = inflation["x_end_hubble_flow"] * M_PL
     common = dict(
         lambda_phi=0.02,
-        Phi_c=1.387 * M_PL,
+        Phi_c=phi_c_exact,
         m_psi=1.0e13,
         lambda_psi=0.1,
         E_th=1.0e16,
