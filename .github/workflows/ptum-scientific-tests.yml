@@ -4,10 +4,13 @@ on:
   push:
     branches:
       - main
-      - ptum/scientific-consistency-fixes-2026-11-13
   pull_request:
     branches:
       - main
+
+concurrency:
+  group: ptum-scientific-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
