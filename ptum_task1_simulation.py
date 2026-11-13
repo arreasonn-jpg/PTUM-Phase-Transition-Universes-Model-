@@ -61,9 +61,9 @@ class PTUMParameters:
     
     @property
     def mu_sq(self) -> float:
-        """μ² = |m_eff²| at Φ = 1.01 Φ_c (just past threshold)"""
-        Phi = 1.01 * self.Phi_c
-        m_eff_sq = self.m_psi**2 * (1 - self.alpha * Phi**2 / self.E_th**2)
+        """Tachyonic scale |m_eff²| just below the threshold at 0.99 Phi_c."""
+        Phi = 0.99 * self.Phi_c
+        m_eff_sq = self.m_psi**2 * (self.alpha * Phi**2 / self.E_th**2 - 1)
         return m_eff_sq  # negative
     
     @property
@@ -130,8 +130,8 @@ def dveff_dphi(Phi: float, params: PTUMParameters) -> float:
 
 
 def meff_sq_psi(Phi: float, params: PTUMParameters) -> float:
-    """Effective mass squared for ψ: m²(1 - αΦ²/E_th²)"""
-    return params.m_psi**2 * (1 - params.alpha * Phi**2 / params.E_th**2)
+    """Waterfall mass: positive above Phi_c and tachyonic below it."""
+    return params.m_psi**2 * (params.alpha * Phi**2 / params.E_th**2 - 1)
 
 
 def rho_phi(Phi: float, Phi_dot: float, psi: float, params: PTUMParameters) -> float:
@@ -196,8 +196,9 @@ def background_equations(t: float, y: np.ndarray, params: PTUMParameters) -> np.
     # Hubble rate
     H = hubble_rate(Phi, Phi_dot, psi, psi_dot, params)
     
-    # Φ equation: Φ̈ + 3HΦ̇ + ∂V_eff/∂Φ - (αm²/E_th²)Φψ² = 0
-    Phi_ddot = -3 * H * Phi_dot - dveff_dphi(Phi, params) + \
+    # Waterfall coupling U_int=+alpha*m^2*Phi^2*psi^2/(2 E_th^2):
+    # Phi_ddot + 3H Phi_dot + V_eff,Phi + alpha*m^2*Phi*psi^2/E_th^2 = 0.
+    Phi_ddot = -3 * H * Phi_dot - dveff_dphi(Phi, params) - \
                (params.alpha * params.m_psi**2 / params.E_th**2) * Phi * psi**2
     
     # ψ equation: ψ̈ + 3Hψ̇ + m_eff²(Φ)ψ + λ_ψψ³ = 0
@@ -259,9 +260,9 @@ def run_simulation(params: PTUMParameters,
     coupling = params.alpha * params.m_psi**2 / params.E_th**2
     m_eff_sq_arr = np.array([meff_sq_psi(x, params) for x in Phi])
     dV_dPhi_arr = np.array([dveff_dphi(x, params) for x in Phi])
-    Phi_ddot_arr = -3.0 * H * Phi_dot - dV_dPhi_arr + coupling * Phi * psi**2
+    Phi_ddot_arr = -3.0 * H * Phi_dot - dV_dPhi_arr - coupling * Phi * psi**2
     psi_ddot_arr = -3.0 * H * psi_dot - m_eff_sq_arr * psi - params.lambda_psi * psi**3
-    dm_eff_sq_dPhi_arr = -2.0 * coupling * Phi
+    dm_eff_sq_dPhi_arr = 2.0 * coupling * Phi
     rho_dot_chain_rule = (
         Phi_dot * (Phi_ddot_arr + dV_dPhi_arr)
         + psi_dot * psi_ddot_arr
@@ -459,7 +460,8 @@ def create_initial_conditions(params: PTUMParameters,
         InitialConditions object
     """
     Phi_c = params.Phi_c
-    Phi = Phi_c + phi_offset
+    # Positive offset means the field has rolled below the threshold.
+    Phi = Phi_c - phi_offset
     
     # Slow-roll Φ̇ at threshold: Φ̇ ≈ -√(2ε_V) H M_Pl
     # ε_V = ½(V'/V)²
@@ -480,15 +482,15 @@ def create_initial_conditions(params: PTUMParameters,
 def create_initial_conditions_underdamped(params: PTUMParameters,
                                            psi_init: float = 0.0,
                                            psi_dot_init: float = 0.0,
-                                           phi_ratio: float = 1.01) -> InitialConditions:
+                                           phi_ratio: float = 0.99) -> InitialConditions:
     """
-    Create initial conditions for underdamped regime (Phi > Phi_c).
+    Create initial conditions on the tachyonic side (Phi < Phi_c).
     
     Args:
         params: PTUM parameters
         psi_init: Initial ψ [default 0 = top of barrier]
         psi_dot_init: Initial ψ̇ [default 0]
-        phi_ratio: Φ/Φ_c ratio [default 1.01 = just past threshold]
+        phi_ratio: Φ/Φ_c ratio [default 0.99 = just below threshold]
     
     Returns:
         InitialConditions object
@@ -694,7 +696,7 @@ def run_baseline_tests():
     print("PTUM Task 1: Tachyonic-to-Quartic Transition Simulation")
     print("=" * 60)
     
-    # Paper benchmark parameters - UNDAMPED regime (V0=1e56)
+    # Low-scale control benchmark - underdamped regime (V0=1e56)
     params = PTUMParameters(
         V0=1e56,
         lambda_phi=0.02,
@@ -723,12 +725,12 @@ def run_baseline_tests():
     t_span = (0, 200 / mu)
     t_eval = np.linspace(t_span[0], t_span[1], 20000)
     
-    # Test 1: Baseline - field at top of barrier with small quantum kick, Phi = 1.01 Phi_c
+    # Test 1: Waterfall field seeded just below the critical threshold
     print("\n" + "=" * 60)
-    print("Test 1: Baseline (psi=0.01*psi_0, psi_dot=0, Phi=1.01 Phi_c)")
+    print("Test 1: Waterfall seed (psi=0.01*psi_0, psi_dot=0, Phi=0.99 Phi_c)")
     print("=" * 60)
     
-    ic1 = create_initial_conditions_underdamped(params, psi_init=0.01*params.psi_0, psi_dot_init=0.0, phi_ratio=1.01)
+    ic1 = create_initial_conditions_underdamped(params, psi_init=0.01*params.psi_0, psi_dot_init=0.0, phi_ratio=0.99)
     result1 = run_simulation(params, ic1, t_span, t_eval)
     classification1 = classify_outcome(result1, params)
     
@@ -748,7 +750,7 @@ def run_baseline_tests():
     print("=" * 60)
     
     psi_dot_init = 0.1 * mu * params.psi_0
-    ic2 = create_initial_conditions_underdamped(params, psi_init=0.01*params.psi_0, psi_dot_init=psi_dot_init, phi_ratio=1.01)
+    ic2 = create_initial_conditions_underdamped(params, psi_init=0.01*params.psi_0, psi_dot_init=psi_dot_init, phi_ratio=0.99)
     result2 = run_simulation(params, ic2, t_span, t_eval)
     classification2 = classify_outcome(result2, params)
     
