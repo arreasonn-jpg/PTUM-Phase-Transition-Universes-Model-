@@ -585,3 +585,15 @@ the thermal vacuum bias, and the domain-wall network are not computed.
 The numerical background remains the \(\Phi\)--\(\psi\) truncation.
 The full SM reheating rate and energy partition are therefore still
 unavailable.
+
+
+
+## 36. LaTeX spinor notation and on-shell SM Hilbert-tensor bookkeeping
+
+The latest 43-test workflow run passed its Python regression step, but the LaTeX job failed because the newly introduced `\\mathscr D_\\mu` spinor derivative was used without loading the `mathrsfs` package. The preamble now loads `mathrsfs`; a regression test checks that the package declaration accompanies the notation. The full LaTeX build must still be rerun.
+
+A separate Hilbert-tensor audit addressed the double-counting concern in the classical chiral-SM action. The displayed fermion tensor (T_f^{\\mu\\nu}) is explicitly the on-shell symmetric tensor, with the ordinary SM Yukawa equations of motion included. Its expression must therefore not be supplemented by a second explicit (-g^{\\mu\\nu}U_{{\\rm SM},Y}) term. The equation for (T_{{\\rm SM},0}^{\\mu\\nu}) now reads (T_{\\rm gauge}^{\\mu\\nu}+T_H^{\\mu\\nu}+T_f^{\\mu\\nu}), and the text explains why the ordinary Yukawa potential is already encoded in the on-shell fermion expression.
+
+The distinct PTUM operator (U_Y=\\psi\\mathcal O_{\\rm SM}/\\Lambda) is not part of (S_{\\rm SM}^{(0)}) and remains assigned exactly once through
+(T_{\\rm SM}^{\\mu\\nu}=T_{{\\rm SM},0}^{\\mu\\nu}-g^{\\mu\\nu}U_Y).
+The formal variational definition now explicitly differentiates (S_{\\rm SM}^{(0)}), not an ambiguously named full SM action. Two source-level regression tests guard the package declaration and this sector bookkeeping. These are consistency guards; a full independent vierbein-variation calculation and numerical SM-sector conservation test remain outstanding.
