@@ -196,3 +196,24 @@ def test_reproducible_inflation_background_scan():
     assert reference["r_hubble_flow_1st_order"] == pytest.approx(
         0.02195265, abs=2.0e-7
     )
+
+
+
+def test_mathieu_floquet_solver_has_unit_wronskian_and_stable_q_zero():
+    from ptum_floquet import floquet_diagnostic
+
+    result = floquet_diagnostic(A_k=0.7, q=0.0)
+    assert not result["unstable"]
+    assert result["mu_z"] == pytest.approx(0.0)
+    assert result["det_monodromy"] == pytest.approx(1.0, abs=1.0e-8)
+
+
+def test_mathieu_primary_resonance_matches_narrow_band_limit():
+    from ptum_floquet import floquet_diagnostic
+
+    q = 0.01
+    result = floquet_diagnostic(A_k=1.0, q=q)
+    assert result["unstable"]
+    # For |q| << 1, the primary-band exponent at A=1 is mu_z ~ |q|/2.
+    assert result["mu_z"] == pytest.approx(abs(q) / 2.0, rel=2.0e-3)
+    assert result["det_monodromy"] == pytest.approx(1.0, abs=1.0e-8)
