@@ -2,29 +2,30 @@
 """
 PTUM Task 1: Tachyonic-to-Quartic Transition Numerical Simulation
 
-This module implements the coupled background evolution equations for the
-PTUM discharge dynamics to determine whether and under what conditions
-the proxy field ψ transitions to a quartic-dominated oscillatory regime
-with radiation-like equation of state (w = 1/3).
+This module is a homogeneous two-field truncation of the PTUM
+discharge sector. It evolves only the fuel field Phi and proxy field psi.
+The Friedmann source is rho_Phi + rho_psi; dark matter chi, residual
+dark energy Phi_res, Standard Model radiation, fermions, and their
+backreaction are NOT integrated here. It therefore tests the local
+two-field tachyonic-to-quartic dynamics, not the complete cosmological
+history or the post-discharge relic abundance.
 
-Equations (from main.tex Sec 3.5.6, Eqs 3.18-3.21):
-  Φ̈ + 3HΦ̇ + ∂V_eff/∂Φ - (αm²/E_th²)Φψ² = 0
-  ψ̈ + 3Hψ̇ + m²(1 - αΦ²/E_th²)ψ + λ_ψψ³ = 0
-  H² = (1/3M_Pl²)(ρ_Φ + ρ_ψ + ρ_χ + ρ_res + ρ_rad)
+Equations (from main.tex Sec. 3.5.6):
+  Phi_ddot + 3H Phi_dot + dV_eff/dPhi
+      - (alpha m^2/E_th^2) Phi psi^2 = 0
+  psi_ddot + 3H psi_dot + m^2(1-alpha Phi^2/E_th^2)psi
+      + lambda_psi psi^3 = 0
+  H^2 = (rho_Phi + rho_psi)/(3 M_Pl^2)
 
-Energy densities (interaction potential assigned once, to ψ):
-  ρ_Φ = ½Φ̇² + V_eff(Φ)
-  ρ_ψ = ½ψ̇² + ½m_eff²(Φ)ψ² + ¼λ_ψψ⁴
-  ρ_total = ρ_Φ + ρ_ψ
-
-Pressures:
-  p_Φ = ½Φ̇² - V_eff(Φ)
-  p_ψ = ½ψ̇² - ½m_eff²(Φ)ψ² - ¼λ_ψψ⁴
+Energy densities (interaction potential assigned once, to psi):
+  rho_Phi = 1/2 Phi_dot^2 + V_eff(Phi)
+  rho_psi = 1/2 psi_dot^2 + 1/2 m_eff^2(Phi) psi^2
+            + 1/4 lambda_psi psi^4
 
 Diagnostics:
-  Q = λ_ψ⟨ψ⁴⟩ / ⟨|m_eff²(Φ)|ψ²⟩, evaluated per half-cycle
-  R_vir = ⟨K⟩ / (2⟨V_4⟩), which tends to 1 for quartic oscillations
-  C_FRW = dρ_total/dt + 3H(ρ_total+p_total)
+  Q = lambda_psi <psi^4> / <|m_eff^2(Phi)| psi^2>, per half-cycle
+  R_vir = <K> / (2<V_4>), tending to 1 for quartic oscillations
+  C_FRW = d rho_total/dt + 3H(rho_total+p_total)
 """
 
 import numpy as np
@@ -80,9 +81,21 @@ class PTUMParameters:
         return np.sqrt(self.V0 / 3) / M_PL
     
     @property
+    def H_threshold_potential(self) -> float:
+        """Potential-dominated Hubble estimate evaluated at Phi=Phi_c."""
+        x = self.lambda_phi * (self.Phi_c / M_PL)**2
+        V_c = self.V0 * (-np.expm1(-x))
+        return np.sqrt(V_c / (3.0 * M_PL**2))
+
+    @property
+    def damping_ratio_plateau(self) -> float:
+        """3 H_star/(2 mu), a plateau-scale estimate, not the local trigger value."""
+        return 3.0 * self.H_star / (2.0 * self.mu)
+
+    @property
     def damping_ratio(self) -> float:
-        """3H/(2μ) - determines underdamped (<1) vs overdamped (>1)"""
-        return 3 * self.H_star / (2 * self.mu)
+        """Potential-dominated 3 H(Phi_c)/(2 mu) at the discharge threshold."""
+        return 3.0 * self.H_threshold_potential / (2.0 * self.mu)
 
 
 @dataclass
@@ -642,7 +655,9 @@ def run_baseline_tests():
     print(f"  mu = {params.mu:.2e} GeV")
     print(f"  psi_0 = {params.psi_0:.2e} GeV")
     print(f"  H_* = {params.H_star:.2e} GeV")
-    print(f"  3H/(2mu) = {params.damping_ratio:.3f}")
+    print(f"  H_c (potential dominated) = {params.H_threshold_potential:.2e} GeV")
+    print(f"  3H_c/(2mu) = {params.damping_ratio:.3f}")
+    print(f"  3H_*/(2mu) = {params.damping_ratio_plateau:.3f}")
     
     # Time span: ~100 oscillations
     mu = params.mu
