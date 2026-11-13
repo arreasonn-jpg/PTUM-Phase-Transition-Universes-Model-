@@ -546,3 +546,50 @@ $H_{c,\rm exact}=\sqrt{3/2}\,H_{c,V}$ for a canonical single-field endpoint at $
 The workflow's scan-artifact upload also produced a secondary error because pytest stopped the job before the scan output file existed. The upload step now uses `if: always()` with `if-no-files-found: ignore`: it preserves an artifact when the scan ran, without masking an earlier test failure with a second missing-file failure.
 
 These are corrective changes after the failed run. A new CI run is required; the latest suite and scan are not yet claimed to pass.
+
+
+## 35. Residual-potential dimensions, radiation fractions and EFT cutoff
+
+A dimensional audit of the residual dark-energy potential found that the exponentials were written as $e^{-\kappa\Phi_{\rm res}^2}$ and $e^{-\lambda_{\rm res}\Phi_{\rm res}^2}$ while the manuscript simultaneously treated $\kappa$ and $\lambda_{\rm res}$ as dimensionless and $\Phi_{\rm res}$ as a canonical dimension-one field in GeV units. These statements cannot all hold. The potential is now written using $\Phi_{\rm res}/M_{\rm Pl}$ in both exponentials. The first and second derivatives have been written explicitly, and a new Python module implements the potential and derivatives; finite-difference regression tests check both derivatives. The previously reported viable-region percentages remain author-reported until the original scan convention and parameter grid are made reproducible against this explicit normalization.
+
+The post-creation radiation-budget equation also conflated the pfd-to-neutrino-equivalent ratio with the fraction of all radiation. With $C_\nu=(7/8)(4/11)^{4/3}\simeq0.2271$,
+$\rho_\psi/\rho_{\nu,\rm std}=\Delta N_{\rm fluid}/N_{\rm eff}^{\rm std}=3.3$--$10.2\%$ over the quoted interval, but the pfd share of total radiation including itself is
+\[
+f_\psi^{\rm rad}=
+\frac{C_\nu\Delta N_{\rm fluid}}
+{1+C_\nu(N_{\rm eff}^{\rm std}+\Delta N_{\rm fluid})}
+\simeq1.3\\text{--}4.0\\%.
+\]
+A new `ptum_radiation_budget.py` module implements these conversions with explicit denominator labels and validation tests. The quoted $\mu/\Lambda$ mapping is now identified as a separate reheating-EFT estimate that cannot be inferred from these fractions without branching and thermalization dynamics.
+
+The manuscript's absolute statement that a perfect proxy fluid produces no CMB peak displacement has been narrowed. The ideal tightly coupled $c_s^2=1/3$, $\sigma=0$ closure omits the characteristic free-streaming anisotropic-stress phase-shift contribution; it does not guarantee that background or other perturbation effects leave every peak location unchanged. The full Boltzmann calculation must isolate the free-streaming contribution from other peak shifts.
+
+The EFT validity section contained a more serious conceptual error: it identified $4\pi\psi_0/\sqrt{\lambda_\psi}$ as a strong-coupling energy cutoff of a canonical renormalizable quartic scalar theory. The quartic $2\to2$ tree amplitude is energy-independent, so that field-dependent expression is not a cutoff derived from this interaction. The expression and the unsupported numerical cutoff claim have been withdrawn. The Wilsonian $\Lambda_{\rm EFT}$ is now explicitly an independent UV-dependent scale. The dimension-five $\psi\mathcal O_{\rm SM}/\Lambda$ operator requires a coupled-channel partial-wave analysis and Wilson-coefficient bounds before a numerical cutoff can be claimed. The waterfall's negative mass squared below threshold is also correctly identified as an intended tachyonic instability, not as an absence of tachyonic modes.
+
+The claim/EFT audit branch currently contains 40 regression tests (35 inherited tests plus five radiation-budget and residual-potential tests). These five new tests have not yet been run in GitHub Actions. No new residual-DE viability percentage, CMB forecast, reheating coupling or UV cutoff is claimed as independently reproduced by these changes.
+
+
+## 36. Linear quantum waterfall-mode solver
+
+A first linear inhomogeneous stage has been added in `ptum_waterfall_modes.py`. For a supplied homogeneous FRW background it evolves the canonical variable $v_k=a^{3/2}\delta\psi_k$ with
+\[
+\ddot v_k+\Omega_k^2(t)v_k=0,
+\quad
+\Omega_k^2=\frac{k^2}{a^2}+m_{\rm eff}^2(\Phi)
++3\lambda_\psi\bar\psi^2
+-\frac32\dot H-\frac94H^2.
+\]
+The initial mode is the leading adiabatic vacuum. The solver computes the WKB adiabaticity parameter and rejects an initial state outside the declared adiabatic threshold. It evolves the Ermakov-Pinney amplitude and phase, which preserves the canonical Wronskian even through the tested tachyonic interval, and reports tachyonic time fraction and amplification. It only returns a final particle number when the final frequency is positive and adiabatic; if the final mode remains tachyonic or non-adiabatic, particle number is explicitly unavailable.
+
+Three regression tests cover a static stable vacuum (no spurious particle production and Wronskian preservation), tachyonic growth (large mode amplification but no invalid final particle number), and rejection of an initially tachyonic state.
+
+This is a linear mode calculation on a prescribed background. It does not yet evolve a self-consistent coupled background with mode backreaction, integrate the full momentum spectrum, renormalize the fluctuation stress tensor, include rescattering, or resolve the real-$\psi$ domain-wall network. It is therefore a meaningful step toward the inhomogeneous waterfall gate, not a relic-abundance or nonlinear-lattice result. The branch now contains 46 tests, including explicit FRW-rescaling and discrete-momentum-spectrum regressions; CI verification is pending.
+
+
+## 37. Explicit curved-space Standard Model action and Hilbert tensors
+
+The microscopic-transfer section previously admitted that the uncoupled Standard Model action and its Hilbert tensor were not explicitly specified. The manuscript now writes the minimal three-generation Standard Model action on a torsion-free curved spacetime, including the $SU(3)_c$, $SU(2)_L$ and $U(1)_Y$ gauge kinetic terms, the Higgs kinetic term and potential, chiral fermion kinetic terms, and the three SM Yukawa structures. It lists the gauge representations and gives the spin-plus-gauge covariant derivative with tetrad gamma matrices. The benchmark explicitly sets the Higgs curvature coupling $\\xi_H=0$ at the stated renormalization scale, while noting that $\\xi_H R H^\\dagger H$ is an allowed curved-space EFT operator and must be included in a broader UV treatment.
+
+The corresponding gauge, Higgs and on-shell symmetric fermion Hilbert/Belinfante tensors are displayed explicitly, with the standard SM Yukawa potential contribution included in $T_{\rm SM,0}^{\mu\nu}$. The PTUM dimension-five operator remains a separate interaction assigned to the SM sector under the declared split.
+
+This closes the earlier omission of the minimal uncoupled SM field content and its standard Hilbert tensor at the displayed EFT order. It does **not** yet constitute the complete interacting-sector proof: the covariant divergences of the full Higgs and chiral-fermion tensors with the PTUM reheating operators must still be derived line by line, including the gauge-current and flavour-matrix terms. Gate 3 therefore remains partial.
