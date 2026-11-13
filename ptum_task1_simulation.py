@@ -265,10 +265,12 @@ def waterfall_excitation_transfer_rate(
 
 
 def w_psi(Phi: float, psi: float, psi_dot: float, params: PTUMParameters) -> float:
-    """Equation of state parameter w_ψ = p_ψ/ρ_ψ"""
+    """Raw unshifted w_psi; NaN when the sector density is numerically zero."""
     p = pressure_psi(Phi, psi, psi_dot, params)
     rho = rho_psi(Phi, psi, psi_dot, params)
-    return p / rho if rho != 0 else 0.0
+    if not np.isfinite(rho) or abs(rho) <= np.finfo(float).tiny:
+        return float("nan")
+    return p / rho
 
 
 def hubble_rate(Phi: float, Phi_dot: float, psi: float, psi_dot: float, 
