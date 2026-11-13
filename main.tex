@@ -690,6 +690,77 @@ A numerical background solution, followed where necessary by nonlinear
 lattice evolution, is required to demonstrate that a chosen benchmark
 actually reaches and remains in this regime.
 
+\subsubsection{Linear waterfall modes across the threshold}
+\label{sec:linear_waterfall_modes}
+
+For the homogeneous \(\bar\psi=0\) background used in the linear mode
+calculation, and with the expectation value of the SM source operator
+neglected, the zero-field solution remains an exact classical solution
+even after the effective mass changes sign. The instability is then
+carried by Fourier fluctuations rather than represented by an arbitrary
+homogeneous classical seed. Linearizing about this background gives
+\begin{equation}
+\delta\ddot\psi_k+3H\delta\dot\psi_k+
+\left(\frac{k^2}{a^2}+m_{\rm eff}^2(\Phi(t))\right)\delta\psi_k=0,
+\qquad
+m_{\rm eff}^2(\Phi)=m_\psi^2
+\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right).
+\label{eq:waterfall_mode_eom}
+\end{equation}
+With the canonical variable \(X_k=a^{3/2}\delta\psi_k\), the equation is
+\begin{equation}
+\ddot X_k+\Omega_k^2 X_k=0,\qquad
+\Omega_k^2=\frac{k^2}{a^2}+m_{\rm eff}^2
+-\frac{3}{2}\dot H-\frac{9}{4}H^2.
+\label{eq:waterfall_canonical_frequency}
+\end{equation}
+The expansion terms in \(\Omega_k^2\) are retained; consequently the
+canonical-frequency sign is not identified with the physical
+tachyonic condition \(k^2/a^2+m_{\rm eff}^2<0\).
+
+Initial conditions are imposed in the stable phase at a time \(t_i\)
+for which \(\Omega_{k,i}^2>0\) and the first-order adiabaticity measure
+\(|\dot\Omega_{k,i}/\Omega_{k,i}^2|\) is below the chosen numerical
+acceptance threshold. The first-order WKB vacuum is
+\begin{equation}
+X_k(t_i)=\frac{1}{\sqrt{2\Omega_{k,i}}},\qquad
+\dot X_k(t_i)=
+\left(-i\Omega_{k,i}
+-\frac{\dot\Omega_{k,i}}{2\Omega_{k,i}}\right)X_k(t_i),
+\label{eq:waterfall_wkb_initial}
+\end{equation}
+with canonical Wronskian
+\begin{equation}
+X_k\dot X_k^*-\dot X_kX_k^*=i.
+\label{eq:waterfall_wronskian}
+\end{equation}
+Intermediate intervals with \(\Omega_k^2<0\) are integrated directly.
+An instantaneous occupation number is reported only if the final
+canonical frequency is real and positive and the Wronskian drift is
+within the numerical tolerance \(10^{-7}\). If strong tachyonic growth
+causes the finite-precision Wronskian diagnostic to fail, the occupation
+number is withheld rather than interpreted as a physical prediction.
+This threshold is a numerical reliability criterion, not a physical
+constant.
+
+The implementation constructs the pre-threshold state from the
+single-field inflationary background and evolves the \(\bar\psi=0\)
+trajectory through \(\Phi_c\), using dimensionless variables
+\(\tau=\mu t\), \(H/\mu\), \(m_{\rm eff}^2/\mu^2\), and \(k/\mu\).
+A finite-band estimate,
+\begin{equation}
+n_{\rm com}^{\rm band}=
+\frac{1}{2\pi^2}\int_{k_{\min}}^{k_{\max}}dk\,k^2 n_k,
+\label{eq:waterfall_finite_band_number}
+\end{equation}
+does not include the uncomputed infrared or ultraviolet tails; momentum
+range and resolution convergence are required before any abundance
+interpretation. This is a linear calculation on a prescribed background:
+it does not include mode backreaction, rescattering, nonlinear
+fragmentation, or a self-consistent reheating history. It therefore
+establishes neither a nonlinear waterfall completion nor the later
+radiation-like equation of state by itself.
+
 \subsubsection{Perturbations and sound-speed terminology}
 
 For a canonical scalar field with Lagrangian

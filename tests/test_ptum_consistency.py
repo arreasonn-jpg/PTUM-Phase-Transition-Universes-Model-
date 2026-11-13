@@ -932,6 +932,46 @@ def test_waterfall_mode_uses_adiabatic_vacuum_and_preserves_wronskian():
 
 
 
+
+def test_manuscript_documents_linear_waterfall_mode_hierarchy():
+    from pathlib import Path
+
+    source = Path("main.tex").read_text(encoding="utf-8")
+    for required in (
+        r"\label{sec:linear_waterfall_modes}",
+        r"\label{eq:waterfall_mode_eom}",
+        r"\label{eq:waterfall_canonical_frequency}",
+        r"\label{eq:waterfall_wkb_initial}",
+        r"\label{eq:waterfall_wronskian}",
+        r"\label{eq:waterfall_finite_band_number}",
+        "occupation number is withheld",
+        "does not include mode backreaction",
+    ):
+        assert required in source
+
+
+def test_waterfall_finite_band_spectrum_reports_units_and_wronskian_status():
+    from ptum_waterfall_modes import (
+        build_waterfall_background,
+        integrate_waterfall_spectrum,
+    )
+
+    background = build_waterfall_background(
+        PTUMParameters(V0=1.0e64),
+        start_fraction=0.05,
+        t_end_mu=1.0,
+        n_points=1001,
+    )
+    spectrum = integrate_waterfall_spectrum(
+        background, [60.0, 80.0, 100.0]
+    )
+    assert spectrum["finite_band_only"]
+    assert spectrum["all_wronskians_valid"]
+    assert spectrum["number_density_unit"] == "mu^3"
+    assert spectrum["momentum_unit"] == "mu"
+    assert np.isfinite(spectrum["n_comoving_finite_band"])
+
+
 def test_deep_tachyonic_growth_with_wronskian_drift_withholds_particle_number():
     from ptum_waterfall_modes import build_waterfall_background, integrate_waterfall_mode
 
