@@ -49,7 +49,7 @@ $U_{\Phi\psi}=+\tfrac12(\alpha m_\psi^2/E_{\rm th}^2)\Phi^2\psi^2$;
 the scalar equation and sector transfer-current signs have been
 rederived accordingly.
 
-The threshold-matched scan now sets $\Phi_c$ from the exact Hubble-flow endpoint, not the older potential slow-roll estimate $\Phi_{\epsilon_V=1}\simeq1.387M_{\rm Pl}$. For $\lambda_\Phi=0.02$, the exact endpoint is $0.986228M_{\rm Pl}$. The potential-only damping estimate is $3H_{c,V}/(2\mu)\simeq3.48$, while the exact $\epsilon_H=1$ endpoint including kinetic energy gives $3H_c/(2\mu)\simeq4.26$. The endpoint energy is $\rho_{\rm end}/V_0\simeq0.02889739$ (with $V_{\rm end}/V_0\simeq0.01926493$ and $K_{\rm end}/V_0\simeq0.00963246$).
+The threshold-matched scan now sets $\Phi_c$ from the exact Hubble-flow endpoint, not the older potential slow-roll estimate $\Phi_{\epsilon_V=1}\simeq1.387M_{\rm Pl}$. For $\lambda_\Phi=0.02$, the exact endpoint is $0.986228M_{\rm Pl}$. The potential-only damping estimate is $3H_{c,V}/(2\mu)\simeq3.50$, while the exact $\epsilon_H=1$ endpoint including kinetic energy gives $3H_c/(2\mu)\simeq4.29$. The endpoint energy is $\rho_{\rm end}/V_0\simeq0.02889739$ (with $V_{\rm end}/V_0\simeq0.01926493$ and $K_{\rm end}/V_0\simeq0.00963246$).
 
 The old 36-point scan used the opposite sign and is historical only.
 The revised code, manuscript, and tests must pass a fresh CI scan
