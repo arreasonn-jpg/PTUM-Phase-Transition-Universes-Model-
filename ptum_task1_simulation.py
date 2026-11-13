@@ -116,9 +116,19 @@ def meff_sq_psi(Phi: float, params: PTUMParameters) -> float:
 
 
 def rho_phi(Phi: float, Phi_dot: float, psi: float, params: PTUMParameters) -> float:
-    """Energy density of fuel field Φ"""
-    m_eff_sq = meff_sq_psi(Phi, params)
-    return 0.5 * Phi_dot**2 + veff_phi(Phi, params) + 0.5 * m_eff_sq * psi**2
+    """Fuel-sector density; the interaction potential is assigned only to ψ."""
+    return 0.5 * Phi_dot**2 + veff_phi(Phi, params)
+
+
+def pressure_phi(Phi: float, Phi_dot: float, params: PTUMParameters) -> float:
+    """Pressure of the canonical fuel field Φ."""
+    return 0.5 * Phi_dot**2 - veff_phi(Phi, params)
+
+
+def rho_total(Phi: float, Phi_dot: float, psi: float, psi_dot: float,
+              params: PTUMParameters, rho_other: float = 0.0) -> float:
+    """Total homogeneous density; the Φ-ψ interaction is counted exactly once."""
+    return rho_phi(Phi, Phi_dot, psi, params) + rho_psi(Phi, psi, psi_dot, params) + rho_other
 
 
 def rho_psi(Phi: float, psi: float, psi_dot: float, params: PTUMParameters) -> float:
@@ -149,8 +159,10 @@ def w_psi(Phi: float, psi: float, psi_dot: float, params: PTUMParameters) -> flo
 def hubble_rate(Phi: float, Phi_dot: float, psi: float, psi_dot: float, 
                 params: PTUMParameters, rho_other: float = 0.0) -> float:
     """Hubble rate H = sqrt(ρ_total/3M_Pl²)"""
-    rho_tot = rho_phi(Phi, Phi_dot, psi, params) + rho_psi(Phi, psi, psi_dot, params) + rho_other
-    return np.sqrt(max(rho_tot, 0) / (3 * M_PL**2))
+    rho_tot = rho_total(Phi, Phi_dot, psi, psi_dot, params, rho_other)
+    if not np.isfinite(rho_tot) or rho_tot <= 0.0:
+        raise ValueError(f"Non-positive or non-finite total density: {rho_tot}")
+    return np.sqrt(rho_tot / (3 * M_PL**2))
 
 
 def background_equations(t: float, y: np.ndarray, params: PTUMParameters) -> np.ndarray:
@@ -217,7 +229,16 @@ def run_simulation(params: PTUMParameters,
     
     rho_phi_arr = np.array([rho_phi(Phi[i], Phi_dot[i], psi[i], params) for i in range(len(t))])
     rho_psi_arr = np.array([rho_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
+    p_phi_arr = np.array([pressure_phi(Phi[i], Phi_dot[i], params) for i in range(len(t))])
     p_psi_arr = np.array([pressure_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
+    rho_total_arr = rho_phi_arr + rho_psi_arr
+    p_total_arr = p_phi_arr + p_psi_arr
+    continuity_residual = np.gradient(rho_total_arr, t) + 3.0 * H * (rho_total_arr + p_total_arr)
+    continuity_scale = np.maximum(
+        np.abs(np.gradient(rho_total_arr, t)) + 3.0 * np.abs(H * (rho_total_arr + p_total_arr)),
+        np.finfo(float).tiny
+    )
+    continuity_residual_relative = continuity_residual / continuity_scale
     w_psi_arr = np.array([w_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
     
     # Shifted potential and virial diagnostics
@@ -241,7 +262,12 @@ def run_simulation(params: PTUMParameters,
         'H': H,
         'rho_phi': rho_phi_arr,
         'rho_psi': rho_psi_arr,
+        'rho_total': rho_total_arr,
+        'p_phi': p_phi_arr,
         'p_psi': p_psi_arr,
+        'p_total': p_total_arr,
+        'continuity_residual': continuity_residual,
+        'continuity_residual_relative': continuity_residual_relative,
         'w_psi': w_psi_arr,
         'w_psi_avg': w_avg,
         't_avg': t_avg,
