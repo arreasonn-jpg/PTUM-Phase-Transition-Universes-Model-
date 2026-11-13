@@ -316,7 +316,7 @@ def test_task1_scan_includes_threshold_matched_high_scale_and_low_scale_control(
     }
     high = scenarios["high_scale_threshold_matched"]
     low = scenarios["low_scale_underdamped_control"]
-    assert high.Phi_c / M_PL == pytest.approx(1.387)
+    assert high.Phi_c / M_PL == pytest.approx(0.9862280831209068, rel=1.0e-8)
     assert high.V0 == pytest.approx(1.0e64)
     assert low.V0 == pytest.approx(1.0e56)
     assert high.damping_ratio > 1.0
@@ -353,7 +353,7 @@ def test_threshold_matched_inflation_starts_dormant_and_becomes_tachyonic():
     # and negative after the field crosses below the critical value.
     p = PTUMParameters(
         lambda_phi=0.02,
-        Phi_c=1.387 * M_PL,
+        Phi_c=0.9862280831209068 * M_PL,
         m_psi=1.0e13,
         E_th=1.0e16,
     )
@@ -414,7 +414,7 @@ def test_quadratic_candidate_requires_its_own_virial_balance():
 
 
 def test_positive_phi_offset_initializes_below_threshold_on_waterfall_side():
-    p = PTUMParameters(Phi_c=1.387 * M_PL)
+    p = PTUMParameters(Phi_c=0.9862280831209068 * M_PL)
     ic = create_initial_conditions(p, psi_init=0.01 * p.psi_0, phi_offset=0.01 * p.Phi_c)
     assert ic.Phi < p.Phi_c
     assert meff_sq_psi(ic.Phi, p) < 0.0
