@@ -3725,8 +3725,12 @@ X_k(t_0)=\frac{1}{\sqrt{2\Omega_{k,0}}},
 \left(-i\Omega_{k,0}
 -\frac{\dot\Omega_{k,0}}{2\Omega_{k,0}}\right)X_k(t_0).
 \]
-At a final time with positive \(\Omega_k^2\), the code reports the
-instantaneous adiabatic occupation estimate
+Only the initial time must admit a real adiabatic vacuum. The
+integrator can evolve through intermediate intervals with
+\(\Omega_k^2<0\), which correspond to tachyonic growth of the
+canonical mode; a particle number is assigned only if the final
+\(\Omega_k^2\) is again positive. At a final time with positive
+\(\Omega_k^2\), the code reports the instantaneous adiabatic occupation estimate
 \[
 n_k=\frac{|\dot X_k|^2+\Omega_k^2|X_k|^2}{2\Omega_k}-\frac12
 \]
