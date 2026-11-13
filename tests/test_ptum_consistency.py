@@ -814,3 +814,28 @@ def test_expanding_mode_solver_rejects_inconsistent_scale_factor_and_hubble():
             m_chi=1.0,
             g_dm=0.0,
         )
+
+
+
+def test_expanding_mode_solver_allows_intermediate_tachyonic_canonical_frequency():
+    from scipy.integrate import cumulative_trapezoid
+    from ptum_floquet import integrate_expanding_mode
+
+    t = np.linspace(0.0, 3.0, 1201)
+    H = np.sin(np.pi * t / 3.0) ** 4
+    log_a = np.concatenate(([0.0], cumulative_trapezoid(H, t)))
+    a = np.exp(log_a)
+    result = integrate_expanding_mode(
+        t=t,
+        scale_factor=a,
+        hubble=H,
+        phi_res=np.zeros_like(t),
+        k_comoving=0.0,
+        m_chi=1.0,
+        g_dm=0.0,
+    )
+    assert result["integration_success"]
+    assert np.min(result["canonical_frequency_sq"]) < 0.0
+    assert result["final_frequency_valid"]
+    assert np.isfinite(result["particle_number"])
+    assert result["wronskian_relative_error"] < 1.0e-7
