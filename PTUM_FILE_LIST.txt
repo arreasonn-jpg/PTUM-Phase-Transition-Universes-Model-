@@ -40,9 +40,11 @@ PTUM_SCIENTIFIC_CORRECTIONS_2026-11-13.md
 ptum_task1_simulation.py
 ptum_inflation_background.py
 ptum_floquet.py
+ptum_task1_scan.py
 tests/test_ptum_consistency.py
 
 # Notes
 The tracked main.pdf predates the current manuscript corrections and
-must not be treated as the current compiled version until the LaTeX
-build job succeeds and a fresh PDF is generated.
+must not be treated as the current compiled version. The CI workflow
+publishes a fresh compiled PDF artifact and the corrected 18-point
+scan JSON as separate downloadable artifacts.
