@@ -384,3 +384,18 @@ def test_quadratic_virial_ratio_is_unavailable_for_tachyonic_mass():
 
     ratio = compute_quadratic_virial_ratio(t, psi, psi_dot, Phi, p)
     assert np.all(np.isnan(ratio))
+
+
+
+def test_quadratic_candidate_requires_its_own_virial_balance():
+    base = {
+        "success": True,
+        "w_psi_avg": np.array([0.0, 0.02, -0.02]),
+        "Q": np.full(100, 0.1),
+        "virial_ratio": np.full(100, 1.0e6),
+    }
+    no_balance = dict(base, quadratic_virial_ratio=np.full(100, 4.0))
+    with_balance = dict(base, quadratic_virial_ratio=np.full(100, 1.0))
+
+    assert classify_outcome(no_balance, PTUMParameters())["regime"] == "non_quartic"
+    assert classify_outcome(with_balance, PTUMParameters())["regime"] == "quadratic_candidate"
