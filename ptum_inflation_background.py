@@ -164,6 +164,16 @@ def compute_observables(
         raise RuntimeError("Inflation-end event was not reached")
 
     n_end = float(sol.t_events[0][0])
+    x_end_hubble_flow = float(sol.y[0, -1])
+    epsilon_v_end = epsilon_potential(x_end_hubble_flow, lambda_phi)
+    # Compare the potential slow-roll end estimate with the exact epsilon_H=1
+    # event. This also quantifies when an older Phi_c=x_end_SR match crosses.
+    n_old_threshold = brentq(
+        lambda N: float(sol.sol(N)[0]) - x_end_sr,
+        0.0,
+        n_end,
+    )
+    old_threshold_lead_efolds = n_end - n_old_threshold
     x_star, X_star = sol.sol(n_end - n_star)
     dX_dN = background_rhs(
         n_end - n_star, np.array([x_star, X_star]), lambda_phi
@@ -183,6 +193,9 @@ def compute_observables(
         "lambda_phi": float(lambda_phi),
         "x_initial": x_initial,
         "x_end_slow_roll": x_end_sr,
+        "x_end_hubble_flow": x_end_hubble_flow,
+        "epsilon_V_at_hubble_end": float(epsilon_v_end),
+        "old_potential_end_threshold_lead_efolds": float(old_threshold_lead_efolds),
         "n_end": n_end,
         "x_star": float(x_star),
         "epsilon_1_star": float(epsilon_1),
@@ -223,6 +236,7 @@ def main() -> None:
         print(
             f"lambda={row['lambda_phi']:g}  "
             f"x_i={row['x_initial']:.6f}  "
+            f"x_end_H={row['x_end_hubble_flow']:.6f}  "
             f"N_end={row['n_end']:.6f}  "
             f"n_s={row['n_s_hubble_flow_1st_order']:.8f}  "
             f"r={row['r_hubble_flow_1st_order']:.8g}"
