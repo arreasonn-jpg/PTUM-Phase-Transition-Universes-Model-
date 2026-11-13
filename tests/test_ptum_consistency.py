@@ -418,3 +418,16 @@ def test_positive_phi_offset_initializes_below_threshold_on_waterfall_side():
     ic = create_initial_conditions(p, psi_init=0.01 * p.psi_0, phi_offset=0.01 * p.Phi_c)
     assert ic.Phi < p.Phi_c
     assert meff_sq_psi(ic.Phi, p) < 0.0
+
+
+
+def test_threshold_matching_uses_exact_hubble_flow_end_not_epsilon_v_estimate():
+    from ptum_inflation_background import compute_observables
+
+    result = compute_observables(0.02, n_target=60.0, n_star=55.0)
+    assert result["x_end_slow_roll"] == pytest.approx(1.3871750383, rel=1.0e-8)
+    assert result["x_end_hubble_flow"] == pytest.approx(0.9862280831, rel=1.0e-8)
+    assert result["epsilon_V_at_hubble_end"] > 2.0
+    assert result["old_potential_end_threshold_lead_efolds"] == pytest.approx(
+        0.31852, rel=1.0e-3
+    )
