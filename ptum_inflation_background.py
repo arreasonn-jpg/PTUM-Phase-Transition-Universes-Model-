@@ -167,7 +167,7 @@ def compute_observables(
     x_end_hubble_flow = float(sol.y[0, -1])
     X_end = float(sol.y[1, -1])
     epsilon_v_end = epsilon_potential(x_end_hubble_flow, lambda_phi)
-    V_end_over_V0 = float(potential_ratio(x_end_hubble_flow, lambda_phi))
+    V_end_over_V0 = float(potential_fraction(x_end_hubble_flow, lambda_phi))
     rho_end_over_V0 = V_end_over_V0 / (1.0 - X_end**2)
     kinetic_end_over_V0 = rho_end_over_V0 * X_end**2
     # Compare the potential slow-roll end estimate with the exact epsilon_H=1
