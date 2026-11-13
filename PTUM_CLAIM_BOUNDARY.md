@@ -122,8 +122,12 @@ to a clean CLASS v3.2.0 tree.
 - The dimensionless fuel-potential convention is now
   $V(\Phi)=V_0[1-\exp(-\lambda_\Phi\Phi^2/M_{\rm Pl}^2)]$.
 - The discharge threshold $\Phi_c=E_{\rm th}/\sqrt{\alpha}$ is independent of $\lambda_\Phi$; matching it to $\Phi_{\rm end}$ is an extra model condition.
-- For $\lambda_\Phi=0.02$, the tree-level single-field estimate gives
-  $\Phi_{\rm end}\simeq1.387M_{\rm Pl}$ and
-  $V(\Phi_{\rm end})/V_0\simeq0.0378$. The previous assumption that the full $V_0$ is available at the threshold is withdrawn.
+- For $\lambda_\Phi=0.02$, the potential slow-roll proxy $\epsilon_V=1$ gives
+  $\Phi_{\epsilon_V=1}\simeq1.387175M_{\rm Pl}$, but the exact canonical
+  background endpoint $\epsilon_H=1$ is
+  $\Phi_{\rm end}^{(H)}\simeq0.986228M_{\rm Pl}$ with
+  $V(\Phi_{\rm end}^{(H)})/V_0\simeq0.0192649$. Threshold-matched scans
+  now use the exact Hubble-flow endpoint. The previous assumption that
+  the full $V_0$ is available at the threshold is withdrawn.
 - The local Floquet monodromy solver is now available, but it is a frozen-background diagnostic. It does not calculate the expanding-background relic abundance.
 - The full Standard Model Hilbert tensor, complete pre-CLASS dark-matter production, and the observational MCMC pipeline remain open verification items.
