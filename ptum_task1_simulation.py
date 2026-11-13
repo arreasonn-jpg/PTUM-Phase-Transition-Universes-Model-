@@ -101,7 +101,7 @@ class PTUMParameters:
 
 @dataclass
 class InitialConditions:
-    """Initial conditions at threshold crossing t = t_c."""
+    """Initial conditions for the post-threshold homogeneous evolution."""
     Phi: float           # Φ(t_c) = Φ_c (at threshold)
     Phi_dot: float       # Φ̇(t_c) from slow-roll
     psi: float           # ψ(t_c) - homogeneous mode
@@ -448,13 +448,13 @@ def create_initial_conditions(params: PTUMParameters,
                               psi_dot_init: float = 0.0,
                               phi_offset: float = 0.0) -> InitialConditions:
     """
-    Create initial conditions at threshold crossing.
+    Create post-threshold initial conditions for the homogeneous evolution.
     
     Args:
         params: PTUM parameters
         psi_init: Initial ψ(t_c) [default 0 = top of barrier]
         psi_dot_init: Initial ψ̇(t_c) [default 0]
-        phi_offset: Offset from Φ_c (positive = already past threshold)
+        phi_offset: Positive offset places Φ below Φ_c, on the tachyonic side.
     
     Returns:
         InitialConditions object
