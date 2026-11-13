@@ -145,3 +145,45 @@ def integrate_waterfall_mode(
         "final_particle_number": n_final,
         "particle_number_is_adiabatic": n_final is not None,
     }
+
+
+
+def integrate_waterfall_spectrum(
+    t, a, H, Phi, k_comoving_values, m_psi: float, Phi_c: float, **kwargs
+) -> dict:
+    """Integrate a discrete set of independent linear Fourier modes.
+
+    This returns mode-by-mode diagnostics only. It deliberately does not
+    integrate a renormalized energy density over momentum or include
+    backreaction.
+    """
+    k_values = np.asarray(k_comoving_values, dtype=float)
+    if k_values.ndim != 1 or len(k_values) == 0:
+        raise ValueError("k_comoving_values must be a non-empty one-dimensional array")
+    if not np.all(np.isfinite(k_values)) or np.any(k_values < 0.0):
+        raise ValueError("all comoving wavenumbers must be finite and non-negative")
+    if np.any(np.diff(k_values) <= 0.0):
+        raise ValueError("comoving wavenumbers must be strictly increasing")
+
+    modes = [
+        integrate_waterfall_mode(
+            t, a, H, Phi, float(k), m_psi, Phi_c, **kwargs
+        )
+        for k in k_values
+    ]
+    return {
+        "k_comoving": k_values,
+        "modes": modes,
+        "log_amplification": np.array(
+            [mode["log_amplification"] for mode in modes], dtype=float
+        ),
+        "tachyonic_time_fraction": np.array(
+            [mode["tachyonic_time_fraction"] for mode in modes], dtype=float
+        ),
+        "final_particle_number": [
+            mode["final_particle_number"] for mode in modes
+        ],
+        "particle_number_is_adiabatic": np.array(
+            [mode["particle_number_is_adiabatic"] for mode in modes], dtype=bool
+        ),
+    }
