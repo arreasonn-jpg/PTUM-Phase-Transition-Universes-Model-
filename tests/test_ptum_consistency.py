@@ -90,7 +90,7 @@ def test_quartic_virial_ratio_is_defined_only_on_complete_half_cycles():
 
 
 
-def test_static_de_sitter_solution_satisfies_frw_continuity_diagnostic():
+def test_vacuum_dominated_near_static_background_satisfies_frw_continuity_diagnostic():
     p = PTUMParameters(V0=1.0e50, m_psi=1.0e5, lambda_psi=0.1)
     ic = InitialConditions(
         Phi=0.9 * p.Phi_c,
