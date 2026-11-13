@@ -253,9 +253,17 @@ def test_damping_ratio_uses_local_threshold_hubble_scale():
         m_psi=1.0e13,
         E_th=1.0e16,
     )
-    expected_hc = np.sqrt(veff_phi(p.Phi_c, p) / (3.0 * M_PL**2))
-    assert p.H_threshold_potential == pytest.approx(expected_hc)
-    assert p.damping_ratio == pytest.approx(3.0 * expected_hc / (2.0 * p.mu))
+    expected_hc_potential = np.sqrt(veff_phi(p.Phi_c, p) / (3.0 * M_PL**2))
+    expected_hc_exact_end = np.sqrt(1.5) * expected_hc_potential
+    assert p.H_threshold_potential == pytest.approx(expected_hc_potential)
+    assert p.H_threshold_exact_end == pytest.approx(expected_hc_exact_end)
+    assert p.damping_ratio_potential == pytest.approx(
+        3.0 * expected_hc_potential / (2.0 * p.mu)
+    )
+    assert p.damping_ratio == pytest.approx(
+        3.0 * expected_hc_exact_end / (2.0 * p.mu)
+    )
+    assert p.damping_ratio > p.damping_ratio_potential
     assert p.damping_ratio < p.damping_ratio_plateau
 
 
