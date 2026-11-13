@@ -48,9 +48,9 @@ with a Unified Dark Sector}
 The dark sector of the standard cosmological model comprises dark matter, dark energy, and possible dark radiation, whose common origin remains unexplained. We present the Phase Transition Universes Model (PTUM), an effective discharge-based cosmological scenario in which a scalar fuel field $\Phi$ rolls toward a critical threshold and triggers a tachyonic waterfall in a proxy field $\psi$. The framework parametrizes candidate dark-matter ($\chi$), residual dark-energy-like ($\Phi_{\rm res}$), and proxy-fluid dark-radiation sectors; their microscopic production and energy partition are not yet established by the present homogeneous calculation. A falsifiable prediction of PTUM is that, \emph{within the effective linear proxy-fluid description}, the pfd component carries $w=1/3$, $c_s^2=1/3$, and zero anisotropic stress ($\sigma=0$). This produces no neutrino-induced CMB acoustic peak phase shift, distinguishing it from free-streaming dark radiation---a signature that may be tested at high significance by next-generation CMB experiments such as CMB-S4, depending on the realized pfd abundance. The authors report implementing the effective phenomenological system in \texttt{CLASS} at background and perturbation levels \emph{(modified code not yet public)}. The creation sector supports a plateau-type slow-roll phase compatible with current CMB constraints, fixing the discharge scale to $V_0^{1/4}\sim 10^{15}$--$10^{16}\,\mathrm{GeV}$. The dark-energy sector admits a broad near-$\Lambda$ viable region with $w_{\rm DE}\approx -1$. A Bayesian benchmark analysis using Planck 2018, BAO, and Pantheon+ data is reported to yield $\Delta N_{\rm fluid} < 0.31$ at $95\%$ credibility \emph{(author-reported; chains not yet public)}. Model comparison is reported to give $\Delta\chi^2\equiv\chi^2_{\rm PTUM}-\chi^2_{\Lambda\rm CDM}=+0.26$ and $\Delta\mathrm{AIC}=2.26$; current data therefore show a weak preference for $\Lambda$CDM while leaving PTUM viable as a falsifiable effective extension. The benchmark is reported to satisfy BBN bounds and elementary linear-stability checks (author-reported); full EFT control and the microscopic realization of the proxy-fluid closure remain conditional on additional calculations. \textbf{Critical caveat:} For the exact threshold match
 $\Phi_c=\Phi_{\rm end}^{(H)}\simeq0.986228M_{\rm Pl}$ at
 $\lambda_\Phi=0.02$, the potential-dominated local estimate gives
-$3H_{c,V}/(2\mu)\simeq3.48$ using the potential-only
+$3H_{c,V}/(2\mu)\simeq3.50$ using the potential-only
 Hubble estimate, while including the exact kinetic contribution at
-$\epsilon_H=1$ gives $3H_c/(2\mu)\simeq4.26$. The plateau estimate
+$\epsilon_H=1$ gives $3H_c/(2\mu)\simeq4.29$. The plateau estimate
 is $3H_*/(2\mu)\simeq25$. All indicate an overdamped benchmark, but
 the actual transition still requires the coupled background
 solution. A microscopic quartic proxy-fluid regime has not yet been
@@ -148,8 +148,8 @@ phenomenological ansatz requiring a coherent quartic-dominated
 oscillation regime with $\omega\gg H$ and controlled energy transfer.
 For $\lambda_\Phi=0.02$, the exact $\epsilon_H=1$ endpoint is
 $\Phi_c\simeq0.986228M_{\rm Pl}$. The potential-only damping estimate
-is $3H_{c,V}/(2\mu)\simeq3.48$, while inclusion of the exact endpoint
-kinetic energy gives $3H_c/(2\mu)\simeq4.26$. The benchmark is
+is $3H_{c,V}/(2\mu)\simeq3.50$, while inclusion of the exact endpoint
+kinetic energy gives $3H_c/(2\mu)\simeq4.29$. The benchmark is
 therefore strongly damped. The real-$\psi$ waterfall is tachyonic
 below threshold, so the exact $\psi=0$ solution is not a stable
 post-trigger state; physically justified seeds and inhomogeneous
@@ -354,7 +354,7 @@ Equivalently, the effective discharge trigger can be written as
 This condition defines the transition from the dormant proxy phase to the
 activated proxy phase. It should be interpreted as an effective threshold
 criterion, not as a microscopic derivation of the pre-discharge background.
-Here, $E_{\rm th}$ is the dimensionful discharge threshold scale (naturally related to the creation energy $V_0^{1/4}$), and $\alpha$ is a dimensionless coupling constant. The tachyonic instability is triggered when the fuel field rolls below the critical threshold $\Phi_c=E_{\rm th}/\sqrt{\alpha}$. The transition duration is not assumed to be negligible compared with the local Hubble time: for the threshold-matched benchmark the potential-only estimate is $3H_{c,V}/(2\mu)\simeq3.48$, while the exact endpoint including kinetic energy gives $3H_c/(2\mu)\simeq4.26$. The discharge and energy partition must therefore be evolved in the expanding background rather than imposed as an instantaneous event. For \(m_{\rm eff}^2>0\) the proxy mode is dormant; for \(m_{\rm eff}^2<0\) it is activated by the tachyonic instability.
+Here, $E_{\rm th}$ is the dimensionful discharge threshold scale (naturally related to the creation energy $V_0^{1/4}$), and $\alpha$ is a dimensionless coupling constant. The tachyonic instability is triggered when the fuel field rolls below the critical threshold $\Phi_c=E_{\rm th}/\sqrt{\alpha}$. The transition duration is not assumed to be negligible compared with the local Hubble time: for the threshold-matched benchmark the potential-only estimate is $3H_{c,V}/(2\mu)\simeq3.50$, while the exact endpoint including kinetic energy gives $3H_c/(2\mu)\simeq4.29$. The discharge and energy partition must therefore be evolved in the expanding background rather than imposed as an instantaneous event. For \(m_{\rm eff}^2>0\) the proxy mode is dormant; for \(m_{\rm eff}^2<0\) it is activated by the tachyonic instability.
 
 The dark-matter sector is
 \begin{equation}
@@ -761,8 +761,8 @@ activation-mass sign and only 200 output samples over
 $20\mu^{-1}$. Its reported overdamping and quartic classifications
 are historical and are not treated as results for the revised
 waterfall model. The exact endpoint now gives
-$3H_c/(2\mu)\simeq4.26$ when the kinetic contribution at
-$\epsilon_H=1$ is included (the potential-only estimate is $3.48$),
+$3H_c/(2\mu)\simeq4.29$ when the kinetic contribution at
+$\epsilon_H=1$ is included (the potential-only estimate is $3.50$),
 so the benchmark is strongly damped. However, the revised
 100-initial-condition scan uses 4001 output points per trajectory
 and must be inspected, together with timestep and solver-tolerance
@@ -2065,9 +2065,9 @@ The expansion during discharge is governed by
 \end{equation}
 The previous estimate $H_*\Delta t\sim10^{-3}$ and the associated
 claim of negligible expansion are withdrawn. In the threshold-matched benchmark, the potential-only
-estimate gives $3H_{c,V}/(2\mu)\simeq3.48$. Including the exact
+estimate gives $3H_{c,V}/(2\mu)\simeq3.50$. Including the exact
 kinetic contribution at $\epsilon_H=1$ raises the endpoint value to
-$3H_c/(2\mu)\simeq4.26$, corresponding to $H_c/\mu\simeq2.84$.
+$3H_c/(2\mu)\simeq4.29$, corresponding to $H_c/\mu\simeq2.84$.
 Thus even the nominal interval $\mu^{-1}$ is not short compared with
 the Hubble time. The actual discharge duration and scale-factor growth
 must be obtained from the coupled background solution; the frozen
@@ -3377,7 +3377,7 @@ phenomenologically characterized by the following properties:
       changes sign. This is a classical slow-roll crossing rather
       than a quantum tunneling event. The discharge duration is not
       assumed to be short compared with a Hubble time; for the
-      threshold-matched benchmark $3H_c/(2\mu)\simeq4.26$, so the
+      threshold-matched benchmark $3H_c/(2\mu)\simeq4.29$, so the
       coupled transition must be evolved in the expanding background.
 
 \item \textbf{Limitations:} The current model does not specify the
@@ -3527,7 +3527,7 @@ a separate calculation of the expanding \(\chi_k\) modes, their
 occupation spectrum, the momentum-integrated abundance, and the
 subsequent entropy dilution. That calculation has not yet been
 completed. Moreover, the stated benchmark is overdamped
-(\(3H_c/(2\mu)\approx4.26\) for the threshold-matched estimate; the plateau-scale ratio is \(3H_*/(2\mu)\approx25\)) and does not realize the coherent
+(\(3H_c/(2\mu)\approx4.29\) for the threshold-matched estimate; the plateau-scale ratio is \(3H_*/(2\mu)\approx25\)) and does not realize the coherent
 oscillatory regime assumed by the simple Floquet reduction. Thus the
 present manuscript does not establish that its benchmark produces
 the observed dark-matter abundance or that the pre-CLASS and
@@ -3678,7 +3678,7 @@ The main conclusions of this work are as follows:
       observational discriminator of PTUM. \emph{However, the
       underlying quartic oscillatory regime that would derive
       $w_\psi=1/3$ from first principles is not realized at the
-      benchmark parameters (overdamped, $3H_c/(2\mu)\approx4.26$), so the
+      benchmark parameters (overdamped, $3H_c/(2\mu)\approx4.29$), so the
       closure is a phenomenological input, not a derived prediction
       at the stated benchmark.}
 
