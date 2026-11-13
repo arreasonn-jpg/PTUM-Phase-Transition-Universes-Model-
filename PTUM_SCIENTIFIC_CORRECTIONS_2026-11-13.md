@@ -679,3 +679,30 @@ would make the stated canonical frequency and the integrated physical
 mode equation mathematically inconsistent. The branch now contains
 50 regression tests; the newest changes remain unverified by a fresh
 CI run.
+
+
+
+## 40. Intermediate tachyonic intervals in the expanding mode solver
+
+A mode-frequency audit found that the initial implementation attempted
+to take (sqrt{Omega_k^2(t)}) over the entire history in order to
+differentiate the frequency for the initial WKB state. That would
+incorrectly reject a physically relevant history if the canonical
+frequency became imaginary after the initial adiabatic vacuum had
+already been specified.
+
+The code now differentiates the real-valued (Omega_k^2(t)) spline
+and obtains (dotOmega_k(t_0)=dot{Omega_k^2}(t_0)/(2Omega_k(t_0)))
+only at the initial time. It can therefore evolve through intermediate
+intervals with (Omega_k^2<0), while still requiring a real positive
+initial frequency and a final positive frequency before assigning an
+instantaneous particle number. A new regression test constructs a
+smooth expanding background with an intermediate tachyonic canonical
+frequency, verifies successful integration, and checks Wronskian
+preservation.
+
+This is a linear mode-level capability, not evidence that PTUM's
+benchmark realizes such a history. The actual (Phi_{\\rm res})
+trajectory and its coupling to the expansion remain to be derived
+self-consistently. The branch now contains 51 regression tests; the
+latest tests and manuscript changes still await a fresh CI run.
