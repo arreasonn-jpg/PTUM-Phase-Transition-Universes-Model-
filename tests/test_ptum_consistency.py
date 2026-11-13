@@ -35,6 +35,17 @@ from ptum_task1_simulation import (
 )
 
 
+def _add_fast_adiabatic_oscillation_history(result, hubble=0.01, t_end=100.0):
+    t = np.linspace(0.0, t_end, 10001)
+    result.update({
+        "t": t,
+        "H": np.full_like(t, hubble),
+        "psi": np.cos(t),
+        "psi_dot": -np.sin(t),
+    })
+    return result
+
+
 def test_interaction_energy_is_counted_exactly_once():
     p = PTUMParameters(V0=2.0e50, m_psi=3.0e8, lambda_psi=0.2)
     phi, phi_dot, psi, psi_dot = 1.01 * p.Phi_c, 2.0e7, 4.0e5, 5.0e6
@@ -171,11 +182,11 @@ def test_regime_classifier_uses_late_time_diagnostics():
         "Q": np.concatenate([np.zeros(80), np.full(20, 10.0)]),
         "virial_ratio": np.concatenate([np.full(80, 0.2), np.ones(20)]),
     }
-    classification = classify_outcome(result, PTUMParameters())
+    _add_fast_adiabatic_oscillation_history(result)\n    classification = classify_outcome(result, PTUMParameters())
     assert classification["regime"] == "quartic"
     assert classification["quartic_achieved"]
     assert classification["Q_final"] == pytest.approx(10.0)
-    assert classification["virial_final"] == pytest.approx(1.0)
+    assert classification["virial_final"] == pytest.approx(1.0)\n    assert classification["H_over_omega_max"] < 0.1\n    assert classification["n_late_half_cycles"] >= 3
 
 
 
@@ -375,7 +386,7 @@ def test_quartic_threshold_matches_potential_energy_dominance():
     quartic = dict(base, Q=np.full(100, 2.1))
     non_quartic = dict(base, Q=np.full(100, 1.9))
 
-    q_class = classify_outcome(quartic, PTUMParameters())
+    _add_fast_adiabatic_oscillation_history(quartic)\n    _add_fast_adiabatic_oscillation_history(non_quartic)\n    q_class = classify_outcome(quartic, PTUMParameters())
     non_q_class = classify_outcome(non_quartic, PTUMParameters())
 
     assert q_class["quartic_achieved"]
@@ -383,6 +394,49 @@ def test_quartic_threshold_matches_potential_energy_dominance():
     assert not non_q_class["quartic_achieved"]
     assert non_q_class["quartic_to_tachyonic_potential_ratio"] == pytest.approx(0.95)
 
+
+
+
+
+def test_quartic_classification_rejects_hubble_damped_oscillations():
+    result = {
+        "success": True,
+        "w_psi_avg": np.full(5, 1.0 / 3.0),
+        "Q": np.full(100, 2.1),
+        "virial_ratio": np.ones(100),
+    }
+    _add_fast_adiabatic_oscillation_history(result, hubble=0.2)
+    classification = classify_outcome(result, PTUMParameters())
+    assert not classification["quartic_achieved"]
+    assert classification["H_over_omega_max"] >= 0.1
+    assert not classification["adiabaticity_valid"]
+
+
+def test_quartic_classification_requires_three_late_half_cycles():
+    result = {
+        "success": True,
+        "w_psi_avg": np.full(5, 1.0 / 3.0),
+        "Q": np.full(100, 2.1),
+        "virial_ratio": np.ones(100),
+    }
+    _add_fast_adiabatic_oscillation_history(result, hubble=0.001, t_end=10.0)
+    classification = classify_outcome(result, PTUMParameters())
+    assert not classification["quartic_achieved"]
+    assert classification["n_late_half_cycles"] < 3
+    assert not classification["adiabaticity_valid"]
+
+
+def test_quartic_classification_rejects_missing_hubble_and_time_history():
+    result = {
+        "success": True,
+        "w_psi_avg": np.full(5, 1.0 / 3.0),
+        "Q": np.full(100, 2.1),
+        "virial_ratio": np.ones(100),
+    }
+    classification = classify_outcome(result, PTUMParameters())
+    assert not classification["quartic_achieved"]
+    assert np.isnan(classification["H_over_omega_max"])
+    assert classification["n_late_half_cycles"] == 0
 
 
 def test_threshold_matched_inflation_starts_dormant_and_becomes_tachyonic():

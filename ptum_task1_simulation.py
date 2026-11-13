@@ -757,6 +757,84 @@ def run_parameter_scan(params: PTUMParameters,
     return results
 
 
+def _late_time_adiabaticity_diagnostic(result: Dict,
+                                       tail_fraction: float = 0.2,
+                                       min_half_cycles: int = 3) -> Dict:
+    """Estimate H/omega from complete late-time half-cycles.
+
+    Turning points are zero crossings of psi_dot. For adjacent extrema,
+    omega_half = pi / Delta_t. The reported ratio is interval-mean H divided
+    by this frequency. At least three complete half-cycles must lie in the
+    final 20% of the trajectory. H/omega < 0.1 is a conservative numerical
+    classifier choice, not a theorem or universal physical boundary.
+    """
+    t = np.asarray(result.get('t', []), dtype=float)
+    H = np.asarray(result.get('H', []), dtype=float)
+    psi_dot = np.asarray(result.get('psi_dot', []), dtype=float)
+    unavailable = {
+        'H_over_omega_max': float('nan'),
+        'H_over_omega_values': [],
+        'n_late_half_cycles': 0,
+        'adiabaticity_valid': False,
+    }
+    if (t.ndim != 1 or H.shape != t.shape or psi_dot.shape != t.shape
+            or len(t) < 8 or not np.all(np.isfinite(t))
+            or np.any(np.diff(t) <= 0.0)):
+        return unavailable
+    if not (0.0 < tail_fraction < 1.0) or min_half_cycles < 1:
+        raise ValueError("tail_fraction must be in (0, 1) and min_half_cycles >= 1")
+
+    tail_start = t[int(np.floor((1.0 - tail_fraction) * (len(t) - 1)))]
+    turning_times = []
+    for i in range(len(psi_dot) - 1):
+        left, right = psi_dot[i], psi_dot[i + 1]
+        if not (np.isfinite(left) and np.isfinite(right)):
+            continue
+        if left == 0.0:
+            crossing = t[i]
+        elif left * right < 0.0:
+            crossing = t[i] - left * (t[i + 1] - t[i]) / (right - left)
+        else:
+            continue
+        if (not turning_times or
+                crossing - turning_times[-1] > 1.0e-12 * max(1.0, abs(crossing))):
+            turning_times.append(float(crossing))
+    if psi_dot[-1] == 0.0 and (not turning_times or t[-1] > turning_times[-1]):
+        turning_times.append(float(t[-1]))
+
+    ratios = []
+    for start, end in zip(turning_times[:-1], turning_times[1:]):
+        if start < tail_start or end > t[-1] or end <= start:
+            continue
+        lo = max(0, int(np.searchsorted(t, start, side='left')) - 1)
+        hi = min(len(t) - 1, int(np.searchsorted(t, end, side='right')))
+        h_segment = H[lo:hi + 1]
+        if (len(h_segment) < 2 or not np.all(np.isfinite(h_segment))
+                or np.any(h_segment < 0.0)):
+            continue
+        half_period = end - start
+        omega = np.pi / half_period
+        ratio = float(np.mean(h_segment)) / omega
+        if np.isfinite(ratio):
+            ratios.append(float(ratio))
+
+    if len(ratios) < min_half_cycles:
+        return {
+            'H_over_omega_max': float('nan'),
+            'H_over_omega_values': ratios,
+            'n_late_half_cycles': len(ratios),
+            'adiabaticity_valid': False,
+        }
+    last_ratios = ratios[-min_half_cycles:]
+    maximum = float(max(last_ratios))
+    return {
+        'H_over_omega_max': maximum,
+        'H_over_omega_values': last_ratios,
+        'n_late_half_cycles': len(ratios),
+        'adiabaticity_valid': maximum < 0.1,
+    }
+
+
 def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     """
     Classify simulation outcome based on diagnostics.
@@ -775,6 +853,7 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     Q = result['Q']
     virial = result['virial_ratio']
     quadratic_virial = result.get('quadratic_virial_ratio', np.array([]))
+    adiabaticity = _late_time_adiabaticity_diagnostic(result)
 
     # Classify the late-time regime, not the whole trajectory.
     # Q and virial are sampled diagnostics; use the final 20% of the run.
@@ -801,7 +880,8 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     quartic_achieved = (diagnostics_valid and
                         quartic_to_tachyonic_potential_ratio > 1.0 and
                         abs(w_final - 1/3) < 0.05 and
-                        abs(virial_final - 1) < 0.2)
+                        abs(virial_final - 1) < 0.2 and
+                        adiabaticity['adiabaticity_valid'])
     
     if not diagnostics_valid:
         regime = 'insufficient_oscillation_data'
@@ -827,6 +907,10 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
         'quartic_to_tachyonic_potential_ratio': float(quartic_to_tachyonic_potential_ratio),
         'virial_final': float(virial_final),
         'quadratic_virial_final': float(quadratic_virial_final),
+        'H_over_omega_max': float(adiabaticity['H_over_omega_max']),
+        'H_over_omega_values': adiabaticity['H_over_omega_values'],
+        'n_late_half_cycles': int(adiabaticity['n_late_half_cycles']),
+        'adiabaticity_valid': bool(adiabaticity['adiabaticity_valid']),
         'n_oscillations': len(w_avg)
     }
 
