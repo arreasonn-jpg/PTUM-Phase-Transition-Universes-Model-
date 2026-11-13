@@ -262,3 +262,17 @@ The CI scan runner has now been expanded to run both:
 - `low_scale_underdamped_control`: $V_0=10^{56}\,\mathrm{GeV}^4$, with the same threshold matching and initial-condition grid.
 
 This produces 36 integrations. Each output row carries the scenario name, $V_0$, $\Phi_c/M_{\rm Pl}$, and both local and plateau damping ratios. A regression test verifies that the high-scale case is overdamped by the local potential estimate and the low-scale control is underdamped. The next CI run must inspect the high-scale outcome before any conclusion is drawn about whether the stated benchmark reaches the quartic regime.
+
+
+## 16. Derivation of the quartic-dominance threshold
+
+The diagnostic is
+\[
+Q=\frac{\lambda_\psi\langle\psi^4\rangle}
+{\langle|m_{\rm eff}^2|\psi^2\rangle}.
+\]
+For $V_4=\lambda_\psi\psi^4/4$ and the magnitude of the tachyonic quadratic contribution $|V_2|=|m_{\rm eff}^2|\psi^2/2$, the ratio of averaged potential contributions is
+\[
+\frac{\langle V_4\rangle}{\langle|V_2|\rangle}=\frac{Q}{2}.
+\]
+Therefore quartic potential-energy dominance corresponds to $Q/2>1$, or $Q>2$. The previous classifier used $Q>5$ without documenting a physical derivation. It now reports the explicit ratio $Q/2$ and applies the energy-dominance boundary $Q>2$, together with independent cycle-averaged equation-of-state and virial conditions. A new regression test checks values on either side of this boundary. This criterion is an operational diagnostic for the homogeneous truncation, not a proof of a radiation-like effective fluid by itself.
