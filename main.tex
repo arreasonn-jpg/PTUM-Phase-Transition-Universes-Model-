@@ -3074,69 +3074,43 @@ cutoff, operator bounds and radiative-stability analysis.
 \subsubsection{EFT cutoff and scale hierarchy}
 \label{sec:eft_cutoff}
 
-The effective field theory is valid up to a cutoff scale
-\(\Lambda_{\rm EFT}\) that must satisfy
-\begin{equation}
-H_* \ll \Lambda_{\rm EFT} \ll M_{\rm Pl}.
-\end{equation}
-In PTUM, the natural cutoff is set by the mass of the heaviest
-integrated-out field. The fuel field \(\Phi\) has mass
-\(m_\Phi^2 \sim V_0''(\Phi) \sim \lambda V_0/\Phi^2\) during
-inflation. For \(\lambda \sim 0.02\) and \(\Phi \sim M_{\rm Pl}\),
-this gives \(m_\Phi \sim 10^{13}\) GeV. The proxy field \(\psi\)
-has mass \(m_\psi \sim |m_{\rm eff}| \sim 10^{13}\) GeV at the
-transition. The dark matter field \(\chi\) has mass
-\(m_\chi \sim 10^{9}\)--\(10^{13}\) GeV. The residual field
-\(\Phi_{\rm res}\) has mass \(m_{\rm res} \sim H_0 \sim 10^{-33}\) eV.
-The hierarchy of scales is therefore:
-\begin{equation}
-H_0 \ll H_* \ll m_\Phi, m_\psi, m_\chi \ll V_0^{1/4} \ll M_{\rm Pl}.
-\end{equation}
+The Wilsonian cutoff $\Lambda_{\rm EFT}$ is an independent scale of
+the effective theory. The fields $\Phi$, $\psi$, $\chi$, and
+$\Phi_{\rm res}$ are retained dynamical degrees of freedom in the
+displayed action; their masses are therefore not, by themselves, a
+derivation of the UV cutoff. In particular, the mass of a retained
+field must not be described as the mass of an integrated-out state.
 
-The cutoff cannot be fixed by identifying it with $V_0^{1/4}$ without
-an argument from UV matching or perturbative unitarity. The quoted
-benchmark values give $H_*\sim10^{12}$--$10^{13}$ GeV and field masses
-of order $10^{13}$ GeV. Thus, if the cutoff were near the smallest
-retained mass, the ratio $H_*/\Lambda_{\rm EFT}$ could be order unity.
-For this reason $\Lambda_{\rm EFT}$ is treated as an independent
-matching scale. The required hierarchy is
-$H_*,m_i<\Lambda_{\rm EFT}<M_{\rm Pl}$, but the manuscript does not
-yet derive a numerical value for it. The scale $V_0^{1/4}$ may be
-used as a benchmark comparison scale, not as proof of EFT control.
-
-\subsubsection{Ghost and gradient instability checks}
-\label{sec:ghost_gradient}
-
-The kinetic terms for all fields are canonical with positive
-signs:
+The characteristic scales quoted for the benchmark are
 \begin{align}
-\mathcal{L}_{\rm kin} &=
-\tfrac{1}{2}(\partial_\mu\Phi)^2
-+\tfrac{1}{2}(\partial_\mu\psi)^2
-+\tfrac{1}{2}(\partial_\mu\chi)^2
-+\tfrac{1}{2}(\partial_\mu\Phi_{\rm res})^2.
+H_* &\sim 10^{12}\text{--}10^{13}\ {\rm GeV},&
+m_\Phi,m_\psi &\sim 10^{13}\ {\rm GeV},\\
+m_\chi &\sim 10^{9}\text{--}10^{13}\ {\rm GeV},&
+m_{\rm res} &\sim H_0\sim10^{-33}\ {\rm eV},\\
+V_0^{1/4}&\sim10^{15}\text{--}10^{16}\ {\rm GeV}
+& &\ll M_{\rm Pl}.
 \end{align}
-The displayed two-derivative scalar action has canonical positive-sign
-kinetic terms, so this truncation contains no tree-level scalar ghost.
-This statement is limited to the displayed kinetic sector. The
-Coleman--Weinberg potential correction is not a calculation of the
-wave-function renormalization; positivity of field-dependent masses
-does not by itself prove that loop-induced derivative terms have a
-positive coefficient. Those derivative corrections have not yet been
-computed, so no all-orders or one-loop ghost-free claim is made.
+These are characteristic physical scales, not a strict ordering:
+the quoted $m_\chi$ interval can lie below or above $H_*$.
 
-The gradient-stability condition for the stated effective components
-is $c_s^2\geq0$, not strictly positive for every component. For the
-canonical fields $\Phi$ and $\Phi_{\rm res}$, $c_s^2=1$. In the
-pressureless limit the dark-matter component has $c_{s,\chi}^2=0$.
-The proxy field has $c_{s,\psi}^2=1/3$ only in the quartic,
-rapid-oscillation regime; this closure is conditional and is not
-realized by the overdamped benchmark. The negative
-$m_{\rm eff}^2$ of $\psi$ below threshold is a tachyonic waterfall
-instability, distinct from a ghost or a negative gradient coefficient.
-A full coupled perturbation-eigenmode analysis, including the
-time-dependent transition, remains necessary before claiming
-stability of every scalar mode.
+For a chosen range of validity with maximum physical energy
+$E_{\rm max}$, the EFT requires
+\begin{equation}
+\max(H_*,m_\Phi,m_\psi,m_\chi,E_{\rm max})
+\ll\Lambda_{\rm EFT}\ll M_{\rm Pl},
+\end{equation}
+unless a specified UV completion changes the gravitational or
+matter-sector cutoff. This hierarchy is a condition on the regime of
+use, not a result derived from the potential height or the retained
+particle masses.
+
+The dimension-five reheating operator
+$\psi\,\mathcal O_{\rm SM}/\Lambda$ can impose a lower perturbative
+unitarity scale that depends on its Wilson coefficients and on the
+coupled channels. A numerical cutoff therefore requires the explicit
+flavour/Wilson matrices, partial-wave amplitudes and UV matching.
+Neither $V_0^{1/4}$ nor the masses of the retained PTUM fields alone
+fix $\Lambda_{\rm EFT}$.
 
 \subsubsection{Perturbative unitarity and coupling bounds}
 \label{sec:perturbative_unitarity}
