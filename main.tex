@@ -1600,66 +1600,57 @@ in Section~\ref{sec:microscopic_transfer}). The term
 \(-2g_{\rm DM}\chi\Phi_{\rm res}^2\dot\chi\) that appeared in an
 earlier draft was a double-counting of the symmetric interaction
 variation and is not part of \(Q_{\rm DM}^\nu\). During the post-discharge
-evolution, the dark matter field \(\chi\) is non-relativistic and
-oscillates rapidly with frequency \(m_\chi\). With the closed
-transfer vector, the time-averaged energy transfer rate over one
-oscillation period is
-\begin{equation}
-\langle Q_{\rm DM} \rangle
-= -2g_{\rm DM}\chi^2\Phi_{\rm res}\langle\dot\Phi_{\rm res}\rangle
-\sim g_{\rm DM}\Phi_{\rm res}^2 m_\chi \chi^2
-\sim g_{\rm DM}\Phi_{\rm res}^2 \rho_{\rm DM},
-\end{equation}
-where the last estimate uses \(\langle\dot\Phi_{\rm res}\rangle\sim
-m_{\rm res}\Phi_{\rm res}\) for an oscillating residual field and
-\(\rho_{\rm DM}\simeq m_\chi\chi^2\). For the benchmark parameters
-\(g_{\rm DM} \lesssim 10^{-3}\), \(\Phi_{\rm res} \sim M_{\rm Pl}\),
-and \(m_\chi \sim 10^9\)--\(10^{13}\) GeV, the ratio of the
-interaction rate to the Hubble rate is
-\begin{equation}
-\begin{split}
-\frac{\langle Q_{\rm DM} \rangle}{H\rho_{\rm DM}}
-&\sim \frac{g_{\rm DM}\Phi_{\rm res}^2 m_{\rm res}}{H M_{\rm Pl}^2}
-\lesssim 10^{-6}
-\left(\frac{g_{\rm DM}}{10^{-3}}\right)
-\left(\frac{m_{\rm res}}{10^{13}\,\mathrm{GeV}}\right) \\
-&\quad\times \left(\frac{10^{13}\,\mathrm{GeV}}{H}\right)
-\ll 1.
-\end{split}
-\end{equation}
-Thus the DM-DE interaction is negligible for the background and
-linear perturbation evolution at late times, and the sectors evolve
-as effectively decoupled fluids with \(Q_i = 0\). The interaction
-becomes relevant only for the dark matter production mechanism
-during the discharge (parametric resonance, see
-Section~\ref{sec:dm_relic}), where the time-dependent
-\(\Phi_{\rm res}(t)\) drives resonant \(\chi\) production. This
-justifies the effective decoupling assumed in the Boltzmann
-implementation.
-
-\noindent\textbf{Numerical bound on the interaction.}
-To make the decoupling statement quantitative, the authors report
-evaluating the full transfer vector \(Q_{\rm DM}^\nu\) along the
-background trajectory for the benchmark parameter range
-\emph{(author-reported analytic estimate)}. The maximum
-dimensionless ratio
-\begin{equation}
-\mathcal{R}_{\rm int} \equiv \frac{|Q_{\rm DM}|}{H\rho_{\rm DM}}
-= \frac{2g_{\rm DM}\Phi_{\rm res}^2}{H}
-\left|\chi^2\frac{\dot\Phi_{\rm res}}{\Phi_{\rm res}}\right|
-\end{equation}
-remains \(\mathcal{R}_{\rm int} < 3\times 10^{-6}\) for all
-benchmark points with \(g_{\rm DM} \le 10^{-3}\), \(m_\chi \le
-10^{13}\,\mathrm{GeV}\), and \(\Phi_{\rm res} \le M_{\rm Pl}\). This
-reportedly confirms that the interaction is dynamically negligible for
-the
-post-discharge cosmological evolution at the level of
-\(10^{-6}\) relative to the Hubble expansion rate. The interaction
-is retained in the Lagrangian solely for its role in the
-parametric-resonance production mechanism during the discharge
-event itself.
-
-\subsubsection{Microscopic interactions for energy transfer}
+evolution, the dark matter field \\(\\chi\\) is non-relativistic and
+oscillates rapidly with frequency \\(m_\\chi\\). The homogeneous
+transfer source obtained from the covariant current is
+\\begin{equation}
+Q_{\\rm DM}^{0}
+=+2g_{\\rm DM}\\chi^2\\Phi_{\\rm res}\\dot\\Phi_{\\rm res},
+\\qquad Q_{\\rm DE}^{0}=-Q_{\\rm DM}^{0}.
+\\end{equation}
+If \\(\\Phi_{\\rm res}\\) varies slowly over a \\(\\chi\\)-oscillation,
+averaging over the rapid \\(\\chi\\) oscillations gives
+\\begin{equation}
+\\langle Q_{\\rm DM}^{0}\\rangle_\\chi
+\\simeq 2g_{\\rm DM}\\Phi_{\\rm res}\\dot\\Phi_{\\rm res}
+\\langle\\chi^2\\rangle_\\chi,
+\\qquad
+\\rho_{\\rm DM}\\simeq m_\\chi^2
+\\langle\\chi^2\\rangle_\\chi,
+\\end{equation}
+where the second relation holds for a coherently oscillating,
+quadratic, non-relativistic scalar after averaging over its rapid
+oscillations. Consequently,
+\\begin{equation}
+\\frac{|\\langle Q_{\\rm DM}^{0}\\rangle_\\chi|}
+{H\\rho_{\\rm DM}}
+\\simeq
+\\frac{2g_{\\rm DM}|\\Phi_{\\rm res}
+\\dot\\Phi_{\\rm res}|}{H m_\\chi^2}.
+\\label{eq:dmde_transfer_ratio}
+\\end{equation}
+If, in addition, the residual field has a characteristic variation
+\\(|\\dot\\Phi_{\\rm res}|\\sim m_{\\rm res}|\\Phi_{\\rm res}|\\),
+this becomes
+\\begin{equation}
+\\frac{|\\langle Q_{\\rm DM}^{0}\\rangle_\\chi|}
+{H\\rho_{\\rm DM}}
+\\sim
+\\frac{2g_{\\rm DM}m_{\\rm res}\\Phi_{\\rm res}^{2}}
+{H m_\\chi^{2}}.
+\\end{equation}
+This is a conditional scaling estimate, not a numerical bound:
+its value depends on the actual residual-field trajectory, its
+amplitude and frequency, and the DM mass. The previous estimate
+\\(\\rho_{\\rm DM}\\simeq m_\\chi\\chi^2\\) had the wrong mass
+dimension for an energy density, and the previous claimed
+\\(10^{-6}\\) suppression did not follow from the stated parameter
+ranges. Until the background trajectory and the correlated
+oscillation average are supplied, late-time decoupling must be treated
+as an assumption to be checked, not as an established numerical
+result. The interaction can still be relevant during the discharge,
+when the time-dependent \\(\\Phi_{\\rm res}(t)\\) may drive
+parametric production of \\(\\chi\\).Microscopic interactions for energy transfer}
 \label{sec:microscopic_transfer}
 
 The covariant energy-momentum transfer four-vectors $Q_i^\nu$ arise
