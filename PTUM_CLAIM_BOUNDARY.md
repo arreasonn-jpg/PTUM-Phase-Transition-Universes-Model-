@@ -53,6 +53,7 @@ The proxy-fluid closure $w=1/3$, $c_s^2=1/3$, $\sigma=0$ is therefore a **phenom
 ## Claims intentionally not made
 
 PTUM does not claim to be:
+- a solution of the cosmological low-entropy initial-condition problem or a derivation of the thermodynamic arrow of time,
 
 - a UV-complete derivation of the pre-discharge background,
 - a solution of the cosmological-constant problem,
