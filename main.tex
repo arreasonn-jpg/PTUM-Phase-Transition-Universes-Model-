@@ -3835,210 +3835,33 @@ ESS & Effective sample size & Sec.~7.1.3 \\
 \subsection{Code availability and reproducibility}
 \label{app:code-availability}
 
-The manuscript source, final figure artifacts, claim-boundary notes,
-and reproducibility scaffold will be made publicly available at
-\url{https://github.com/ErdemEsa/ptum-cosmology.git} upon acceptance
-(the repository is not yet public at the time of writing). The release
-will include the public PTUM code-release structure and a clean
-\texttt{CLASS}~v3.2.0 patch for the proxy-fluid dark-radiation sector.
-The patch introduces the effective-fluid parameter
-$\Delta N_{\rm fluid}$, the associated background contribution, and the
-linear perturbation variables for a perfect-fluid dark-radiation
-component with $w=1/3$, $c_s^2=1/3$, and $\sigma=0$. It was generated as
-a path-limited diff against a clean \texttt{CLASS}~v3.2.0 baseline and
-has been checked with \texttt{git apply --check} against the corresponding
-clean source tree. Once the repository is public, it will provide the
-manuscript archive and the PTUM-modified \texttt{CLASS} patch needed to
-inspect and re-apply the core Boltzmann-code implementation.
+The current canonical manuscript and figure package is maintained at
+\url{https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-}.
+A legacy release note points to
+\url{https://github.com/ErdemEsa/ptum-cosmology.git}; however, that
+repository returned HTTP 404 through the GitHub API during the
+2026-11-13 review. This does not establish whether it is private,
+renamed, or otherwise inaccessible, but its contents could not be
+verified.
+
+The current repository contains a binary \texttt{PTUM.zip}, but the
+CLASS patch is not exposed as an individually reviewable source file
+in the tracked root inventory, and the archive has not been inspected
+in this review. Therefore the earlier statement that a PTUM
+\texttt{CLASS}~v3.2.0 patch is publicly available and apply-check
+verified is \textbf{unverified}. The exact patch, target CLASS commit,
+checksum, application command, and clean-tree apply log must be
+provided in an accessible source location before that claim can be
+restored.
 
 The production-level \texttt{Cobaya} configuration files and full MCMC
-chains are pending and will be added to the reproducibility release
-upon acceptance; they are not yet public. The planned release will
-contain:
-\begin{itemize}
-\item \texttt{cobaya/ptum.yaml} -- Main Cobaya configuration with
-      Planck 2018 TTTEEE-lite, low-\(\ell\) EE, lensing, BAO, and
-      Pantheon+ likelihoods.
-\item \texttt{\detokenize{cobaya/ptum_prior_variants.yaml}} --
-      Configurations for prior sensitivity tests
-      (Uniform\([0,0.5]\), Uniform\([0,1]\), Uniform\([0,3]\) on
-      \(\Delta N_{\rm fluid}\)).
-\item \texttt{\detokenize{chains/ptum_planck_bao_pantheon/}} --
-      Four converged MCMC chains (500,000 samples each after burn-in)
-      with Gelman-Rubin \(R-1 < 0.01\) and ESS \(> 5000\) for all
-      parameters.
-\item \texttt{\detokenize{chains/ptum_nested_sampling/}} -- PolyChord nested
-      sampling chains with 2000 live points, log-evidence
-      \(\ln\mathcal{Z}_{\rm PTUM} = -1198.61 \pm 0.12\).
-\item \texttt{\detokenize{scripts/reproduce_figures.py}} -- Planned
-      computation pipeline that will regenerate all figures from the
-      final CLASS/Cobaya chains \emph{(not yet released)}.
-\item \texttt{Dockerfile} -- Reproducible environment with pinned
-      dependencies: \texttt{CLASS}~v3.2.0, \texttt{Cobaya}~3.3.0,
-      \texttt{PolyChord}~1.17.0, \texttt{CAMB}~1.5.0, Python 3.11,
-      and all required cosmology packages.
-\end{itemize}
-
-To reproduce the full analysis:
-\begin{verbatim}
-docker build -t ptum-cosmology .
-docker run -v $(pwd)/output:/output \
-    ptum-cosmology \
-    python scripts/reproduce_figures.py \
-    --all
-\end{verbatim}
-
-This regenerates all figures (including Figure~\ref{fig:gamma} with
-\(c=0.3854\), \(\gamma(0)=0.722\)), runs the MCMC and nested sampling
-analyses, and produces the complete set of posterior constraints and
-diagnostics reported in the paper. The Docker image ensures bitwise
-reproducibility across platforms.
-
-\subsubsection{Independent CLASS/CAMB reproduction}
-\label{app:class_camb_reproduction}
-
-The authors report cross-code agreement between \texttt{CLASS}~v3.2.0
-and \texttt{CAMB}~1.5.0 at the $<0.1\%$ level for $C_\ell^{TT,EE,TE}$
-spectra across all $\ell < 5000$ and $\Delta N_{\rm fluid} \le 1$
-(Section~\ref{app:class_validation}, test 5); this comparison has not
-been independently reproduced because the code and chains are not yet
-released. The planned reproducibility package will include:
-\begin{itemize}
-\item \texttt{class/ptum.patch} -- The PTUM patch for \texttt{CLASS}~v3.2.0
-\item \texttt{camb/ptum.patch} -- The equivalent patch for \texttt{CAMB}~1.5.0
-\item \texttt{\detokenize{scripts/compare_class_camb.py}} -- Script that runs both
-      codes and produces the cross-code comparison plots
-\item \texttt{\detokenize{output/class_camb_comparison/}} -- Pre-computed comparison
-      outputs for verification
-\end{itemize}
-Once independently reproduced, this comparison would validate that
-the PTUM proxy-fluid implementation is not code-specific and that the
-physical predictions are robust across Boltzmann solvers.
-
-\subsubsection{MCMC and PolyChord verification with released code}
-\label{app:mcmc_polychord_verification}
-
-Once released, the Docker image and chains will enable verification of
-the numerical claims; at present these are reported by the authors and
-have not been independently reproduced:
-\begin{itemize}
-\item \textbf{MCMC convergence:} The chains in
-      \texttt{\detokenize{chains/ptum_planck_bao_pantheon/}} can be loaded with
-      \texttt{getdist} and the Gelman-Rubin $R-1$ and ESS diagnostics
-      reproduced exactly as reported in Section~\ref{sec:mcmc_diagnostics}.
-\item \textbf{PolyChord evidence:} The nested sampling chains in
-      \texttt{\detokenize{chains/ptum_nested_sampling/}} reproduce the log-evidence
-      $\ln\mathcal{Z}_{\rm PTUM} = -1198.61 \pm 0.12$ and
-      $\ln\mathcal{Z}_{\Lambda{\rm CDM}} = -1198.48 \pm 0.11$ when
-      analyzed with \texttt{anesthetic} or \texttt{getdist}.
-\item \textbf{Posterior constraints:} The marginalized constraints on
-      all parameters (Table~\ref{tab:datasplit}, Eq.~\ref{eq:bound})
-      are reproduced to within the Monte Carlo uncertainty.
-\item \textbf{Profile likelihood:} No frequentist profile likelihood
-      has been computed; Fig.~\ref{fig:profile_dN} shows a binned
-      maximum-posterior envelope only.
-\end{itemize}
-The verification scripts are planned to be included in the repository
-and to run automatically as part of the Docker-based reproduction
-pipeline once the repository is made public.
-
-%------------------------------------------------------------
-\section{Appendix figures and consistency diagnostics}
-\label{app:figures}
-%------------------------------------------------------------
-
-The following figures are included in this appendix because they
-directly support the main-text consistency analysis. The library-final
-version is therefore self-contained and does not require the obsolete
-external supplementary-material pointer.
-
-%--- Appendix Figure A1 ---
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig_BBN_consistency.pdf}
-\caption{BBN consistency check for PTUM. The shaded region shows
-the BBN-allowed range $\Delta N_{\rm eff}<0.40$ from primordial
-helium and deuterium abundances~\cite{Fields2020,Cyburt2016}. The
-vertical line marks the PTUM 95\% upper limit
-$\Delta N_{\rm fluid}<0.31$, which lies well within the
-BBN-allowed region. At the maximum allowed pfd abundance, the
-predicted shift in $Y_p$ is approximately $1.1\sigma$.}
-\label{fig:bbn}
-\end{figure}
-
-%--- Appendix Figure A2 ---
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{fig_fluid_vs_freestream.pdf}
-\caption{Comparison of CMB $TT$ (left) and $EE$ (right) power
-spectrum residuals for PTUM proxy-fluid dark radiation
-($\sigma=0$, solid) and free-streaming dark radiation
-($\sigma\neq0$, dashed) at $\Delta N=0.10$. The free-streaming
-component produces a characteristic phase shift of the acoustic
-peaks, while the proxy-fluid shifts peak amplitudes without
-displacing their positions. The distinction is especially
-pronounced in $EE$ at $\ell>1000$. \emph{(Author-reported figure;
-modified CLASS code not yet public.)}}
-\label{fig:fluid_vs_fs}
-\end{figure*}
-
-%--- Appendix Figure A3 ---
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{lcdm_vs_ptum_triangle.pdf}
-\caption{Comparison of marginalised posterior distributions for
-$\Lambda$CDM (blue) and PTUM (red) from the full data
-combination. The standard parameters are consistent between the
-two models. PTUM shows a mild broadening in $\omega_{\rm cdm}$
-and $H_0$ due to the degeneracy with $\Delta N_{\rm fluid}$, and
-a systematic upward shift of $H_0$ by
-$\sim0.8\;\mathrm{km\,s^{-1}\,Mpc^{-1}}$. \emph{(Author-reported;
-chains not yet public.)}}
-\label{fig:lcdm_vs_ptum}
-\end{figure*}
-
-%--- Appendix Figure A4 ---
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig_perturbation_stability.pdf}
-\caption{Linear perturbation stability diagnostics for all PTUM
-sectors. Top: squared sound speed $c_s^2$ as a function of scale
-factor, confirming $c_s^2>0$ (no gradient instability) throughout.
-Bottom: effective squared mass confirming the absence of tachyonic
-instabilities. All sectors are ghost-free by construction.
-\emph{(Author-reported figure; modified CLASS code not yet public.)}}
-\label{fig:stability}
-\end{figure}
-
-%--- Appendix Figure A5 ---
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig_eft_validity.pdf}
-\caption{EFT validity diagnostics for PTUM. The inflationary
-Hubble scale $H_*$, potential energy $V_0^{1/4}$, slow-roll
-parameters $\epsilon$ and $|\eta|$, and coupling constants are
-shown as functions of $\lambda$. All quantities satisfy EFT
-consistency: $H_*\ll M_{\rm Pl}$, $V_0<M_{\rm Pl}^4$,
-$\epsilon,|\eta|\ll1$, and perturbative couplings. For
-$\lambda\lesssim0.05$ the field excursion is super-Planckian,
-protectable by an approximate shift
-symmetry~\cite{Freese1990,Silverstein2008}.}
-\label{fig:eft}
-\end{figure}
-
-%------------------------------------------------------------
-\section{Lattice simulation outputs and reproducibility}
-\label{app:lattice}
-
-This appendix documents the lattice simulation outputs that
-support the PTUM discharge dynamics and parametric resonance
-calculations. \textbf{Status label: reported by the authors, not
-independently reproduced;} the lattice code and raw outputs are not
-yet part of the public release, so the numerical values below
-($\mu=0.198\pm0.005$, $\Omega_\chi h^2=0.118\pm0.015$, and related
-quantities) cannot currently be verified by third parties. These
-simulations are planned for the reproducibility package and can be
-regenerated once the code is released.
+chains are not present as individually reviewable files in the current
+repository snapshot. They remain pending or external-archive items.
+Consequently, the current public package does not yet establish an
+end-to-end reproducible Bayesian pipeline. The reported observational
+constraints should be treated as author-reported until the complete
+configuration, likelihood data references, priors, chains, and
+post-processing scripts are available and independently rerun.
 
 \subsection{Lattice setup}
 
