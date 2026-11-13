@@ -302,7 +302,11 @@ def test_scan_summary_is_strict_json_and_nonfinite_values_become_null(tmp_path):
 
 
 def test_task1_scan_includes_threshold_matched_high_scale_and_low_scale_control():
-    from ptum_task1_scan import build_scan_scenarios
+    from ptum_task1_scan import (
+        DEFAULT_N_POINTS,
+        build_initial_condition_grid,
+        build_scan_scenarios,
+    )
 
     scenarios = dict(build_scan_scenarios())
     assert set(scenarios) == {
@@ -316,6 +320,11 @@ def test_task1_scan_includes_threshold_matched_high_scale_and_low_scale_control(
     assert low.V0 == pytest.approx(1.0e56)
     assert high.damping_ratio > 1.0
     assert low.damping_ratio < 1.0
+    assert DEFAULT_N_POINTS >= 4001
+    psi, psi_dot, offsets = build_initial_condition_grid(high)
+    assert len(psi) * len(psi_dot) * len(offsets) == 50
+    assert max(psi) == pytest.approx(5.0 * high.psi_0)
+    assert max(psi_dot) == pytest.approx(5.0 * high.mu * high.psi_0)
 
 
 
@@ -400,3 +409,11 @@ def test_quadratic_candidate_requires_its_own_virial_balance():
 
     assert classify_outcome(no_balance, PTUMParameters())["regime"] == "non_quartic"
     assert classify_outcome(with_balance, PTUMParameters())["regime"] == "quadratic_candidate"
+
+
+
+def test_positive_phi_offset_initializes_below_threshold_on_waterfall_side():
+    p = PTUMParameters(Phi_c=1.387 * M_PL)
+    ic = create_initial_conditions(p, psi_init=0.01 * p.psi_0, phi_offset=0.01 * p.Phi_c)
+    assert ic.Phi < p.Phi_c
+    assert meff_sq_psi(ic.Phi, p) < 0.0
