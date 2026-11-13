@@ -34,6 +34,7 @@ from dataclasses import dataclass
 from typing import Optional, Tuple, List, Dict
 import json
 import os
+import math
 
 # Physical constants (natural units: c = ħ = k_B = 1)
 M_PL = 2.435e18  # GeV (reduced Planck mass)
@@ -538,7 +539,7 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     Classify simulation outcome based on diagnostics.
     
     Returns classification dict with:
-    - regime: 'quartic', 'quadratic', 'tachyonic', 'barrier_crossing', 'failed'
+    - regime: 'quartic', 'quadratic_candidate', 'non_quartic', 'insufficient_oscillation_data', 'failed'
     - quartic_achieved: bool
     - w_final: final time-averaged w
     - Q_final: final quartic dominance
@@ -575,11 +576,13 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     elif quartic_achieved:
         regime = 'quartic'
     elif abs(w_final) < 0.1 and Q_final < 1:
-        regime = 'quadratic'
-    elif w_final > 0.5:
-        regime = 'barrier_crossing'
+        # This is a diagnostic candidate, not proof of a quadratic attractor.
+        regime = 'quadratic_candidate'
     else:
-        regime = 'transitional'
+        # w alone does not establish barrier crossing. In particular, a
+        # tachyonic/negative contribution can produce w > 1 without any
+        # direct measurement of a field-space barrier crossing.
+        regime = 'non_quartic'
     
     return {
         'regime': regime,
@@ -609,7 +612,7 @@ def save_results(results: List[Dict], filepath: str):
             summary.append({
                 'classification': class_dict,
                 'ic_params': r['ic_params'],
-                'final_psi_amplitude': float(np.max(np.abs(r['psi']))),
+                'max_abs_psi_over_trajectory': float(np.max(np.abs(r['psi']))),
                 'final_Phi': float(r['Phi'][-1]),
                 'max_abs_relative_frw_continuity_residual': float(np.nanmax(
                     np.abs(r['continuity_residual_relative'])
@@ -622,8 +625,8 @@ def save_results(results: List[Dict], filepath: str):
                 'ic_params': r['ic_params']
             })
     
-    with open(filepath, 'w') as f:
-        json.dump(summary, f, indent=2)
+    with open(filepath, 'w', encoding='utf-8') as f:
+        json.dump(_json_safe(summary), f, indent=2, allow_nan=False)
 
 
 # ============================================================
