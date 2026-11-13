@@ -19,6 +19,7 @@ from ptum_task1_simulation import (
     compute_quartic_dominance,
     compute_quartic_virial_ratio,
     compute_quadratic_virial_ratio,
+    waterfall_transfer_rate,
     InitialConditions,
     create_initial_conditions,
     run_simulation,
@@ -434,3 +435,17 @@ def test_threshold_matching_uses_exact_hubble_flow_end_not_epsilon_v_estimate():
     assert result["old_potential_end_threshold_lead_efolds"] == pytest.approx(
         0.31852, rel=1.0e-3
     )
+
+
+
+def test_waterfall_sector_transfer_rates_cancel_with_revised_sign():
+    p = PTUMParameters()
+    q_psi, q_phi = waterfall_transfer_rate(
+        Phi=0.9 * p.Phi_c,
+        psi=0.2 * p.psi_0,
+        Phi_dot=-1.0e20,
+        params=p,
+    )
+    assert q_psi < 0.0
+    assert q_phi > 0.0
+    assert q_psi + q_phi == pytest.approx(0.0, abs=1.0e-30)
