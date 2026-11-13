@@ -21,3 +21,14 @@ jobs:
         run: python -m pip install --upgrade pip numpy scipy pytest
       - name: Run PTUM regression tests
         run: python -m pytest -q tests/test_ptum_consistency.py
+
+  latex-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install LaTeX toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-publishers
+      - name: Compile manuscript
+        run: latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
