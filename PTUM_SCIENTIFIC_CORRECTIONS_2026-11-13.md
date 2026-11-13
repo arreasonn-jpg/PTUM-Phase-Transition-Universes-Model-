@@ -208,3 +208,14 @@ The legacy CLASS-patch repository URL returned HTTP 404 through the GitHub API d
 
 ### Manuscript compilation
 A LaTeX build job was added to CI using latexmk. The Python regression job passed (15/15), and the corrected manuscript compiled successfully with latexmk in run 43388485828. The first compile failure on run 43388241537 was caused by an unclosed description list; the missing closing tag was added in commit a851c545bbdd17eca260d9a12662ced7ac7b8c41.
+
+
+## 12. Corrected scan classification, strict JSON, and manuscript references
+
+The first corrected 18-point scan (GitHub Actions run 43389261756) completed all 18 integrations, but none satisfied the combined quartic criteria. Sixteen were previously labelled `barrier_crossing` solely because the late-time averaged equation-of-state diagnostic exceeded 0.5; that condition does not measure a field-space barrier crossing. The classifier has therefore been changed to the neutral `non_quartic` label unless the explicit quartic or quadratic-candidate criteria are met. The two zero-seed cases have no oscillation data because the exact `psi=psi_dot=0` solution is invariant under the deterministic homogeneous equations. This does not model quantum fluctuation seeding.
+
+The scan export previously emitted Python's non-standard `NaN` tokens for unavailable diagnostics. The serializer now maps non-finite values to JSON `null` and uses `allow_nan=False`; the trajectory amplitude field is renamed `max_abs_psi_over_trajectory` because it is a maximum over the history, not the final-time amplitude. New regression tests cover both the regime-label semantics and strict JSON parsing. The updated scan must be rerun in CI; the prior artifact is not a validation of the corrected serializer/classifier.
+
+The successful LaTeX build in run 43389261756 still reported two unresolved references to `sec:entropy_budget`. A dedicated `Reheating and entropy budget` subsubsection label has now been added before the reheating derivation. The next LaTeX CI run must confirm that the warnings are gone; a successful exit code alone is not sufficient if cross-references remain unresolved.
+
+The branch now has additional tests for (i) refusing to infer barrier crossing from (w>0.5), and (ii) serializing unavailable values as strict JSON nulls. The full test count and the corrected scan/LaTeX artifacts remain pending the next CI run.
