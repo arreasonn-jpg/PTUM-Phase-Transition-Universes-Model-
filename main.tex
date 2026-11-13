@@ -1861,27 +1861,72 @@ T_H^{\mu\nu}={}&
 +(D^\nu H)^\dagger D^\mu H
 -g^{\mu\nu}\left[(D_\rho H)^\dagger D^\rho H+V_H\right],
 \nonumber\\
-T_f^{\mu\nu}={}&
+T_{f,\mathrm{kin}}^{\mu\nu}={}&
 -\frac{i}{4}\sum_{\text{generations},\,f}
 \left[
 \bar f\gamma^\mu\overleftrightarrow{\mathscr D}^{\,\nu}f
 +\bar f\gamma^\nu\overleftrightarrow{\mathscr D}^{\,\mu}f
 \right],\nonumber\\
+\mathcal K_f={}&
+\frac{i}{2}\sum_{\text{generations},\,f}
+\bar f\gamma^\rho\overleftrightarrow{\mathscr D}_{\rho}f,\nonumber\\
+T_{f,0}^{\mu\nu}={}&
+T_{f,\mathrm{kin}}^{\mu\nu}
++g^{\mu\nu}\left(\mathcal K_f-U_{{\rm SM},Y}\right),\nonumber\\
 T_{{\rm SM},0}^{\mu\nu}={}&
-T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}+T_f^{\mu\nu}.
+T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}+T_{f,0}^{\mu\nu}.
 \label{eq:sm_hilbert_tensor}
 \end{align}
-The fermion term is the on-shell symmetric tensor obtained after
-including the vierbein and spin-connection variations, with the
-ordinary SM Yukawa equations of motion included; it is not the
-canonical unsymmetrized flat-space tensor. Consequently the
-ordinary Yukawa potential is already encoded in this on-shell
-fermion expression and must not be added again as a separate
-\(-g^{\mu\nu}U_{{\rm SM},Y}\) term. The distinct PTUM operator
-\(U_Y\), which is not part of \(S_{\rm SM}^{(0)}\), is assigned
-once to the SM sector, so
+The displayed \(T_{f,0}^{\mu\nu}\) is the off-shell symmetric
+Hilbert tensor from the torsion-free vierbein variation; the
+variation of the spin connection supplies the Belinfante
+symmetrization. Its trace term must be retained before applying
+the fermion equations of motion. Define
+\(U_{\rm tot,Y}=U_{{\rm SM},Y}+U_Y\). Since the PTUM operator
+\(U_Y=\psi\mathcal O_{\rm SM}/\Lambda\) is active in the full
+action, the fermion equations are those of \(U_{\rm tot,Y}\), not
+of the SM-only action:
+\begin{equation}
+i\gamma^\mu\mathscr D_\mu f
+=\frac{\partial U_{\rm tot,Y}}{\partial\bar f},
+\qquad
+-i(\mathscr D_\mu\bar f)\gamma^\mu
+=\frac{\partial U_{\rm tot,Y}}{\partial f}.
+\end{equation}
+Multiplying these equations by the corresponding chiral fields
+and summing over all independent fermions gives
+\begin{align}
+\mathcal K_f
+&=\frac12\sum_f\left[
+\bar f\frac{\partial U_{\rm tot,Y}}{\partial\bar f}
++\frac{\partial U_{\rm tot,Y}}{\partial f}f
+\right]\nonumber\\
+&=U_{{\rm SM},Y}+U_Y,
+\end{align}
+because every term in both Yukawa operators is bilinear in the
+fermion fields (one fermion and one conjugate fermion). The Higgs
+field is held fixed in this fermion variation; the Higgs portal
+does not enter these fermion equations. Therefore, on the full
+PTUM+SM fermion equations of motion,
+\begin{equation}
+T_{f,0}^{\mu\nu}
+=T_{f,\mathrm{kin}}^{\mu\nu}+g^{\mu\nu}U_Y.
+\end{equation}
+The distinct PTUM operator is assigned once to the SM sector,
 \(T_{\rm SM}^{\mu\nu}=T_{{\rm SM},0}^{\mu\nu}
--g^{\mu\nu}U_Y\).
+-g^{\mu\nu}U_Y\), and its two trace contributions cancel:
+\begin{equation}
+T_{\rm SM}^{\mu\nu}
+=T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}
++T_{f,\mathrm{kin}}^{\mu\nu}
+\qquad\text{(on shell)}.
+\end{equation}
+Thus the compact kinetic expression is the full-interaction
+on-shell result; it is not obtained by applying SM-only equations
+of motion while \(U_Y\) is active. The ordinary Yukawa potential
+is already accounted for in the off-shell trace and its EOM
+reduction, so no separate \(-g^{\mu\nu}U_{{\rm SM},Y}\) term is
+added a second time.
 This is a classical tree-level EFT derivation. It does not include
 quantum trace anomalies, loop-induced curvature operators, or a
 renormalized in-in effective action, and the current homogeneous

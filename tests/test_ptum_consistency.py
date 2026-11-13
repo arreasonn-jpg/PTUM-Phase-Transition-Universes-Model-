@@ -808,7 +808,9 @@ def test_manuscript_contains_explicit_curved_sm_action_and_hilbert_tensor():
         r"\label{eq:sm_hilbert_tensor}",
         r"T_{\rm gauge}^{\mu\nu}",
         r"T_H^{\mu\nu}",
-        r"T_f^{\mu\nu}",
+        r"T_{f,\mathrm{kin}}^{\mu\nu}",
+        r"T_{f,0}^{\mu\nu}",
+        r"\mathcal K_f",
         r"T_{{\rm SM},0}^{\mu\nu}",
         r"-\frac{i}{4}",
     ):
@@ -832,18 +834,22 @@ def test_manuscript_loads_mathrsfs_for_covariant_spinor_derivative():
     assert r"\mathscr D_\mu" in source
 
 
-def test_on_shell_sm_hilbert_tensor_does_not_double_count_ordinary_yukawa():
+def test_off_shell_sm_hilbert_tensor_reduces_with_full_ptum_fermion_eom():
     from pathlib import Path
 
     source = Path("main.tex").read_text(encoding="utf-8")
-    start = source.index(r"T_{{\rm SM},0}^{\mu\nu}={}&")
+    start = source.index(r"T_{f,\mathrm{kin}}^{\mu\nu}={}&")
     end = source.index(r"\label{eq:sm_hilbert_tensor}", start)
     tensor_definition = source[start:end]
-    assert r"T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}+T_f^{\mu\nu}." in tensor_definition
-    assert r"-g^{\mu\nu}U_{{\rm SM},Y}" not in tensor_definition
-    assert "must not be added again" in source
+    assert r"\mathcal K_f" in tensor_definition
+    assert r"g^{\mu\nu}\left(\mathcal K_f-U_{{\rm SM},Y}\right)" in tensor_definition
+    assert r"T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}+T_{f,0}^{\mu\nu}" in tensor_definition
+    assert r"U_{{\rm SM},Y}+U_Y" in source
+    assert "full PTUM+SM fermion equations of motion" in source
     assert r"T_{{\rm SM},0}^{\mu\nu}-g^{\mu\nu}U_Y" in source
-
+    assert r"T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}" in source
+    assert r"T_{f,\mathrm{kin}}^{\mu\nu}" in source
+    assert "must be retained before applying" in source
 
 
 def test_expanding_mode_solver_preserves_adiabatic_vacuum_in_de_sitter():
