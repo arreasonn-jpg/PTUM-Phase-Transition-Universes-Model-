@@ -53,6 +53,21 @@ Its mass dimension is 3+2=5, matching the dimension of the divergence of an ener
 
 With the stated assignment, the scalar-quartic reheating current signs have also been oriented oppositely between the two sectors. The displayed currents cancel pairwise algebraically. A final first-principles verification still requires writing the complete SM/fermion action and deriving each sector Hilbert tensor, including all interaction contributions, from that same action. Pairwise cancellation is a bookkeeping consistency check, not a substitute for the omitted microscopic SM derivation.
 
+The DM--DE Hilbert tensors were also corrected: with signature $(-+++)$, the potential terms enter
+$T^{\\mu\\nu}=\\partial^\\mu\\varphi\\partial^\\nu\\varphi
+-g^{\\mu\\nu}[\\tfrac12(\\partial\\varphi)^2+V]$
+with a plus sign. The former DM and DE tensor expressions had the potential signs reversed.
+
+The conversion from a covariant transfer vector to the homogeneous source is now explicit. Since $\\nabla^0\\varphi=-\\dot\\varphi$,
+$Q_i^0$ appears on the right-hand side of
+$\\dot\\rho_i+3H(\\rho_i+p_i)=Q_i^0$.
+The manuscript's homogeneous signs are now
+$Q_\\psi^0=-(\\alpha m^2/E_{\\rm th}^2)\\Phi\\psi^2\\dot\\Phi$,
+$Q_\\Phi^0=-Q_\\psi^0$,
+$Q_{\\rm DM}^0=+2g_{\\rm DM}\\chi^2\\Phi_{\\rm res}\\dot\\Phi_{\\rm res}$,
+and $Q_{\\rm DE}^0=-Q_{\\rm DM}^0$.
+The former background expressions had signs inconsistent with their own covariant currents. The manuscript now shows the derivation from the assigned interaction potentials.
+
 ## 4. Dark-matter Mathieu reduction
 
 Starting from
