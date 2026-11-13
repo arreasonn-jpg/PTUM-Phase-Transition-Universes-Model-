@@ -597,3 +597,34 @@ A separate Hilbert-tensor audit addressed the double-counting concern in the cla
 The distinct PTUM operator (U_Y=\\psi\\mathcal O_{\\rm SM}/\\Lambda) is not part of (S_{\\rm SM}^{(0)}) and remains assigned exactly once through
 (T_{\\rm SM}^{\\mu\\nu}=T_{{\\rm SM},0}^{\\mu\\nu}-g^{\\mu\\nu}U_Y).
 The formal variational definition now explicitly differentiates (S_{\\rm SM}^{(0)}), not an ambiguously named full SM action. Two source-level regression tests guard the package declaration and this sector bookkeeping. These are consistency guards; a full independent vierbein-variation calculation and numerical SM-sector conservation test remain outstanding.
+
+
+
+## 37. Linear expanding-background mode evolution
+
+The frozen Mathieu monodromy solver has been complemented by
+`integrate_expanding_mode` in `ptum_floquet.py`. Given sampled
+(a(t)), (H(t)), and (Phi_{\\rm res}(t)), it integrates the
+physical (chi_k) equation with Hubble friction and the time-dependent
+effective mass. It initializes the canonical variable
+(X_k=a^{3/2}chi_k) in a first-order adiabatic vacuum only when the
+initial canonical frequency is real and the WKB adiabaticity measure
+(|\\dot\\Omega_k/\\Omega_k^2|) is below a declared threshold.
+It returns the mode history, final instantaneous occupation estimate,
+and Wronskian conservation error. It refuses to assign a particle
+number when the final canonical frequency is non-positive.
+
+Two regression tests were added: an expanding de Sitter control with
+constant physical mass and zero coupling must preserve the adiabatic
+vacuum to numerical accuracy; a deliberately non-adiabatic initial
+history must be rejected rather than silently labelled as vacuum.
+
+This advances Gate 6 only at the linear numerical-method level. The
+solver consumes externally supplied background histories; PTUM does
+not yet generate a self-consistent (Phi_{\\rm res}) trajectory
+coupled to (chi), SM reheating, and the waterfall. There is no
+backreaction, rescattering, nonlinear fragmentation, converged
+momentum integral, relic abundance, or entropy dilution result. The
+threshold-matched benchmark remains overdamped, so the coherent
+oscillatory history required by the Floquet setup is not demonstrated.
+The latest two tests and manuscript changes await a fresh CI run.
