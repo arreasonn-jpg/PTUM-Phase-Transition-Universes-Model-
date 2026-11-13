@@ -12,17 +12,19 @@ Equations (from main.tex Sec 3.5.6, Eqs 3.18-3.21):
   ψ̈ + 3Hψ̇ + m²(1 - αΦ²/E_th²)ψ + λ_ψψ³ = 0
   H² = (1/3M_Pl²)(ρ_Φ + ρ_ψ + ρ_χ + ρ_res + ρ_rad)
 
-Energy densities:
-  ρ_Φ = ½Φ̇² + V_eff(Φ) + ½m²(1 - αΦ²/E_th²)ψ²
-  ρ_ψ = ½ψ̇² + ½m²(1 - αΦ²/E_th²)ψ² + ¼λ_ψψ⁴
+Energy densities (interaction potential assigned once, to ψ):
+  ρ_Φ = ½Φ̇² + V_eff(Φ)
+  ρ_ψ = ½ψ̇² + ½m_eff²(Φ)ψ² + ¼λ_ψψ⁴
+  ρ_total = ρ_Φ + ρ_ψ
 
-Shifted potential for ψ (energy measured from minimum):
-  U(ψ) = ¼λ_ψ(ψ² - ψ₀²)²,  ψ₀² = μ²/λ_ψ,  μ² = |m_eff²|
+Pressures:
+  p_Φ = ½Φ̇² - V_eff(Φ)
+  p_ψ = ½ψ̇² - ½m_eff²(Φ)ψ² - ¼λ_ψψ⁴
 
 Diagnostics:
-  w_ψ = (½ψ̇² - U) / (½ψ̇² + U)
-  Q = λ_ψ⟨ψ⁴⟩ / μ²⟨ψ²⟩  (quartic dominance parameter)
-  Virial ratio V = ⟨ψ̇²⟩ / (4⟨U⟩)
+  Q = λ_ψ⟨ψ⁴⟩ / ⟨|m_eff²(Φ)|ψ²⟩, evaluated per half-cycle
+  R_vir = ⟨K⟩ / (2⟨V_4⟩), which tends to 1 for quartic oscillations
+  C_FRW = dρ_total/dt + 3H(ρ_total+p_total)
 """
 
 import numpy as np
