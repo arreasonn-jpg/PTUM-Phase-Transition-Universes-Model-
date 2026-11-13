@@ -577,19 +577,23 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     w_avg = result['w_psi_avg']
     Q = result['Q']
     virial = result['virial_ratio']
-    
+    quadratic_virial = result.get('quadratic_virial_ratio', np.array([]))
+
     # Classify the late-time regime, not the whole trajectory.
     # Q and virial are sampled diagnostics; use the final 20% of the run.
     tail_start_q = int(0.8 * len(Q))
     tail_start_v = int(0.8 * len(virial))
     q_tail = Q[tail_start_q:] if len(Q) else np.array([])
     v_tail = virial[tail_start_v:] if len(virial) else np.array([])
+    qv_tail = quadratic_virial[tail_start_v:] if len(quadratic_virial) else np.array([])
     q_valid = q_tail[np.isfinite(q_tail)]
     v_valid = v_tail[np.isfinite(v_tail)]
+    qv_valid = qv_tail[np.isfinite(qv_tail)]
     w_final = float(np.mean(w_avg[-3:])) if len(w_avg) >= 3 else (
         float(w_avg[-1]) if len(w_avg) else float("nan"))
     Q_final = float(np.mean(q_valid)) if len(q_valid) else float("nan")
     virial_final = float(np.mean(v_valid)) if len(v_valid) else float("nan")
+    quadratic_virial_final = float(np.mean(qv_valid)) if len(qv_valid) else float("nan")
 
     # Do not classify a regime when the required diagnostics are unavailable.
     diagnostics_valid = np.isfinite([w_final, Q_final, virial_final]).all()
@@ -606,8 +610,11 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
         regime = 'insufficient_oscillation_data'
     elif quartic_achieved:
         regime = 'quartic'
-    elif abs(w_final) < 0.1 and Q_final < 1:
-        # This is a diagnostic candidate, not proof of a quadratic attractor.
+    elif (abs(w_final) < 0.1 and Q_final < 1 and
+          np.isfinite(quadratic_virial_final) and
+          abs(quadratic_virial_final - 1.0) < 0.2):
+        # A matter-like equation of state and quadratic virial balance are
+        # both required; this remains a candidate, not an attractor proof.
         regime = 'quadratic_candidate'
     else:
         # w alone does not establish barrier crossing. In particular, a
@@ -622,6 +629,7 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
         'Q_final': float(Q_final),
         'quartic_to_tachyonic_potential_ratio': float(quartic_to_tachyonic_potential_ratio),
         'virial_final': float(virial_final),
+        'quadratic_virial_final': float(quadratic_virial_final),
         'n_oscillations': len(w_avg)
     }
 
