@@ -11,7 +11,7 @@ This file defines the evidence required before PTUM can be called scientifically
 | 3. Hilbert tensors and conservation | Every sector tensor derived from the same action; all Q_i^nu derived; sum of currents cancels; numerical conservation converges independently with solver tolerance and timestep | **PARTIAL**. The classical tree-level gauge, Higgs, chiral-fermion and PTUM Hilbert tensors and all interaction currents are now written from one action; the current solver does not evolve SM fields, and full-sector numerical conservation/timestep-tolerance convergence is not yet demonstrated |
 | 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **PARTIAL**. Chain-rule and finite-difference diagnostics exist; convergence campaign remains open |
 | 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and a defect-topology analysis (including the Z2 domain-wall risk of a real waterfall scalar) | **NOT MET**. Current scan is homogeneous and post-threshold |
-| 6. Resonance and relic abundance | Expanding-background mode equations; converged monodromy/Floquet growth; momentum integration; backreaction; thermalization and entropy dilution; independently reproduced relic abundance | **NOT MET**. A linear mode integrator now evolves supplied expanding-FRW histories with an adiabatic-vacuum check and Wronskian monitor, but the background is not generated self-consistently, and no momentum-integrated abundance, backreaction or entropy dilution is available |
+| 6. Resonance and relic abundance | Expanding-background mode equations; converged monodromy/Floquet growth; momentum integration; backreaction; thermalization and entropy dilution; independently reproduced relic abundance | **NOT MET**. A linear mode integrator now evolves supplied expanding-FRW histories with an adiabatic-vacuum check and Wronskian monitor, and a finite-band trapezoidal momentum integral is implemented. The background is not generated self-consistently, the momentum tails and grid are not converged, and no backreaction or entropy dilution is available |
 | 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The closure remains phenomenological; no microscopic realization is established |
 | 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. Conditional potential-dominated T_rh estimate only; branching and thermalization are not computed |
 | 9. Observational reproducibility | Public exact CLASS patch; pinned version/commit; complete configs, likelihoods, data, chains and commands; independent rerun reproduces posteriors and model comparison | **NOT MET**. Reported numbers are author-reported; patch availability and chains remain unverified |
@@ -109,3 +109,20 @@ rescattering, momentum-integrated relic abundance or entropy history.
 The threshold-matched benchmark remains overdamped. The branch now
 contains 47 Python regression tests, but the newest tests and LaTeX
 fix have not yet been observed in a fresh CI run.
+
+
+
+## 2026-11-13 finite-band spectrum update
+
+The expanding-mode module now evolves each mode on a supplied
+(a(t),H(t),Phi_{\\rm res}(t)) history and computes a finite-band
+trapezoidal estimate of (n_{\\chi,\\rm com}) over a strictly
+increasing (k)-grid. The finite-band output is explicitly not
+extrapolated beyond its input range. Regression tests cover the
+vacuum-preservation control and momentum-grid validation.
+
+Gate 6 remains **NOT MET**. Momentum-range and resolution convergence,
+a self-consistent PTUM background, backreaction, rescattering,
+nonlinear mode coupling, and entropy dilution are still missing.
+The latest branch contains 49 tests, but no fresh CI run has yet
+verified the newest mode and manuscript changes.
