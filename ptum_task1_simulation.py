@@ -683,14 +683,33 @@ def run_parameter_scan(params: PTUMParameters,
                        phi_offset_range: List[float],
                        t_max: float = 50.0,
                        n_points: int = 500,
-                       phi_dot_init_by_offset: Optional[Dict[float, float]] = None) -> List[Dict]:
+                       phi_dot_init_by_offset: Optional[Dict[float, float]] = None,
+                       progress_interval: int = 0,
+                       progress_label: str = "scan") -> List[Dict]:
     """
     Run parameter scan over initial conditions.
     
     Returns list of simulation results with success/failure classification.
     """
     results = []
-    
+    total_runs = (
+        len(psi_init_range) * len(psi_dot_init_range) * len(phi_offset_range)
+    )
+    completed_runs = 0
+    if progress_interval < 0:
+        raise ValueError("progress_interval must be non-negative")
+
+    def record_progress():
+        nonlocal completed_runs
+        completed_runs += 1
+        if progress_interval and (
+            completed_runs % progress_interval == 0 or completed_runs == total_runs
+        ):
+            print(
+                f"[{progress_label}] completed {completed_runs}/{total_runs} trajectories",
+                flush=True,
+            )
+
     # Time array (in units of 1/μ)
     mu = np.sqrt(abs(params.mu_sq))
     t_span = (0, t_max / mu)
@@ -721,6 +740,7 @@ def run_parameter_scan(params: PTUMParameters,
                         'phi_offset': phi_offset
                     }
                     results.append(result)
+                    record_progress()
                     
                 except Exception as e:
                     results.append({
@@ -732,6 +752,7 @@ def run_parameter_scan(params: PTUMParameters,
                             'phi_offset': phi_offset
                         }
                     })
+                    record_progress()
     
     return results
 
