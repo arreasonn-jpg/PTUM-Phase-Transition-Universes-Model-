@@ -175,3 +175,19 @@ def test_fuel_potential_exponent_is_dimensionless_and_threshold_is_independent()
     )
     assert meff_sq_psi(p.Phi_c, p) == pytest.approx(0.0, abs=1.0e-10 * p.m_psi**2)
     assert meff_sq_psi(1.01 * p.Phi_c, p) < 0.0
+
+
+
+def test_reproducible_inflation_background_scan_lambda_002():
+    from ptum_inflation_background import compute_observables
+
+    result = compute_observables(0.02, n_target=60.0, n_star=55.0)
+    assert result["n_end"] == pytest.approx(60.0, abs=1.0e-6)
+    assert result["x_initial"] == pytest.approx(10.71523918, rel=2.0e-7)
+    assert result["x_star"] == pytest.approx(10.46534426, rel=2.0e-7)
+    assert result["n_s_hubble_flow_1st_order"] == pytest.approx(
+        0.95808593, abs=2.0e-7
+    )
+    assert result["r_hubble_flow_1st_order"] == pytest.approx(
+        0.02195265, abs=2.0e-7
+    )
