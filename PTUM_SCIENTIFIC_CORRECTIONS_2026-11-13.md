@@ -402,7 +402,7 @@ At $\epsilon_H=1$, $X_{\rm end}^2=1/3$, so the exact single-field endpoint also 
 K_{\rm end}/V_0\simeq0.00963246,\qquad
 \rho_{\rm end}/V_0\simeq0.02889739.
 \]
-If all of this total energy thermalized instantaneously at $g_*=100$ and $V_0^{1/4}=10^{16}\,\mathrm{GeV}$, the idealized upper-limit estimate is $T_{\rm rh}^{\rm ideal}\simeq1.72\times10^{15}\,\mathrm{GeV}$. Converting only the potential contribution gives $1.56\times10^{15}\,\mathrm{GeV}$. The potential-only damping estimate is $3H_{c,V}/(2\mu)\simeq3.48$, while the exact endpoint including kinetic energy gives $3H_c/(2\mu)\simeq4.26$. Both are overdamped. These values supersede the earlier $0.0378V_0$, $1.84\times10^{15}\,\mathrm{GeV}$, and $4.9$ estimates in Sections 13 and 21.
+If all of this total energy thermalized instantaneously at $g_*=100$ and $V_0^{1/4}=10^{16}\,\mathrm{GeV}$, the idealized upper-limit estimate is $T_{\rm rh}^{\rm ideal}\simeq1.72\times10^{15}\,\mathrm{GeV}$. Converting only the potential contribution gives $1.56\times10^{15}\,\mathrm{GeV}$. The potential-only damping estimate is $3H_{c,V}/(2\mu)\simeq3.50$, while the exact endpoint including kinetic energy gives $3H_c/(2\mu)\simeq4.29$. Both are overdamped. These values supersede the earlier $0.0378V_0$, $1.84\times10^{15}\,\mathrm{GeV}$, and $4.9$ estimates in Sections 13 and 21.
 
 The new regression test checks both end-field values and the $0.31852$ e-fold crossing offset. A fresh 100-point high-resolution scan must run with this exact threshold before its outcomes are accepted.
 
