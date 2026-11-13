@@ -18,6 +18,7 @@ from ptum_task1_simulation import (
     hubble_rate,
     compute_quartic_dominance,
     compute_quartic_virial_ratio,
+    compute_quadratic_virial_ratio,
     InitialConditions,
     run_simulation,
     compute_time_averaged_w,
@@ -354,3 +355,32 @@ def test_threshold_matched_inflation_starts_on_tachyonic_side():
         0.0, abs=1.0e-10 * p.m_psi**2
     )
     assert meff_sq_psi(0.99 * phi_end, p) > 0.0
+
+
+
+def test_quadratic_virial_ratio_is_unity_for_harmonic_oscillator():
+    p = PTUMParameters()
+    phi = 0.9 * p.Phi_c
+    mass = np.sqrt(meff_sq_psi(phi, p))
+    t = np.linspace(0.0, 20.0 * np.pi / mass, 4001)
+    amplitude = 1.0e10
+    psi = amplitude * np.cos(mass * t)
+    psi_dot = -mass * amplitude * np.sin(mass * t)
+    Phi = np.full_like(t, phi)
+
+    ratio = compute_quadratic_virial_ratio(t, psi, psi_dot, Phi, p)
+    valid = ratio[np.isfinite(ratio)]
+    assert len(valid) > 0
+    assert np.mean(valid) == pytest.approx(1.0, rel=2.0e-3)
+
+
+def test_quadratic_virial_ratio_is_unavailable_for_tachyonic_mass():
+    p = PTUMParameters()
+    phi = 1.1 * p.Phi_c
+    t = np.linspace(0.0, 10.0, 1001)
+    psi = np.cos(t)
+    psi_dot = -np.sin(t)
+    Phi = np.full_like(t, phi)
+
+    ratio = compute_quadratic_virial_ratio(t, psi, psi_dot, Phi, p)
+    assert np.all(np.isnan(ratio))
