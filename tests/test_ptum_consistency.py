@@ -548,3 +548,27 @@ def test_unbroken_phase_excitation_potential_matches_raw_potential():
 def test_raw_psi_equation_of_state_is_nan_when_sector_density_is_zero():
     p = PTUMParameters()
     assert np.isnan(w_psi(1.1 * p.Phi_c, 0.0, 0.0, p))
+
+
+
+def test_high_resolution_scan_validation_fails_closed():
+    from ptum_task1_scan import validate_scan_results
+
+    valid_rows = [
+        {"success": True, "scan_metadata": {"scenario": "test"}}
+        for _ in range(100)
+    ]
+    assert validate_scan_results(valid_rows) == 100
+
+    with pytest.raises(RuntimeError, match="Incomplete scan"):
+        validate_scan_results(valid_rows[:-1])
+
+    failed_rows = [dict(row) for row in valid_rows]
+    failed_rows[17] = {
+        "success": False,
+        "scan_metadata": {"scenario": "test"},
+        "ic_params": {"psi_init": 0.0},
+        "error": "synthetic integration failure",
+    }
+    with pytest.raises(RuntimeError, match="integrations failed"):
+        validate_scan_results(failed_rows)
