@@ -202,7 +202,7 @@ def integrate_expanding_mode(
         raise ValueError("scale factor must remain positive")
     scalar_parameters = np.asarray(
         [k_comoving, m_chi, g_dm, rtol, atol, max_initial_adiabaticity,
-         background_consistency_tolerance],
+         background_consistency_tolerance, wronskian_tolerance],
         dtype=float,
     )
     if not np.all(np.isfinite(scalar_parameters)):
