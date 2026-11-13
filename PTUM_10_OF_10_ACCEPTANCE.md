@@ -124,5 +124,23 @@ vacuum-preservation control and momentum-grid validation.
 Gate 6 remains **NOT MET**. Momentum-range and resolution convergence,
 a self-consistent PTUM background, backreaction, rescattering,
 nonlinear mode coupling, and entropy dilution are still missing.
-The latest branch contains 50 tests, but no fresh CI run has yet
+The latest branch contains 51 tests, but no fresh CI run has yet
 verified the newest mode and manuscript changes.
+
+
+
+## 2026-11-13 tachyonic interval regression
+
+The expanding mode solver no longer requires (Omega_k^2(t)>0)
+throughout the entire supplied history. It requires a real positive
+initial frequency for the adiabatic vacuum, permits intermediate
+(Omega_k^2<0) intervals, and assigns an instantaneous particle
+number only if the final frequency is positive. The initial WKB
+derivative is obtained from the derivative of (Omega_k^2), avoiding
+a square root of negative intermediate values. A regression test
+checks tachyonic growth and Wronskian preservation.
+
+Gate 6 remains **NOT MET** because this solver still uses externally
+supplied histories and no self-consistent PTUM production/relic
+calculation has been performed. The current branch contains 51 tests;
+the latest full CI run is still pending.
