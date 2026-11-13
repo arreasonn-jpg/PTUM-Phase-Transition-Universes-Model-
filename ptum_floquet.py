@@ -369,9 +369,7 @@ def integrate_expanding_spectrum(
         n_comoving = float(
             np.trapezoid(k_arr**2 * occupations, x=k_arr) / (2.0 * np.pi**2)
         )
-        n_physical = float(
-            n_comoving / float(np.asarray(tuple(scale_factor), dtype=float)[-1])**3
-        )
+        n_physical = float(n_comoving / float(a_arr[-1])**3)
     else:
         n_comoving = float("nan")
         n_physical = float("nan")
