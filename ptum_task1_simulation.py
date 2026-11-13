@@ -300,6 +300,9 @@ def run_simulation(params: PTUMParameters,
     # NaN denotes that no valid oscillation interval was available.
     U_psi = 0.25 * params.lambda_psi * psi**4
     virial_ratio = compute_quartic_virial_ratio(t, psi, psi_dot, params)
+    quadratic_virial_ratio = compute_quadratic_virial_ratio(
+        t, psi, psi_dot, Phi, params
+    )
     Q_arr = compute_quartic_dominance(t, psi, psi_dot, params, Phi)
     
     # Time-averaged w_psi over oscillation periods
@@ -328,6 +331,7 @@ def run_simulation(params: PTUMParameters,
         't_avg': t_avg,
         'U_psi': U_psi,
         'virial_ratio': virial_ratio,
+        'quadratic_virial_ratio': quadratic_virial_ratio,
         'Q': Q_arr,
         'params': params,
         'ic': ic
@@ -376,6 +380,28 @@ def compute_quartic_virial_ratio(t: np.ndarray, psi: np.ndarray,
         twice_potential_avg = 0.5 * params.lambda_psi * np.mean(psi[start:end]**4)
         if twice_potential_avg > 0.0:
             ratio[start:end] = kinetic_avg / twice_potential_avg
+    return ratio
+
+
+def compute_quadratic_virial_ratio(t: np.ndarray, psi: np.ndarray,
+                                      psi_dot: np.ndarray, Phi: np.ndarray,
+                                      params: PTUMParameters) -> np.ndarray:
+    """Half-cycle <K>/<V2> for a positive, slowly varying quadratic mode."""
+    if len(Phi) != len(t):
+        raise ValueError("Phi and t must have the same length")
+    ratio = np.full_like(t, np.nan, dtype=float)
+    m_eff_sq = np.array([meff_sq_psi(value, params) for value in Phi])
+    turning_points = np.where(np.diff(np.signbit(psi_dot)))[0]
+    for i in range(len(turning_points) - 1):
+        start, end = turning_points[i], turning_points[i + 1] + 1
+        if end - start < 3 or np.any(m_eff_sq[start:end] <= 0.0):
+            continue
+        kinetic_avg = 0.5 * np.mean(psi_dot[start:end]**2)
+        quadratic_potential_avg = 0.5 * np.mean(
+            m_eff_sq[start:end] * psi[start:end]**2
+        )
+        if quadratic_potential_avg > 0.0:
+            ratio[start:end] = kinetic_avg / quadratic_potential_avg
     return ratio
 
 
