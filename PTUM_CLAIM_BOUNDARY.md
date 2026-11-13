@@ -30,13 +30,36 @@ Current data show a weak preference for LambdaCDM while leaving PTUM viable as a
 
 It should not be framed as positive evidence that current data prefer PTUM.
 
+## Activation-sign revision
+
+The activation mass has been revised to
+\[
+m_{\rm eff}^2(\Phi)=m_\psi^2\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right),
+\qquad
+\Phi_c=\frac{E_{\rm th}}{\sqrt\alpha}.
+\]
+Thus the proxy is stable for $|\Phi|>\Phi_c$ and tachyonic for
+$|\Phi|<\Phi_c$. This sign is selected to match the stated chronology:
+the positive-$\Phi$ slow-roll solution moves downward from
+$\Phi_*\simeq10.5M_{\rm Pl}$ to $\Phi_{\rm end}\simeq1.387M_{\rm Pl}$,
+so the waterfall instability turns on as the field crosses below
+$\Phi_c\simeq\Phi_{\rm end}$. The associated interaction potential is
+$U_{\Phi\psi}=+\tfrac12(\alpha m_\psi^2/E_{\rm th}^2)\Phi^2\psi^2$;
+the scalar equation and sector transfer-current signs have been
+rederived accordingly.
+
+The old 36-point scan used the opposite sign and is historical only.
+The revised code, manuscript, and tests must pass a fresh CI scan
+before any new regime conclusion is accepted. The onset itself still
+requires coupled quantum/inhomogeneous evolution and backreaction.
+
 ## Current Task 1 status
 
 **The quartic-dominated regime is not demonstrated in either current homogeneous scan.** GitHub Actions run 43392067477 completed 24 regression tests and 36/36 integrations successfully:
 - High-scale threshold-matched benchmark ($V_0=10^{64}\,\mathrm{GeV}^4$, $\Phi_c=1.387M_{\rm Pl}$, local damping ratio $3H_c/(2\mu)\simeq4.87$): 16 non-quartic and two insufficient-oscillation-data trajectories; zero quartic or quadratic-candidate trajectories.
 - Low-scale underdamped control ($V_0=10^{56}\,\mathrm{GeV}^4$): 16 non-quartic and two insufficient-oscillation-data trajectories; zero quartic or quadratic-candidate trajectories.
 
-The added positive-mass quadratic virial diagnostic gives $R_2=\langle K\rangle/\langle V_2\rangle\simeq0.75$--$0.79$ in the measurable high-scale cases, outside the classifier's $|R_2-1|<0.2$ criterion. The previous single quadratic-candidate label is therefore withdrawn. In the high-scale scan, $Q$ is many orders of magnitude below two, so the quartic potential contribution is negligible relative to the tachyonic quadratic contribution over the sampled late-time intervals. Neither scan meets the combined quartic conditions ($Q>2$, $\langle V_4\rangle/\langle|V_2|\rangle>1$, $w\simeq1/3$, and quartic virial ratio near one).
+The results above were generated with the **superseded activation-mass sign** and are retained as a historical diagnostic only. They must not be used as validation of the revised waterfall model. The 36-point scan must be rerun after the sign revision before making any claim about quartic or quadratic regimes.
 
 The two exactly zero-seed solutions remain at $\psi=0$ in the deterministic homogeneous equations; this is an invariant solution, not evidence that quantum fluctuations are absent physically. A fluctuation-seeded or inhomogeneous treatment is required to model tachyonic growth from vacuum fluctuations. Both scans are homogeneous post-trigger tests and do not establish the full inhomogeneous discharge or microscopic proxy-fluid production.
 
@@ -63,7 +86,7 @@ PTUM does not claim to be:
 
 - a UV-complete derivation of the pre-discharge background,
 - a complete gauge-invariant chiral Standard Model reheating interaction or full SM Hilbert-tensor derivation; the displayed Dirac coupling is generic EFT shorthand pending specification,
-- a dynamically demonstrated dormant-to-tachyonic trigger at the end of inflation; with the current $m_{\\rm eff}^2$ sign and monotonic slow-roll potential, the matched trajectory is tachyonic before threshold crossing and stabilizes afterward,
+- a fully dynamical coupled inflation-to-waterfall calculation including quantum seeds, inhomogeneous growth, and backreaction; the corrected mass sign gives the intended stable-above/tachyonic-below threshold ordering, but the current single-field inflation and post-trigger homogeneous scan do not yet evolve the onset,
 - a solution of the cosmological-constant problem,
 - a unique microscopic theory of the dark sector,
 - a replacement for LambdaCDM already favored by current data,
