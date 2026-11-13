@@ -115,14 +115,14 @@ fix have not yet been observed in a fresh CI run.
 ## 2026-11-13 finite-band spectrum update
 
 The expanding-mode module now evolves each mode on a supplied
-(a(t),H(t),Phi_{\\rm res}(t)) history and computes a finite-band
-trapezoidal estimate of (n_{\\chi,\\rm com}) over a strictly
-increasing (k)-grid. The finite-band output is explicitly not
+(a(t),H(t),Phi_{\\rm res}(t)) history, checks H=dot(a)/a consistency,
+and computes a finite-band trapezoidal estimate of n_chi,com over a
+strictly increasing k-grid. The finite-band output is explicitly not
 extrapolated beyond its input range. Regression tests cover the
 vacuum-preservation control and momentum-grid validation.
 
 Gate 6 remains **NOT MET**. Momentum-range and resolution convergence,
 a self-consistent PTUM background, backreaction, rescattering,
 nonlinear mode coupling, and entropy dilution are still missing.
-The latest branch contains 49 tests, but no fresh CI run has yet
+The latest branch contains 50 tests, but no fresh CI run has yet
 verified the newest mode and manuscript changes.
