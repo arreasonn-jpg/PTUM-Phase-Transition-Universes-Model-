@@ -752,3 +752,21 @@ def test_linear_waterfall_mode_rejects_nonadiabatic_initial_frequency():
             np.full_like(t, 0.9), k_comoving=0.0, m_psi=1.0, Phi_c=1.0,
             H_dot=np.zeros_like(t),
         )
+
+
+
+def test_linear_waterfall_mode_includes_frw_rescaling_terms():
+    from ptum_waterfall_modes import integrate_waterfall_mode
+
+    t = np.linspace(0.0, 1.0, 101)
+    H = 0.1 + 0.001 * t
+    H_dot = np.full_like(t, 0.001)
+    a = np.exp(0.1 * t + 0.0005 * t**2)
+    Phi = np.full_like(t, 2.0)
+    result = integrate_waterfall_mode(
+        t, a, H, Phi, k_comoving=0.0, m_psi=1.0, Phi_c=1.0,
+        H_dot=H_dot,
+    )
+    expected = 3.0 - 1.5 * H_dot - 2.25 * H**2
+    assert result["omega_sq"] == pytest.approx(expected)
+    assert result["wronskian_error"] < 1.0e-7
