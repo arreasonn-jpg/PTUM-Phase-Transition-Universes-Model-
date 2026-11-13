@@ -934,6 +934,25 @@ def test_waterfall_mode_uses_adiabatic_vacuum_and_preserves_wronskian():
 
 
 
+
+def test_forecast_methodology_discloses_missing_reproducibility_artifacts():
+    from pathlib import Path
+
+    source = Path("main.tex").read_text(encoding="utf-8")
+    normalized_source = " ".join(source.split())
+    required = (
+        "not independently reproduced from the present repository",
+        "modified \\texttt{CLASS} implementation",
+        "Fisher code",
+        "bandpower covariance outputs",
+        "foreground and delensing-residual model",
+        "indicative forecasts rather than independently validated detection significances",
+        "derivative step-size tests",
+    )
+    for phrase in required:
+        assert phrase in normalized_source
+
+
 def test_manuscript_documents_linear_waterfall_mode_hierarchy():
     from pathlib import Path
 

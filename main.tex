@@ -3302,12 +3302,26 @@ at \(\sim5\sigma\).
 \subsubsection{Forecast methodology and experimental specifications}
 \label{sec:forecast_methodology}
 
-The forecasts presented here are derived from Fisher matrix
-analyses using the full experimental covariance matrices for
-CMB-S4 and CMB-HD, following the methodology of
-\cite{Abazajian2016,Abazajian2019,Sehgal2019} \emph{(FENOMENOLOJİK
-tahmin; Fisher kodu yayında değil)}. We summarize the
-key specifications and assumptions below.
+The forecasts presented here are conditional, phenomenological
+Fisher projections. Their numerical results are author-reported and
+are not independently reproduced from the present repository. The
+modified \texttt{CLASS} implementation, Fisher code, fiducial spectra,
+numerical derivatives, bandpower covariance outputs, foreground and
+delensing-residual model, nuisance-parameter priors, and full
+nuisance-parameter marginalization are not deposited here. The
+covariance expression below is a Gaussian approximation constructed
+from published instrument specifications; it is not an end-to-end
+experimental likelihood or a released instrument covariance package.
+Accordingly, the values below are indicative forecasts rather than
+independently validated detection significances. A reproducible
+forecast release must provide the executable code, fiducial parameter
+vector and spectra, derivative step-size tests, multipole binning and
+cuts, covariance matrices, foreground/noise residual assumptions,
+delensing model, nuisance priors, and marginalized Fisher outputs.
+The forecasts follow the general methodology of
+\cite{Abazajian2016,Abazajian2019,Sehgal2019}
+\emph{(phenomenological forecast; Fisher implementation not public)}.
+We summarize the reported specifications and assumptions below.
 
 \textbf{CMB-S4:} We adopt the baseline CMB-S4 configuration from
 the \textit{CMB-S4 Science Book}~\cite{Abazajian2016}:
@@ -3363,7 +3377,7 @@ derivatives are computed numerically using the PTUM-modified
 \(\Delta N_{\rm fluid}\) is \(\sigma(\Delta N_{\rm fluid}) =
 \sqrt{(F^{-1})_{\Delta N,\Delta N}}\).
 
-\textbf{Results:} The Fisher forecasts yield:
+\textbf{Reported results:} The author-reported Fisher calculation gives:
 \begin{itemize}
 \item CMB-S4: \(\sigma(\Delta N_{\rm fluid}) \simeq 0.027\) (95\% CL
       \(< 0.044\)), a factor of 7 improvement over current
