@@ -297,3 +297,21 @@ def test_scan_summary_is_strict_json_and_nonfinite_values_become_null(tmp_path):
     assert parsed[0]["classification"]["Q_final"] is None
     assert "NaN" not in raw
     assert "max_abs_psi_over_trajectory" in parsed[0]
+
+
+
+def test_task1_scan_includes_threshold_matched_high_scale_and_low_scale_control():
+    from ptum_task1_scan import build_scan_scenarios
+
+    scenarios = dict(build_scan_scenarios())
+    assert set(scenarios) == {
+        "high_scale_threshold_matched",
+        "low_scale_underdamped_control",
+    }
+    high = scenarios["high_scale_threshold_matched"]
+    low = scenarios["low_scale_underdamped_control"]
+    assert high.Phi_c / M_PL == pytest.approx(1.387)
+    assert high.V0 == pytest.approx(1.0e64)
+    assert low.V0 == pytest.approx(1.0e56)
+    assert high.damping_ratio > 1.0
+    assert low.damping_ratio < 1.0
