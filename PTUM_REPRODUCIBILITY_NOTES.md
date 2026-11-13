@@ -1,51 +1,83 @@
 # PTUM Reproducibility Notes
 
-## Public repository
+**Review snapshot:** 2026-11-13  
+**Canonical repository:** https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-
+
+## 1. Public repository and historical reference
+
+The active repository reviewed for this branch is:
+
+```text
+https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-
+```
+
+Earlier package metadata referenced:
 
 ```text
 https://github.com/ErdemEsa/ptum-cosmology.git
 ```
 
-## Current public code status
+The legacy URL returned HTTP 404 through the GitHub repository API during the 2026-11-13 review. This does not prove whether the repository is private, renamed, or deleted; its contents could not be verified from the current connection.
 
-```text
-Manuscript archive: public
-Final figure artifacts: public
-Claim-boundary notes: public
-CLASS v3.2.0 PTUM patch: public
-Patch apply check: PASS, against a clean CLASS v3.2.0 tree
-Cobaya production YAML files: pending
-Full MCMC chains: pending or external archive
+## 2. Evidence-based code availability
+
+| Item | Current status | Evidence boundary |
+|---|---|---|
+| Manuscript source | Present | `main.tex` is tracked |
+| Historical manuscript PDF | Present | `main.pdf` predates current branch corrections; not a current build |
+| Figure artifacts | Present | Tracked under `figures/` |
+| Scalar homogeneous simulation | Present | `ptum_task1_simulation.py` |
+| Inflation background integrator | Present | `ptum_inflation_background.py` |
+| High-resolution homogeneous scan runner | Present | `ptum_task1_scan.py`; expects 100 trajectories |
+| Frozen Mathieu/Floquet solver | Present | `ptum_floquet.py` |
+| Linear expanding-background mode solver | Present | `integrate_expanding_mode` in `ptum_floquet.py`; supplied backgrounds only |
+| Finite-band momentum integration | Present | `integrate_expanding_spectrum`; no IR/UV extrapolation or convergence claim |
+| Covariant action registry | Present | `ptum_covariant_action.py`; algebraic representation/dimension checks only |
+| Python regression tests | Present | `tests/test_ptum_consistency.py`; 51 tests on current correction branch |
+| CLASS v3.2.0 patch source | **UNVERIFIED / not individually exposed** | The tracked root inventory does not expose a reviewable patch file |
+| PTUM.zip archive contents | **NOT INSPECTED** | Archive existence does not establish contents or patch validity |
+| CLASS patch clean-tree apply check | **UNVERIFIED** | No accessible patch, checksum, target tree, or apply log was available |
+| Production Cobaya YAML files | Pending / not verified | Not available as a complete public reproducibility package |
+| Full MCMC chains | Pending or external archive | No independently reproducible chain package verified |
+
+## 3. Current CI status
+
+The workflow is `.github/workflows/ptum-scientific-tests.yml`; its Python dependencies are pinned in `requirements-ci.txt`.
+
+Workflow run 43400134268 completed the then-current 43-test Python regression step successfully. Its LaTeX job failed because `main.tex` used `\mathscr D_\mu` without loading `mathrsfs`. The package has since been added, and regression tests now guard the package declaration and the SM Hilbert-tensor bookkeeping.
+
+The current correction branch contains 51 tests and has triggered workflow run 43405427845. At the time of this snapshot, that run is pending. The newest 51-test suite, 100-trajectory scan, and LaTeX build are therefore **not yet verified as passing**. The earlier scan attempt was cancelled when a newer commit superseded its run, and no complete scan artifact was validated.
+
+## 4. Requirements to make the CLASS/Cobaya claim reproducible
+
+To claim that the CLASS v3.2.0 patch is publicly available and independently applicable, the repository must expose:
+
+1. The exact patch file as a tracked, individually reviewable source file.
+2. The exact upstream CLASS version and commit SHA.
+3. A cryptographic checksum for the patch.
+4. The clean-tree apply command.
+5. A reproducible log showing the patch applies without conflicts.
+6. A build/test command and successful output.
+7. The exact production Cobaya YAML files, likelihood versions, dataset versions, parameter priors, and sampler settings.
+8. Full chains or an accessible archival record with checksums and enough metadata to reproduce posterior summaries and model comparison.
+
+Until these are available and independently rerun, the earlier statement that the CLASS v3.2.0 patch is public and apply-check verified must remain **UNVERIFIED**.
+
+## 5. Reproduction commands
+
+From a clean checkout of the correction branch:
+
+```bash
+python -m pip install -r requirements-ci.txt
+python -m pytest -q tests/test_ptum_consistency.py
+python ptum_task1_scan.py
+latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
 ```
 
-The repository includes a clean path-limited PTUM patch for `CLASS v3.2.0`. The patch implements the proxy-fluid dark-radiation sector used in the manuscript by introducing `Delta_N_fluid`, the corresponding background contribution, and the linear perturbation variables for the perfect-fluid component.
+The 100-trajectory scan is a homogeneous post-threshold sensitivity study, not an inhomogeneous quantum-seeded waterfall simulation. Its output must be inspected and subjected to timestep, solver-tolerance, and output-grid convergence before any physical regime conclusion is accepted.
 
-## Verification status in the current repository review (2026-11-13)
+The expanding-background mode solver requires supplied histories (a(t),H(t),\Phi_{\rm res}(t)). It does not generate a self-consistent PTUM background, include backreaction/rescattering, or by itself yield a relic abundance.
 
-The legacy URL above, `https://github.com/ErdemEsa/ptum-cosmology.git`,
-returned HTTP 404 through the GitHub repository API during this review.
-This does not establish whether the repository is private, renamed, or
-otherwise inaccessible; it means its contents and public accessibility
-could not be verified from the present connection.
+## 6. Reproducibility boundary
 
-The current PTUM repository root contains a binary `PTUM.zip`, but the
-tracked file list does not expose the CLASS patch as an individually
-reviewable source file. The archive contents were not inspected in this
-review. Therefore the claim that the CLASS v3.2.0 patch is publicly
-available and apply-check verified is currently **UNVERIFIED** from the
-canonical repository snapshot. To restore a reproducibility claim, add
-the exact patch file and its target CLASS version, checksum, apply
-command, and clean-tree test log to this repository, or provide a
-verifiable accessible archive/repository location.
-
-## Remaining public reproducibility items
-
-```text
-1. Add production Cobaya YAML files.
-2. Add full MCMC chain summaries or external archive links.
-3. Optionally add CI/build logs for patched CLASS.
-```
-
-## Claim boundary
-
-The CLASS implementation side is now publicly inspectable through the patch. The full Bayesian pipeline should not yet be described as completely end-to-end public until the production Cobaya configuration files and MCMC chains are released.
+A passing Python test suite is necessary but not sufficient. The project is not 10/10 until the latest CI and LaTeX build pass, the complete 100-trajectory scan is validated, all relevant numerical convergence studies are supplied, the CLASS/Cobaya pipeline is independently reproducible, and the microscopic waterfall, resonance, reheating, and proxy-fluid claims are supported by the required calculations.
