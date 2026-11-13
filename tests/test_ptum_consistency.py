@@ -618,3 +618,32 @@ def test_scan_initial_conditions_accept_integrated_fuel_velocity():
         Phi_dot_override=expected_phi_dot,
     )
     assert ic.Phi_dot == expected_phi_dot
+
+
+
+def test_delta_neff_radiation_fraction_uses_total_radiation_denominator():
+    from ptum_radiation_budget import radiation_fractions
+
+    low = radiation_fractions(0.10, 3.044)
+    high = radiation_fractions(0.31, 3.044)
+    assert low["extra_over_standard_neutrino_equivalent"] == pytest.approx(
+        0.10 / 3.044
+    )
+    assert low["extra_fraction_including_itself"] == pytest.approx(
+        0.0132499388, rel=2.0e-8
+    )
+    assert high["extra_fraction_including_itself"] == pytest.approx(
+        0.0399628492, rel=2.0e-8
+    )
+    assert high["extra_fraction_including_itself"] > low["extra_fraction_including_itself"]
+
+
+def test_delta_neff_radiation_fraction_rejects_invalid_inputs():
+    from ptum_radiation_budget import radiation_fractions
+
+    with pytest.raises(ValueError):
+        radiation_fractions(-0.1)
+    with pytest.raises(ValueError):
+        radiation_fractions(0.1, 0.0)
+    with pytest.raises(ValueError):
+        radiation_fractions(float("nan"))
