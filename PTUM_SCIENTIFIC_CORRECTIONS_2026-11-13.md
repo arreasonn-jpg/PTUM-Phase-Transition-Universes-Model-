@@ -90,13 +90,13 @@ rho_total = rho_phi + rho_psi
 
 The corresponding total pressure includes the interaction potential once with negative sign in p_psi. The Friedmann routine no longer silently clips non-positive total density to zero; it raises an error for a non-positive or non-finite state.
 
-The old diagnostic rho_total(t)-rho_total(0) was not a conservation law in an expanding universe. The simulation now reports the FRW continuity residual
+The old diagnostic rho_total(t)-rho_total(0) was not a conservation law in an expanding universe. The FRW continuity residual is
 
 ~~~tex
-C_{\rm FRW}=\dot\rho_{\rm tot}+3H(\rho_{\rm tot}+p_{\rm tot}),
+C_{\\rm FRW}=\\dot\\rho_{\\rm tot}+3H(\\rho_{\\rm tot}+p_{\\rm tot}).
 ~~~
 
-estimated from the sampled solution with a finite-difference derivative, plus a normalized residual. This is a numerical diagnostic, not an exact identity test; its value must be checked for convergence as output resolution and solver tolerances change.
+The code now exposes two distinct diagnostics. The primary `continuity_residual` applies the chain rule to the energy density and evaluates the field accelerations from the background equations. This avoids catastrophic relative normalization when a nearly constant vacuum density is differentiated numerically. It is an equation-consistency check using the same RHS, not an independent validation of the ODE solver. The separate `continuity_residual_finite_difference` differentiates the sampled density with `numpy.gradient`; it is retained for output-grid and solver-tolerance convergence studies and may be noisy when the density is vacuum dominated. The two diagnostics must not be conflated.
 
 ## 6. Oscillation diagnostics
 
