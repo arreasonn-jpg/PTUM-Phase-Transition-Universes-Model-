@@ -317,7 +317,7 @@ M_{\rm Pl}=(8\pi G)^{-1/2}\simeq 2.435\times10^{18}\,\mathrm{GeV},
 with the energy-momentum tensor defined by
 \(T_{\mu\nu}=-\frac{2}{\sqrt{-g}}\frac{\delta(\sqrt{-g}\mathcal{L}_{\rm m})}
 {\delta g^{\mu\nu}}\), so that a canonical scalar
-\(\mathcal{L}=\tfrac12(\partial\phi)^2-V\) gives
+\(\mathcal{L}=-\tfrac12 g^{\mu\nu}\partial_\mu\phi\partial_\nu\phi-V\) gives
 \(\rho=\tfrac12\dot\phi^2+V\), \(p=\tfrac12\dot\phi^2-V\).
 Natural units \(c=\hbar=k_B=1\) are used; all dimensionful quantities
 are in powers of GeV. The Riemann tensor convention is
@@ -370,7 +370,7 @@ The total effective Lagrangian is
 The fuel sector is
 \begin{equation}
 \mathcal{L}_{\rm fuel}
-=\tfrac{1}{2}(\partial_\mu\Phi)^2
+=-\tfrac{1}{2}g^{\mu\nu}\partial_\mu\Phi\partial_\nu\Phi
 -V_{\rm eff}(\Phi),
 \end{equation}
 with
@@ -436,7 +436,7 @@ condition.
 The activation sector is
 \begin{equation}
 \mathcal{L}_{\rm activation}
-=\tfrac{1}{2}(\partial_\mu\psi)^2
+=-\tfrac{1}{2}g^{\mu\nu}\partial_\mu\psi\partial_\nu\psi
 -\frac{m^2}{2}\psi^2\!\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)
 -\frac{\lambda_\psi}{4}\psi^4,
 \label{eq:lact}
@@ -463,14 +463,14 @@ Here, $E_{\rm th}$ is the dimensionful discharge threshold scale (naturally rela
 The dark-matter sector is
 \begin{equation}
 \mathcal{L}_{\rm DM}
-=\tfrac{1}{2}(\partial_\mu\chi)^2
+=-\tfrac{1}{2}g^{\mu\nu}\partial_\mu\chi\partial_\nu\chi
 -\tfrac{1}{2}m_\chi^2\chi^2
 -g_{\rm DM}\chi^2\Phi_{\rm res}^2,
 \end{equation}
 and the dark-energy sector is
 \begin{equation}
 \mathcal{L}_{\rm DE}
-=\tfrac{1}{2}(\partial_\mu\Phi_{\rm res})^2
+=-\tfrac{1}{2}g^{\mu\nu}\partial_\mu\Phi_{\rm res}\partial_\nu\Phi_{\rm res}
 -W(\Phi_{\rm res}),
 \end{equation}
 with
@@ -532,7 +532,7 @@ For a scalar field \(\phi\) with Lagrangian
 - V(\phi)\), the Euler--Lagrange equation is
 \begin{equation}
 \frac{1}{\sqrt{-g}}\partial_\mu\left(\sqrt{-g}\,g^{\mu\nu}
-\partial_\nu\phi\right) + \frac{\partial V}{\partial\phi} = 0.
+\partial_\nu\phi\right) - \frac{\partial V}{\partial\phi} = 0.
 \end{equation}
 In FRW, \(g^{00}=-1\), \(g^{ij}=a^{-2}\delta^{ij}\), and for
 homogeneous fields \(\phi(t)\) this reduces to
@@ -1670,7 +1670,7 @@ Lagrangian is
 \end{equation}
 where the interaction terms are:
 \begin{align}
-\mathcal{L}_{\rm int}^{\psi\Phi} &= -\frac{1}{2}\alpha m^2 \frac{\Phi^2}{E_{\rm th}^2} \psi^2, \\
+\mathcal{L}_{\rm int}^{\psi\Phi} &= +\frac{1}{2}\alpha m^2 \frac{\Phi^2}{E_{\rm th}^2} \psi^2, \\
 \mathcal{L}_{\rm int}^{\chi\Phi_{\rm res}} &= -g_{\rm DM} \chi^2 \Phi_{\rm res}^2, \\
 \mathcal{L}_{\rm rh} &= -y_\psi \psi \bar{f} f - \frac{1}{2} g_\psi \psi^2 \phi_{\rm SM}^2.
 \end{align}
@@ -1678,12 +1678,12 @@ where the interaction terms are:
 The energy-momentum tensor for each sector is $T_i^{\mu\nu} = \frac{2}{\sqrt{-g}}\frac{\delta(\sqrt{-g}\mathcal{L}_i)}{\delta g_{\mu\nu}}$. The covariant divergence gives the transfer vectors. Each interaction term in the total Lagrangian contributes once to the divergence of the total tensor; assigning each contribution with opposite signs to the two exchanging sectors yields the closed system:
 \begin{align}
 Q_\psi^\nu &= +\alpha m^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi
- + y_\psi \psi \bar{f}\gamma^\nu f
+ + y_\psi \bar f f\,\nabla^\nu\psi
  + g_\psi \psi^2 \phi_{\rm SM} \partial^\nu\phi_{\rm SM}, \\
 Q_\Phi^\nu &= -\alpha m^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi, \\
 Q_{\rm DM}^\nu &= -2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
 Q_{\rm DE}^\nu &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
-Q_{\rm SM}^\nu &= -y_\psi \psi \bar{f}\gamma^\nu f - g_\psi \psi^2 \phi_{\rm SM} \partial^\nu\phi_{\rm SM}.
+Q_{\rm SM}^\nu &= -y_\psi \bar f f\,\nabla^\nu\psi - g_\psi \psi^2 \phi_{\rm SM} \partial^\nu\phi_{\rm SM}.
 \end{align}
 Direct summation now gives $\sum_i Q_i^\nu = 0$ identically, as required
 by $\nabla_\mu T^{\mu\nu}_{\rm total}=0$ (GÖSTERİLDİ). The terms
@@ -3095,15 +3095,16 @@ mass term for $\chi$. Writing
 $\Phi_{\rm res}(t)=\mathcal{A}_{\rm res}\cos(\omega_{\rm res}t)$,
 the mode equation becomes a Mathieu equation with
 \begin{equation}
-q \equiv \frac{2g_{\rm DM}\mathcal{A}_{\rm res}^2}{2\omega_{\rm res}^2}
-= \frac{g_{\rm DM}\mathcal{A}_{\rm res}^2}{\omega_{\rm res}^2},
+q = -\frac{g_{\rm DM}\mathcal{A}_{\rm res}^2}{2\omega_{\rm res}^2},
 \qquad
-A_k \equiv \frac{k^2/a^2+m_\chi^2}{\omega_{\rm res}^2}.
+A_k = \frac{k^2/a^2+m_\chi^2+g_{\rm DM}\mathcal{A}_{\rm res}^2}
+{\omega_{\rm res}^2}.
 \end{equation}
 The $\chi$ field experiences parametric resonance when the Mathieu
 parameters place the mode in an instability band, the dominant one
-being $A_k\approx 1$ ($n=1$), i.e.\
-$\omega_\chi\equiv\sqrt{k^2/a^2+m_\chi^2}\approx\omega_{\rm res}/2$.
+being $A_k\simeq1$ for the narrow primary band, corresponding to
+$\sqrt{k^2/a^2+m_\chi^2+g_{\rm DM}\mathcal A_{\rm res}^2}
+\simeq\omega_{\rm res}$, not $\omega_\chi\simeq\omega_{\rm res}/2$.
 
 The equation of motion for the $\chi$ field modes in an FRW
 background is
@@ -3117,11 +3118,12 @@ exponential growth of modes within the resonance band:
 \begin{equation}
 \chi_k(t) \propto \exp(\mu_k t).
 \end{equation}
-For the broad resonance regime ($q \gg 1$),
-the maximum Floquet exponent is $\mu_{\rm max} \approx q\,\omega_{\rm res}/2$
-(GÖSTERİLDİ from the standard Mathieu asymptotics; the earlier draft's
-$\mu_{\rm max}\approx0.2\,\omega_{\rm res}$ was a narrow-resonance
-estimate and is not used here). The occupation number of produced
+The dimensionless Floquet exponent is defined in $z=\omega_{\rm res}t$;
+the physical growth rate is $\mu_k^{(t)}=\omega_{\rm res}\mu_k^{(z)}$.
+No universal broad-resonance estimate $\mu_{\rm max}\simeq
+q\omega_{\rm res}/2$ is assumed: the exponent and instability bands
+must be computed from the monodromy matrix for the actual $(A_k,q)$,
+then checked against expansion and backreaction. The occupation number of produced
 $\chi$ particles after $N$ oscillation periods is
 \begin{equation}
 n_k \approx \exp(2\mu_k N\,\omega_{\rm res}^{-1}),
