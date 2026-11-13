@@ -6,8 +6,6 @@ PTUM_LIBRARY_MANIFEST.md
 PTUM_LIBRARY_SUPPLEMENTARY_NOTE.pdf
 PTUM_LIBRARY_SUPPLEMENTARY_NOTE.tex
 PTUM_REPRODUCIBILITY_NOTES.md
-compile1.log
-compile2.log
 cover_letter.txt
 figures/PTUM_F3_proxy_fluid_vs_free_streaming_dark_radiation.pdf
 figures/PTUM_F4_CMB_phase_shift_diagnostic.pdf
@@ -45,6 +43,12 @@ tests/test_ptum_consistency.py
 
 # Notes
 The tracked main.pdf predates the current manuscript corrections and
-must not be treated as the current compiled version. The CI workflow
-publishes a fresh compiled PDF artifact and the corrected 18-point
-scan JSON as separate downloadable artifacts.
+must not be treated as the current compiled version. LaTeX auxiliary
+files and stale compile logs are removed from the correction branch.
+The CI workflow is the source of truth for a fresh compiled PDF.
+The current scan runner expects 100 trajectories (50 initial conditions
+at each of two energy scales); its JSON output is generated at runtime
+and uploaded as a CI artifact, not committed as a source file.
+The expanding-background linear chi-mode solver is in ptum_floquet.py.
+The repository's 10/10 evidence requirements and current gate statuses
+are maintained in PTUM_10_OF_10_ACCEPTANCE.md.
