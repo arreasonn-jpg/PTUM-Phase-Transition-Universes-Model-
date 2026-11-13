@@ -95,11 +95,15 @@ $Z_2$ symmetry and form domain walls. This model does not, by itself,
 derive cosmic strings. The string-tachyon discussion is only a
 structural analogy, and the separately reported winding analysis of
 $\Phi_{\rm res}$ does not establish the absence of $\psi$ domain walls.
-A defect-safe completion requires specifying whether $\psi$ is real,
-complex, or gauge charged, choosing the relevant symmetry-breaking
-potential, and simulating the resulting inhomogeneous defect network.
-Until then, no defect-free or cosmic-string claim is made for the
-real-$\psi$ truncation.
+The dimension-five fermion-Higgs operator introduced for reheating
+is odd in $\psi$ and may explicitly break this $Z_2$, but its induced
+vacuum bias and domain-wall lifetime depend on the Wilson
+coefficients and any additional discrete charge assignments. A
+defect-safe completion requires specifying whether $\psi$ is real,
+complex, or gauge charged, deriving the symmetry-breaking bias, and
+simulating the resulting inhomogeneous defect network. Until then,
+no defect-free or cosmic-string claim is made for the real-$\psi$
+truncation.
 
 ## Claims intentionally not made
 
