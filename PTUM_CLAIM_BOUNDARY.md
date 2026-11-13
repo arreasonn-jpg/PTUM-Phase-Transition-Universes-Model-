@@ -34,12 +34,12 @@ It should not be framed as positive evidence that current data prefer PTUM.
 
 **The quartic-dominated regime (w=1/3) is NOT achieved with the benchmark parameters stated in the paper.**
 
-Numerical integration of the coupled background equations with:
-- $V_0 \sim 10^{64}\,\mathrm{GeV}^4$ ($H_* \sim 10^{13}\,\mathrm{GeV}$)
+The benchmark inputs considered are:
+- $V_0 \sim 10^{64}\,\mathrm{GeV}^4$ (plateau scale $H_* \sim 10^{13}\,\mathrm{GeV}$)
 - $m_\psi \sim 10^{13}\,\mathrm{GeV}$, $\lambda_\psi \sim 0.1$
-- $\psi(t_c)=0$, $\dot{\psi}(t_c)=0$ (field at top of barrier)
+- $\psi(t_c)=0$, $\dot{\psi}(t_c)=0$ in the zero-seed limit
 
-For the threshold-matched benchmark $\Phi_c\simeq\Phi_{\rm end}\simeq1.387M_{\rm Pl}$, the potential-dominated local estimate is $3H_c/(2\mu)\simeq4.9>1$; the plateau-scale estimate is $3H_*/(2\mu)\simeq25$. The two-field homogeneous calculation remains overdamped, and the quartic regime is not established.
+For the threshold-matched benchmark $\Phi_c\simeq\Phi_{\rm end}\simeq1.387M_{\rm Pl}$, the potential-dominated local estimate is $3H_c/(2\mu)\simeq4.9>1$; the plateau-scale estimate is $3H_*/(2\mu)\simeq25$. The two-field homogeneous truncation remains overdamped in this estimate, and the quartic regime is not established. A nonzero seed, local $H(t)$, and the coupled transfer terms must be followed in a trajectory before treating this as a complete numerical proof.
 
 A conservative sufficient low-scale regime is:
 1. $V_0 \lesssim 10^{58}\,\mathrm{GeV}^4$ ($H_* \lesssim 10^{10}\,\mathrm{GeV}$), which gives underdamped motion with a large margin in the threshold-matched estimate
