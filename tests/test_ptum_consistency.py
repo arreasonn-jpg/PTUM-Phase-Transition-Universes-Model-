@@ -938,6 +938,7 @@ def test_manuscript_documents_linear_waterfall_mode_hierarchy():
     from pathlib import Path
 
     source = Path("main.tex").read_text(encoding="utf-8")
+    normalized_source = " ".join(source.split())
     for required in (
         r"\label{sec:linear_waterfall_modes}",
         r"\label{eq:waterfall_mode_eom}",
