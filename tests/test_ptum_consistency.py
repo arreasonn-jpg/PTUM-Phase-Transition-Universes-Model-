@@ -942,7 +942,7 @@ def test_forecast_methodology_discloses_missing_reproducibility_artifacts():
     normalized_source = " ".join(source.split())
     required = (
         "not independently reproduced from the present repository",
-        "modified \\texttt{CLASS} implementation",
+        r"modified \texttt{CLASS} implementation",
         "Fisher code",
         "bandpower covariance outputs",
         "foreground and delensing-residual model",
