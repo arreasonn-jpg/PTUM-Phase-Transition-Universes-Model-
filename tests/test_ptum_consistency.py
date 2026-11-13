@@ -873,3 +873,45 @@ def test_linear_waterfall_spectrum_rejects_unsorted_or_invalid_wavenumbers():
             *common, [-1.0, 0.5], m_psi=1.0, Phi_c=1.0,
             H_dot=np.zeros_like(t),
         )
+
+
+
+def test_residual_portal_one_loop_mass_correction_matches_threshold_formula():
+    from ptum_radiative_stability import residual_portal_radiative_stability
+
+    result = residual_portal_radiative_stability(
+        m_chi_gev=1.0e9, g_dm=0.1, phi_amplitude_gev=2.435e18
+    )
+    expected = -0.1 * 1.0e18 / (8.0 * np.pi**2)
+    assert result["delta_m_phi_sq_gev2"] == pytest.approx(expected)
+    assert result["delta_m_phi_scale_gev"] == pytest.approx(np.sqrt(abs(expected)))
+
+
+def test_residual_portal_naturalness_bound_scales_as_inverse_dm_mass_squared():
+    from ptum_radiative_stability import residual_portal_radiative_stability
+
+    low = residual_portal_radiative_stability(1.0e9, 0.0)
+    high = residual_portal_radiative_stability(1.0e13, 0.0)
+    assert high["naturalness_g_dm_max"] / low["naturalness_g_dm_max"] == pytest.approx(1.0e-8)
+    assert low["naturalness_g_dm_max"] == pytest.approx(1.63e-100, rel=0.02)
+    assert high["naturalness_g_dm_max"] == pytest.approx(1.63e-108, rel=0.02)
+
+
+def test_residual_portal_naturalness_and_heavy_dm_modulation_are_in_tension():
+    from ptum_radiative_stability import residual_portal_radiative_stability
+
+    result = residual_portal_radiative_stability(
+        m_chi_gev=1.0e9, g_dm=0.1, phi_amplitude_gev=2.435e18
+    )
+    assert result["modulation_fraction_at_input_g"] > 0.99
+    assert result["modulation_fraction_at_naturalness_bound"] < 1.0e-70
+    assert result["tension_factor_for_10pct_modulation"] > 1.0e70
+
+
+def test_residual_portal_radiative_stability_rejects_invalid_inputs():
+    from ptum_radiative_stability import residual_portal_radiative_stability
+
+    with pytest.raises(ValueError, match="positive"):
+        residual_portal_radiative_stability(0.0, 0.1)
+    with pytest.raises(ValueError, match="non-negative"):
+        residual_portal_radiative_stability(1.0e9, -0.1)
