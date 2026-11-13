@@ -286,7 +286,7 @@ def run_simulation(params: PTUMParameters,
     Q_arr = compute_quartic_dominance(t, psi, psi_dot, params, Phi)
     
     # Time-averaged w_psi over oscillation periods
-    w_avg, t_avg = compute_time_averaged_w(t, w_psi_arr, psi_dot)
+    w_avg, t_avg = compute_time_averaged_w(t, p_psi_arr, rho_psi_arr, psi_dot)
     
     return {
         'success': True,
@@ -362,26 +362,41 @@ def compute_quartic_virial_ratio(t: np.ndarray, psi: np.ndarray,
     return ratio
 
 
-def compute_time_averaged_w(t: np.ndarray, w: np.ndarray, 
+def compute_time_averaged_w(t: np.ndarray, pressure: np.ndarray,
+                            density: np.ndarray,
                             psi_dot: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-    """Compute time-averaged w_ψ over oscillation periods."""
-    zero_crossings = np.where(np.diff(np.sign(psi_dot)))[0]
-    
-    if len(zero_crossings) < 2:
+    """Compute cycle-averaged w as <p>/<rho>, not as <p/rho>.
+
+    Turning points of psi delimit half-oscillation intervals. The ratio of
+    separately averaged pressure and density is the physically relevant
+    coarse-grained equation of state; averaging the instantaneous ratio can
+    overweight epochs where rho is small.
+    """
+    turning_points = np.where(np.diff(np.signbit(psi_dot)))[0]
+
+    if len(turning_points) < 2:
         return np.array([]), np.array([])
-    
+
     w_avg = []
     t_avg = []
-    
-    for i in range(len(zero_crossings) - 1):
-        start = zero_crossings[i]
-        end = zero_crossings[i + 1]
+
+    for i in range(len(turning_points) - 1):
+        start = turning_points[i]
+        end = turning_points[i + 1] + 1
         if end - start < 2:
             continue
-        w_avg.append(np.mean(w[start:end]))
-        t_avg.append(0.5 * (t[start] + t[end]))
-    
-    return np.array(w_avg), np.array(t_avg)
+        rho_mean = float(np.mean(density[start:end]))
+        p_mean = float(np.mean(pressure[start:end]))
+        scale = max(float(np.max(np.abs(density[start:end]))),
+                    float(np.max(np.abs(pressure[start:end]))),
+                    np.finfo(float).tiny)
+        if not np.isfinite(rho_mean) or abs(rho_mean) <= 1.0e-14 * scale:
+            w_avg.append(np.nan)
+        else:
+            w_avg.append(p_mean / rho_mean)
+        t_avg.append(0.5 * (t[start] + t[end - 1]))
+
+    return np.asarray(w_avg), np.asarray(t_avg)
 
 
 def create_initial_conditions(params: PTUMParameters,
