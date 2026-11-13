@@ -1688,14 +1688,85 @@ from the microscopic interactions in the PTUM Lagrangian. The full interacting a
 +\mathcal{L}_{\rm SM}^{(0)}
 +\mathcal{L}_{\rm rh},
 \end{equation}
-Here \(\mathcal{L}_{\rm SM}^{(0)}\) denotes the uncoupled
-Standard Model matter action, including the kinetic and self-interaction
-terms for the fermionic and scalar fields appearing below. Its explicit
-field content, gauge representations, and normalization are not
-specified in the present manuscript; therefore the complete Standard
-Model Hilbert tensor is not yet derived here. The transfer currents
-below are interaction contributions under the stated bookkeeping
-convention, not a substitute for that missing full derivation.
+We take $\mathcal{L}_{\rm SM}^{(0)}$ to be the minimal
+three-generation Standard Model on a torsion-free curved spacetime:
+\begin{align}
+\mathcal{L}_{\rm SM}^{(0)}
+={}&-\frac14G_{\mu\nu}^A G_A^{\mu\nu}
+-\frac14W_{\mu\nu}^I W_I^{\mu\nu}
+-\frac14B_{\mu\nu}B^{\mu\nu}
+-(D_\mu H)^\dagger D^\mu H
+-V_H(H)
+\nonumber\\
+&+\frac{i}{2}\sum_{\Psi}
+\left[
+\bar\Psi\gamma^\mu D_\mu\Psi
+-(D_\mu\bar\Psi)\gamma^\mu\Psi
+\right]
+-\mathcal{U}_{\rm SM,Y},
+\end{align}
+where $\Psi\in\{Q_L,u_R,d_R,L_L,e_R\}$ includes all three
+generations, $\gamma^\mu=e^\mu{}_a\gamma^a$, and the spinor
+covariant derivative contains the torsion-free spin connection and
+the appropriate $SU(3)_c\times SU(2)_L\times U(1)_Y$ gauge
+connections. The gauge representations are
+\begin{align}
+Q_L&:(\mathbf{3},\mathbf{2},1/6),&
+u_R&:(\mathbf{3},\mathbf{1},2/3),&
+d_R&:(\mathbf{3},\mathbf{1},-1/3),\\
+L_L&:(\mathbf{1},\mathbf{2},-1/2),&
+e_R&:(\mathbf{1},\mathbf{1},-1),&
+H&:(\mathbf{1},\mathbf{2},1/2).
+\end{align}
+We use $\widetilde H=i\sigma_2H^*$ and
+\begin{equation}
+\mathcal{U}_{\rm SM,Y}
+=\bar Q_LY_dHd_R+\bar Q_LY_u\widetilde H u_R
++\bar L_LY_eHe_R+\mathrm{h.c.},
+\qquad
+V_H=-\mu_H^2H^\dagger H+\lambda_H(H^\dagger H)^2.
+\end{equation}
+The Higgs doublet has mass dimension one, the Yukawa matrices are
+dimensionless, and the gauge kinetic terms have their canonical
+normalization.
+
+For this torsion-free minimal coupling, the Standard Model
+Hilbert/Belinfante tensor can be written as
+\begin{align}
+T_{\rm gauge}^{\mu\nu}
+&=\sum_{\mathcal{F}=G,W,B}
+\left(
+\mathcal{F}^{\mu\rho}\mathcal{F}^{\nu}{}_{\rho}
+-\frac14g^{\mu\nu}\mathcal{F}_{\rho\sigma}\mathcal{F}^{\rho\sigma}
+\right),\\
+T_H^{\mu\nu}
+&=(D^\mu H)^\dagger D^\nu H
++(D^\nu H)^\dagger D^\mu H
+-g^{\mu\nu}\left[(D_\rho H)^\dagger D^\rho H+V_H\right],\\
+T_f^{\mu\nu}
+&=\frac{i}{4}\sum_{\Psi}
+\bar\Psi\left(
+\gamma^\mu\overleftrightarrow D^{\,\nu}
++\gamma^\nu\overleftrightarrow D^{\,\mu}
+\right)\Psi,
+\end{align}
+where the fermion expression is the on-shell symmetric tensor and
+$\bar\Psi\overleftrightarrow D^\mu\Psi
+\equiv\bar\Psi D^\mu\Psi-(D^\mu\bar\Psi)\Psi$.
+Thus
+\begin{equation}
+T_{\rm SM,0}^{\mu\nu}
+=T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}+T_f^{\mu\nu}
+-g^{\mu\nu}\mathcal{U}_{\rm SM,Y}.
+\end{equation}
+The PTUM dimension-five interaction is an additional operator,
+not part of $\mathcal{L}_{\rm SM}^{(0)}$; under the sector assignment
+below its contribution is $-g^{\mu\nu}U_Y$ in $T_{\rm SM}^{\mu\nu}$.
+This explicit field content closes the earlier omission of the
+uncoupled Standard Model action at the level of the minimal
+torsion-free EFT. A full line-by-line evaluation of all interacting
+fermion and Higgs divergences remains part of the transfer-current
+verification.
 
 The homogeneous equations of motion
 Eqs.~(\ref{eq:frw1})--(\ref{eq:frw4}) describe the conservative scalar
