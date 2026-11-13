@@ -839,3 +839,31 @@ def test_expanding_mode_solver_allows_intermediate_tachyonic_canonical_frequency
     assert result["final_frequency_valid"]
     assert np.isfinite(result["particle_number"])
     assert result["wronskian_relative_error"] < 1.0e-7
+
+def test_manuscript_withdraws_unverified_lattice_outputs_and_reproduction_claims():
+    from pathlib import Path
+
+    source = Path("main.tex").read_text(encoding="utf-8")
+    start = source.index(r"\\subsection{Nonlinear lattice validation: current status}")
+    end = source.index("%============================================================\\n% REFERENCES", start)
+    section = source[start:end]
+    assert "does not expose an individually reviewable PTUM lattice solver" in section
+    assert "does \\emph{not} claim" in section
+    assert "sub-percent energy-conservation" in section
+    assert "raw outputs and checksums" in section
+    for unsupported_claim in (
+        "The following lattice outputs are included",
+        "convergence tested up to",
+        r"0.198 \\pm 0.005",
+        r"0.118 \\pm 0.015",
+        r"S_{\\rm obs} \\sim 10^{88}",
+        "docker run -v",
+    ):
+        assert unsupported_claim not in section
+
+
+def test_manuscript_describes_proxy_fluid_as_a_phenomenological_closure():
+    from pathlib import Path
+
+    source = Path("main.tex").read_text(encoding="utf-8")
+    assert "specifies a phenomenological linear proxy-fluid perturbation closure" in source
