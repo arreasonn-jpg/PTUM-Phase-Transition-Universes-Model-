@@ -48,23 +48,43 @@ def build_scan_scenarios():
     ]
 
 
-def build_initial_condition_grid(params: PTUMParameters):
-    """Build a 5x5x2 grid in field seed, velocity seed and threshold offset."""
-    psi_init_range = [scale * params.psi_0 for scale in SEED_SCALES]
+def scan_profile_scales(profile: str = "full"):
+    """Return the declared initial-condition grid for a named scan profile."""
+    if profile == "full":
+        return SEED_SCALES, VELOCITY_SCALES, PHI_OFFSETS
+    if profile == "ci":
+        # Two field seeds (exact invariant control + nonzero seed), one
+        # velocity seed and one post-threshold offset per energy scale.
+        return (0.0, 1.0), (0.0,), (0.1,)
+    raise ValueError("profile must be 'ci' or 'full'")
+
+
+def expected_scan_count(profile: str = "full") -> int:
+    """Number of trajectories in both energy-scale scenarios."""
+    seeds, velocities, offsets = scan_profile_scales(profile)
+    return 2 * len(seeds) * len(velocities) * len(offsets)
+
+
+def build_initial_condition_grid(params: PTUMParameters, profile: str = "full"):
+    """Build either the full 5x5x2 grid or the four-trajectory CI smoke grid."""
+    seed_scales, velocity_scales, phi_offsets = scan_profile_scales(profile)
+    psi_init_range = [scale * params.psi_0 for scale in seed_scales]
     psi_dot_init_range = [
-        scale * params.mu * params.psi_0 for scale in VELOCITY_SCALES
+        scale * params.mu * params.psi_0 for scale in velocity_scales
     ]
-    phi_offset_range = [scale * params.Phi_c for scale in PHI_OFFSETS]
+    phi_offset_range = [scale * params.Phi_c for scale in phi_offsets]
     return psi_init_range, psi_dot_init_range, phi_offset_range
 
 
 def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
-                   n_points: int = DEFAULT_N_POINTS):
-    """Run 50 initial-condition combinations in each of the two scenarios."""
+                   n_points: int = DEFAULT_N_POINTS,
+                   profile: str = "full"):
+    """Run the selected scan profile at both high and low energy scales."""
+    seed_scales, velocity_scales, phi_offsets = scan_profile_scales(profile)
     all_results = []
     for scenario_name, params in build_scan_scenarios():
         psi_init_range, psi_dot_init_range, phi_offset_range = (
-            build_initial_condition_grid(params)
+            build_initial_condition_grid(params, profile=profile)
         )
         # Initialize Phi_dot from the same single-field FRW trajectory
         # that defines the exact epsilon_H=1 endpoint. Each post-threshold
@@ -104,9 +124,10 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
                 "plateau_damping_ratio": params.damping_ratio_plateau,
                 "t_max_over_mu_inverse": t_max,
                 "n_output_points": n_points,
-                "psi_seed_scales": list(SEED_SCALES),
-                "psi_velocity_scales": list(VELOCITY_SCALES),
-                "phi_offset_scales": list(PHI_OFFSETS),
+                "scan_profile": profile,
+                "psi_seed_scales": list(seed_scales),
+                "psi_velocity_scales": list(velocity_scales),
+                "phi_offset_scales": list(phi_offsets),
                 "fuel_velocity_source": "integrated_single_field_FRW_trajectory",
                 "quantum_vacuum_seeded": False,
                 "zero_seed_rows_are_exact_classical_invariant_controls": True,
@@ -115,9 +136,11 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
     return all_results
 
 
-def validate_scan_results(results):
-    """Fail closed unless the complete two-scenario scan integrates successfully."""
-    expected = 2 * len(SEED_SCALES) * len(VELOCITY_SCALES) * len(PHI_OFFSETS)
+def validate_scan_results(results, expected_count: int | None = None):
+    """Fail closed unless every trajectory in the selected profile succeeds."""
+    expected = expected_scan_count() if expected_count is None else expected_count
+    if expected < 1:
+        raise ValueError("expected_count must be positive")
     if len(results) != expected:
         raise RuntimeError(
             f"Incomplete scan: expected {expected} trajectories, received {len(results)}"
@@ -145,13 +168,19 @@ def main() -> None:
     )
     parser.add_argument("--t-max", type=float, default=DEFAULT_T_MAX)
     parser.add_argument("--n-points", type=int, default=DEFAULT_N_POINTS)
+    parser.add_argument(
+        "--profile", choices=("ci", "full"), default="full",
+        help="Use four fast CI smoke trajectories or the full 100-trajectory scan",
+    )
     args = parser.parse_args()
 
-    results = run_scan_suite(t_max=args.t_max, n_points=args.n_points)
+    results = run_scan_suite(
+        t_max=args.t_max, n_points=args.n_points, profile=args.profile
+    )
     # Persist the complete diagnostic summary before enforcing the CI gate,
     # so a failed run still leaves an inspectable artifact.
     save_results(results, args.output)
-    validate_scan_results(results)
+    validate_scan_results(results, expected_count=expected_scan_count(args.profile))
 
     for scenario_name, _params in build_scan_scenarios():
         scenario_rows = [
@@ -169,6 +198,7 @@ def main() -> None:
         print(f"  Failed integrations: {len(scenario_rows) - len(successful)}")
         print(f"  Late-time regimes: {dict(regimes)}")
 
+    print(f"Scan profile: {args.profile}")
     print(f"Total scan points: {len(results)}")
     print(f"Summary written to: {args.output}")
 

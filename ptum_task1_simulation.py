@@ -786,21 +786,24 @@ def _late_time_adiabaticity_diagnostic(result: Dict,
 
     tail_start = t[int(np.floor((1.0 - tail_fraction) * (len(t) - 1)))]
     turning_times = []
-    for i in range(len(psi_dot) - 1):
-        left, right = psi_dot[i], psi_dot[i + 1]
-        if not (np.isfinite(left) and np.isfinite(right)):
+    # A zero is a turning point only when the derivative changes sign
+    # across it. This excludes tangential touches and unbracketed endpoints.
+    nonzero_indices = np.flatnonzero(np.isfinite(psi_dot) & (psi_dot != 0.0))
+    for left_index, right_index in zip(nonzero_indices[:-1], nonzero_indices[1:]):
+        if not np.all(np.isfinite(psi_dot[left_index:right_index + 1])):
             continue
-        if left == 0.0:
-            crossing = t[i]
-        elif left * right < 0.0:
-            crossing = t[i] - left * (t[i + 1] - t[i]) / (right - left)
+        left, right = psi_dot[left_index], psi_dot[right_index]
+        if np.signbit(left) == np.signbit(right):
+            continue
+        if right_index == left_index + 1:
+            crossing = (t[left_index] - left *
+                        (t[right_index] - t[left_index]) / (right - left))
         else:
-            continue
+            # A sampled zero plateau is bracketed by opposite signs.
+            crossing = float(np.mean(t[left_index + 1:right_index]))
         if (not turning_times or
                 crossing - turning_times[-1] > 1.0e-12 * max(1.0, abs(crossing))):
             turning_times.append(float(crossing))
-    if psi_dot[-1] == 0.0 and (not turning_times or t[-1] > turning_times[-1]):
-        turning_times.append(float(t[-1]))
 
     ratios = []
     for start, end in zip(turning_times[:-1], turning_times[1:]):
@@ -877,22 +880,35 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     # quartic-to-tachyonic-quadratic potential-energy ratio:
     # <V4>/<|V2|> = Q/2. Thus Q>2 is the energy-dominance boundary.
     quartic_to_tachyonic_potential_ratio = 0.5 * Q_final
-    quartic_achieved = (diagnostics_valid and
-                        quartic_to_tachyonic_potential_ratio > 1.0 and
-                        abs(w_final - 1/3) < 0.05 and
-                        abs(virial_final - 1) < 0.2 and
-                        adiabaticity['adiabaticity_valid'])
-    
+    quartic_candidate_shape = (
+        diagnostics_valid and
+        quartic_to_tachyonic_potential_ratio > 1.0 and
+        abs(w_final - 1/3) < 0.05 and
+        abs(virial_final - 1) < 0.2
+    )
+    quadratic_candidate_shape = (
+        diagnostics_valid and abs(w_final) < 0.1 and Q_final < 1 and
+        np.isfinite(quadratic_virial_final) and
+        abs(quadratic_virial_final - 1.0) < 0.2
+    )
+    adiabaticity_measured = np.isfinite(adiabaticity['H_over_omega_max'])
+    quartic_achieved = (
+        quartic_candidate_shape and adiabaticity['adiabaticity_valid']
+    )
+
     if not diagnostics_valid:
         regime = 'insufficient_oscillation_data'
-    elif quartic_achieved:
-        regime = 'quartic'
-    elif (abs(w_final) < 0.1 and Q_final < 1 and
-          np.isfinite(quadratic_virial_final) and
-          abs(quadratic_virial_final - 1.0) < 0.2):
-        # A matter-like equation of state and quadratic virial balance are
-        # both required; this remains a candidate, not an attractor proof.
-        regime = 'quadratic_candidate'
+    elif quartic_candidate_shape or quadratic_candidate_shape:
+        if not adiabaticity_measured:
+            regime = 'insufficient_oscillation_data'
+        elif not adiabaticity['adiabaticity_valid']:
+            regime = 'non_quartic'
+        elif quartic_candidate_shape:
+            regime = 'quartic'
+        else:
+            # Matter-like equation of state, quadratic virial balance, and
+            # adiabatic oscillations are required; this is not attractor proof.
+            regime = 'quadratic_candidate'
     else:
         # w alone does not establish barrier crossing. In particular, a
         # tachyonic/negative contribution can produce w > 1 without any

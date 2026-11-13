@@ -5,10 +5,11 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
 
 concurrency:
-  group: ptum-scientific-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.event_name == 'workflow_dispatch' && format('ptum-full-scan-{0}', github.ref) || format('ptum-scientific-{0}', github.event.pull_request.number || github.ref) }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 permissions:
   contents: read
@@ -31,13 +32,40 @@ jobs:
           python -m pip freeze
       - name: Run PTUM regression tests
         run: python -m pytest -q tests/test_ptum_consistency.py
-      - name: Run 100-point high-resolution waterfall scans
-        run: python ptum_task1_scan.py
-      - name: Upload two-field scan summary
+      - name: Run four-trajectory two-scale CI smoke scan
+        if: github.event_name != 'workflow_dispatch'
+        run: python ptum_task1_scan.py --profile ci --output task1_parameter_scan_ci.json
+      - name: Upload two-scale CI smoke summary
+        if: always() && github.event_name != 'workflow_dispatch'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ptum-two-scale-ci-smoke
+          path: task1_parameter_scan_ci.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+  full-waterfall-scan:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      - name: Install scan dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+      - name: Run complete 100-trajectory high-resolution waterfall scan
+        run: python ptum_task1_scan.py --profile full --output task1_parameter_scan_results.json
+      - name: Upload full two-field scan summary
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: ptum-two-field-scan
+          name: ptum-two-field-full-scan
           path: task1_parameter_scan_results.json
           if-no-files-found: ignore
           retention-days: 30

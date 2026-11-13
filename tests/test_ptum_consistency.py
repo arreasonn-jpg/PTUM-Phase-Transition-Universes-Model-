@@ -442,6 +442,7 @@ def test_quartic_classification_rejects_missing_hubble_and_time_history():
     assert not classification["quartic_achieved"]
     assert np.isnan(classification["H_over_omega_max"])
     assert classification["n_late_half_cycles"] == 0
+    assert classification["regime"] == "insufficient_oscillation_data"
 
 
 def test_threshold_matched_inflation_starts_dormant_and_becomes_tachyonic():
@@ -494,6 +495,22 @@ def test_quadratic_virial_ratio_is_unavailable_for_tachyonic_mass():
 
 
 
+
+def test_late_time_adiabaticity_ignores_tangential_zero_without_sign_change():
+    from ptum_task1_simulation import _late_time_adiabaticity_diagnostic
+
+    t = np.linspace(0.0, 100.0, 10001)
+    psi_dot = -np.sin(t)
+    psi_dot[np.argmin(np.abs(t - 85.0))] = 0.0
+    result = {
+        "t": t,
+        "H": np.full_like(t, 0.01),
+        "psi_dot": psi_dot,
+    }
+    diagnostic = _late_time_adiabaticity_diagnostic(result)
+    assert diagnostic["n_late_half_cycles"] == 5
+    assert diagnostic["adiabaticity_valid"]
+
 def test_quadratic_candidate_requires_its_own_virial_balance():
     base = {
         "success": True,
@@ -503,9 +520,38 @@ def test_quadratic_candidate_requires_its_own_virial_balance():
     }
     no_balance = dict(base, quadratic_virial_ratio=np.full(100, 4.0))
     with_balance = dict(base, quadratic_virial_ratio=np.full(100, 1.0))
+    _add_fast_adiabatic_oscillation_history(with_balance)
 
     assert classify_outcome(no_balance, PTUMParameters())["regime"] == "non_quartic"
     assert classify_outcome(with_balance, PTUMParameters())["regime"] == "quadratic_candidate"
+
+
+def test_quadratic_candidate_rejects_hubble_damped_oscillations():
+    result = {
+        "success": True,
+        "w_psi_avg": np.array([0.0, 0.02, -0.02]),
+        "Q": np.full(100, 0.1),
+        "virial_ratio": np.full(100, 1.0e6),
+        "quadratic_virial_ratio": np.ones(100),
+    }
+    _add_fast_adiabatic_oscillation_history(result, hubble=0.2)
+    classification = classify_outcome(result, PTUMParameters())
+    assert classification["regime"] == "non_quartic"
+    assert not classification["adiabaticity_valid"]
+    assert classification["H_over_omega_max"] >= 0.1
+
+
+def test_quadratic_candidate_requires_oscillation_history():
+    result = {
+        "success": True,
+        "w_psi_avg": np.array([0.0, 0.02, -0.02]),
+        "Q": np.full(100, 0.1),
+        "virial_ratio": np.full(100, 1.0e6),
+        "quadratic_virial_ratio": np.ones(100),
+    }
+    classification = classify_outcome(result, PTUMParameters())
+    assert classification["regime"] == "insufficient_oscillation_data"
+    assert not classification["adiabaticity_valid"]
 
 
 
@@ -617,6 +663,28 @@ def test_raw_psi_equation_of_state_is_nan_when_sector_density_is_zero():
     assert np.isnan(w_psi(1.1 * p.Phi_c, 0.0, 0.0, p))
 
 
+
+
+def test_scan_profiles_keep_ci_smoke_separate_from_full_high_resolution_scan():
+    from ptum_task1_scan import (
+        build_initial_condition_grid,
+        build_scan_scenarios,
+        expected_scan_count,
+        validate_scan_results,
+    )
+
+    assert expected_scan_count("ci") == 4
+    assert expected_scan_count("full") == 100
+    params = build_scan_scenarios()[0][1]
+    ci_grid = build_initial_condition_grid(params, profile="ci")
+    assert tuple(map(len, ci_grid)) == (2, 1, 1)
+    assert len(build_initial_condition_grid(params, profile="full")[0]) == 5
+
+    ci_rows = [
+        {"success": True, "scan_metadata": {"scenario": "ci"}}
+        for _ in range(4)
+    ]
+    assert validate_scan_results(ci_rows, expected_count=4) == 4
 
 def test_high_resolution_scan_validation_fails_closed():
     from ptum_task1_scan import validate_scan_results
