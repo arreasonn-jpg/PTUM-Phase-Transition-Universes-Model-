@@ -288,3 +288,46 @@ def attestation_is_supported(claim):
 def convergence_status():
     """Every stated convergence check, and whether it can be reproduced here."""
     return {k: {"claim": v, "reproducible": False} for k, v in CONVERGENCE_CLAIMS.items()}
+
+
+# ---------------------------------------------------------------------------
+# 7. Defect in ``compute_quartic_dominance`` (found in SPRINT 6)
+# ---------------------------------------------------------------------------
+def quartic_dominance_tail_is_zeroed(Q, n_tail=30):
+    """``True`` when the tail of the ``Q`` array is exactly zero.
+
+    ``ptum_task1_simulation.compute_quartic_dominance`` ends with
+
+        if len(zero_crossings) > 0:
+            last_idx = zero_crossings[-1]
+            Q[last_idx:] = Q[last_idx]
+
+    ``Q`` was initialised with ``np.zeros_like`` and the loop never writes to
+    ``Q[last_idx]`` itself (its segment ends at ``end = zero_crossings[-1]``,
+    excluded).  So the line copies a zero across the whole tail.  Since
+    ``classify_outcome`` reads ``Q_final = np.mean(Q[-len(w_avg)*10:])``, it
+    always reads zero, and ``quartic_achieved = (Q_final > 5 and ...)`` is
+    **False by construction** for every input.
+    """
+    Q = np.asarray(Q)
+    if Q.size == 0:
+        return False
+    return bool(np.all(Q[-min(n_tail, Q.size):] == 0.0))
+
+
+def quartic_dominance_reference(psi, psi_dot, lam, mu_sq):
+    """The quantity the diagnostic was meant to compute.
+
+    ``Q = lam <psi^4> / (mu^2 <psi^2>)`` over the whole window.
+    """
+    psi = np.asarray(psi, dtype=float)
+    psi2 = float(np.mean(psi ** 2))
+    if psi2 == 0.0:
+        return 0.0
+    psi4 = float(np.mean(psi ** 4))
+    return float(lam * psi4 / (abs(mu_sq) * psi2))
+
+
+def quartic_regime_is_reachable(psi, psi_dot, lam, mu_sq, threshold=5.0):
+    """A large-amplitude quartic orbit must give ``Q >> 1``."""
+    return quartic_dominance_reference(psi, psi_dot, lam, mu_sq) > threshold

@@ -273,3 +273,64 @@ def test_no_spectral_code_exists_in_the_script():
         src = fh.read().lower()
     for token in ("power_spectrum", "mukhanov", "transfer_function"):
         assert token not in src
+
+
+# ===========================================================================
+# 9. ``quartic_achieved = False`` is a CODE ARTEFACT, not a physical result
+#    (found while auditing the label at main.tex line 913)
+# ===========================================================================
+def _quartic_orbit(amp_frac, n=4000):
+    import ptum_task1_simulation as S
+    p = S.PTUMParameters()
+    amp = amp_frac * p.psi_0
+    T = 2 * np.pi / (np.sqrt(p.lambda_psi) * amp)
+    t = np.linspace(0, 6 * T, n)
+    psi = amp * np.cos(np.sqrt(p.lambda_psi) * amp * t)
+    return p, t, psi, np.gradient(psi, t)
+
+
+def test_the_Q_tail_is_zeroed_by_the_code():
+    """``Q[last_crossing:] = Q[last_crossing]`` copies a zero over the tail."""
+    import ptum_task1_simulation as S
+    p, t, psi, psid = _quartic_orbit(10.0)
+    Q = S.compute_quartic_dominance(t, psi, psid, p)
+    assert R.quartic_dominance_tail_is_zeroed(Q) is True
+
+
+def test_the_Q_diagnostic_does_fire_away_from_the_tail():
+    """The loop itself works: mid-array ``Q`` reaches the quartic regime."""
+    import ptum_task1_simulation as S
+    p, t, psi, psid = _quartic_orbit(10.0)
+    Q = S.compute_quartic_dominance(t, psi, psid, p)
+    assert Q.max() > 5.0
+
+
+def test_classify_outcome_reads_only_the_zeroed_tail():
+    """``quartic_achieved`` can therefore never be ``True``."""
+    import ptum_task1_simulation as S
+    p, t, psi, psid = _quartic_orbit(10.0)
+    Q = S.compute_quartic_dominance(t, psi, psid, p)
+    # this is exactly what classify_outcome does
+    n_w_avg = 5
+    Q_final = float(np.mean(Q[-n_w_avg * 10:]))
+    assert Q_final == 0.0
+    assert (Q_final > 5) is False
+
+
+def test_the_physics_does_reach_the_quartic_regime():
+    """A reference computation shows the regime *is* reachable at large amplitude.
+
+    So the manuscript's ``quartic_achieved = False`` cannot be cited as
+    evidence about the physics -- it is an artefact of the code path above.
+    """
+    p, t, psi, psid = _quartic_orbit(10.0)
+    Q = R.quartic_dominance_reference(psi, psid, p.lambda_psi, p.mu**2)
+    assert Q > 5.0
+    assert R.quartic_regime_is_reachable(psi, psid, p.lambda_psi, p.mu**2) is True
+
+
+def test_the_reference_quantity_shrinks_at_small_amplitude():
+    """And it correctly reports *no* quartic dominance when the orbit is small."""
+    p, t, psi, psid = _quartic_orbit(0.5)
+    Q = R.quartic_dominance_reference(psi, psid, p.lambda_psi, p.mu**2)
+    assert Q < 5.0

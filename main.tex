@@ -1279,8 +1279,10 @@ given in Table~\ref{tab:exactscan}.
 \caption{Exact-background primordial scan of the PTUM creation
 sector. The exact and slow-roll predictions agree to within
 \(\Delta n_s\simeq5\times10^{-4}\) and
-\(|\Delta r|/r\simeq1.5\%\). \emph{(SAYISAL OLARAK DOĞRULANDI with the
-public script \texttt{ptum\_task1\_simulation.py}.)}}
+\(|\Delta r|/r\simeq1.5\%\). \emph{(Slow-roll versus exact-background
+estimate at the homogeneous level. The public script
+\texttt{ptum\_task1\_simulation.py} integrates the homogeneous background
+only and does not compute \(n_s\) or \(r\).)}}
 \label{tab:exactscan}
 \centering
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}ccccccccc}
@@ -1392,11 +1394,12 @@ power spectrum is then
 \mathcal{P}_{\mathcal{R}}(k) = \frac{k^3}{2\pi^2} |\mathcal{R}_k|^2.
 \end{equation}
 
-The numerical integration was performed for 200 logarithmically
+The authors report a numerical integration over 200 logarithmically
 spaced \(k\)-modes spanning \(10^{-4} \le k \le 1\ \mathrm{Mpc}^{-1}\)
-for each \(\lambda\) in the benchmark range. The results are consistent
-with the slow-roll and exact-background predictions to high precision
-(SAYISAL OLARAK DOĞRULANDI, with the public script):
+for each \(\lambda\) in the benchmark range
+\emph{(author-reported; the 200-mode Mukhanov--Sasaki integration is not
+contained in the public script)}. The results are reported to be
+consistent with the slow-roll and exact-background predictions:
 \begin{itemize}
 \item Spectral index: \(n_s^{\rm MS} = n_s^{\rm exact} + \mathcal{O}(10^{-5})\)
 \item Tensor-to-scalar ratio: \(r^{\rm MS} = r^{\rm exact} + \mathcal{O}(10^{-6})\)
@@ -2791,8 +2794,8 @@ Four distinct pillars are claimed, with the following status labels:
 \begin{enumerate}[label=(\roman*)]
 \item the creation sector admits a plateau-type primordial potential
       compatible with current CMB constraints on $n_s$ and $r$
-      \emph{(GÖSTERİLDİ at the analytic/slow-roll level; exact-background
-      check SAYISAL OLARAK DOĞRULANDI with the public script)};
+      \emph{(demonstrated at the analytic/slow-roll level; the
+      exact-background check is performed at the homogeneous level only)};
 \item the discharge scale is normalised to a concrete high-energy
       band, $V_0^{1/4}\sim10^{15}$--$10^{16}\,\mathrm{GeV}$
       \emph{(GÖSTERİLDİ from the scalar amplitude; in unresolved tension
