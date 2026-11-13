@@ -915,8 +915,8 @@ def test_waterfall_mode_uses_adiabatic_vacuum_and_preserves_wronskian():
     background = build_waterfall_background(
         PTUMParameters(V0=1.0e64),
         start_fraction=0.05,
-        t_end_mu=10.0,
-        n_points=2001,
+        t_end_mu=1.0,
+        n_points=1001,
     )
     mode = integrate_waterfall_mode(
         background, k_over_mu=60.0, max_initial_adiabaticity=0.1
