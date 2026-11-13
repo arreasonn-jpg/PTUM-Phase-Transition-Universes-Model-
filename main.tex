@@ -3223,7 +3223,8 @@ with
 \begin{equation}
 q = -\frac{g_{\rm DM}\mathcal{A}_{\rm res}^2}{2\omega_{\rm res}^2},
 \qquad
-A_k = \frac{k^2/a^2+m_\chi^2+g_{\rm DM}\mathcal{A}_{\rm res}^2}
+A_k = \frac{k^2/a^2+m_\chi^2+g_{\rm DM}\mathcal{A}_{\rm res}^2
+-\frac{3}{2}\dot H-\frac{9}{4}H^2}
 {\omega_{\rm res}^2}.
 \end{equation}
 The $\chi$ field experiences parametric resonance when the Mathieu
@@ -3245,9 +3246,10 @@ For $X_k=a^{3/2}\chi_k$ this becomes
 2g_{\rm DM}\Phi_{\rm res}^2
 -\frac{3}{2}\dot H-\frac{9}{4}H^2\right]X_k=0.
 \end{equation}
-Only when $H/\omega_{\rm res}\ll1$ and the background parameters
-vary slowly over an oscillation can the expansion terms be neglected
-and the equation be reduced to a Mathieu equation. The Floquet exponent $\mu_k$ determines the
+The terms involving \(H\) and \(\dot H\) in \(A_k\) follow from
+the canonical rescaling \(X_k=a^{3/2}\chi_k\). In the short-time
+Minkowski limit \(H/\omega_{\rm res}\ll1\), with slowly varying
+background parameters, they may be neglected. The Floquet exponent $\mu_k$ determines the
 exponential growth of modes within the resonance band:
 \begin{equation}
 \chi_k(t) \propto \exp(\mu_k t).
@@ -3257,37 +3259,44 @@ the physical growth rate is $\mu_k^{(t)}=\omega_{\rm res}\mu_k^{(z)}$.
 No universal broad-resonance estimate $\mu_{\rm max}\simeq
 q\omega_{\rm res}/2$ is assumed: the exponent and instability bands
 must be computed from the monodromy matrix for the actual $(A_k,q)$,
-then checked against expansion and backreaction. The occupation number of produced
-$\chi$ particles after $N$ oscillation periods is
+then checked against expansion and backreaction. In the linear regime, while a mode remains in a Floquet
+instability band and the background is approximately periodic, its
+amplitude grows by \(e^{\pi\mu_k^{(z)}}\) per period. The occupation
+number therefore scales as
 \begin{equation}
-n_k \propto \exp(4\pi\mu_k^{(z)}N),
+n_k(N_{\rm osc})\propto
+\exp\!\left(2\pi\mu_k^{(z)}N_{\rm osc}\right),
 \end{equation}
-where $N\,\omega_{\rm res}^{-1}$ is the duration of the resonant phase.
+where \(N_{\rm osc}\) is the number of completed oscillation periods.
+This relation ceases to apply once expansion moves the mode through
+the band or backreaction becomes important.
 
-The relic abundance is determined by the number density of produced
-$\chi$ particles at the end of the discharge, redshifted to the
-present epoch. The comoving number density is
+A reproducible frozen-background monodromy calculation is now
+provided in \texttt{ptum\_floquet.py}. It computes the two fundamental
+solutions over one Mathieu period, returns the monodromy matrix and
+its real Floquet growth exponent, and includes the \(H,\dot H\)
+contribution to \(A_k\). Regression tests verify the unit Wronskian
+(\(\det M\simeq1\)), stability at \(q=0\), and the narrow primary-band
+limit \(\mu_z\simeq |q|/2\) near \(A_k=1\). This is a local Floquet
+diagnostic only; it does not yet integrate a time-dependent expanding
+background or include backreaction and rescattering.
+
+The comoving number density must be obtained from the momentum
+distribution rather than from a universal \(\omega_{\rm res}^3\)
+prefactor:
 \begin{equation}
-n_\chi \sim \frac{1}{(2\pi)^3}\int d^3k\, n_k \sim \frac{\omega_{\rm res}^3}{(2\pi)^3}
-\exp(2\mu_{\rm max}N\,\omega_{\rm res}^{-1}).
+n_\chi^{\rm com}(t)
+=\frac{1}{2\pi^2}\int_0^\infty dk\,k^2 n_k(t),
+\qquad
+n_\chi^{\rm phys}(t)=\frac{n_\chi^{\rm com}(t)}{a^3(t)}.
 \end{equation}
-The present-day dark matter density is
-\begin{equation}
-\begin{split}
-\Omega_\chi h^2 &= \frac{m_\chi n_\chi}{\rho_{\rm crit}/h^2}
-\sim 0.12 \left(\frac{m_\chi}{10^{12}\,{\rm GeV}}\right)
-\left(\frac{\omega_{\rm res}}{10^{13}\,{\rm GeV}}\right)^3 \\
-&\quad\times \exp(2\mu_{\rm max}N\,\omega_{\rm res}^{-1}).
-\end{split}
-\end{equation}
-Matching the observed $\Omega_\chi h^2 \approx 0.12$ then fixes the
-required number of e-folds of resonant growth,
-$2\mu_{\rm max}N\,\omega_{\rm res}^{-1}\sim\ln(10^2\text{--}10^3)$,
-rather than being an automatic output of natural parameter choices.
-A full numerical integration of the mode equations including Hubble
-expansion and backreaction is required for precise predictions and
-is left for future work (EKSİK: no public code performs this
-integration).
+The present abundance then requires the post-production expansion
+and entropy history. No numerical \(\Omega_\chi h^2\) follows from
+the local Floquet exponent alone. The former closed-form estimate
+that directly normalized \(\Omega_\chi h^2\) to 0.12 is withdrawn;
+a physical relic abundance remains uncomputed until the expanding
+mode system, momentum integral, backreaction, and reheating history
+are solved consistently.
 
 \noindent\textbf{Clarification: parametric resonance target vs. CLASS evolution.}
 The value $\Omega_\chi h^2 \sim 0.12$ derived above is a \emph{target
