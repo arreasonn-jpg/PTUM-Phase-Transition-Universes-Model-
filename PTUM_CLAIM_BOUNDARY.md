@@ -2,7 +2,7 @@
 
 ## Safe core claim
 
-PTUM is an effective phenomenological cosmological framework in which a threshold-triggered discharge event can generate a dark-matter candidate sector, a residual near-Lambda dark-energy-like sector, and a proxy-fluid dark-radiation component.
+PTUM is an effective phenomenological cosmological framework that parametrizes a threshold-triggered discharge and its candidate dark-matter, residual dark-energy-like, and proxy-fluid dark-radiation sectors. The current homogeneous simulation does not yet establish their microscopic production or the required energy partition.
 
 The sharp observational discriminator is the difference between fluid-like dark radiation and free-streaming relativistic species. In the effective linear proxy-fluid closure, the pfd component has
 
