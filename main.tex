@@ -1240,17 +1240,20 @@ Planck/BICEP-allowed region.
 
 At tree level, the fuel potential is
 \begin{equation}
-V(\Phi)=V_0\!\left(1-e^{-\lambda\Phi^2}\right).
+V(\Phi)=V_0\!\left(1-e^{-\lambda_\Phi\Phi^2/M_{\rm Pl}^2}\right).
 \label{eq:fuelpot}
 \end{equation}
+Here \(\lambda_\Phi\) is dimensionless and the field \(\Phi\) is
+dimensionful.
 This is a plateau-type potential: approximately quadratic at small
 \(\Phi\) and saturating to a constant at large \(\Phi\). Such
 plateau structures are strongly favored by CMB data~\cite{BICEPKeck2021}.
 
 We define the potential slow-roll parameters
 \begin{equation}
-\epsilon_V=\tfrac{1}{2}\!\left(\frac{V_{,\Phi}}{V}\right)^2,\qquad
-\eta_V=\frac{V_{,\Phi\Phi}}{V},
+\epsilon_V=\frac{M_{\rm Pl}^2}{2}
+\left(\frac{V_{,\Phi}}{V}\right)^2,\qquad
+\eta_V=M_{\rm Pl}^2\frac{V_{,\Phi\Phi}}{V}.
 \end{equation}
 and the standard approximate observables
 \begin{equation}
@@ -1280,34 +1283,39 @@ null prediction of PTUM.
 
 \subsection{Exact-background consistency}
 
-To verify the slow-roll treatment, an exact-background
-integration is reported (performed with the in-repository script
-\texttt{ptum\_task1\_simulation.py}, which is publicly available)
-using the bounded variable
+An exact-background calculation is reported using the
+dimensionless variables
 \begin{equation}
-X\equiv\frac{\dot\Phi}{\sqrt{6}\,H},\qquad \epsilon_H=3X^2.
+x\equiv\frac{\Phi}{M_{\rm Pl}},\qquad
+X\equiv\frac{\dot\Phi}{\sqrt{6}\,H M_{\rm Pl}},\qquad
+\epsilon_H=3X^2.
 \end{equation}
-The exact background equations in terms of \(N=\ln a\) are
+For a scalar-dominated flat-FRW background, the autonomous equations
+in \(N=\ln a\) are
 \begin{align}
-\frac{d\Phi}{dN}&=\sqrt{6}\,X,\\[4pt]
-\frac{dX}{dN}&=(1-X^2)\!\left(\sqrt{\tfrac{3}{2}}\,s(\Phi)-3X\right),
+\frac{dx}{dN}&=\sqrt{6}\,X,\\[4pt]
+\frac{dX}{dN}&=(1-X^2)\!
+\left(\sqrt{\tfrac{3}{2}}\,s(x)-3X\right),
 \end{align}
-where \(s(\Phi)\equiv-V_{,\Phi}/V\). For each \(\lambda\) we searched
-for an initial field value \(\Phi_i\) yielding \(N_{\rm end}\sim60\)
-and evaluated the observables 55 e-folds before the end. Results are
-given in Table~\ref{tab:exactscan}.
+where \(s(x)\equiv-M_{\rm Pl}V_{,\Phi}/V\) is dimensionless.
+The exact-background integration code and machine-readable outputs
+supporting the scan are not present in this repository snapshot;
+the results below are therefore author-reported and have not been
+independently reproduced here. For each \(\lambda_\Phi\), an initial
+field value \(\Phi_i\) was selected to obtain approximately 60
+e-folds, and observables were evaluated 55 e-folds before the end.
 
 \begin{table*}
 \caption{Exact-background primordial scan of the PTUM creation
-sector. The exact and slow-roll predictions agree to within
-\(\Delta n_s\simeq5\times10^{-4}\) and
-\(|\Delta r|/r\simeq1.5\%\). \emph{(SAYISAL OLARAK DOĞRULANDI with the
-public script \texttt{ptum\_task1\_simulation.py}.)}}
+sector. The exact and slow-roll predictions are reported to agree
+to within \(\Delta n_s\simeq5\times10^{-4}\) and
+\(|\Delta r|/r\simeq1.5\%\). \emph{(AUTHOR-REPORTED; the dedicated
+integration code and outputs are not included in this repository.)}}
 \label{tab:exactscan}
 \centering
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}ccccccccc}
 \hline\noalign{\smallskip}
-\(\lambda\) & \(\Phi_i\) & \(N_{\rm end}\) & \(\Phi_*\) &
+\(\lambda_\Phi\) & \(\Phi_i/M_{\rm Pl}\) & \(N_{\rm end}\) & \(\Phi_*/M_{\rm Pl}\) &
 \(\epsilon_*\) & \(n_s^{\rm ex}\) & \(n_s^{\rm SR}\) &
 \(r^{\rm ex}\) & Status \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
@@ -1400,7 +1408,7 @@ where primes denote derivatives with respect to conformal time
 \end{equation}
 with the Hubble-flow parameters \(\epsilon_1 = -\dot H/H^2\),
 \(\epsilon_{n+1} = d\ln|\epsilon_n|/dN\). For the PTUM fuel potential
-\(V(\Phi) = V_0(1 - e^{-\lambda\Phi^2})\), these parameters are
+\(V(\Phi) = V_0(1 - e^{-\lambda_\Phi\Phi^2/M_{\rm Pl}^2})\), these parameters are
 computed exactly along the background trajectory.
 
 The authors report integrating the mode equation from deep inside the
@@ -3455,7 +3463,7 @@ The simulation setup follows the PTUM discharge dynamics:
 \item Initial conditions: $\Phi = \Phi_c - \delta\Phi$ (just below
       threshold), $\psi = \psi_{\rm vac} + \delta\psi$ with quantum
       fluctuations $\delta\psi_k \sim H_*/2\pi$.
-\item Potential: $V(\Phi,\psi) = V_0(1-e^{-\lambda\Phi^2}) +
+\item Potential: $V(\Phi,\psi) = V_0(1-e^{-\lambda_\Phi\Phi^2/M_{\rm Pl}^2}) +
       \frac{1}{2}m^2(1-\alpha\Phi^2/E_{\rm th}^2)\psi^2 +
       \frac{1}{4}\lambda_\psi\psi^4$.
 \item Lattice: $N=512^3$ points, comoving box size $L \sim 10/H_*$,
@@ -3914,11 +3922,11 @@ equations are dimensionally consistent in natural units.}
 \hline\noalign{\smallskip}
 Equation & Quantity & Dimensions \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
-\(V(\Phi) = V_0(1-e^{-\lambda\Phi^2})\) & \(V_0\) & \([{\rm GeV}]^4\) \\
-& \(\lambda\) & \([{\rm GeV}]^{-2}\) \\
+\(V(\Phi) = V_0(1-e^{-\lambda_\Phi\Phi^2/M_{\rm Pl}^2})\) & \(V_0\) & \([{\rm GeV}]^4\) \\
+& \(\lambda_\Phi\) & dimensionless \\
 & \(\Phi\) & \([{\rm GeV}]\) \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
-\(\epsilon_V = \frac{1}{2}(V_{,\Phi}/V)^2\) & \(\epsilon_V\) & dimensionless \\
+\(\epsilon_V = \frac{M_{\rm Pl}^2}{2}(V_{,\Phi}/V)^2\) & \(\epsilon_V\) & dimensionless \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
 \(A_s = \frac{V_*}{24\pi^2 M_{\rm Pl}^4 \epsilon_*}\) & \(A_s\) & dimensionless \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
