@@ -14,6 +14,7 @@ from ptum_task1_simulation import (
     pressure_psi,
     hubble_rate,
     compute_quartic_dominance,
+    compute_quartic_virial_ratio,
 )
 
 
@@ -66,3 +67,14 @@ def test_scalar_pressure_and_density_are_consistent_components():
     rho = rho_phi(phi, phi_dot, psi, p) + rho_psi(phi, psi, psi_dot, p)
     pressure = pressure_phi(phi, phi_dot, p) + pressure_psi(phi, psi, psi_dot, p)
     assert np.isfinite(rho + pressure)
+
+
+
+def test_quartic_virial_ratio_is_defined_only_on_complete_half_cycles():
+    p = PTUMParameters(lambda_psi=0.1)
+    t = np.linspace(0.0, 8.0 * np.pi, 4001)
+    psi = np.sin(t)
+    psi_dot = np.cos(t)
+    ratio = compute_quartic_virial_ratio(t, psi, psi_dot, p)
+    assert np.isfinite(ratio).any()
+    assert np.isnan(ratio).any()
