@@ -60,3 +60,23 @@ is withdrawn. The package must not be described as fully code-available,
 fully reproducible, or 10/10 until the CLASS patch, production configs,
 chains, current manuscript build, scan artifact, and outstanding
 scientific calculations are independently verified.
+
+## 2026-11-13 follow-up: lattice-claim audit
+
+A source-level consistency review found that the manuscript still
+contained detailed LATTICEEASY results and reproduction instructions
+while the current public repository did not expose the solver or the
+underlying run artifacts. The former $256^3/512^3$, energy-conservation,
+Floquet, relic-density, defect, and entropy claims have been removed
+from the verified-results narrative. The replacement subsection
+states the evidence gap and specifies the minimum source, initial
+conditions, discretization, renormalization, diagnostics, raw outputs,
+and convergence material required before those claims can be restored.
+
+The introduction was also narrowed from saying that PTUM implements
+proxy-fluid perturbations to saying that it specifies a phenomenological
+linear proxy-fluid closure. The closure is not a microscopic result.
+
+Two new manuscript-boundary regression tests have been added. Their
+status, the 100-trajectory scan, and the current LaTeX build must be
+checked in the latest GitHub Actions run before any pass is recorded.
