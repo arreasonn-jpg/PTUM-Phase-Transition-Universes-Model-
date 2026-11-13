@@ -204,13 +204,17 @@ def integrate_expanding_mode(
     h_spline = CubicSpline(t_arr, h_arr, extrapolate=False)
     phi_spline = CubicSpline(t_arr, phi_arr, extrapolate=False)
     hubble_from_scale_factor = a_spline.derivative()(t_arr) / a_arr
-    hubble_consistency_scale = np.maximum(
-        np.maximum(np.abs(hubble_from_scale_factor), np.abs(h_arr)),
-        np.finfo(float).tiny,
+    # Use a tiny interval-based floor so a nearly static background
+    # does not acquire an O(1) relative mismatch from round-off in a_dot.
+    interval_hubble_floor = 1.0e-12 / (t_arr[-1] - t_arr[0])
+    hubble_consistency_scale = max(
+        float(np.max(np.abs(hubble_from_scale_factor))),
+        float(np.max(np.abs(h_arr))),
+        interval_hubble_floor,
     )
-    hubble_consistency_relative = np.abs(
-        hubble_from_scale_factor - h_arr
-    ) / hubble_consistency_scale
+    hubble_consistency_relative = (
+        np.abs(hubble_from_scale_factor - h_arr) / hubble_consistency_scale
+    )
     max_hubble_consistency_error = float(np.max(hubble_consistency_relative))
     if max_hubble_consistency_error > background_consistency_tolerance:
         raise ValueError(
