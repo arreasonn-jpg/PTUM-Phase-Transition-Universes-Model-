@@ -558,7 +558,7 @@ $\rho_\psi/\rho_{\nu,\rm std}=\Delta N_{\rm fluid}/N_{\rm eff}^{\rm std}=3.3$--$
 f_\psi^{\rm rad}=
 \frac{C_\nu\Delta N_{\rm fluid}}
 {1+C_\nu(N_{\rm eff}^{\rm std}+\Delta N_{\rm fluid})}
-\simeq1.3$--$4.0\%.
+\simeq1.3\\text{--}4.0\\%.
 \]
 A new `ptum_radiation_budget.py` module implements these conversions with explicit denominator labels and validation tests. The quoted $\mu/\Lambda$ mapping is now identified as a separate reheating-EFT estimate that cannot be inferred from these fractions without branching and thermalization dynamics.
 
