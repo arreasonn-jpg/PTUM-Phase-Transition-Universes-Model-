@@ -416,3 +416,13 @@ Thus the author-reported $+0.26$ indicates a slightly worse best-fit chi-square 
 Added `PTUM_10_OF_10_ACCEPTANCE.md` to the repository. It defines ten evidence gates covering the complete action, inflation-to-waterfall connection, Hilbert tensors and conservation, converged background numerics, inhomogeneous waterfall dynamics, expanding-background resonance and relic abundance, microscopic proxy-fluid realization, reheating/entropy, observational reproducibility, and software/manuscript reproducibility.
 
 The matrix explicitly separates partial work from unmet requirements and sets a non-negotiable rule: PTUM is not called 10/10 until every gate is supported by reproducible evidence. Passing tests alone cannot satisfy the physics gates.
+
+
+## 26. Signed waterfall transfer rates in the numerical model
+
+The revised sector source is now implemented as `waterfall_transfer_rate` in `ptum_task1_simulation.py` and exposed in each simulation result as `Q_psi0` and `Q_Phi0`. For the declared split with $U_{\Phi\psi}=+\tfrac12(\alpha m_\psi^2/E_{\rm th}^2)\Phi^2\psi^2$,
+\[
+Q_\psi^0=+\frac{\alpha m_\psi^2}{E_{\rm th}^2}
+\Phi\psi^2\dot\Phi,\qquad Q_\Phi^0=-Q_\psi^0.
+\]
+The new regression test checks the sign for $\dot\Phi<0$ and exact pairwise cancellation. This makes the manuscript's signed source convention directly inspectable in the simulation output; it does not replace the still-pending full SM-sector Hilbert-tensor derivation.
