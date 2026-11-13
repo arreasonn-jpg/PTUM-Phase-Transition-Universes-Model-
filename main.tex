@@ -386,7 +386,29 @@ Here $\kappa$ and $\lambda_{\rm res}$ are dimensionless, while
 $W_0$ and $\Lambda_{\rm NP}^4$ have mass dimension four and
 $f_{\rm res}$ has mass dimension one. The Planck normalization in
 the exponential is required because $\Phi_{\rm res}$ is a
-dimension-one canonical scalar in the stated GeV convention.
+dimension-one canonical scalar in the stated GeV convention. Defining
+$x_{\rm res}\equiv\Phi_{\rm res}/M_{\rm Pl}$, the derivatives used in
+the background equations are
+\begin{align}
+W_{,\Phi_{\rm res}}
+&=\frac{2W_0\Phi_{\rm res}}{M_{\rm Pl}^2}
+\left[
+(\kappa+\lambda_{\rm res})e^{-(\kappa+\lambda_{\rm res})x_{\rm res}^2}
+-\kappa e^{-\kappa x_{\rm res}^2}
+\right]
+-\frac{\Lambda_{\rm NP}^4e^{-S_E}}{f_{\rm res}}
+\sin\!\left(\frac{\Phi_{\rm res}}{f_{\rm res}}\right),\\
+W_{,\Phi_{\rm res}\Phi_{\rm res}}
+&=\frac{2W_0}{M_{\rm Pl}^2}
+\left[
+(\kappa+\lambda_{\rm res})e^{-(\kappa+\lambda_{\rm res})x_{\rm res}^2}
+\left(1-2(\kappa+\lambda_{\rm res})x_{\rm res}^2\right)
+-\kappa e^{-\kappa x_{\rm res}^2}
+\left(1-2\kappa x_{\rm res}^2\right)
+\right]\\
+&\quad-\frac{\Lambda_{\rm NP}^4e^{-S_E}}{f_{\rm res}^2}
+\cos\!\left(\frac{\Phi_{\rm res}}{f_{\rm res}}\right).
+\end{align}
 
 \subsection{Equations of motion}
 
