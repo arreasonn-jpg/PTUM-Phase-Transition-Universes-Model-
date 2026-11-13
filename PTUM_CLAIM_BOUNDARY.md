@@ -52,6 +52,7 @@ The old 36-point scan used the opposite sign and is historical only.
 The revised code, manuscript, and tests must pass a fresh CI scan
 before any new regime conclusion is accepted. The onset itself still
 requires coupled quantum/inhomogeneous evolution and backreaction.
+The revised-sign branch has passed 25 regression tests in GitHub Actions run 43393188155; its 100-point high-resolution scan and LaTeX build are still running. No scan conclusion is claimed until that run completes.
 
 ## Task 1 baseline under the previous activation sign (historical)
 
