@@ -853,6 +853,80 @@ def test_off_shell_sm_hilbert_tensor_reduces_with_full_ptum_fermion_eom():
     assert "must be retained before applying" in source
 
 
+
+def test_expanding_mode_solver_accepts_tachyonic_effective_mass_history():
+    from ptum_floquet import integrate_expanding_mode
+
+    t = np.linspace(0.0, 10.0, 1001)
+    mass_sq = 1.0 - 2.0 * np.exp(-((t - 5.0) / 1.2) ** 2)
+    result = integrate_expanding_mode(
+        t=t,
+        scale_factor=np.ones_like(t),
+        hubble=np.zeros_like(t),
+        phi_res=np.zeros_like(t),
+        k_comoving=0.0,
+        m_chi=0.0,
+        g_dm=0.0,
+        effective_mass_sq=mass_sq,
+    )
+    assert np.min(result["effective_mass_sq"]) < 0.0
+    assert np.min(result["canonical_frequency_sq"]) < 0.0
+    assert result["final_frequency_valid"]
+    assert np.isfinite(result["particle_number"])
+    assert result["wronskian_relative_error"] < 1.0e-7
+
+
+def test_expanding_mode_solver_rejects_tachyonic_initial_effective_mass():
+    from ptum_floquet import integrate_expanding_mode
+
+    t = np.linspace(0.0, 2.0, 101)
+    with pytest.raises(ValueError, match="initial canonical mode frequency"):
+        integrate_expanding_mode(
+            t=t,
+            scale_factor=np.ones_like(t),
+            hubble=np.zeros_like(t),
+            phi_res=np.zeros_like(t),
+            k_comoving=0.0,
+            m_chi=0.0,
+            g_dm=0.0,
+            effective_mass_sq=-np.ones_like(t),
+        )
+
+
+def test_waterfall_background_crosses_threshold_from_stable_phase():
+    from ptum_waterfall_modes import build_waterfall_background
+
+    params = PTUMParameters(V0=1.0e64)
+    background = build_waterfall_background(
+        params, start_fraction=0.05, t_end_mu=10.0, n_points=1001
+    )
+    mass_sq = background["effective_mass_sq_over_mu2"]
+    assert mass_sq[0] > 0.0
+    assert np.min(mass_sq) < 0.0
+    assert 0.0 < background["threshold_crossing_tau"] < 10.0
+    assert np.all(np.diff(background["scale_factor"]) > 0.0)
+    assert background["psi_homogeneous_exact_zero"]
+    assert not background["backreaction_included"]
+
+
+def test_waterfall_mode_uses_adiabatic_vacuum_and_preserves_wronskian():
+    from ptum_waterfall_modes import build_waterfall_background, integrate_waterfall_mode
+
+    background = build_waterfall_background(
+        PTUMParameters(V0=1.0e64),
+        start_fraction=0.05,
+        t_end_mu=10.0,
+        n_points=2001,
+    )
+    mode = integrate_waterfall_mode(
+        background, k_over_mu=20.0, max_initial_adiabaticity=0.1
+    )
+    assert mode["integration_success"]
+    assert mode["initial_adiabatic_vacuum"]
+    assert mode["tachyonic_mass_interval"]
+    assert mode["wronskian_relative_error"] < 1.0e-7
+
+
 def test_expanding_mode_solver_preserves_adiabatic_vacuum_in_de_sitter():
     from ptum_floquet import integrate_expanding_mode
 

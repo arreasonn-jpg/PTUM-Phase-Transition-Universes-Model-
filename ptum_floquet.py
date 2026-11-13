@@ -150,16 +150,19 @@ def integrate_expanding_mode(
     atol: float = 1.0e-12,
     max_initial_adiabaticity: float = 0.1,
     background_consistency_tolerance: float = 5.0e-2,
+    effective_mass_sq: Iterable[float] | None = None,
 ) -> dict[str, object]:
     """Evolve one chi_k mode on a supplied expanding-FRW background.
 
-    The physical mode equation is integrated for chi_k:
+    The default physical mode equation is
         chi_ddot + 3 H chi_dot
         + [k^2/a^2 + m_chi^2 + 2 g_dm phi_res(t)^2] chi = 0.
+    If effective_mass_sq is supplied, it replaces the mass expression
+    with the provided (possibly negative) effective-mass-squared history.
 
     Initial conditions are imposed on X_k=a^(3/2) chi_k using a
     first-order adiabatic/WKB vacuum. The canonical frequency is
-        Omega_k^2 = k^2/a^2 + m_chi^2 + 2 g_dm phi_res^2
+        Omega_k^2 = k^2/a^2 + m_eff^2(t)
                     - 3 Hdot/2 - 9 H^2/4.
 
     The supplied H(t) history is a consistency check; the mode evolution
@@ -178,8 +181,14 @@ def integrate_expanding_mode(
     a_arr = np.asarray(tuple(scale_factor), dtype=float)
     h_arr = np.asarray(tuple(hubble), dtype=float)
     phi_arr = np.asarray(tuple(phi_res), dtype=float)
+    mass_sq_arr = (
+        None if effective_mass_sq is None
+        else np.asarray(tuple(effective_mass_sq), dtype=float)
+    )
 
     arrays = (t_arr, a_arr, h_arr, phi_arr)
+    if mass_sq_arr is not None:
+        arrays = arrays + (mass_sq_arr,)
     if any(arr.ndim != 1 for arr in arrays):
         raise ValueError("background histories must be one-dimensional")
     if len(t_arr) < 3 or any(len(arr) != len(t_arr) for arr in arrays[1:]):
@@ -228,10 +237,14 @@ def integrate_expanding_mode(
             f"{background_consistency_tolerance:.6g}"
         )
     hubble_dot_from_scale_factor = log_a_spline.derivative(2)(t_arr)
-    omega_chi_sq = (
-        (k_comoving / a_arr) ** 2
-        + m_chi**2
-        + 2.0 * g_dm * phi_arr**2
+    if mass_sq_arr is None:
+        effective_mass_sq_arr = m_chi**2 + 2.0 * g_dm * phi_arr**2
+    else:
+        effective_mass_sq_arr = mass_sq_arr
+    omega_chi_sq = (k_comoving / a_arr) ** 2 + effective_mass_sq_arr
+    mass_sq_spline = (
+        None if mass_sq_arr is None
+        else CubicSpline(t_arr, mass_sq_arr, extrapolate=False)
     )
     omega_canonical_sq = (
         omega_chi_sq - 1.5 * hubble_dot_from_scale_factor
@@ -275,11 +288,12 @@ def integrate_expanding_mode(
     def rhs(time: float, state: np.ndarray) -> np.ndarray:
         chi, chi_dot = state
         a_now, h_now, phi_now = background_at(time)
-        frequency_sq = (
-            (k_comoving / a_now) ** 2
-            + m_chi**2
-            + 2.0 * g_dm * phi_now**2
+        mass_sq_now = (
+            m_chi**2 + 2.0 * g_dm * phi_now**2
+            if mass_sq_spline is None
+            else float(mass_sq_spline(time))
         )
+        frequency_sq = (k_comoving / a_now) ** 2 + mass_sq_now
         return np.array([
             chi_dot,
             -3.0 * h_now * chi_dot - frequency_sq * chi,
@@ -330,6 +344,7 @@ def integrate_expanding_mode(
         "canonical_mode": X,
         "canonical_mode_dot": X_dot,
         "canonical_frequency_sq": omega_canonical_sq,
+        "effective_mass_sq": effective_mass_sq_arr,
         "initial_adiabaticity": initial_adiabaticity,
         "background_hubble_consistency_max_relative": max_hubble_consistency_error,
         "wronskian_relative_error": wronskian_relative_error,
@@ -352,6 +367,7 @@ def integrate_expanding_spectrum(
     rtol: float = 1.0e-9,
     atol: float = 1.0e-12,
     max_initial_adiabaticity: float = 0.1,
+    effective_mass_sq: Iterable[float] | None = None,
 ) -> dict[str, object]:
     """Integrate a finite k-grid and estimate the produced comoving number.
 
@@ -389,6 +405,7 @@ def integrate_expanding_spectrum(
             rtol=rtol,
             atol=atol,
             max_initial_adiabaticity=max_initial_adiabaticity,
+            effective_mass_sq=effective_mass_sq,
         )
         for k in k_arr
     ]
