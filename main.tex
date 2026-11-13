@@ -417,7 +417,7 @@ field $\Phi$ to the other sectors:
 
 \begin{itemize}
 \item \textbf{Proxy sector:} The $\psi$ field has effective mass
-      $m_\psi^2(\Phi) = m^2(1 - \alpha\Phi^2/E_{\rm th}^2)$ with
+      $m_\psi^2(\Phi) = m^2(\alpha\Phi^2/E_{\rm th}^2 - 1)$ with
       $n_\psi = 1$ (real scalar).
 \item \textbf{Dark matter sector:} The $\chi$ field has effective mass
       $m_\chi^2(\Phi) = m_\chi^2 + 2g_{\rm DM}\Phi_{\rm res}^2$; at the
@@ -448,21 +448,21 @@ The activation sector is
 \begin{equation}
 \mathcal{L}_{\rm activation}
 =-\tfrac{1}{2}g^{\mu\nu}\partial_\mu\psi\partial_\nu\psi
--\frac{m^2}{2}\psi^2\!\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)
+-\frac{m^2}{2}\psi^2\!\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)
 -\frac{\lambda_\psi}{4}\psi^4,
 \label{eq:lact}
 \end{equation}
 with effective mass
 \begin{equation}
 m_{\rm eff}^2(\Phi)
-=m^2\!\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right).
+=m^2\!\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right).
 \end{equation}
 Equivalently, the effective discharge trigger can be written as
 \begin{equation}
 \boxed{
  m_{\rm eff}^2(\Phi)<0
  \quad\Longleftrightarrow\quad
- |\Phi|>\Phi_c\equiv \frac{E_{\rm th}}{\sqrt{\alpha}} .
+ |\Phi|<\Phi_c\equiv \frac{E_{\rm th}}{\sqrt{\alpha}} .
 }
 \label{eq:ptum_threshold_box}
 \end{equation}
@@ -503,12 +503,12 @@ The field equations in a flat FRW universe,
 \begin{align}
 \ddot\Phi+3H\dot\Phi
 +\frac{\partial V_{\rm eff}}{\partial\Phi}
--\frac{\alpha m^2}{E_{\rm th}^2}\Phi\psi^2
++\frac{\alpha m^2}{E_{\rm th}^2}\Phi\psi^2
 &=0,
 \label{eq:frw1}
 \\
 \ddot\psi+3H\dot\psi
-+m^2\!\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi
++m^2\!\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi
 +\lambda_\psi\psi^3
 &=0,
 \label{eq:frw2}
@@ -560,7 +560,7 @@ Applying this to each sector:
       \begin{equation}
       \begin{split}
       &\frac{\partial}{\partial\Phi}\left[V_{\rm eff}(\Phi)
-      + \frac{m^2}{2}\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi^2\right] \\
+      + \frac{m^2}{2}\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi^2\right] \\
       &\quad= \frac{\partial V_{\rm eff}}{\partial\Phi}
       - \frac{\alpha m^2}{E_{\rm th}^2}\Phi\psi^2.
       \end{split}
@@ -583,15 +583,15 @@ Applying this to each sector:
       \frac{\lambda_\psi}{4}\psi^4\). The derivative is
       \begin{equation}
       \begin{split}
-      &\frac{\partial}{\partial\psi}\left[\frac{m^2}{2}\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi^2
+      &\frac{\partial}{\partial\psi}\left[\frac{m^2}{2}\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi^2
       + \frac{\lambda_\psi}{4}\psi^4\right] \\
-      &\quad= m^2\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi
+      &\quad= m^2\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi
       + \lambda_\psi\psi^3.
       \end{split}
       \end{equation}
       The equation of motion is
       \begin{equation}
-      \ddot\psi + 3H\dot\psi + m^2\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi
+      \ddot\psi + 3H\dot\psi + m^2\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi
       + \lambda_\psi\psi^3 = 0,
       \end{equation}
       matching Eq.~\eqref{eq:frw2}.
@@ -955,7 +955,7 @@ m_{\rm eff}^2(\Phi)
 =
 m^2
 \left(
-1-\frac{\alpha\Phi^2}{E_{\rm th}^2}
+\frac{\alpha\Phi^2}{E_{\rm th}^2}-1
 \right),
 \label{eq:PTUM_meff_operational}
 \end{equation}
@@ -966,8 +966,8 @@ so that the critical field value is
 \frac{E_{\rm th}}{\sqrt{\alpha}} .
 \label{eq:PTUM_critical_phi_operational}
 \end{equation}
-For $|\Phi|<\Phi_c$ the proxy sector is dormant, while for
-$|\Phi|>\Phi_c$ the tachyonic sign change activates the discharge channel.
+For $|\Phi|>\Phi_c$ the proxy sector is dormant, while for
+$|\Phi|<\Phi_c$ the tachyonic sign change activates the discharge channel.
 The activation potential may be written as
 \begin{equation}
 V_{\rm act}(\psi;\Phi)
@@ -1239,25 +1239,24 @@ $\dot\Phi\simeq-V_{,\Phi}/(3H)<0$: the field rolls from
 $\Phi_*\simeq10.5M_{\rm Pl}$ toward
 $\Phi_{\rm end}\simeq1.387M_{\rm Pl}$. But the activation mass used
 above satisfies
-$m_{\rm eff}^2<0$ for $|\Phi|>\Phi_c$. Under the matching
-$\Phi_c\simeq\Phi_{\rm end}$, the proxy field is therefore on the
-tachyonic side throughout the observable slow-roll interval and
-becomes non-tachyonic as $\Phi$ falls below the threshold. This is
-the opposite temporal ordering from a dormant proxy mode that first
-becomes tachyonic when the inflaton reaches the end-of-inflation
-threshold.
+With the revised waterfall sign,
+$m_{\rm eff}^2>0$ for $|\Phi|>\Phi_c$ and
+$m_{\rm eff}^2<0$ for $|\Phi|<\Phi_c$. The canonical slow-roll
+trajectory has $\dot\Phi<0$ for $\Phi>0$ and moves from
+$\Phi_*/M_{\rm Pl}\simeq10.5$ toward
+$\Phi_{\rm end}/M_{\rm Pl}\simeq1.387$. With
+$\Phi_c\simeq\Phi_{\rm end}$, the proxy is therefore massive and
+stable during the observable slow-roll interval and becomes
+tachyonic after the field crosses below the threshold. The sign
+ordering now matches the intended dormant-to-waterfall chronology.
 
-The current single-field inflation calculation omits $\psi$ and
-does not test its stability along the inflationary trajectory. The
-homogeneous two-field scan starts at $\Phi>\Phi_c$, on the already
-tachyonic side, and therefore does not simulate the onset of the
-claimed instability from a dormant state. This is a structural
-mismatch between the stated activation narrative, the sign of
-$m_{\rm eff}^2(\Phi)$, and the direction of the slow-roll solution.
-It must be resolved by deriving a consistent activation function
-or a physically motivated fuel trajectory from a single action.
-No sign flip is made here without that derivation; until resolved,
-the threshold-triggered onset is not claimed as demonstrated.
+The single-field inflation module still omits $\psi$ and therefore
+does not calculate the growth of its quantum fluctuations or their
+backreaction through the crossing. The homogeneous two-field scan
+starts just below $\Phi_c$, on the already tachyonic side, and tests
+post-trigger relaxation rather than the onset itself. Thus the
+algebraic sign/trajectory mismatch is corrected, but a fully
+dynamical threshold-trigger calculation remains outstanding.
 
 %============================================================
 \section{Primordial consistency of the creation sector}
@@ -1750,7 +1749,7 @@ energy transfer must be evolved explicitly.
 
 The following lines identify the interaction terms already included in the scalar-sector Lagrangians and the additional reheating interactions; they are not to be added a second time to \(\mathcal{L}_{\rm full}\):
 \begin{align}
-\mathcal{L}_{\rm int}^{\psi\Phi} &= +\frac{1}{2}\alpha m^2 \frac{\Phi^2}{E_{\rm th}^2} \psi^2, \\
+\mathcal{L}_{\rm int}^{\psi\Phi} &= -\frac{1}{2}\alpha m^2 \frac{\Phi^2}{E_{\rm th}^2} \psi^2, \\
 \mathcal{L}_{\rm int}^{\chi\Phi_{\rm res}} &= -g_{\rm DM} \chi^2 \Phi_{\rm res}^2, \\
 \mathcal{L}_{\rm rh} &= -y_\psi \psi \bar{f} f - \frac{1}{2} g_\psi \psi^2 \phi_{\rm SM}^2.
 \end{align}
@@ -1804,25 +1803,25 @@ The individual $Q_i^\nu$ depend on this bookkeeping convention;
 the total tensor and its conservation law do not.
 With these explicit assignments the transfer vectors are:
 \begin{align}
-Q_\psi^\nu &= +\alpha m^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi
+Q_\psi^\nu &= -\alpha m^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi
  + y_\psi \bar f f\,\nabla^\nu\psi
  - g_\psi \psi^2 \phi_{\rm SM} \nabla^\nu\phi_{\rm SM}, \\
-Q_\Phi^\nu &= -\alpha m^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi, \\
+Q_\Phi^\nu &= +\alpha m^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi, \\
 Q_{\rm DM}^\nu &= -2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
 Q_{\rm DE}^\nu &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
 Q_{\rm SM}^\nu &= -y_\psi \bar f f\,\nabla^\nu\psi + g_\psi \psi^2 \phi_{\rm SM} \nabla^\nu\phi_{\rm SM}.
 \end{align}
 The signs can be checked directly from the assigned interaction
 potentials. For
-$U_{\Phi\psi}=-\tfrac12(\alpha m^2/E_{\rm th}^2)\Phi^2\psi^2$,
+$U_{\Phi\psi}=+\tfrac12(\alpha m^2/E_{\rm th}^2)\Phi^2\psi^2$,
 assigning $U_{\Phi\psi}$ to the $\psi$ tensor gives
 $Q_\Phi^\nu=U_{\Phi\psi,\Phi}\nabla^\nu\Phi$ and
 $Q_\psi^\nu=-U_{\Phi\psi,\Phi}\nabla^\nu\Phi$.
 Consequently, in homogeneous FRW,
 \begin{equation}
-Q_\psi^0=-\frac{\alpha m^2}{E_{\rm th}^2}
+Q_\psi^0=+\frac{\alpha m^2}{E_{\rm th}^2}
 \Phi\psi^2\dot\Phi,\qquad
-Q_\Phi^0=+\frac{\alpha m^2}{E_{\rm th}^2}
+Q_\Phi^0=-\frac{\alpha m^2}{E_{\rm th}^2}
 \Phi\psi^2\dot\Phi.
 \end{equation}
 Likewise, for $U_{\chi r}=g_{\rm DM}\chi^2\Phi_{\rm res}^2$
@@ -1888,7 +1887,7 @@ During the tachyonic growth phase, with \(\Phi\) near \(\Phi_c\) and
 \(\psi\) growing, the leading fuel-to-proxy transfer is
 \begin{equation}
 Q_\psi \simeq -Q_\Phi
-\simeq -\alpha m^2\frac{\Phi_c}{E_{\rm th}^2}
+\simeq +\alpha m^2\frac{\Phi_c}{E_{\rm th}^2}
 \psi^2\dot\Phi.
 \end{equation}
 This is the homogeneous time-component source obtained from the
@@ -3276,8 +3275,8 @@ phenomenologically characterized by the following properties:
 
 \item \textbf{Metastability:} The configuration is metastable because
       the proxy field $\psi$ has a positive effective mass squared
-      $m_{\rm eff}^2(\Phi) = m^2(1 - \alpha\Phi^2/E_{\rm th}^2) > 0$
-      for $|\Phi| < \Phi_c$. The $\psi$ field sits at the origin
+      $m_{\rm eff}^2(\Phi) = m^2(\alpha\Phi^2/E_{\rm th}^2 - 1) > 0$
+      for $|\Phi| > \Phi_c$. The $\psi$ field sits at the origin
       $\psi = 0$, which is a local minimum of the activation
       potential. The system is stable against small fluctuations in
       $\psi$ but unstable to the large-field excursion of $\Phi$
