@@ -111,6 +111,26 @@ class InitialConditions:
     k_modes: Optional[np.ndarray] = None
 
 
+def waterfall_transfer_rate(
+    Phi: np.ndarray | float,
+    psi: np.ndarray | float,
+    Phi_dot: np.ndarray | float,
+    params: PTUMParameters,
+) -> tuple[np.ndarray | float, np.ndarray | float]:
+    """Return homogeneous Q_psi^0 and Q_Phi^0 for the declared sector split.
+
+    The interaction potential U_int=+alpha*m_psi^2*Phi^2*psi^2/(2 E_th^2)
+    is assigned to T_psi. With (-+++), Q_psi^0=+U_int,Phi*Phi_dot
+    and Q_Phi^0=-Q_psi^0. For Phi>0 and Phi_dot<0, Q_psi^0 is negative.
+    """
+    coefficient = params.alpha * params.m_psi**2 / params.E_th**2
+    q_psi = coefficient * np.asarray(Phi) * np.asarray(psi)**2 * np.asarray(Phi_dot)
+    q_phi = -q_psi
+    if np.ndim(q_psi) == 0:
+        return float(q_psi), float(q_phi)
+    return q_psi, q_phi
+
+
 def veff_phi(Phi: float, params: PTUMParameters) -> float:
     """Tree-level fuel potential with dimensionless exponent.
 
@@ -282,6 +302,10 @@ def run_simulation(params: PTUMParameters,
         where=continuity_scale > 0.0
     )
 
+    Q_psi0_arr, Q_Phi0_arr = waterfall_transfer_rate(
+        Phi, psi, Phi_dot, params
+    )
+
     # Keep the sampled finite-difference estimate as a separate convergence
     # diagnostic. It is expected to be noisy when rho is vacuum dominated.
     rho_dot_finite_difference = np.gradient(rho_total_arr, t)
@@ -325,6 +349,8 @@ def run_simulation(params: PTUMParameters,
         'p_total': p_total_arr,
         'continuity_residual': continuity_residual,
         'continuity_residual_relative': continuity_residual_relative,
+        'Q_psi0': Q_psi0_arr,
+        'Q_Phi0': Q_Phi0_arr,
         'continuity_residual_finite_difference': continuity_residual_finite_difference,
         'continuity_residual_finite_difference_relative': continuity_residual_finite_difference_relative,
         'w_psi': w_psi_arr,
