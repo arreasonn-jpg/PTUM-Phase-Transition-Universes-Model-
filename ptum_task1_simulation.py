@@ -299,8 +299,8 @@ def background_equations(t: float, y: np.ndarray, params: PTUMParameters) -> np.
     # Hubble rate
     H = hubble_rate(Phi, Phi_dot, psi, psi_dot, params)
     
-    # Waterfall coupling U_int=+alpha*m^2*Phi^2*psi^2/(2 E_th^2):
-    # Phi_ddot + 3H Phi_dot + V_eff,Phi + alpha*m^2*Phi*psi^2/E_th^2 = 0.
+    # Waterfall coupling U_int=+alpha*m_psi^2*Phi^2*psi^2/(2 E_th^2):
+    # Phi_ddot + 3H Phi_dot + V_eff,Phi + alpha*m_psi^2*Phi*psi^2/E_th^2 = 0.
     Phi_ddot = -3 * H * Phi_dot - dveff_dphi(Phi, params) - \
                (params.alpha * params.m_psi**2 / params.E_th**2) * Phi * psi**2
     
