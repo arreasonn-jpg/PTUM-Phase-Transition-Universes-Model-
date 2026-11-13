@@ -56,6 +56,7 @@ PTUM does not claim to be:
 - a solution of the cosmological low-entropy initial-condition problem or a derivation of the thermodynamic arrow of time,
 
 - a UV-complete derivation of the pre-discharge background,
+- a complete gauge-invariant chiral Standard Model reheating interaction or full SM Hilbert-tensor derivation; the displayed Dirac coupling is generic EFT shorthand pending specification,
 - a solution of the cosmological-constant problem,
 - a unique microscopic theory of the dark sector,
 - a replacement for LambdaCDM already favored by current data,
