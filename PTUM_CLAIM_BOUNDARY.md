@@ -39,10 +39,10 @@ Numerical integration of the coupled background equations with:
 - $m_\psi \sim 10^{13}\,\mathrm{GeV}$, $\lambda_\psi \sim 0.1$
 - $\psi(t_c)=0$, $\dot{\psi}(t_c)=0$ (field at top of barrier)
 
-Shows the system is **overdamped**: $3H/(2\mu) \approx 25 \gg 1$. The field remains at $\psi=0$ with $w_\psi=0$. The quartic regime is never reached.
+For the threshold-matched benchmark $\Phi_c\simeq\Phi_{\rm end}\simeq1.387M_{\rm Pl}$, the potential-dominated local estimate is $3H_c/(2\mu)\simeq4.9>1$; the plateau-scale estimate is $3H_*/(2\mu)\simeq25$. The two-field homogeneous calculation remains overdamped, and the quartic regime is not established.
 
-Achieving the quartic regime requires:
-1. $V_0 \lesssim 10^{58}\,\mathrm{GeV}^4$ ($H_* \lesssim 10^{10}\,\mathrm{GeV}$) for underdamped oscillations
+A conservative sufficient low-scale regime is:
+1. $V_0 \lesssim 10^{58}\,\mathrm{GeV}^4$ ($H_* \lesssim 10^{10}\,\mathrm{GeV}$), which gives underdamped motion with a large margin in the threshold-matched estimate
 2. Sufficient initial kinetic energy in $\psi$ to cross the barrier
 3. Continuing energy input from rolling $\Phi$ field or rescattering
 
@@ -72,3 +72,15 @@ https://github.com/ErdemEsa/ptum-cosmology.git
 ```
 
 The repository contains the public PTUM `CLASS v3.2.0` patch. This supports a code-availability claim for the core Boltzmann-code implementation. It does not by itself complete the full public Bayesian pipeline, because production Cobaya YAML files and full MCMC chains remain pending or external-archive items.
+
+
+## 2026-11-13 scientific correction addendum
+
+- The dimensionless fuel-potential convention is now
+  $V(\Phi)=V_0[1-\exp(-\lambda_\Phi\Phi^2/M_{\rm Pl}^2)]$.
+- The discharge threshold $\Phi_c=E_{\rm th}/\sqrt{\alpha}$ is independent of $\lambda_\Phi$; matching it to $\Phi_{\rm end}$ is an extra model condition.
+- For $\lambda_\Phi=0.02$, the tree-level single-field estimate gives
+  $\Phi_{\rm end}\simeq1.387M_{\rm Pl}$ and
+  $V(\Phi_{\rm end})/V_0\simeq0.0378$. The previous assumption that the full $V_0$ is available at the threshold is withdrawn.
+- The local Floquet monodromy solver is now available, but it is a frozen-background diagnostic. It does not calculate the expanding-background relic abundance.
+- The full Standard Model Hilbert tensor, complete pre-CLASS dark-matter production, and the observational MCMC pipeline remain open verification items.
