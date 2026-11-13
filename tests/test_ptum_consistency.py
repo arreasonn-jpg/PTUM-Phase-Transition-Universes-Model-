@@ -20,6 +20,14 @@ from ptum_task1_simulation import (
     compute_quartic_virial_ratio,
     compute_quadratic_virial_ratio,
     waterfall_transfer_rate,
+    psi_minimum_potential,
+    psi_minimum_squared,
+    psi_excitation_potential,
+    waterfall_excitation_transfer_rate,
+    rho_phi,
+    rho_psi,
+    pressure_phi,
+    pressure_psi,
     InitialConditions,
     create_initial_conditions,
     run_simulation,
@@ -460,3 +468,63 @@ def test_waterfall_sector_transfer_rates_cancel_with_revised_sign():
     assert q_psi < 0.0
     assert q_phi > 0.0
     assert q_psi + q_phi == pytest.approx(0.0, abs=1.0e-30)
+
+
+
+def test_instantaneous_minimum_excitation_split_preserves_total_stress():
+    p = PTUMParameters()
+    Phi = 0.9 * p.Phi_c
+    psi = 0.2 * p.psi_0
+    Phi_dot = -1.0e20
+    psi_dot = 2.0e18
+
+    v_min = psi_minimum_potential(Phi, p)
+    rho_phi_raw = rho_phi(Phi, Phi_dot, psi, p)
+    rho_psi_raw = rho_psi(Phi, psi, psi_dot, p)
+    p_phi_raw = pressure_phi(Phi, Phi_dot, p)
+    p_psi_raw = pressure_psi(Phi, psi, psi_dot, p)
+
+    rho_phi_split = rho_phi_raw + v_min
+    rho_psi_exc = rho_psi_raw - v_min
+    p_phi_split = p_phi_raw - v_min
+    p_psi_exc = p_psi_raw + v_min
+
+    assert rho_psi_exc >= 0.0
+    assert rho_phi_split + rho_psi_exc == pytest.approx(
+        rho_phi_raw + rho_psi_raw
+    )
+    assert p_phi_split + p_psi_exc == pytest.approx(
+        p_phi_raw + p_psi_raw
+    )
+
+
+def test_excitation_potential_vanishes_at_instantaneous_broken_minimum():
+    p = PTUMParameters()
+    Phi = 0.9 * p.Phi_c
+    psi_min_sq = psi_minimum_squared(Phi, p)
+    assert psi_min_sq > 0.0
+    psi_min = np.sqrt(psi_min_sq)
+    assert psi_excitation_potential(Phi, psi_min, p) == pytest.approx(
+        0.0, abs=1.0e-25
+    )
+
+
+def test_shifted_excitation_transfer_vanishes_at_moving_minimum():
+    p = PTUMParameters()
+    Phi = 0.9 * p.Phi_c
+    psi_min = np.sqrt(psi_minimum_squared(Phi, p))
+    q_psi_exc, q_phi_split = waterfall_excitation_transfer_rate(
+        Phi, psi_min, -1.0e20, p
+    )
+    assert q_psi_exc == pytest.approx(0.0, abs=1.0e-20)
+    assert q_phi_split == pytest.approx(-q_psi_exc, abs=1.0e-20)
+
+
+def test_unbroken_phase_excitation_potential_matches_raw_potential():
+    p = PTUMParameters()
+    Phi = 1.1 * p.Phi_c
+    psi = 0.3 * p.psi_0
+    m_eff_sq = meff_sq_psi(Phi, p)
+    raw = 0.5 * m_eff_sq * psi**2 + 0.25 * p.lambda_psi * psi**4
+    assert psi_minimum_potential(Phi, p) == pytest.approx(0.0)
+    assert psi_excitation_potential(Phi, psi, p) == pytest.approx(raw)
