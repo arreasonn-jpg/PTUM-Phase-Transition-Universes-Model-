@@ -162,10 +162,13 @@ def integrate_expanding_mode(
         Omega_k^2 = k^2/a^2 + m_chi^2 + 2 g_dm phi_res^2
                     - 3 Hdot/2 - 9 H^2/4.
 
-    The initial state is rejected if Omega_k^2<=0 or if the WKB
-    adiabaticity parameter |Omegadot/Omega^2| exceeds the supplied
-    threshold. The final instantaneous occupation number is reported
-    only when the final canonical frequency is real and positive.
+    The supplied H(t) history is a consistency check; the mode evolution
+    derives H=a_dot/a and Hdot from the same scale-factor spline used
+    throughout the integration. The initial state is rejected if
+    Omega_k^2<=0 or if |Omegadot/Omega^2| exceeds the supplied threshold.
+    Intermediate tachyonic intervals are allowed. The final instantaneous
+    occupation number is reported only when the final canonical frequency
+    is real and positive.
 
     This is a linear mode calculation on a prescribed background. It
     does not include mode backreaction, rescattering, nonlinear
@@ -237,11 +240,15 @@ def integrate_expanding_mode(
     if omega_canonical_sq[0] <= 0.0:
         raise ValueError("initial canonical mode frequency is not real and positive")
 
-    omega_arr = np.sqrt(omega_canonical_sq)
-    omega_spline = CubicSpline(t_arr, omega_arr, extrapolate=False)
-    omega_dot_arr = omega_spline.derivative()(t_arr)
+    omega0 = float(np.sqrt(omega_canonical_sq[0]))
+    omega_sq_spline = CubicSpline(
+        t_arr, omega_canonical_sq, extrapolate=False
+    )
+    omega_dot0 = float(
+        omega_sq_spline.derivative()(t_arr[0]) / (2.0 * omega0)
+    )
     initial_adiabaticity = float(
-        abs(omega_dot_arr[0]) / max(omega_arr[0] ** 2, np.finfo(float).tiny)
+        abs(omega_dot0) / max(omega0**2, np.finfo(float).tiny)
     )
     if initial_adiabaticity > max_initial_adiabaticity:
         raise ValueError(
@@ -250,10 +257,9 @@ def integrate_expanding_mode(
             f"{max_initial_adiabaticity:.6g}"
         )
 
-    omega0 = omega_arr[0]
     X0 = 1.0 / np.sqrt(2.0 * omega0)
     X_dot0 = (
-        -1j * omega0 - 0.5 * omega_dot_arr[0] / omega0
+        -1j * omega0 - 0.5 * omega_dot0 / omega0
     ) * X0
     chi0 = X0 / a_arr[0] ** 1.5
     chi_dot0 = (
