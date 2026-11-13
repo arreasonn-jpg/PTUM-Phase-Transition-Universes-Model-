@@ -154,7 +154,7 @@ A new ptum_inflation_background.py implements the dimensionless autonomous backg
 
 The plateau's asymptotic logarithmic slope tends to zero; the previous statement that it tends to \(2\lambda_\Phi\Phi\) was incorrect. No swampland-compliance claim is retained. The action also does not establish an approximate shift symmetry, so super-Planckian excursions remain a UV-control issue.
 
-## 8. Regression tests and verification boundary
+## 9. Regression tests and verification boundary
 
 The pytest regression file is maintained at `tests/test_ptum_consistency.py`. The initial six-test suite passed in GitHub Actions on commit `c2007f455f4cdfc0eee7221aef350ea2ad811659` (`6 passed in 0.42s`). The subsequently added static de Sitter test failed because finite-differencing an almost constant vacuum-dominated density and normalizing by a near-zero scale generated spurious relative values of 1.
 
@@ -170,7 +170,7 @@ The current branch contains eleven tests. No GitHub Actions run or combined stat
 
 These tests cover homogeneous bookkeeping and internal equation consistency only. They do not establish the full PTUM scenario, reproduce CLASS/Cobaya, or calculate a physical dark-matter relic abundance.
 
-## 8. Still open
+## 10. Still open
 
 1. Derive all sector divergences from one complete action including the Dirac/SM Lagrangian, then verify the interaction-stress assignment line by line.
 2. Run the Python test suite and convergence tests; compare analytic and finite-difference continuity residuals.
