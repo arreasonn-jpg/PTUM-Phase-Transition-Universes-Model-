@@ -45,7 +45,7 @@ with a Unified Dark Sector}
 \date{}
 
 \abstract{%
-The dark sector of the standard cosmological model comprises dark matter, dark energy, and possible dark radiation, whose common origin remains unexplained. We present the Phase Transition Universes Model (PTUM), an effective discharge-based cosmological scenario in which a scalar fuel field $\Phi$ rolls toward a critical threshold and triggers a tachyonic waterfall in a proxy field $\psi$. The framework parametrizes candidate dark-matter ($\chi$), residual dark-energy-like ($\Phi_{\rm res}$), and proxy-fluid dark-radiation sectors; their microscopic production and energy partition are not yet established by the present homogeneous calculation. A falsifiable prediction of PTUM is that, \emph{within the effective linear proxy-fluid description}, the pfd component carries $w=1/3$, $c_s^2=1/3$, and zero anisotropic stress ($\sigma=0$). This produces no neutrino-induced CMB acoustic peak phase shift, distinguishing it from free-streaming dark radiation---a signature that may be tested at high significance by next-generation CMB experiments such as CMB-S4, depending on the realized pfd abundance. The authors report implementing the effective phenomenological system in \texttt{CLASS} at background and perturbation levels \emph{(modified code not yet public)}. The creation sector supports a plateau-type slow-roll phase compatible with current CMB constraints, fixing the discharge scale to $V_0^{1/4}\sim 10^{15}$--$10^{16}\,\mathrm{GeV}$. The dark-energy sector admits a broad near-$\Lambda$ viable region with $w_{\rm DE}\approx -1$. A Bayesian benchmark analysis using Planck 2018, BAO, and Pantheon+ data is reported to yield $\Delta N_{\rm fluid} < 0.31$ at $95\%$ credibility \emph{(author-reported; chains not yet public)}. Model comparison is reported to give $\Delta\chi^2\equiv\chi^2_{\rm PTUM}-\chi^2_{\Lambda\rm CDM}=+0.26$ and $\Delta\mathrm{AIC}=2.26$; current data therefore show a weak preference for $\Lambda$CDM while leaving PTUM viable as a falsifiable effective extension. The benchmark is reported to satisfy BBN bounds and elementary linear-stability checks (author-reported); full EFT control and the microscopic realization of the proxy-fluid closure remain conditional on additional calculations. \textbf{Critical caveat:} For the exact threshold match
+The dark sector of the standard cosmological model comprises dark matter, dark energy, and possible dark radiation, whose common origin remains unexplained. We present the Phase Transition Universes Model (PTUM), an effective discharge-based cosmological scenario in which a scalar fuel field $\Phi$ rolls toward a critical threshold and triggers a tachyonic waterfall in a proxy field $\psi$. The framework parametrizes candidate dark-matter ($\chi$), residual dark-energy-like ($\Phi_{\rm res}$), and proxy-fluid dark-radiation sectors; their microscopic production and energy partition are not yet established by the present homogeneous calculation. A falsifiable prediction of PTUM is that, \emph{within the effective linear proxy-fluid description}, the pfd component carries $w=1/3$, $c_s^2=1/3$, and zero anisotropic stress ($\sigma=0$). Within this closure, the pfd does not generate the characteristic free-streaming-induced acoustic phase shift sourced by anisotropic stress; this does not imply that all peak locations are unchanged, since background and perturbation evolution can still affect the spectrum. The authors' phenomenological forecast suggests that the distinction may be testable by next-generation CMB experiments such as CMB-S4, depending on the realized pfd abundance. The authors report implementing the effective phenomenological system in \texttt{CLASS} at background and perturbation levels \emph{(modified code not yet public)}. The creation sector supports a plateau-type slow-roll phase compatible with current CMB constraints, fixing the discharge scale to $V_0^{1/4}\sim 10^{15}$--$10^{16}\,\mathrm{GeV}$. The dark-energy sector admits a broad near-$\Lambda$ viable region with $w_{\rm DE}\approx -1$. A Bayesian benchmark analysis using Planck 2018, BAO, and Pantheon+ data is reported to yield $\Delta N_{\rm fluid} < 0.31$ at $95\%$ credibility \emph{(author-reported; chains not yet public)}. Model comparison is reported to give $\Delta\chi^2\equiv\chi^2_{\rm PTUM}-\chi^2_{\Lambda\rm CDM}=+0.26$ and $\Delta\mathrm{AIC}=2.26$; current data therefore show a weak preference for $\Lambda$CDM while leaving PTUM viable as a falsifiable effective extension. The benchmark is reported to satisfy BBN bounds and elementary linear-stability checks (author-reported); full EFT control and the microscopic realization of the proxy-fluid closure remain conditional on additional calculations. \textbf{Critical caveat:} For the exact threshold match
 $\Phi_c=\Phi_{\rm end}^{(H)}\simeq0.986228M_{\rm Pl}$ at
 $\lambda_\Phi=0.02$, the potential-dominated local estimate gives
 $3H_{c,V}/(2\mu)\simeq3.50$ using the potential-only
@@ -131,12 +131,14 @@ c_s^{2} = \tfrac{1}{3},\qquad
 \end{equation}
 Free-streaming dark radiation generates a characteristic phase shift
 of the CMB acoustic peaks through its anisotropic
-stress~\cite{Bashinsky2004,Baumann2016,Follin2015}; the pfd
-component, having $\sigma=0$ in the effective linear fluid description,
-produces \emph{no such shift}. This absence would constitute a
-distinctive discriminator: if additional relativistic degrees of freedom
-are detected in CMB data, the presence or absence of the associated
-phase shift separates free-streaming from fluid dark radiation. As we
+stress~\cite{Bashinsky2004,Baumann2016,Follin2015}; the ideal
+tightly coupled pfd closure with $c_s^2=1/3$ and $\sigma=0$ does not
+generate that same free-streaming contribution. This is not a claim
+that every peak location remains unchanged: the altered radiation
+density and its gravitational response can still affect the spectrum.
+The discriminator is the additional phase-shift pattern associated
+with free-streaming anisotropic stress, which must be isolated in the
+full Boltzmann calculation. As we
 show in Section~\ref{sec:forecast}, CMB-S4 may make this distinction
 at high significance for $\Delta N_{\rm fluid}\gtrsim 0.20$,
 depending on the realized pfd abundance, making PTUM a concretely
@@ -373,13 +375,18 @@ with
 \begin{equation}
 \begin{split}
 W(\Phi_{\rm res})
-&=W_0\,e^{-\kappa\Phi_{\rm res}^2}
-\!\left(1-e^{-\lambda_{\rm res}\Phi_{\rm res}^2}\right) \\
+&=W_0\,e^{-\kappa(\Phi_{\rm res}/M_{\rm Pl})^2}
+\!\left(1-e^{-\lambda_{\rm res}(\Phi_{\rm res}/M_{\rm Pl})^2}\right) \\
 &\quad +\Lambda_{\rm NP}^4\,e^{-S_E}
 \cos\!\left(\frac{\Phi_{\rm res}}{f_{\rm res}}\right).
 \end{split}
 \label{eq:wpot}
 \end{equation}
+Here $\kappa$ and $\lambda_{\rm res}$ are dimensionless, while
+$W_0$ and $\Lambda_{\rm NP}^4$ have mass dimension four and
+$f_{\rm res}$ has mass dimension one. The Planck normalization in
+the exponential is required because $\Phi_{\rm res}$ is a
+dimension-one canonical scalar in the stated GeV convention.
 
 \subsection{Equations of motion}
 
@@ -1008,30 +1015,35 @@ Higher-dimensional operators and UV sensitivity therefore remain
 open issues rather than being declared controlled by a shift symmetry.
 
 \noindent\textbf{EFT validity summary.}
-As demonstrated in Section~\ref{sec:stability}, all PTUM energy
-scales satisfy $H_* \ll M_{\rm Pl}$, all couplings remain
-perturbative, and the theory is free from ghost, gradient, and
-tachyonic instabilities. The EFT cutoff is \textbf{not}
-identified with the potential height: setting
-$\Lambda_{\rm EFT}\sim V_0^{1/4}$ would be an unjustified assumption
-(ÖNCELİK 6.6). Instead, the cutoff is bounded from unitarity of
-$2\to2$ scattering in the quartic sector. For the interaction
-$-\frac{\lambda_\psi}{4}\psi^4$, partial-wave unitarity requires
-$\lambda_\psi \lesssim 8\pi$ at tree level, which is satisfied
-($\lambda_\psi\sim0.1$), and the strong-coupling scale of the quartic
-theory is $\Lambda_{\rm sc}\sim 4\pi\psi_0/\sqrt{\lambda_\psi}\sim
-10^{14}$--$10^{15}$ GeV for $\psi_0\sim10^{13}$ GeV. The effective
-description is therefore controlled for
-$E\ll\Lambda_{\rm sc}\sim10^{14}$--$10^{15}$ GeV, which still contains
-$H_*\sim10^{13}$ GeV and all fields with $m\sim10^{13}$ GeV, but is
-\emph{below} $V_0^{1/4}\sim10^{15}$--$10^{16}$ GeV at the upper end.
-The precise cutoff depends on the UV completion and is left as an
-open parameter (VARSAYIM: $\Lambda_{\rm EFT}\sim10^{14}$--$10^{15}$ GeV);
-all predictions in this work are computed at
-$E\lesssim H_*\ll\Lambda_{\rm EFT}$. The question of
-which specific UV completion gives rise to the PTUM effective
-Lagrangian is an important but separate question that does not
-affect the observational predictions derived in this work.
+The displayed scalar kinetic terms are canonical, so the two-derivative
+scalar truncation contains no ghost degree of freedom. The negative
+$m_{\rm eff}^2$ of $\psi$ below $\Phi_c$ is the intended waterfall
+instability, not an absence of tachyonic modes; its nonlinear endpoint
+and perturbative stability must be checked dynamically. The EFT cutoff
+is \textbf{not} identified with the potential height:
+setting $\Lambda_{\rm EFT}\sim V_0^{1/4}$ would be unjustified.
+The quartic interaction $-\lambda_\psi\psi^4/4$ has a
+dimensionless, energy-independent tree-level $2\to2$ amplitude.
+For $\lambda_\psi\sim0.1$, its loop expansion parameter is small,
+$\lambda_\psi/(16\pi^2)\ll1$, but this does not generate a finite
+energy cutoff proportional to $4\pi\psi_0/\sqrt{\lambda_\psi}$.
+That expression is not a unitarity cutoff of a canonical
+renormalizable quartic scalar theory and is withdrawn.
+
+The Wilsonian scale $\Lambda_{\rm EFT}$ is an independent parameter
+that must be constrained by the higher-dimensional operators and
+their coupled-channel partial-wave amplitudes, by the gravitational
+sector, and ultimately by a specified UV completion. In particular,
+the dimension-five operator $\psi\mathcal O_{\rm SM}/\Lambda$
+requires an explicit bound on its Wilson matrices and on the energy
+range where perturbative unitarity holds. No numerical value
+$10^{14}$--$10^{15}$ GeV is established by the quartic coupling alone.
+Consequently, the hierarchy $H_*\ll\Lambda_{\rm EFT}$ is a
+necessary working assumption for the present EFT analysis, not a
+demonstrated result. A UV completion and a complete unitarity analysis
+remain open requirements; this limitation does not by itself invalidate
+the low-energy phenomenological calculations, but it limits claims
+about their ultraviolet control.
 
 \subsubsection{Inflation-discharge connection}
 \label{sec:inflation_discharge}
@@ -2328,20 +2340,24 @@ The suppression grows with \(\Delta N_{\rm fluid}\) and reaches
 
 The key observable distinction between pfd and standard
 neutrino-like dark radiation is the absence of anisotropic stress
-in the pfd case. Free-streaming dark radiation with extra energy
-fraction \(\Delta N_{\rm eff}\) induces a CMB acoustic-peak phase
-shift
+in the ideal tightly coupled pfd closure. Free-streaming dark radiation
+with extra energy fraction $\Delta N_{\rm eff}$ induces a CMB
+acoustic-peak phase-shift contribution
 \begin{equation}
 \begin{split}
 \delta\phi_{\rm peak}
 &\approx 0.19\pi\,R_{\rm extra}, \\
 R_{\rm extra}
-&=\frac{\Delta N_{\rm fluid}\,\tfrac{7}{8}
-\!\left(\tfrac{4}{11}\right)^{4/3}}
+&=\frac{\Delta N_{\rm fluid}\,\tfrac78
+\left(\tfrac4{11}\right)^{4/3}}
 {\sum_i\Omega_{i,{\rm rad}}},
 \end{split}
 \end{equation}
-whereas pfd with \(\sigma=0\) produces no such shift.
+whereas the ideal tightly coupled pfd closure with $c_s^2=1/3$
+and $\sigma=0$ omits this free-streaming anisotropic-stress
+contribution. Residual peak displacements caused by the changed
+background and coupled perturbations must still be computed with
+the full Boltzmann hierarchy.
 
 The observational distinction between a proxy-fluid component and a free-streaming relativistic species can be expressed directly in terms of the acoustic phase of the CMB temperature spectrum. For a fixed additional radiation abundance, a free-streaming component shifts the acoustic peaks through anisotropic-stress effects, whereas the PTUM proxy-fluid component preserves the standard peak phase within the effective linear fluid description. This diagnostic is illustrated schematically in Fig.~\ref{fig:ptum_cmb_phase_shift_diagnostic}.
 
