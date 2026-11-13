@@ -383,7 +383,7 @@ with
 \begin{equation}
 \begin{split}
 V_{\rm eff}(\Phi)
-&=V_0\!\left(1-e^{-\lambda\Phi^2}\right) \\
+&=V_0\!\left(1-e^{-\lambda_\Phi\Phi^2/M_{\rm Pl}^2}\right) \\
 &\quad +\frac{1}{64\pi^2}
 \sum_i n_i\,m_{{\rm eff},i}^4(\Phi)
 \left[\ln\frac{m_{{\rm eff},i}^2(\Phi)}{\mu_R^2}
@@ -1076,35 +1076,32 @@ rigorous derivation; a full embedding into a specific string
 compactification is left for future work.
 
 \noindent\textbf{Swampland considerations.}
-The fuel potential $V(\Phi) = V_0(1 - e^{-\lambda\Phi^2})$ has
+For the dimensionless plateau parameter \(\lambda_\Phi\), define
+\(x=\lambda_\Phi\Phi^2/M_{\rm Pl}^2\). The tree-level fuel potential
+is \(V(\Phi)=V_0(1-e^{-x})\), and its dimensionless logarithmic slope is
 \begin{equation}
-\frac{|V'|}{V} = \frac{2\lambda\Phi e^{-\lambda\Phi^2}}{1-e^{-\lambda\Phi^2}}.
+M_{\rm Pl}\frac{|V_{,\Phi}|}{V}
+=\frac{2\lambda_\Phi|\Phi|}{M_{\rm Pl}}
+\frac{e^{-x}}{1-e^{-x}}.
 \end{equation}
-In the large-field asymptotic regime ($\lambda\Phi^2 \gg 1$),
-$|V'|/V \to 2\lambda\Phi \gtrsim \mathcal{O}(1)$ for $\Phi \gtrsim
-M_{\rm Pl}$, satisfying the de Sitter Swampland Conjecture
-\cite{Obied2018,Ooguri2019}. In the inflationary slow-roll regime,
-the field is at intermediate values $\lambda\Phi^2 \sim \mathcal{O}(1)$
-where the exponential is not yet saturated; here $|V'|/V \ll 1$ is
-maintained for the required $N_e \sim 50$--$60$ e-folds. The refined
-de Sitter conjecture, which allows $\min(\nabla_i \nabla_j V) \leq
--c'\,V/M_{\rm Pl}^2$, is satisfied throughout the slow-roll phase
-for $c' \sim \mathcal{O}(\eta)$. There is no contradiction: the
-swampland bound applies asymptotically at very large $\Phi$, while
-slow-roll occurs at intermediate field values where the potential is
-plateau-like. A systematic analysis of the full PTUM potential
-landscape against swampland criteria is deferred to future work.
+Both this slope and the dimensionless curvature
+\(M_{\rm Pl}^2V_{,\Phi\Phi}/V\) tend to zero as \(x\to\infty\).
+Consequently, the asymptotic plateau does \emph{not} satisfy a
+de Sitter gradient bound with a fixed positive order-one constant,
+nor does its asymptotic curvature establish the refined conjecture.
+The earlier statement that the slope tends to
+\(2\lambda_\Phi\Phi\) was incorrect because it omitted the
+exponential factor. No claim of swampland compliance is made here;
+any such assessment requires a specified conjecture, its constants,
+and a UV completion.
 
-\noindent\textbf{Field excursions and shift symmetry.}
-For small values of the coupling $\lambda \lesssim 0.05$, the fuel
-field undergoes super-Planckian excursions $\Delta\Phi > M_{\rm Pl}$
-during the inflationary phase. This is a generic feature of
-large-field inflation models and is not specific to PTUM. Such
-excursions can be protected against dangerous higher-dimensional
-operators by an approximate shift symmetry $\Phi \to \Phi + c$,
-which is broken only by the exponential potential. This is the same
-protective mechanism invoked in natural inflation
-\cite{Freese1990} and axion monodromy \cite{Silverstein2008} models.
+\noindent\textbf{Field excursions and UV control.}
+The leading slow-roll solutions below involve super-Planckian field
+excursions. The quadratic-exponential potential does not possess an
+exact shift symmetry \(\Phi\to\Phi+c\), and the present action does
+not provide a mechanism that protects such an approximate symmetry.
+Higher-dimensional operators and UV sensitivity therefore remain
+open issues rather than being declared controlled by a shift symmetry.
 
 \noindent\textbf{EFT validity summary.}
 As demonstrated in Section~\ref{sec:stability}, all PTUM energy
@@ -1135,76 +1132,97 @@ affect the observational predictions derived in this work.
 \subsubsection{Inflation-discharge connection}
 \label{sec:inflation_discharge}
 
-The end of inflation and the onset of the discharge are dynamically
-connected through the fuel field $\Phi$. During the slow-roll
-inflationary phase, $\Phi$ rolls down the plateau potential
-$V(\Phi) = V_0(1 - e^{-\lambda\Phi^2})$. The slow-roll parameters
-are
+We use the dimensionally consistent tree-level potential
+\begin{equation}
+V(\Phi)=V_0\left(1-e^{-x}\right),
+\qquad
+x\equiv\lambda_\Phi\frac{\Phi^2}{M_{\rm Pl}^2},
+\end{equation}
+where \(\lambda_\Phi\) is dimensionless. Writing
+\(u=\Phi/M_{\rm Pl}\), the potential slow-roll parameters are
 \begin{align}
-\epsilon_V &= \frac{1}{2}\left(\frac{V_{,\Phi}}{V}\right)^2
-= 2\lambda^2 \frac{\Phi^2 e^{-2\lambda\Phi^2}}{(1-e^{-\lambda\Phi^2})^2}, \notag\\
-\eta_V &= \frac{V_{,\Phi\Phi}}{V}
-= 2\lambda \frac{e^{-\lambda\Phi^2}(1-2\lambda\Phi^2)}{1-e^{-\lambda\Phi^2}}.
+\epsilon_V
+&=\frac{M_{\rm Pl}^2}{2}
+\left(\frac{V_{,\Phi}}{V}\right)^2
+=2\lambda_\Phi^2u^2
+\frac{e^{-2x}}{(1-e^{-x})^2},\\
+\eta_V
+&=M_{\rm Pl}^2\frac{V_{,\Phi\Phi}}{V}
+=2\lambda_\Phi
+\frac{e^{-x}(1-2x)}{1-e^{-x}}.
 \end{align}
-Inflation ends when $\epsilon_V \approx 1$ or $|\eta_V| \approx 1$.
-For $\lambda \sim 0.02$, this occurs at $\Phi_{\rm end} \sim
-M_{\rm Pl}/\sqrt{\lambda} \sim 7 M_{\rm Pl}$.
-
-The discharge threshold is at $\Phi_c = E_{\rm th}/\sqrt{\alpha}$.
-For the discharge to be triggered naturally at the end of inflation,
-we require $\Phi_{\rm end} \approx \Phi_c$. This gives a relation
-between the threshold scale and the inflationary parameters:
+Inflation ends when the first slow-roll condition reaches unity.
+For the illustrative value \(\lambda_\Phi=0.02\), solving
+\(\epsilon_V=1\) gives
 \begin{equation}
-E_{\rm th} \approx \sqrt{\alpha}\,\Phi_{\rm end}
-\sim \sqrt{\alpha}\,\frac{M_{\rm Pl}}{\sqrt{\lambda}}.
+\Phi_{\rm end}\simeq1.387\,M_{\rm Pl},
 \end{equation}
-Since $E_{\rm th} \sim V_0^{1/4}$ and $V_0^{1/4} \sim 10^{15}$--$10^{16}$
-GeV from the primordial normalization, while $\Phi_{\rm end} \sim
-M_{\rm Pl}/\sqrt{\lambda} \sim 7 M_{\rm Pl} \sim 1.7 \times 10^{19}$ GeV
-for $\lambda \sim 0.02$, the relation $E_{\rm th} \approx \sqrt{\alpha}\,\Phi_{\rm end}$
-requires $\sqrt{\alpha} \sim 10^{15\text{--}16} / 10^{19} \sim 10^{-4}\text{--}10^{-3}$,
-i.e. $\alpha \sim 10^{-8}\text{--}10^{-6}$. This small value of $\alpha$
-is technically natural (protected by the approximate shift symmetry
-of the fuel field during inflation) and lies within the expected
-range for a dimensionless coupling generated by higher-dimensional
-operators. The parameter $\lambda \sim 0.02$--$0.1$ remains in its
-natural range for the PTUM creation sector.
+not \(M_{\rm Pl}/\sqrt{\lambda_\Phi}\simeq7.07M_{\rm Pl}\).
+The latter is the field value at which the exponent \(x=1\), not
+the end-of-inflation field value.
 
-After inflation ends, the fuel field $\Phi$ continues to roll
-toward the minimum of its potential. The transition from the
-slow-roll regime to the fast-roll regime occurs when the field
-reaches $\Phi_c$. At this point, the effective mass of the proxy
-field $\psi$ changes sign, triggering the tachyonic instability.
-The timescale for the field to roll from $\Phi_{\rm end}$ to
-$\Phi_c$ is
+At leading slow-roll order, with the end condition above and
+\(N_*=\int_{\Phi_{\rm end}}^{\Phi_*}
+V/(M_{\rm Pl}^2V_{,\Phi})\,d\Phi\), the illustrative
+\(\lambda_\Phi=0.02\) predictions are:
+\begin{center}
+\begin{tabular}{c|c|c|c|c}
+\(N_*\) & \(\Phi_*/M_{\rm Pl}\) & \(n_s\) & \(r\) &
+\(V_0^{1/4}\,[\mathrm{GeV}]\)\\
+\hline
+50 & 10.265 & 0.9547 & 0.0258 & \(1.34\times10^{16}\)\\
+55 & 10.535 & 0.9585 & 0.0211 & \(1.27\times10^{16}\)\\
+60 & 10.780 & 0.9618 & 0.0175 & \(1.21\times10^{16}\)
+\end{tabular}
+\end{center}
+The normalization uses \(A_s\simeq2.1\times10^{-9}\) and
+\(A_s=V_*/(24\pi^2M_{\rm Pl}^4\epsilon_*)\). These are tree-level,
+single-field slow-roll estimates; they are not a replacement for
+integrating the exact background or including reheating, loop
+corrections, and perturbations. In particular, the predicted tilt
+depends on \(N_*\), so the reheating history must be specified before
+claiming observational compatibility.
+
+The discharge threshold is independently defined by
 \begin{equation}
-\Delta t_{\rm roll} \sim \int_{\Phi_c}^{\Phi_{\rm end}}
-\frac{d\Phi}{\dot\Phi} \sim \frac{\Phi_{\rm end} - \Phi_c}{\sqrt{2\epsilon_V} H M_{\rm Pl}}.
+\Phi_c=\frac{E_{\rm th}}{\sqrt{\alpha}}.
 \end{equation}
-For $\Phi_{\rm end} \approx \Phi_c$, this timescale is short
-compared to the Hubble time, $\Delta t_{\rm roll} \ll H^{-1}$,
-ensuring that the discharge follows inflation without a prolonged
-intermediate phase.
-
-The energy released in the discharge is the potential energy
-difference between the inflationary plateau and the post-discharge
-vacuum:
+If the model requires the threshold to coincide with the end of
+inflation, this is an additional matching condition
+\(\Phi_c\simeq\Phi_{\rm end}\), giving
 \begin{equation}
-\Delta V = V(\Phi_c) - V_{\rm res} \approx V_0 - V_{\rm res}
-\sim V_0,
+\alpha\simeq\left(\frac{E_{\rm th}}{\Phi_{\rm end}}\right)^2.
 \end{equation}
-since $V_{\rm res}/V_0 \sim 10^{-108}$ is negligible. This energy
-is partitioned into the proxy-fluid dark radiation, dark matter,
-and residual dark energy as described in Section~\ref{sec:energy_momentum_conservation}.
+For \(\lambda_\Phi=0.02\) and
+\(E_{\rm th}=10^{15}\)--\(10^{16}\,\mathrm{GeV}\), this gives
+\(\alpha\simeq8.8\times10^{-8}\)--\(8.8\times10^{-6}\).
+The threshold is not fixed by \(\lambda_\Phi\) alone; it is an
+independent coupling/scale matching condition. The numerical
+simulation must use the same \(\Phi_c\) and \(\alpha\) as the
+inflationary calculation.
 
-The connection between inflation and discharge is therefore not an
-additional assumption but a consequence of the fuel field dynamics.
-The same field $\Phi$ that drives inflation also controls the
-discharge trigger, and the parameters that normalize the
-primordial spectrum ($V_0$, $\lambda$) also determine the discharge
-scale ($E_{\rm th}$, $\alpha$). This provides a unified description
-of the creation event from inflation through discharge to the hot
-Big Bang.
+A crucial energy-budget consequence follows. At the matched
+threshold, \(x_{\rm end}\simeq0.0385\), so
+\begin{equation}
+\frac{V(\Phi_c)}{V_0}
+=1-e^{-x_{\rm end}}\simeq0.0378,
+\end{equation}
+not unity. The earlier approximation
+\(\Delta V\simeq V_0\) at the discharge threshold is therefore
+unsupported for this matched benchmark. The energy released during
+the discharge, the energy already redshifted or transferred during
+inflation, and the post-transition residual energy must be accounted
+for in a single continuous background solution. A short roll interval
+also cannot be inferred merely by setting
+\(\Phi_c\simeq\Phi_{\rm end}\); it must be calculated from the
+coupled equations for a specified offset and initial velocity.
+
+The inflation-discharge connection is thus a parameter-matching
+hypothesis to be tested dynamically, not yet a demonstrated
+consequence of the present effective action. The same field may
+control both stages, but the threshold matching, energy partition,
+and duration of the transition require a self-consistent numerical
+solution.
 
 %============================================================
 \section{Primordial consistency of the creation sector}
