@@ -1940,10 +1940,15 @@ that appeared in an earlier draft is not part of \(Q_\Phi^\nu\); it
 belongs to the proxy sector's own energy balance and is already
 contained in \(\dot\rho_\psi+3H(\rho_\psi+p_\psi)\) on the left-hand
 side of the sector conservation equation.)
-During the quartic oscillation phase, the proxy field decays to SM radiation via $\mathcal{L}_{\rm rh}$, with
+In a perturbative quasiparticle approximation, after defining a
+positive excitation energy $\rho_{\psi,\rm exc}$ above the
+broken-phase minimum, one may coarse-grain the decay source as
 \begin{equation}
-Q_{\rm SM} \approx -Q_\psi \approx \Gamma_\psi \rho_\psi.
+Q_{\rm SM}\simeq -Q_\psi\simeq\Gamma_\psi\rho_{\psi,\rm exc}.
 \end{equation}
+This is a Boltzmann-level approximation, not the exact covariant
+source. The present homogeneous simulation does not yet compute
+$\rho_{\psi,\rm exc}$, $\Gamma_\psi$, or the branching fractions.
 The dark matter production occurs via parametric resonance when $\Phi_{\rm res}(t)$ oscillates, with the energy transfer rate
 \begin{equation}
 Q_{\rm DM} \approx -Q_{\rm DE} \approx 2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res}.
@@ -1952,45 +1957,78 @@ Q_{\rm DM} \approx -Q_{\rm DE} \approx 2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{
 \subsubsection{Reheating and entropy budget}
 \label{sec:entropy_budget}
 
-\noindent\textbf{Complete reheating derivation.}
-The reheating sector $\mathcal{L}_{\rm rh} = -y_\psi \psi \bar{f} f - \frac{1}{2} g_\psi \psi^2 \phi_{\rm SM}^2$ governs the decay of the proxy field $\psi$ into Standard Model particles. During the quartic oscillation phase, $\psi$ oscillates coherently with amplitude $\mathcal{A} \sim \psi_0$ and effective mass $m_\psi \sim \sqrt{\lambda_\psi}\psi_0$. The perturbative decay width into fermions is
+\noindent\textbf{Gauge-invariant EFT reheating channels.}
+The reheating interactions are
+\[
+\mathcal L_{\rm rh}
+=-\frac{\psi}{\Lambda}\mathcal O_{\rm SM}
+-\frac12g_{\psi H}\psi^2H^\dagger H,
+\]
+with $\mathcal O_{\rm SM}$ defined above. After electroweak
+symmetry breaking, the first term gives effective couplings
+$y_{\psi f}^{\rm eff}=C_fv/(\sqrt2\Lambda)$. For a well-defined
+scalar quasiparticle oscillating about a fixed broken-phase
+minimum, the local curvature mass is
+$m_{\rm osc}^2=-2m_{\rm eff}^2$. If
+$m_{\rm osc}>2m_f$ and the EFT interaction is perturbative, the
+conditional partial width is
 \begin{equation}
-\Gamma_{\psi \to f\bar{f}} = \frac{y_\psi^2}{8\pi} m_\psi \left(1 - \frac{4m_f^2}{m_\psi^2}\right)^{3/2} \approx \frac{y_\psi^2}{8\pi} m_\psi,
+\Gamma_{\psi\to f\bar f}=
+\frac{N_c|y_{\psi f}^{\rm eff}|^2m_{\rm osc}}{8\pi}
+\left(1-\frac{4m_f^2}{m_{\rm osc}^2}\right)^{3/2}.
 \end{equation}
-The quartic interaction $-\tfrac12 g_\psi\psi^2\phi_{\rm SM}^2$ does not generate a single-particle decay $\psi\to\phi_{\rm SM}\phi_{\rm SM}$ around a vacuum with $\langle\psi\rangle=0$; it instead mediates processes such as $\psi\psi\to\phi_{\rm SM}\phi_{\rm SM}$. Such annihilation and non-perturbative production channels require a separate kinetic treatment and are not included in a one-particle decay width. If the Yukawa channel is kinematically open, its perturbative width is
-\begin{equation}
-\Gamma_\psi\simeq\sum_f\frac{y_{\psi,f}^2}{8\pi}m_\psi\left(1-\frac{4m_f^2}{m_\psi^2}\right)^{3/2}.
-\end{equation}
-This expression is only a perturbative estimate for a well-defined quasiparticle excitation; its use for a coherently oscillating quartic condensate requires an averaging and backreaction analysis.
-Reheating completes when $\Gamma_\psi \sim H$. At this point, the energy density of the oscillating $\psi$ field is $\rho_\psi \sim \lambda_\psi \psi_0^4$, and the Hubble rate is $H \sim \sqrt{\rho_\psi}/M_{\rm Pl} \sim \sqrt{\lambda_\psi}\psi_0^2/M_{\rm Pl}$. The condition $\Gamma_\psi \sim H$ gives
-\begin{equation}
-\frac{y^2}{8\pi} \sqrt{\lambda_\psi}\psi_0 \sim \frac{\sqrt{\lambda_\psi}\psi_0^2}{M_{\rm Pl}} \quad \Rightarrow \quad \psi_0 \sim \frac{y^2}{8\pi} M_{\rm Pl}.
-\end{equation}
-The relation above is a conditional estimate obtained by equating a perturbative decay rate to the Hubble rate; it is not a self-consistent solution for the oscillating condensate. The reheating temperature would then be estimated as
-\begin{equation}
-\begin{split}
-T_{\rm rh} &\sim \left(\frac{90}{\pi^2 g_*}\right)^{1/4} \sqrt{\Gamma_\psi M_{\rm Pl}} \\
-&\sim 10^{15}\,\mathrm{GeV} \left(\frac{y}{10^{-2}}\right)
-\left(\frac{\lambda_\psi}{0.1}\right)^{1/4} \\
-&\qquad \left(\frac{\psi_0}{10^{13}\,\mathrm{GeV}}\right)^{1/2}
-\left(\frac{100}{g_*}\right)^{1/4}.
-\end{split}
-\end{equation}
-No numerical value of $T_{\rm rh}$ is claimed here: the condensate-averaged decay rate, branching fractions, non-perturbative production, and thermalization efficiency have not been computed self-consistently. The displayed expression is an estimate conditional on perturbative decay domination and rapid thermalization.
+This expression applies to small oscillations about a fixed
+minimum. It is not automatically the decay rate of a nonlinear,
+time-dependent waterfall condensate.
 
-The energy density released in the discharge is not generically $V_0$.
-It must be obtained from the decrease of the total energy density along
-the coupled background trajectory. In the potential-dominated,
-threshold-matched single-field estimate, with
-$\Phi_c\simeq\Phi_{\rm end}^{(H)}\simeq0.986228M_{\rm Pl}$ for
-$\lambda_\Phi=0.02$ and $V(0)=0$, the available fuel potential is only
+The Higgs portal $\psi^2H^\dagger H$ preserves the isolated
+$\psi\mapsto-\psi$ symmetry and therefore does not produce a
+single-particle $\psi$ decay by itself. It mediates pair processes
+such as $\psi\psi\to HH^\dagger$ and can excite Higgs modes
+non-perturbatively through the time-dependent background
+$g_{\psi H}\psi^2(t)$. Those channels require a kinetic or
+mode-function calculation. The dimension-five fermion-Higgs
+operator is odd in $\psi$ and may break the $Z_2$ symmetry; its
+induced vacuum bias and effect on domain walls must be included
+in the same effective potential.
+
+The commonly used relation $Q_{\rm SM}\simeq\Gamma_\psi
+\rho_{\psi,\rm exc}$ is valid only after a positive excitation
+energy above the broken-phase minimum and a quasiparticle decay
+rate have been defined. In the present simulation,
+$\rho_\psi$ is formed from the unshifted field-dependent
+potential. A consistent $\rho_{\psi,\rm exc}$ requires subtracting
+the moving minimum energy and including the associated
+$\Phi$-dependent contribution in the total stress tensor and
+$\Phi$ equation. That calculation has not yet been implemented.
+Consequently, no numerical decay width, branching fraction, or
+perturbative reheating temperature is claimed from the EFT
+couplings.
+
+If perturbative decay dominates and thermalization is rapid, the
+usual conditional estimate is
+\begin{equation}
+T_{\rm rh}\simeq
+\left(\frac{90}{\pi^2g_*}\right)^{1/4}
+\sqrt{\Gamma_\psi M_{\rm Pl}}.
+\end{equation}
+The Wilson coefficients $C_f$, cutoff $\Lambda$, Higgs-portal
+coupling $g_{\psi H}$, condensate history, and competing
+non-perturbative channels are not fixed, so this formula is not
+assigned a numerical value here.
+
+The available energy from the fuel potential is not generically
+$V_0$. In the potential-dominated, threshold-matched single-field
+estimate, with $\Phi_c\simeq\Phi_{\rm end}^{(H)}
+\simeq0.986228M_{\rm Pl}$ for $\lambda_\Phi=0.02$ and $V(0)=0$,
+the available fuel-potential difference is
 \begin{equation}
 \rho_{\rm dis}\simeq V(\Phi_c)-V(0)
 \simeq0.0192649V_0,
 \end{equation}
-provided initial kinetic and proxy-field contributions are negligible.
-This is a conditional estimate, not the energy release computed by the
-full interacting system.
+provided initial kinetic and proxy-field contributions are
+negligible. This is a conditional estimate, not the energy release
+computed by the full interacting system.
 
 Assuming instantaneous thermalization, the entropy density and
 radiation energy density are
@@ -2007,10 +2045,12 @@ T_{\rm rh}\simeq
 \simeq1.56\times10^{15}\,\mathrm{GeV}
 \left(\frac{V_0^{1/4}}{10^{16}\,\mathrm{GeV}}\right)
 \left(\frac{g_*}{100}\right)^{-1/4}
-\left(\frac{\rho_{\rm dis}}{0.0378V_0}\right)^{1/4}.
+\left(\frac{\rho_{\rm dis}}{0.0192649V_0}\right)^{1/4}.
 \end{equation}
-The result changes if the coupled fields carry appreciable kinetic or
-interaction energy at discharge, or if thermalization is delayed.
+The result changes if the coupled fields carry appreciable kinetic
+or interaction energy at discharge, or if thermalization is
+delayed. The displayed number is therefore only a
+potential-dominated instantaneous-thermalization estimate.
 
 The comoving entropy density after reheating is
 \begin{equation}
@@ -2021,11 +2061,11 @@ up to changes in the effective entropy degrees of freedom. The
 present entropy density is approximately
 $s_0\simeq2.9\times10^3\,\mathrm{cm}^{-3}$; multiplying by the
 present observable-universe volume gives a total entropy of order
-$10^{88}$. This is an observed cosmological quantity, not a prediction
-of the PTUM discharge calculation. Connecting it to $T_{\rm rh}$
-requires a specified thermal history, entropy degrees of freedom,
-scale-factor normalization, and absence (or modelling) of later
-entropy injection.
+$10^{88}$. This is an observed cosmological quantity, not a
+prediction of the PTUM discharge calculation. Connecting it to
+$T_{\rm rh}$ requires a specified thermal history, entropy degrees
+of freedom, scale-factor normalization, and absence (or modelling)
+of later entropy injection.
 
 The expansion during discharge is governed by
 \begin{equation}
