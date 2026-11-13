@@ -484,3 +484,15 @@ The dimension-five operator is odd in $psi$ and may explicitly break the $Z_2$ s
 The manuscript now writes $T_\Phi^{\mu\nu}$ and $T_\psi^{\mu\nu}$ explicitly from the revised scalar action. The $Phi$--$psi$ interaction and Higgs portal are included exactly once in $T_\psi$; the $chi^2\Phi_{\rm res}^2$ interaction remains assigned to $T_{\rm DM}$; the dimension-five fermion-Higgs operator is assigned to $T_{\rm SM}$. A formal Hilbert definition of $T_{{\rm SM},0}^{\mu\nu}$ from the curved-spacetime chiral SM action is now displayed, with $-g^{\mu\nu}U_Y$ as the assigned interaction contribution.
 
 This closes the bookkeeping definition of the sector split at the action level, but not the full explicit SM tensor derivation: gauge, Higgs, tetrad and spin-connection terms for all chiral fermions still need to be evaluated and checked against the displayed transfer currents. Gate 3 therefore remains PARTIAL.
+
+
+## 31. Well-conditioned FRW residual normalization
+
+The FRW continuity diagnostic now reports both the local-term normalization and a background-energy normalization:
+\[
+C_{\rm FRW}^{\rm bg}
+=\frac{\dot\rho+3H(\rho+p)}{|H|\,|\rho|}.
+\]
+The latter remains well-conditioned when a vacuum-dominated solution makes both $\dot\rho$ and $3H(\rho+p)$ very small. The finite-difference estimate has the same background-energy normalization, in addition to the original local normalization. The local ratio is retained for diagnostic purposes but must not be interpreted when its denominator approaches round-off scale.
+
+Regression tests now check the chain-rule and background-normalized finite-difference residuals for both the near-static vacuum-dominated and evolving two-field cases. The finite-difference tolerance is looser and is intended as a numerical diagnostic, not as a substitute for a timestep/tolerance convergence campaign.
