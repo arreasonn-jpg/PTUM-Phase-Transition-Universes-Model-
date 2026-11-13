@@ -334,3 +334,23 @@ def test_quartic_threshold_matches_potential_energy_dominance():
     assert q_class["quartic_to_tachyonic_potential_ratio"] == pytest.approx(1.05)
     assert not non_q_class["quartic_achieved"]
     assert non_q_class["quartic_to_tachyonic_potential_ratio"] == pytest.approx(0.95)
+
+
+
+def test_threshold_matched_inflation_starts_on_tachyonic_side():
+    # Characterization test: this confirms the current sign/trajectory
+    # mismatch documented in the manuscript. It is not a claim that the
+    # dormant-to-tachyonic trigger has been dynamically realized.
+    p = PTUMParameters(
+        lambda_phi=0.02,
+        Phi_c=1.387 * M_PL,
+        m_psi=1.0e13,
+        E_th=1.0e16,
+    )
+    phi_star = 10.535 * M_PL
+    phi_end = 1.387 * M_PL
+    assert meff_sq_psi(phi_star, p) < 0.0
+    assert meff_sq_psi(phi_end, p) == pytest.approx(
+        0.0, abs=1.0e-10 * p.m_psi**2
+    )
+    assert meff_sq_psi(0.99 * phi_end, p) > 0.0
