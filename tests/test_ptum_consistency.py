@@ -861,7 +861,7 @@ def test_manuscript_withdraws_unverified_lattice_outputs_and_reproduction_claims
         r"S_{\rm obs} \sim 10^{88}",
         "docker run -v",
     ):
-        assert unsupported_claim not in normalized_section
+        assert unsupported_claim.lower() not in normalized_section
 
 
 def test_manuscript_describes_proxy_fluid_as_a_phenomenological_closure():
