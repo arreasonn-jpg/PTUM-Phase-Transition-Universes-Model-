@@ -113,8 +113,9 @@ class InitialConditions:
 def veff_phi(Phi: float, params: PTUMParameters) -> float:
     """Tree-level fuel potential with dimensionless exponent.
 
-    lambda_phi is dimensionless and Phi_c = M_PL/sqrt(lambda_phi),
-    so the exponent is -lambda_phi * Phi**2 / M_PL**2.
+    lambda_phi is dimensionless; M_PL/sqrt(lambda_phi) is the
+    characteristic plateau field scale. The discharge threshold Phi_c
+    is an independent parameter fixed through alpha=(E_th/Phi_c)**2.
     """
     x = params.lambda_phi * (Phi / M_PL)**2
     return params.V0 * (-np.expm1(-x))
