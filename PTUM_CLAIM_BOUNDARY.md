@@ -55,7 +55,7 @@ The old 36-point scan used the opposite sign and is historical only.
 The revised code, manuscript, and tests must pass a fresh CI scan
 before any new regime conclusion is accepted. The onset itself still
 requires coupled quantum/inhomogeneous evolution and backreaction.
-The revised-sign branch has passed 25 regression tests in GitHub Actions run 43393188155; its 100-point high-resolution scan and LaTeX build are still running. No scan conclusion is claimed until that run completes.
+The pre-exact-endpoint revised-sign revision passed 25 regression tests in run 43393188155. The current branch additionally matches the threshold to the exact $\epsilon_H=1$ endpoint and adds an inflation-end regression test; its fresh 26-test suite, 100-point high-resolution scan, and LaTeX build are pending. No scan conclusion is claimed until that run completes.
 
 ## Task 1 baseline under the previous activation sign (historical)
 
