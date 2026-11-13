@@ -36,6 +36,7 @@ jobs:
       - name: Run 100-point high-resolution waterfall scans
         run: python ptum_task1_scan.py
       - name: Upload two-field scan summary
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: ptum-two-field-scan
