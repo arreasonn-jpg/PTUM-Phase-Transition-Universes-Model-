@@ -1,4 +1,6 @@
 """Regression tests for PTUM homogeneous energy bookkeeping and diagnostics."""
+import json
+
 import numpy as np
 import pytest
 
@@ -251,3 +253,47 @@ def test_two_field_parameter_scan_returns_explicit_classification():
     assert results[0]["success"]
     assert "regime" in results[0]["classification"]
     assert "quartic_achieved" in results[0]["classification"]
+
+
+
+def test_high_w_does_not_claim_barrier_crossing_without_a_barrier_diagnostic():
+    result = {
+        "success": True,
+        "w_psi_avg": np.array([0.8, 0.9, 1.0]),
+        "Q": np.full(100, 2.0),
+        "virial_ratio": np.full(100, 0.4),
+    }
+    classification = classify_outcome(result, PTUMParameters())
+    assert classification["regime"] == "non_quartic"
+    assert "barrier_crossed" not in classification
+
+
+def test_scan_summary_is_strict_json_and_nonfinite_values_become_null(tmp_path):
+    from ptum_task1_simulation import save_results
+
+    result = {
+        "success": True,
+        "classification": {
+            "regime": "insufficient_oscillation_data",
+            "quartic_achieved": False,
+            "w_final": float("nan"),
+            "Q_final": float("nan"),
+            "virial_final": float("nan"),
+            "n_oscillations": 0,
+        },
+        "ic_params": {"psi_init": 0.0, "psi_dot_init": 0.0, "phi_offset": 0.0},
+        "psi": np.array([0.0, 0.0]),
+        "Phi": np.array([1.0, 1.0]),
+        "continuity_residual_relative": np.array([0.0, 0.0]),
+    }
+    output = tmp_path / "scan.json"
+    save_results([result], str(output))
+    raw = output.read_text(encoding="utf-8")
+    parsed = json.loads(
+        raw,
+        parse_constant=lambda token: (_ for _ in ()).throw(ValueError(token)),
+    )
+    assert parsed[0]["classification"]["w_final"] is None
+    assert parsed[0]["classification"]["Q_final"] is None
+    assert "NaN" not in raw
+    assert "max_abs_psi_over_trajectory" in parsed[0]
