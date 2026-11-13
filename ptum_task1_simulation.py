@@ -314,6 +314,16 @@ def run_simulation(params: PTUMParameters,
         out=np.zeros_like(continuity_residual),
         where=continuity_scale > 0.0
     )
+    # A second normalization referenced to the total background energy
+    # remains well-conditioned when rho_dot and 3H(rho+p) both approach
+    # zero in a vacuum-dominated, nearly static solution.
+    background_energy_scale = np.maximum(
+        np.abs(H) * np.abs(rho_total_arr),
+        np.finfo(float).tiny,
+    )
+    continuity_residual_background_relative = (
+        continuity_residual / background_energy_scale
+    )
 
     Q_psi0_arr, Q_Phi0_arr = waterfall_transfer_rate(
         Phi, psi, Phi_dot, params
@@ -331,6 +341,9 @@ def run_simulation(params: PTUMParameters,
         continuity_scale_finite_difference,
         out=np.full_like(continuity_residual_finite_difference, np.nan),
         where=continuity_scale_finite_difference > 0.0
+    )
+    continuity_residual_finite_difference_background_relative = (
+        continuity_residual_finite_difference / background_energy_scale
     )
     w_psi_arr = np.array([w_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
     
@@ -362,10 +375,12 @@ def run_simulation(params: PTUMParameters,
         'p_total': p_total_arr,
         'continuity_residual': continuity_residual,
         'continuity_residual_relative': continuity_residual_relative,
+        'continuity_residual_background_relative': continuity_residual_background_relative,
         'Q_psi0': Q_psi0_arr,
         'Q_Phi0': Q_Phi0_arr,
         'continuity_residual_finite_difference': continuity_residual_finite_difference,
         'continuity_residual_finite_difference_relative': continuity_residual_finite_difference_relative,
+        'continuity_residual_finite_difference_background_relative': continuity_residual_finite_difference_background_relative,
         'w_psi': w_psi_arr,
         'w_psi_avg': w_avg,
         't_avg': t_avg,
