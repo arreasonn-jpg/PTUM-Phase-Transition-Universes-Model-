@@ -20,6 +20,7 @@ from ptum_task1_simulation import (
     compute_quartic_virial_ratio,
     compute_quadratic_virial_ratio,
     waterfall_transfer_rate,
+    w_psi,
     psi_minimum_potential,
     psi_minimum_squared,
     psi_excitation_potential,
@@ -531,3 +532,9 @@ def test_unbroken_phase_excitation_potential_matches_raw_potential():
     raw = 0.5 * m_eff_sq * psi**2 + 0.25 * p.lambda_psi * psi**4
     assert psi_minimum_potential(Phi, p) == pytest.approx(0.0)
     assert psi_excitation_potential(Phi, psi, p) == pytest.approx(raw)
+
+
+
+def test_raw_psi_equation_of_state_is_nan_when_sector_density_is_zero():
+    p = PTUMParameters()
+    assert np.isnan(w_psi(1.1 * p.Phi_c, 0.0, 0.0, p))
