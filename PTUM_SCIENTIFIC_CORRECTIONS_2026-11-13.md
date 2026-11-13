@@ -218,7 +218,7 @@ The scan export previously emitted Python's non-standard `NaN` tokens for unavai
 
 The successful LaTeX build in run 43389261756 still reported two unresolved references to `sec:entropy_budget`. A dedicated `Reheating and entropy budget` subsubsection label has now been added before the reheating derivation. The next LaTeX CI run must confirm that the warnings are gone; a successful exit code alone is not sufficient if cross-references remain unresolved.
 
-The branch now has additional tests for (i) refusing to infer barrier crossing from (w>0.5), and (ii) serializing unavailable values as strict JSON nulls. The full test count and the corrected scan/LaTeX artifacts remain pending the next CI run.
+The branch now has additional tests for (i) refusing to infer barrier crossing from (w>0.5), and (ii) serializing unavailable values as strict JSON nulls. GitHub Actions run 43390565834 on commit 733b4f477112b9cc4c1b096bb791fb2e2acd9c47 reports **18 passed in 4.30 s**. Its 18-point scan completed 18/18 integrations and classified 16 as `non_quartic` and two as `insufficient_oscillation_data`; none met the quartic criteria. The newly generated scan artifact was downloaded and parsed with a strict JSON parser; all unavailable diagnostics are JSON `null`, not non-standard `NaN`. The LaTeX job for this run was still in progress when this note was updated, so the corrected entropy section and reference-label fix remain pending final compilation verification.
 
 
 ## 13. Reheating energy, entropy, and cosmological initial entropy
