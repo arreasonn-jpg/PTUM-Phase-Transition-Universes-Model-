@@ -30,6 +30,7 @@ from ptum_task1_simulation import (
     InitialConditions,
     create_initial_conditions,
     run_simulation,
+    finite_difference_continuity_diagnostic,
     compute_time_averaged_w,
     classify_outcome,
 )
@@ -44,6 +45,33 @@ def _add_fast_adiabatic_oscillation_history(result, hubble=0.01, t_end=100.0):
         "psi_dot": -np.sin(t),
     })
     return result
+
+
+def test_independent_finite_difference_continuity_closes_for_analytic_frw_history():
+    # rho(t)=rho_offset + A exp(-3 H t), with rho+p=A exp(-3 H t),
+    # is an exact constant-H continuity solution. The offset is deliberately
+    # much larger than the evolving component and is removed before sampling.
+    t = np.linspace(0.0, 4.0, 4001)
+    hubble = 0.07
+    amplitude = 3.0
+    evolving_density = amplitude * np.exp(-3.0 * hubble * t)
+    diagnostic = finite_difference_continuity_diagnostic(
+        t,
+        evolving_density - evolving_density[0],
+        np.full_like(t, hubble),
+        evolving_density,
+    )
+    assert np.max(np.abs(diagnostic["relative"][2:-2])) < 2.0e-7
+    assert np.max(np.abs(diagnostic["residual"][2:-2])) < 2.0e-7
+
+
+def test_independent_finite_difference_continuity_rejects_bad_time_grid():
+    t = np.array([0.0, 1.0, 1.0, 2.0])
+    values = np.ones_like(t)
+    with pytest.raises(ValueError, match="strictly increasing"):
+        finite_difference_continuity_diagnostic(
+            t, values, values, values
+        )
 
 
 def test_interaction_energy_is_counted_exactly_once():
