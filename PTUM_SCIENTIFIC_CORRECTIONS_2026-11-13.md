@@ -749,3 +749,33 @@ rows were non-quartic or insufficient-oscillation-data. These results
 are a smoke-test check only, not evidence for or against the full
 100-point parameter grid. No full scan, nonlinear waterfall, relic
 abundance, or microscopic proxy-fluid conclusion is claimed.
+
+
+## 42. 2026-11-14 CI verification and source-regression correction
+
+The final-WKB particle-basis implementation was already documented in
+the manuscript with the stronger statement that both the occupation
+number and the associated finite-band number density are withheld when
+the final WKB or Wronskian validity condition fails. The source regression
+still expected the older shorter phrase and therefore failed on workflow
+`43580694626` (74 passed, 1 failed). This was a stale test expectation,
+not a physical or numerical failure. Commit
+`82ab0f26014de58634386efd1d90b635f6ec9e45` aligns the assertion with
+the manuscript's actual wording.
+
+The fresh workflow `43580982470` on that head passed:
+- 75/75 Python regression tests;
+- all four CI smoke integrations (two high-scale and two low-scale);
+- the LaTeX build and manuscript PDF upload.
+
+The smoke classifications were, in each scenario, one
+`insufficient_oscillation_data` and one `non_quartic`. Thus the smoke
+run demonstrates successful integration and fail-closed classification,
+not quartic-fluid production. The LaTeX log had no Overfull \\hbox
+warnings, but retained Underfull \\hbox and two float-placement
+warnings; the manuscript build is successful but not warning-free.
+
+The complete 100-trajectory scan and its artifact are still outstanding.
+No output-grid or solver-tolerance convergence, physical inhomogeneous
+waterfall completion, backreaction, rescattering, relic abundance, or
+entropy dilution is claimed from this workflow.
