@@ -257,3 +257,30 @@ quantum-seeded inhomogeneous waterfall, nonlinear backreaction,
 rescattering, converged spectrum/relic calculation, proxy-fluid
 microphysics, thermal history, and independent CLASS/Cobaya
 reproduction remain unmet or partial as listed in the matrix.
+
+
+## 2026-11-14 analytic real-psi defect-topology progress
+
+The real waterfall scalar has a genuine pair of degenerate minima in the
+unbiased broken phase. The manuscript now derives the planar kink and its
+flat-space tension,
+`psi_wall=v tanh(mu_eff z/sqrt(2))` and
+`sigma_wall=2 sqrt(2) mu_eff^3/(3 lambda_psi)`, at fixed
+post-threshold background. It also derives the spinodal source for a
+linear tilt `-epsilon_bias psi`, the small-bias vacuum splitting
+`DeltaV ~= 2 epsilon_bias v`, and necessary order-of-magnitude
+conditions for annihilation before wall domination and BBN.
+
+The new `ptum_defects.py` implements the exact tilted-quartic stationary
+minima, the spinodal threshold, the kink tension, and conditional
+annihilation/domination estimates. Seven regression tests cover the
+static kink equation, numerical tension integral, small-bias splitting,
+spinodal disappearance of the false vacuum, zero-bias persistence, the
+necessary bias bound, and the dimension-five operator-to-source mapping.
+
+This is analytic defect-topology progress only. The renormalized
+`<O_SM>`, Wilson coefficients, thermal history and actual bias are not
+specified, and no expanding inhomogeneous network, formation probability,
+wall evolution, backreaction or rescattering has been computed. Gate 5
+therefore remains **NOT MET**. The new tests and manuscript change are
+pending the next CI result.
