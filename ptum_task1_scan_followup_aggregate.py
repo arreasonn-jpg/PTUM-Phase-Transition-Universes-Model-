@@ -184,7 +184,7 @@ def write_markdown_report(report: dict, output: str | Path) -> None:
     lines = [
         "# PTUM long-horizon transient-quartic follow-up",
         "",
-        f"- Validated trajectories: **{summary['validated_trajectories']} / {summary['validated_trajectories']}**",
+        f"- Validated trajectories: **{summary['validated_trajectories']} / {len(report['scan_definition']['expected_trajectory_indices'])}**",
         f"- Horizon: **{report['scan_definition']['horizon_mu_inverse']} mu^-1**",
         f"- Output points per trajectory: **{report['scan_definition']['output_points']}**",
         f"- Late-time quartic classifications: **{summary['late_time_quartic_count']}**",
