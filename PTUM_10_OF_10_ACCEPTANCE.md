@@ -371,3 +371,17 @@ contains 89 Python tests by source count; the new tests and LaTeX
 equations await fresh CI. Gate 5 remains **NOT MET** because the
 actual bias and expanding inhomogeneous defect network are not
 calculated.
+
+
+## 2026-11-14 thermal-bias LaTeX layout correction
+
+Workflow `43586022884` completed successfully on
+`9902041fa8c2dfaf52eab213cfbbd82612e67b58`: 89 Python tests passed,
+all four smoke integrations succeeded, and the 42-page manuscript
+compiled. The final log audit nevertheless found an Overfull
+`\\hbox` at the long inline broken-phase coupling expression in
+the new thermal-bias paragraph. The coupling has been moved to a
+display equation in commit `d9455781f0a643f6c1b2badc199bf2fb6fedcab7`.
+The fresh LaTeX build on that latest source is pending; Gate 10 stays
+PARTIAL until the new log is checked. The previous build also retained
+numerous Underfull `\\hbox` warnings and two float-placement warnings.
