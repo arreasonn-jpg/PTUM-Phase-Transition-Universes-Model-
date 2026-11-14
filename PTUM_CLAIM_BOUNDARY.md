@@ -246,9 +246,9 @@ BBN-safe realization is claimed.
 
 A zero-temperature-subtracted ideal-gas expression is now implemented
 for the finite-temperature scalar condensate of a free equilibrium
-Dirac species in the broken electroweak phase. With fixed mass and
-real coupling $m_f(\psi)=m_f+y_{\psi f}\psi$, it gives the
-conditional thermal linear coefficient in the convention
+Dirac species in the broken electroweak phase. With fixed mass and the diagonal real mass-basis coupling
+$m_f(\psi)=m_f+\operatorname{Re}[(C_f)_{ii}]v_H\psi/(\sqrt2\Lambda)$,
+it gives the conditional thermal linear coefficient in the convention
 $V_{\rm bias}=-\epsilon_{\rm bias}\psi$.
 
 This estimate is not the PTUM bias prediction. It assumes a fixed
