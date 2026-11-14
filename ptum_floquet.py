@@ -149,6 +149,7 @@ def integrate_expanding_mode(
     rtol: float = 1.0e-9,
     atol: float = 1.0e-12,
     max_initial_adiabaticity: float = 0.1,
+    max_final_adiabaticity: float = 0.1,
     background_consistency_tolerance: float = 5.0e-2,
     effective_mass_sq: Iterable[float] | None = None,
     wronskian_tolerance: float = 1.0e-7,
@@ -169,10 +170,13 @@ def integrate_expanding_mode(
     The supplied H(t) history is a consistency check; the mode evolution
     derives H=a_dot/a and Hdot from the same scale-factor spline used
     throughout the integration. The initial state is rejected if
-    Omega_k^2<=0 or if |Omegadot/Omega^2| exceeds the supplied threshold.
-    Intermediate tachyonic intervals are allowed. The final instantaneous
+    Omega_k^2<=0 or if |Omegadot/Omega^2| exceeds the initial threshold.
+    Intermediate tachyonic intervals are allowed. A final instantaneous
     occupation number is reported only when the final canonical frequency
-    is real and positive.
+    is real and positive, the final first-order WKB adiabaticity measure
+    |Omegadot/Omega^2| is below max_final_adiabaticity, and the Wronskian
+    remains within tolerance. Positive frequency alone is not sufficient
+    to define an adiabatic particle basis.
 
     This is a linear mode calculation on a prescribed background. It
     does not include mode backreaction, rescattering, nonlinear
@@ -202,7 +206,8 @@ def integrate_expanding_mode(
         raise ValueError("scale factor must remain positive")
     scalar_parameters = np.asarray(
         [k_comoving, m_chi, g_dm, rtol, atol, max_initial_adiabaticity,
-         background_consistency_tolerance, wronskian_tolerance],
+         max_final_adiabaticity, background_consistency_tolerance,
+         wronskian_tolerance],
         dtype=float,
     )
     if not np.all(np.isfinite(scalar_parameters)):
@@ -328,8 +333,18 @@ def integrate_expanding_mode(
     final_omega_sq = float(omega_canonical_sq[-1])
     if final_omega_sq > 0.0:
         final_omega = float(np.sqrt(final_omega_sq))
+        omega_dot_final = float(
+            omega_sq_spline.derivative()(t_arr[-1]) / (2.0 * final_omega)
+        )
+        final_adiabaticity = float(
+            abs(omega_dot_final)
+            / max(final_omega**2, np.finfo(float).tiny)
+        )
         final_frequency_valid = True
-        if wronskian_valid:
+        final_adiabaticity_valid = (
+            final_adiabaticity <= max_final_adiabaticity
+        )
+        if wronskian_valid and final_adiabaticity_valid:
             occupation = float(
                 (abs(X_dot[-1]) ** 2 + final_omega_sq * abs(X[-1]) ** 2)
                 / (2.0 * final_omega)
@@ -342,8 +357,10 @@ def integrate_expanding_mode(
             particle_number_valid = False
     else:
         final_omega = float("nan")
-        occupation = float("nan")
+        final_adiabaticity = float("nan")
         final_frequency_valid = False
+        final_adiabaticity_valid = False
+        occupation = float("nan")
         particle_number_valid = False
 
     return {
@@ -360,6 +377,9 @@ def integrate_expanding_mode(
         "wronskian_valid": bool(wronskian_valid),
         "wronskian_tolerance": float(wronskian_tolerance),
         "final_frequency_valid": final_frequency_valid,
+        "final_adiabaticity": final_adiabaticity,
+        "max_final_adiabaticity": float(max_final_adiabaticity),
+        "final_adiabaticity_valid": bool(final_adiabaticity_valid),
         "particle_number_valid": bool(particle_number_valid),
         "final_omega": final_omega,
         "particle_number": occupation,
@@ -379,6 +399,7 @@ def integrate_expanding_spectrum(
     rtol: float = 1.0e-9,
     atol: float = 1.0e-12,
     max_initial_adiabaticity: float = 0.1,
+    max_final_adiabaticity: float = 0.1,
     effective_mass_sq: Iterable[float] | None = None,
     wronskian_tolerance: float = 1.0e-7,
 ) -> dict[str, object]:
@@ -418,6 +439,7 @@ def integrate_expanding_spectrum(
             rtol=rtol,
             atol=atol,
             max_initial_adiabaticity=max_initial_adiabaticity,
+            max_final_adiabaticity=max_final_adiabaticity,
             effective_mass_sq=effective_mass_sq,
             wronskian_tolerance=wronskian_tolerance,
         )
@@ -432,8 +454,11 @@ def integrate_expanding_spectrum(
     all_wronskians_valid = all(
         bool(mode["wronskian_valid"]) for mode in mode_results
     )
+    all_particle_numbers_valid = all(
+        bool(mode["particle_number_valid"]) for mode in mode_results
+    )
     if (all_final_frequencies_valid and all_wronskians_valid
-            and np.all(np.isfinite(occupations))):
+            and all_particle_numbers_valid and np.all(np.isfinite(occupations))):
         n_comoving = float(
             np.trapezoid(k_arr**2 * occupations, x=k_arr) / (2.0 * np.pi**2)
         )
@@ -450,6 +475,12 @@ def integrate_expanding_spectrum(
         "n_physical_finite_band": n_physical,
         "all_final_frequencies_valid": all_final_frequencies_valid,
         "all_wronskians_valid": all_wronskians_valid,
+        "all_particle_numbers_valid": all_particle_numbers_valid,
+        "max_final_adiabaticity": float(max(
+            (mode["final_adiabaticity"] for mode in mode_results
+             if np.isfinite(mode["final_adiabaticity"])),
+            default=float("nan"),
+        )),
         "finite_band_only": True,
         "momentum_range": (float(k_arr[0]), float(k_arr[-1])),
     }
