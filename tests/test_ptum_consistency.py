@@ -227,11 +227,11 @@ def test_cycle_averaged_equation_of_state_is_ratio_of_averages():
     density = np.array([1.0, 2.0, 6.0, 2.0, 1.0])
     w_avg, t_avg = compute_time_averaged_w(t, pressure, density, psi_dot)
 
-    # The first complete half-cycle uses indices 1, 2, 3:
-    # <p>/<rho> = (4+3+2)/(2+6+2) = 0.9.
-    assert w_avg[0] == pytest.approx(0.9)
-    assert t_avg[0] == pytest.approx(2.0)
-    # This differs from mean(p/rho), which would be 1.0 here.
+    # Interpolated turning points are t=1.5 and t=3.5. Trapezoidal
+    # time integrals give integral(p)=5 and integral(rho)=5.5.
+    assert w_avg[0] == pytest.approx(5.0 / 5.5)
+    assert t_avg[0] == pytest.approx(2.5)
+    # This remains a ratio of integrals, not a mean of instantaneous p/rho.
     assert w_avg[0] != pytest.approx(np.mean(pressure[1:4] / density[1:4]))
 
 
