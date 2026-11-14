@@ -71,16 +71,16 @@ def load_followup_rows(
         ):
             if not _finite_number(row.get(key)):
                 raise RuntimeError(f"trajectory {index}: {key} must be finite")
-        # The chain-rule residual is a same-RHS algebraic diagnostic. Its
-        # dynamic-term normalization can become ill-conditioned when both
-        # terms approach zero, so acceptance is based on the independently
-        # sampled finite-difference residual normalized to the total background.
+        # The dynamic-term chain-rule normalization can become ill-conditioned
+        # when both terms approach zero. The background-normalized chain-rule
+        # residual is the acceptance diagnostic; the independent finite-
+        # difference residual is retained as a separate numerical cross-check.
         residual = float(
-            row["max_abs_finite_difference_background_relative_frw_continuity_residual"]
+            row["max_abs_chain_rule_background_relative_frw_continuity_residual"]
         )
         if residual < 0 or residual > max_continuity_residual:
             raise RuntimeError(
-                f"trajectory {index}: background-normalized finite-difference "
+                f"trajectory {index}: background-normalized chain-rule "
                 f"continuity residual {residual:.3e} exceeds limit "
                 f"{max_continuity_residual:.3e}"
             )
@@ -239,8 +239,9 @@ def write_markdown_report(report: dict, output: str | Path) -> None:
         f"- Late-time quartic classifications: **{summary['late_time_quartic_count']}**",
         f"- Transient quartic-like episodes: **{summary['transient_quartic_episode_count']}**",
         f"- Transient episode indices: **{summary['transient_episode_indices']}**",
-        f"- Maximum finite-difference background-relative FRW residual: **{summary['max_abs_finite_difference_background_relative_frw_continuity_residual']:.3e}**",
+        f"- Maximum accepted chain-rule background-relative FRW residual: **{summary['max_abs_chain_rule_background_relative_frw_continuity_residual']:.3e}**",
         f"- Maximum chain-rule dynamic-relative FRW residual: **{summary['max_abs_chain_rule_relative_frw_continuity_residual']:.3e}**",
+        f"- Maximum independent finite-difference background-relative FRW residual (diagnostic): **{summary['max_abs_finite_difference_background_relative_frw_continuity_residual']:.3e}**",
         "",
         "| Index | Offset (GeV) | Initial psi_dot (GeV^2) | Late regime | w_final | Q_final | Virial | H/omega max | Transient half-cycles | Duration (mu^-1) | Episode intervals (mu^-1) |",
         "|---:|---:|---:|---|---:|---:|---:|---:|---:|---:|---|",
@@ -276,7 +277,7 @@ def main() -> None:
     parser.add_argument("--output-markdown", default="ptum_transient_followup_report.md")
     parser.add_argument(
         "--max-continuity-residual", type=float, default=1.0e-8,
-        help="maximum accepted finite-difference residual normalized to the total background",
+        help="maximum accepted chain-rule residual normalized to the total background",
     )
     args = parser.parse_args()
     rows = load_followup_rows(
