@@ -154,6 +154,22 @@ def test_quartic_virial_time_integral_converges_with_output_sampling_density():
     assert abs(estimates[-1] - estimates[-2]) < abs(estimates[-2] - estimates[-3])
 
 
+def test_cycle_averaged_w_time_integral_converges_with_output_sampling_density():
+    estimates = []
+    for count in (321, 641, 1281):
+        t = np.linspace(0.0, 8.0 * np.pi, count)
+        psi_dot = np.cos(t)
+        pressure = np.sin(t) ** 2
+        density = 1.0 + np.sin(t) ** 2
+        w_avg, _ = compute_time_averaged_w(t, pressure, density, psi_dot)
+        assert w_avg.size > 0
+        estimates.append(float(np.median(w_avg)))
+
+    # Over a complete half-cycle: integral(sin^2)/integral(1+sin^2) = 1/3.
+    assert estimates[-1] == pytest.approx(1.0 / 3.0, rel=2.0e-5)
+    assert abs(estimates[-1] - estimates[-2]) < abs(estimates[-2] - estimates[-3])
+
+
 def test_vacuum_dominated_near_static_background_satisfies_frw_continuity_diagnostic():
     p = PTUMParameters(V0=1.0e50, m_psi=1.0e5, lambda_psi=0.1)
     ic = InitialConditions(
