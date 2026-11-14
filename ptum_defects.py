@@ -102,32 +102,29 @@ def _tilted_minima(mu_eff: float, lambda_psi: float, epsilon_bias: float):
             "bias_ratio_to_spinodal": b / b_critical,
         }
 
-    roots = np.roots([1.0, 0.0, -1.0, -b])
-    real_roots = sorted(
-        float(root.real)
-        for root in roots
-        if abs(float(root.imag)) <= 1.0e-9
-        and 3.0 * float(root.real) ** 2 - 1.0 > 0.0
-    )
-    if len(real_roots) != 2:
-        raise ArithmeticError("tilted quartic did not yield two metastable minima")
+    # Parameterize the three real stationary points with
+    # delta = (1/3) asin(3 sqrt(3) b / 2). This is better conditioned
+    # than a generic cubic root finder when b is far below machine
+    # precision relative to the O(1) locations of the two minima.
+    argument = np.clip(1.5 * np.sqrt(3.0) * b, 0.0, 1.0)
+    delta = np.arcsin(argument) / 3.0
+    y_true = 2.0 / np.sqrt(3.0) * np.cos(np.pi / 6.0 - delta)
+    y_false = -2.0 / np.sqrt(3.0) * np.cos(np.pi / 6.0 + delta)
 
-    def potential(y: float) -> float:
-        return 0.25 * y**4 - 0.5 * y**2 - b * y
+    # Hellmann-Feynman: d(f_false - f_true)/db = y_true - y_false.
+    # Integrating this identity gives a cancellation-free closed form.
+    # Directly subtracting the two O(mu_eff^4/lambda_psi) potential
+    # values loses the entire bias when b is cosmologically tiny.
+    delta_f = (
+        np.sin(2.0 * delta) + 0.5 * np.sin(4.0 * delta)
+    ) / np.sqrt(3.0)
+    vacuum_bias = delta_f * mu_eff**4 / lambda_psi
 
-    minima = [
-        {
-            "psi": y * v,
-            "potential": potential(y) * mu_eff**4 / lambda_psi,
-        }
-        for y in real_roots
-    ]
-    minima.sort(key=lambda item: item["potential"])
     return {
         "metastable_vacuum_exists": True,
-        "true_minimum": minima[0]["psi"],
-        "false_minimum": minima[1]["psi"],
-        "vacuum_bias": minima[1]["potential"] - minima[0]["potential"],
+        "true_minimum": y_true * v,
+        "false_minimum": y_false * v,
+        "vacuum_bias": vacuum_bias,
         "epsilon_critical": epsilon_critical,
         "bias_ratio_to_spinodal": b / b_critical,
     }
