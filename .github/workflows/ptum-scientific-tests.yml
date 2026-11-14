@@ -82,7 +82,7 @@ jobs:
           retention-days: 30
 
   aggregate-waterfall-scan:
-    if: always() && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/independent-trajectory-scan-')))
+    if: always() && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/independent-trajectory-scan-'))))
     needs: [full-waterfall-scan]
     runs-on: ubuntu-latest
     timeout-minutes: 10
