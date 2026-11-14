@@ -1353,6 +1353,32 @@ def test_small_explicit_bias_splits_the_two_vacua_by_two_epsilon_v():
     assert result["vacuum_bias"] == pytest.approx(expected, rel=2.0e-6)
 
 
+def test_tilted_quartic_bias_matches_stationary_potential_at_moderate_bias():
+    from ptum_defects import domain_wall_bias_diagnostics
+
+    mu = 1.0e4
+    lam = 0.1
+    epsilon_critical = 2.0 * mu**3 / (3.0 * np.sqrt(3.0 * lam))
+    epsilon = 0.35 * epsilon_critical
+    result = domain_wall_bias_diagnostics(
+        mu, lam, epsilon, hubble_bbn=1.0e-20,
+        reduced_planck_mass=2.435e18,
+    )
+    v = mu / np.sqrt(lam)
+    y_true = result["true_minimum"] / v
+    y_false = result["false_minimum"] / v
+    b = epsilon * np.sqrt(lam) / mu**3
+
+    def dimensionless_potential(y):
+        return 0.25 * y**4 - 0.5 * y**2 - b * y
+
+    direct = (dimensionless_potential(y_false)
+              - dimensionless_potential(y_true)) * mu**4 / lam
+    assert result["vacuum_bias"] == pytest.approx(direct, rel=2.0e-13)
+    assert result["true_minimum"] > 0.0
+    assert result["false_minimum"] < 0.0
+
+
 def test_domain_wall_bias_spinodal_removes_false_vacuum():
     from ptum_defects import domain_wall_bias_diagnostics
 
@@ -1392,7 +1418,14 @@ def test_domain_wall_bias_required_source_can_annihilate_before_bbn():
     threshold = domain_wall_bias_diagnostics(epsilon_bias=0.0, **kwargs)
     epsilon = 2.0 * threshold["required_linear_source_for_bbn_and_domination"]
     result = domain_wall_bias_diagnostics(epsilon_bias=epsilon, **kwargs)
+    expected_linear_bias = 2.0 * epsilon * result["vev"]
     assert result["small_bias_tension_approx_valid"]
+    # Here epsilon/epsilon_crit is about 1e-24. Direct subtraction of
+    # the two O(mu^4/lambda) minima rounds their splitting to exactly zero.
+    assert result["vacuum_bias"] == pytest.approx(expected_linear_bias, rel=2.0e-14)
+    assert result["hubble_annihilation_estimate"] == pytest.approx(
+        expected_linear_bias / result["wall_tension"], rel=2.0e-14
+    )
     assert result["annihilation_before_bbn"]
     assert result["annihilation_before_wall_domination"]
 
