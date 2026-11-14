@@ -150,11 +150,29 @@ def main() -> None:
                 )
 
             residual = row.get("continuity_residual_finite_difference_relative")
+            background_residual = row.get(
+                "continuity_residual_finite_difference_background_relative"
+            )
+            chain_rule_background_residual = row.get(
+                "continuity_residual_background_relative"
+            )
             if residual is None:
                 raise KeyError("missing continuity_residual_finite_difference_relative")
+            if background_residual is None:
+                raise KeyError(
+                    "missing continuity_residual_finite_difference_background_relative"
+                )
+            if chain_rule_background_residual is None:
+                raise KeyError("missing continuity_residual_background_relative")
             classification = row.get("classification", {})
             comparisons[str(count)] = {
                 "finite_difference_residual": finite_residual_summary(residual),
+                "finite_difference_background_residual": finite_residual_summary(
+                    background_residual
+                ),
+                "chain_rule_background_residual": finite_residual_summary(
+                    chain_rule_background_residual
+                ),
                 "classification": classification,
                 "classification_difference_vs_finest": {
                     "late_time_regime_match": (
