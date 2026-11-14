@@ -140,6 +140,7 @@ def integrate_waterfall_mode(
     rtol: float = 1.0e-9,
     atol: float = 1.0e-12,
     max_initial_adiabaticity: float = 0.1,
+    max_final_adiabaticity: float = 0.1,
     wronskian_tolerance: float = 1.0e-7,
 ) -> dict[str, object]:
     """Evolve one linear psi_k mode, allowing a tachyonic mass interval."""
@@ -158,6 +159,7 @@ def integrate_waterfall_mode(
         rtol=rtol,
         atol=atol,
         max_initial_adiabaticity=max_initial_adiabaticity,
+        max_final_adiabaticity=max_final_adiabaticity,
         effective_mass_sq=mass_sq,
         wronskian_tolerance=wronskian_tolerance,
     )
@@ -176,6 +178,7 @@ def integrate_waterfall_spectrum(
     rtol: float = 1.0e-9,
     atol: float = 1.0e-12,
     max_initial_adiabaticity: float = 0.1,
+    max_final_adiabaticity: float = 0.1,
     wronskian_tolerance: float = 1.0e-7,
 ) -> dict[str, object]:
     """Integrate a finite dimensionless momentum band of linear waterfall modes."""
@@ -194,6 +197,7 @@ def integrate_waterfall_spectrum(
         rtol=rtol,
         atol=atol,
         max_initial_adiabaticity=max_initial_adiabaticity,
+        max_final_adiabaticity=max_final_adiabaticity,
         effective_mass_sq=mass_sq,
         wronskian_tolerance=wronskian_tolerance,
     )
@@ -215,6 +219,7 @@ def converge_waterfall_band_resolution(
     rtol: float = 1.0e-9,
     atol: float = 1.0e-12,
     max_initial_adiabaticity: float = 0.1,
+    max_final_adiabaticity: float = 0.1,
     wronskian_tolerance: float = 1.0e-7,
 ) -> dict[str, object]:
     """Check quadrature resolution on a fixed finite momentum band.
@@ -236,7 +241,8 @@ def converge_waterfall_band_resolution(
         raise ValueError("resolutions must be at least two strictly increasing integers >= 4")
     scalars = np.asarray(
         [k_min_over_mu, k_max_over_mu, relative_tolerance, rtol, atol,
-         max_initial_adiabaticity, wronskian_tolerance],
+         max_initial_adiabaticity, max_final_adiabaticity,
+         wronskian_tolerance],
         dtype=float,
     )
     if not np.all(np.isfinite(scalars)):
@@ -256,6 +262,7 @@ def converge_waterfall_band_resolution(
             rtol=rtol,
             atol=atol,
             max_initial_adiabaticity=max_initial_adiabaticity,
+            max_final_adiabaticity=max_final_adiabaticity,
             wronskian_tolerance=wronskian_tolerance,
         )
         all_wronskians_valid = (
