@@ -1498,3 +1498,14 @@ def test_thermal_fermion_bias_rejects_invalid_degeneracy_and_temperature():
         thermal_fermion_bias([(0.5, 0.2, 1.5)], temperature=1.0)
     with pytest.raises(ValueError):
         thermal_fermion_bias([(0.5, 0.2, 1)], temperature=-1.0)
+
+
+def test_manuscript_thermal_domain_wall_bias_keeps_ideal_gas_scope_explicit():
+    from pathlib import Path
+
+    manuscript = Path("main.tex").read_text(encoding="utf-8")
+    assert "eq:ptum_thermal_fermion_condensate" in manuscript
+    assert "eq:ptum_thermal_bias" in manuscript
+    assert "ideal-gas contribution only" in manuscript
+    assert "electroweak crossover" in manuscript
+    assert "not a prediction of the PTUM bias or" in manuscript
