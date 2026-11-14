@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        trajectory: [94, 98]
+        trajectory: [0, 30, 50, 94, 98]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
