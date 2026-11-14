@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Compare IVP solvers on one exact deterministic PTUM scan trajectory."""
+"""Compare IVP solvers on one exact deterministic PTUM scan trajectory.
+
+This is a diagnostic only: it never changes physical parameters or equations.
+"""
 # Diagnostic baseline: preserve scan initial conditions and physical parameters.
 import argparse
 import warnings
