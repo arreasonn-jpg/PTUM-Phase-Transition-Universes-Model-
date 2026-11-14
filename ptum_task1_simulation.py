@@ -316,12 +316,20 @@ def run_simulation(params: PTUMParameters,
                    t_span: Tuple[float, float],
                    t_eval: Optional[np.ndarray] = None,
                    rtol: float = 1e-9,
-                   atol: float = 1e-12) -> Dict:
+                   atol: float = 1e-12,
+                   max_step: float = 0.05) -> Dict:
     """
     Run a single background simulation.
     
     Returns dictionary with time series and diagnostics.
     """
+    if not np.isfinite(rtol) or rtol <= 0.0:
+        raise ValueError("rtol must be finite and positive")
+    if not np.isfinite(atol) or atol <= 0.0:
+        raise ValueError("atol must be finite and positive")
+    if not np.isfinite(max_step) or max_step <= 0.0:
+        raise ValueError("max_step must be finite and positive")
+
     # Integrate in dimensionless variables.  The physical state contains
     # components separated by 17+ orders of magnitude (GeV fields and
     # GeV^2 velocities); integrating that raw vector makes the adaptive
@@ -380,7 +388,7 @@ def run_simulation(params: PTUMParameters,
         atol=atol,
         method='DOP853',
         dense_output=False,
-        max_step=0.05,
+        max_step=max_step,
     )
 
     if not sol.success:
@@ -502,6 +510,7 @@ def run_simulation(params: PTUMParameters,
     
     return {
         'success': True,
+        'solver_settings': {'method': 'DOP853', 'rtol': rtol, 'atol': atol, 'max_step_dimensionless': max_step},
         't': t,
         'Phi': Phi,
         'Phi_dot': Phi_dot,
@@ -803,7 +812,10 @@ def run_parameter_scan(params: PTUMParameters,
                        phi_dot_init_by_offset: Optional[Dict[float, float]] = None,
                        progress_interval: int = 0,
                        progress_label: str = "scan",
-                       result_callback: Optional[Callable[[Dict], None]] = None
+                       result_callback: Optional[Callable[[Dict], None]] = None,
+                       rtol: float = 1e-9,
+                       atol: float = 1e-12,
+                       max_step: float = 0.05
                        ) -> List[Dict]:
     """
     Run parameter scan over initial conditions.
@@ -848,7 +860,10 @@ def run_parameter_scan(params: PTUMParameters,
                 )
                 
                 try:
-                    result = run_simulation(params, ic, t_span, t_eval)
+                    result = run_simulation(
+                        params, ic, t_span, t_eval,
+                        rtol=rtol, atol=atol, max_step=max_step
+                    )
                     
                     # Classify outcome
                     classification = classify_outcome(result, params)
