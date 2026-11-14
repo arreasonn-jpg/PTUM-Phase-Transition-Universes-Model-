@@ -593,18 +593,22 @@ def test_quadratic_virial_ratio_is_unity_for_harmonic_oscillator():
     p = PTUMParameters()
     phi = 1.1 * p.Phi_c
     mass = np.sqrt(meff_sq_psi(phi, p))
-    t = np.linspace(0.0, 20.0 * np.pi / mass, 4001)
     amplitude = 1.0e10
-    psi = amplitude * np.cos(mass * t)
-    psi_dot = -mass * amplitude * np.sin(mass * t)
-    Phi = np.full_like(t, phi)
+    estimates = []
+    for count in (1001, 2001, 4001):
+        t = np.linspace(0.0, 20.0 * np.pi / mass, count)
+        psi = amplitude * np.cos(mass * t)
+        psi_dot = -mass * amplitude * np.sin(mass * t)
+        Phi = np.full_like(t, phi)
 
-    ratio = compute_quadratic_virial_ratio(t, psi, psi_dot, Phi, p)
-    valid = ratio[np.isfinite(ratio)]
-    assert len(valid) > 0
-    # Turning points are represented by the nearest output-grid sample;
-    # with 100 samples per half-cycle the expected endpoint bias is about 1%.
-    assert np.mean(valid) == pytest.approx(1.0, rel=1.2e-2)
+        ratio = compute_quadratic_virial_ratio(t, psi, psi_dot, Phi, p)
+        valid = ratio[np.isfinite(ratio)]
+        assert len(valid) > 0
+        estimates.append(float(np.mean(valid)))
+
+    # Time-integrated complete half-cycles recover the harmonic virial theorem.
+    assert estimates == pytest.approx([1.0] * 3, rel=2.0e-8)
+    assert max(estimates) - min(estimates) < 2.0e-8
 
 
 def test_quadratic_virial_ratio_is_unavailable_for_tachyonic_mass():
