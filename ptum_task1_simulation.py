@@ -311,6 +311,46 @@ def background_equations(t: float, y: np.ndarray, params: PTUMParameters) -> np.
     return np.array([Phi_dot, Phi_ddot, psi_dot, psi_ddot])
 
 
+def finite_difference_continuity_diagnostic(
+    t: np.ndarray,
+    delta_rho: np.ndarray,
+    H: np.ndarray,
+    rho_plus_p: np.ndarray,
+) -> Dict[str, np.ndarray]:
+    """Estimate FRW continuity from sampled histories, independently of the ODE RHS.
+
+    delta_rho may have any time-independent energy offset removed. This is
+    essential for vacuum-dominated trajectories, where differentiating the
+    full ~V0 density can erase the much smaller evolving contribution in
+    floating-point arithmetic.
+    """
+    t = np.asarray(t, dtype=float)
+    delta_rho = np.asarray(delta_rho, dtype=float)
+    H = np.asarray(H, dtype=float)
+    rho_plus_p = np.asarray(rho_plus_p, dtype=float)
+    if (t.ndim != 1 or len(t) < 3 or delta_rho.shape != t.shape
+            or H.shape != t.shape or rho_plus_p.shape != t.shape):
+        raise ValueError("continuity diagnostic requires matching 1D arrays with at least 3 samples")
+    if (not all(np.all(np.isfinite(x)) for x in (t, delta_rho, H, rho_plus_p))
+            or np.any(np.diff(t) <= 0.0)):
+        raise ValueError("continuity diagnostic inputs must be finite with strictly increasing time")
+    rho_dot_fd = np.gradient(delta_rho, t, edge_order=2)
+    expansion = 3.0 * H * rho_plus_p
+    residual = rho_dot_fd + expansion
+    scale = np.abs(rho_dot_fd) + np.abs(expansion)
+    relative = np.divide(
+        residual, scale,
+        out=np.full_like(residual, np.nan),
+        where=scale > np.finfo(float).tiny,
+    )
+    return {
+        "rho_dot": rho_dot_fd,
+        "expansion_term": expansion,
+        "residual": residual,
+        "relative": relative,
+    }
+
+
 def run_simulation(params: PTUMParameters, 
                    ic: InitialConditions,
                    t_span: Tuple[float, float],
@@ -472,19 +512,25 @@ def run_simulation(params: PTUMParameters,
         Phi, psi, Phi_dot, params
     )
 
-    # Keep the sampled finite-difference estimate as a separate convergence
-    # diagnostic. It is expected to be noisy when rho is vacuum dominated.
-    rho_dot_finite_difference = np.gradient(rho_total_arr, t)
-    continuity_residual_finite_difference = rho_dot_finite_difference + expansion_term
-    continuity_scale_finite_difference = (
-        np.abs(rho_dot_finite_difference) + np.abs(expansion_term)
+    # Independent sampled-history check: finite-difference the evolving
+    # energy after removing only its time-independent initial offset. Compute
+    # Delta V with expm1 to avoid cancellation against the large plateau V0.
+    x_initial = params.lambda_phi * (Phi[0] / M_PL)**2
+    x_delta = params.lambda_phi * (Phi / M_PL)**2 - x_initial
+    delta_veff = (
+        params.V0 * np.exp(-x_initial) * (-np.expm1(-x_delta))
     )
-    continuity_residual_finite_difference_relative = np.divide(
-        continuity_residual_finite_difference,
-        continuity_scale_finite_difference,
-        out=np.full_like(continuity_residual_finite_difference, np.nan),
-        where=continuity_scale_finite_difference > 0.0
+    delta_rho_total = (
+        0.5 * (Phi_dot**2 - Phi_dot[0]**2)
+        + delta_veff
+        + (rho_psi_arr - rho_psi_arr[0])
     )
+    fd_continuity = finite_difference_continuity_diagnostic(
+        t, delta_rho_total, H, Phi_dot**2 + psi_dot**2
+    )
+    rho_dot_finite_difference = fd_continuity["rho_dot"]
+    continuity_residual_finite_difference = fd_continuity["residual"]
+    continuity_residual_finite_difference_relative = fd_continuity["relative"]
     continuity_residual_finite_difference_background_relative = (
         continuity_residual_finite_difference / background_energy_scale
     )
