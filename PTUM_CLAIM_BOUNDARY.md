@@ -219,3 +219,24 @@ and received manifest commit
 artifact has yet been inspected or validated. The full scan remains
 a homogeneous post-threshold sensitivity study, not a quantum-seeded
 inhomogeneous waterfall or a relic calculation.
+
+
+## 2026-11-14 tilted-domain-wall diagnostic boundary
+
+The analytic defect module now returns the dimensionful locations of the
+true and false stationary minima for a tilted quartic potential. These
+are algebraic stationary points of a frozen-background potential; they
+are not a prediction of the bias. At or above the spinodal source the
+metastable minimum no longer exists and both minimum-location fields are
+reported as unavailable.
+
+The bias source
+\[
+\epsilon_{\rm bias}=|C|\,|\langle\mathcal O_{\rm SM}\rangle|/\Lambda
+\]
+still depends on a renormalized operator expectation value, Wilson
+coefficient, cutoff, and thermal history that have not been calculated
+for PTUM. The kink tension and annihilation/domination estimates remain
+conditional order-of-magnitude diagnostics. No defect formation
+probability, network scaling solution, annihilation history, or
+BBN-safe realization is claimed.
