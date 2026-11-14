@@ -215,6 +215,7 @@ def integrate_expanding_mode(
     if k_comoving < 0.0 or m_chi < 0.0:
         raise ValueError("wavenumber and mass must be non-negative")
     if (rtol <= 0.0 or atol <= 0.0 or max_initial_adiabaticity <= 0.0
+            or max_final_adiabaticity <= 0.0
             or background_consistency_tolerance <= 0.0
             or wronskian_tolerance <= 0.0):
         raise ValueError("solver tolerances and consistency thresholds must be positive")
