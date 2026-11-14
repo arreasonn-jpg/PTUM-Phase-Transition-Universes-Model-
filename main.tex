@@ -4,6 +4,7 @@
 \usepackage{lmodern}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{mathtools}
+\usepackage{mathrsfs} % provides \mathscr for the covariant spinor derivative
 \usepackage{bm}
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -45,7 +46,17 @@ with a Unified Dark Sector}
 \date{}
 
 \abstract{%
-The dark sector of the standard cosmological model comprises dark matter, dark energy, and possible dark radiation, whose common origin remains unexplained. We present the Phase Transition Universes Model (PTUM), a discharge-based cosmological creation scenario where a scalar quantum fuel field $\Phi$ accumulates, reaches a critical threshold, and undergoes a tachyonic transition. Within this effective description, the discharge event leaves behind a dark-matter candidate sector ($\chi$), a residual dark-energy sector ($\Phi_{\rm res}$), and a relativistic proxy-fluid dark radiation component (pfd, $\psi$). A falsifiable prediction of PTUM is that, \emph{within the effective linear proxy-fluid description}, the pfd component carries $w=1/3$, $c_s^2=1/3$, and zero anisotropic stress ($\sigma=0$). This produces no neutrino-induced CMB acoustic peak phase shift, distinguishing it from free-streaming dark radiation---a signature that may be tested at high significance by next-generation CMB experiments such as CMB-S4, depending on the realized pfd abundance. The authors report implementing the effective phenomenological system in \texttt{CLASS} at background and perturbation levels \emph{(modified code not yet public)}. The creation sector supports a plateau-type slow-roll phase compatible with current CMB constraints, fixing the discharge scale to $V_0^{1/4}\sim 10^{15}$--$10^{16}\,\mathrm{GeV}$. The dark-energy sector admits a broad near-$\Lambda$ viable region with $w_{\rm DE}\approx -1$. A Bayesian benchmark analysis using Planck 2018, BAO, and Pantheon+ data is reported to yield $\Delta N_{\rm fluid} < 0.31$ at $95\%$ credibility \emph{(author-reported; chains not yet public)}. Model comparison is reported to give $\Delta\chi^2 = +0.26$ and $\Delta\mathrm{AIC}=2.26$; current data therefore show a weak preference for $\Lambda$CDM while leaving PTUM viable as a falsifiable effective extension. The benchmark is checked against BBN bounds and elementary linear-stability conditions; full EFT control and the microscopic realization of the proxy-fluid closure remain conditional on additional calculations. \textbf{Critical caveat:} Numerical integration of the coupled background equations with the benchmark parameters ($V_0\sim10^{64}\,\mathrm{GeV}^4$, $H_*\sim10^{13}\,\mathrm{GeV}$) shows the system is overdamped ($3H/(2\mu)\approx 25$); the quartic-dominated regime with $w_\psi=1/3$ is \emph{not achieved} with these parameters. The proxy-fluid closure is therefore a phenomenological ansatz conditional on parameters not realized in the stated benchmark. The formulation should be read as an effective phenomenological framework rather than as a first-principles derivation of the pre-discharge background, a solution of the cosmological-constant hierarchy, or a UV completion.%
+The dark sector of the standard cosmological model comprises dark matter, dark energy, and possible dark radiation, whose common origin remains unexplained. We present the Phase Transition Universes Model (PTUM), an effective discharge-based cosmological scenario in which a scalar fuel field $\Phi$ rolls toward a critical threshold and triggers a tachyonic waterfall in a proxy field $\psi$. The framework parametrizes candidate dark-matter ($\chi$), residual dark-energy-like ($\Phi_{\rm res}$), and proxy-fluid dark-radiation sectors; their microscopic production and energy partition are not yet established by the present homogeneous calculation. A falsifiable prediction of PTUM is that, \emph{within the effective linear proxy-fluid description}, the pfd component carries $w=1/3$, $c_s^2=1/3$, and zero anisotropic stress ($\sigma=0$). This produces no neutrino-induced CMB acoustic peak phase shift, distinguishing it from free-streaming dark radiation---a signature that may be tested at high significance by next-generation CMB experiments such as CMB-S4, depending on the realized pfd abundance. The authors report implementing the effective phenomenological system in \texttt{CLASS} at background and perturbation levels \emph{(modified code not yet public)}. The creation sector supports a plateau-type slow-roll phase compatible with current CMB constraints, fixing the discharge scale to $V_0^{1/4}\sim 10^{15}$--$10^{16}\,\mathrm{GeV}$. The dark-energy sector admits a broad near-$\Lambda$ viable region with $w_{\rm DE}\approx -1$. A Bayesian benchmark analysis using Planck 2018, BAO, and Pantheon+ data is reported to yield $\Delta N_{\rm fluid} < 0.31$ at $95\%$ credibility \emph{(author-reported; chains not yet public)}. Model comparison is reported to give $\Delta\chi^2\equiv\chi^2_{\rm PTUM}-\chi^2_{\Lambda\rm CDM}=+0.26$ and $\Delta\mathrm{AIC}=2.26$; current data therefore show a weak preference for $\Lambda$CDM while leaving PTUM viable as a falsifiable effective extension. The benchmark is reported to satisfy BBN bounds and elementary linear-stability checks (author-reported); full EFT control and the microscopic realization of the proxy-fluid closure remain conditional on additional calculations. \textbf{Critical caveat:} For the exact threshold match
+$\Phi_c=\Phi_{\rm end}^{(H)}\simeq0.986228M_{\rm Pl}$ at
+$\lambda_\Phi=0.02$, the potential-dominated local estimate gives
+$3H_{c,V}/(2\mu)\simeq3.50$ using the potential-only
+Hubble estimate, while including the exact kinetic contribution at
+$\epsilon_H=1$ gives $3H_c/(2\mu)\simeq4.29$. The plateau estimate
+is $3H_*/(2\mu)\simeq25$. All indicate an overdamped benchmark, but
+the actual transition still requires the coupled background
+solution. A microscopic quartic proxy-fluid regime has not yet been
+established, so the proxy-fluid closure remains phenomenological
+pending the revised high-resolution scan and inhomogeneous dynamics. The formulation should be read as an effective phenomenological framework rather than as a first-principles derivation of the pre-discharge background, a solution of the cosmological-constant hierarchy, or a UV completion.%
 } % abstract'ın kapanış parantezi
 \PACS{
       {98.80.Cq}{Particle-theory and field-theory models of the early Universe} \and
@@ -94,9 +105,9 @@ matter and dark energy as independent sectors added to a pre-existing
 cosmological framework, PTUM proposes a discharge-based creation
 mechanism in which \emph{all} dark-sector components arise from a
 single cosmogonic event. In this picture, a scalar quantum fuel field
-$\Phi$ accumulates in a metastable multiverse-like background and,
-once a critical threshold is reached, undergoes a tachyonic transition
-that activates string-like proxy modes. The resulting discharge is modeled as
+$\Phi$ evolves along a metastable background trajectory and, when it
+rolls below a critical threshold, triggers a tachyonic waterfall in
+the proxy field. The resulting discharge is modeled as
 separating into:
 
 \begin{itemize}
@@ -133,26 +144,20 @@ depending on the realized pfd abundance, making PTUM a concretely
 testable cosmological framework.
 
 \paragraph{Critical caveat on the proxy-fluid closure.}
-The proxy-fluid closure $w=1/3$, $c_s^2=1/3$, $\sigma=0$ is a
-phenomenological ansatz that assumes a coherent, quartic-dominated
-oscillation regime with $\omega\gg H$ and negligible energy transfer.
-Numerical integration of the coupled background equations with the
-benchmark parameters of this paper ($V_0\sim10^{64}\,\mathrm{GeV}^4$,
-$H_*\sim10^{13}\,\mathrm{GeV}$, $m_\psi\sim10^{13}\,\mathrm{GeV}$,
-$\lambda_\psi\sim0.1$) shows the system is \textbf{overdamped}:
-$3H/(2\mu)\approx 25\gg1$. The field remains at $\psi=0$ (the top of
-the barrier) with $w_\psi=0$; the quartic regime is \textbf{not
-achieved}. Achieving the quartic regime requires $V_0\lesssim10^{58}
-\,\mathrm{GeV}^4$ ($H_*\lesssim10^{10}\,\mathrm{GeV}$) \emph{and}
-sufficient initial kinetic energy in $\psi$ to cross the barrier,
-\emph{and} continuing energy input from the rolling $\Phi$ field or
-rescattering. The proxy-fluid closure is therefore conditional on
-parameters not realized in the stated benchmark. A full numerical
-background solution followed by nonlinear lattice evolution is required
-to demonstrate that any chosen benchmark actually reaches and remains
-in the quartic regime. The observational discriminator in
-Eq.~(\ref{eq:pfd_signature}) applies \emph{if} the quartic regime is
-realized; it is not a prediction of the benchmark parameters alone.
+The closure $w=1/3$, $c_s^2=1/3$, $\sigma=0$ is a
+phenomenological ansatz requiring a coherent quartic-dominated
+oscillation regime with $\omega\gg H$ and controlled energy transfer.
+For $\lambda_\Phi=0.02$, the exact $\epsilon_H=1$ endpoint is
+$\Phi_c\simeq0.986228M_{\rm Pl}$. The potential-only damping estimate
+is $3H_{c,V}/(2\mu)\simeq3.50$, while inclusion of the exact endpoint
+kinetic energy gives $3H_c/(2\mu)\simeq4.29$. The benchmark is
+therefore strongly damped. The real-$\psi$ waterfall is tachyonic
+below threshold, so the exact $\psi=0$ solution is not a stable
+post-trigger state; physically justified seeds and inhomogeneous
+growth must be included. The revised 100-point homogeneous scan is
+a post-threshold sensitivity study, not a microscopic derivation of
+the proxy-fluid. No quartic attractor is claimed until its
+high-resolution results and convergence tests are inspected.
 
 The aim of the present paper is therefore broader than a
 phenomenological dark-radiation study. We pursue three linked goals:
@@ -161,10 +166,10 @@ phenomenological dark-radiation study. We pursue three linked goals:
 \item to formulate PTUM as a cosmological creation scenario based on
       a discharge event, establishing the theoretical framework and
       its effective field theory;
-\item to show that the resulting effective dark-sector structure is
-      internally consistent within the tested parameter regime, with
-      perturbation stability, EFT validity, and compatibility with
-      BBN and isocurvature constraints;
+\item to assess the effective dark-sector structure under explicit
+      assumptions and identify its consistency conditions; the
+      perturbation, BBN, and isocurvature results are phenomenological
+      or author-reported and require independent reproduction;
 \item to test the observable consequences of the model against
       current cosmological data through a Bayesian benchmark analysis,
       a binned maximum-posterior diagnostic, and dataset-split
@@ -177,131 +182,17 @@ not as a completed first-principles theory of the origin of the Universe. The
 model does not derive the metastable pre-discharge background, does not solve
 the cosmological-constant hierarchy by itself, and does not specify a UV
 completion. Its present claims are narrower: it defines a threshold-triggered
-phase-transition scenario, implements the associated proxy-fluid perturbations,
+phase-transition scenario, specifies a phenomenological linear proxy-fluid perturbation closure,
 and identifies an observational discriminator between fluid and free-streaming
 dark radiation.
 
-\paragraph{Critical caveat on the quartic-fluid closure.}
-The proxy-fluid closure $w=1/3$, $c_s^2=1/3$, $\sigma=0$ used in the
-CLASS implementation and Bayesian analysis is a phenomenological ansatz
-conditional on a coherent, quartic-dominated oscillation regime with
-$\omega\gg H$ and negligible energy transfer. Numerical integration of
-the coupled background equations with the benchmark parameters of this
-paper ($V_0\sim10^{64}\,\mathrm{GeV}^4$, $H_*\sim10^{13}\,\mathrm{GeV}$,
-$m_\psi\sim10^{13}\,\mathrm{GeV}$, $\lambda_\psi\sim0.1$) shows the
-system is \textbf{overdamped}: $3H/(2\mu)\approx 25\gg1$. The field
-remains at $\psi=0$ (the top of the barrier) with $w_\psi=0$; the
-quartic regime is \textbf{not achieved}. Achieving the quartic regime
-requires $V_0\lesssim10^{58}\,\mathrm{GeV}^4$ ($H_*\lesssim10^{10}
-\,\mathrm{GeV}$) \emph{and} sufficient initial kinetic energy in $\psi$
-to cross the barrier, \emph{and} continuing energy input from the
-rolling $\Phi$ field or rescattering. The proxy-fluid closure is
-therefore conditional on parameters not realized in the stated
-benchmark. A full numerical background solution followed by nonlinear
-lattice evolution is required to demonstrate that any chosen benchmark
-actually reaches and remains in the quartic regime. The observational
-discriminator in Eq.~(\ref{eq:pfd_signature}) applies \emph{if} the
-quartic regime is realized; it is not a prediction of the benchmark
-parameters alone. The Bayesian constraints on $\Delta N_{\rm fluid}$
-should be interpreted as constraints on the \emph{phenomenological
-proxy-fluid model}, not as constraints on the microscopic PTUM
-discharge dynamics with the stated benchmark parameters.
-
-
-To this end, we proceed in two steps. First, we construct the
-effective field theory of PTUM, derive its equations of motion, study
-the primordial creation sector---including exact-background
-inflationary dynamics---and identify the parameter region in which the
-late-time dark-energy sector remains observationally viable. Second,
-the authors report implementing the proxy-fluid perturbations in the
-\texttt{CLASS} Boltzmann code~\cite{Blas2011,Lesgourgues2011},
-computing the cosmological signatures, and constraining the model
-using a Bayesian benchmark analysis with
-\texttt{Cobaya}~\cite{Torrado2021} \emph{(author-reported; modified
-code and chains not yet public)}. The resulting
-constraints are cross-checked through a binned maximum-posterior
-diagnostic and dataset-split analysis, and confronted with BBN,
-isocurvature, and linear stability requirements.
-
-The authors report that PTUM is observationally viable: the pfd
-abundance is bounded to $\Delta N_{\rm fluid}<0.31$ at 95\% credibility
-from the full data combination, model comparison gives
-$\Delta\mathrm{AIC}=2.26$ relative to $\Lambda$CDM, and all
-consistency checks are satisfied \emph{(author-reported; chains not
-yet public, not independently reproduced)}. The Hubble constant shifts upward by
-$\sim\!0.8\;\mathrm{km\,s^{-1}\,Mpc^{-1}}$ relative to $\Lambda$CDM,
-partially alleviating the Hubble tension without being designed to do
-so. The discharge energy scale is fixed to
-$V_0^{1/4}\sim 10^{15}$--$10^{16}\;\mathrm{GeV}$ by the observed
-scalar amplitude, and the creation sector is compatible with current
-bounds on the scalar spectral index and the tensor-to-scalar ratio.
-
-The paper is organized as follows.
-Section~\ref{sec:conceptual} summarizes the physical picture of PTUM.
-Section~\ref{sec:eft} presents the effective field theory,
-equations of motion, and symmetry structure.
-Section~\ref{sec:primordial} studies the primordial creation sector.
-Section~\ref{sec:late} analyses the late-time dark-energy and
-dark-sector structure.
-Section~\ref{sec:pert} describes the perturbation framework and
-\texttt{CLASS} implementation.
-Section~\ref{sec:sigs} presents the cosmological signatures.
-Section~\ref{sec:mcmc} gives the Bayesian constraints, profile
-likelihood, dataset-split analysis, and model comparison.
-Section~\ref{sec:stability} collects the stability and consistency
-tests.
-We discuss the interpretation, limitations, and future prospects in
-Section~\ref{sec:discussion} and conclude in
-Section~\ref{sec:conclusion}.
-
-%============================================================
-\section{Conceptual overview of PTUM}
-\label{sec:conceptual}
-%============================================================
-
-PTUM begins with a multiverse-like background containing a scalar
-quantum fuel field \(\Phi\). The central idea is that local
-accumulation of this field drives a threshold-triggered discharge
-process. Once a critical configuration is reached, the effective
-mass of a proxy activation mode becomes negative, generating a
-tachyonic transition that activates string-like degrees of freedom.
-
-The basic sequence is:
-
-\begin{description}
-\item[(a) Fuel accumulation.] The scalar fuel field \(\Phi\) accumulates
-in a metastable environment. The effective potential is chosen such
-that it is approximately quadratic at small field values but saturates
-to a plateau at large field values.
-
-\item[(b) Threshold discharge.] When the effective mass-squared of
-the proxy field becomes negative, the dormant configuration
-destabilizes and the activated sector appears. This transition plays
-the role of the creation trigger.
-
-\item[(c) Residual splitting.] The discharge energy separates into a
-passive component (dark matter), an active component (dark energy),
-and a transient relativistic sector (proxy-fluid dark radiation).
-\end{description}
-
-\begin{figure*}[t]
-\centering
-\includegraphics[width=0.88\textwidth]{fig_model_flowchart.pdf}
-\caption{Conceptual flow of the PTUM scenario: accumulation of the
-quantum fuel field, threshold discharge, activation of proxy
-string-like modes, and residual splitting into dark matter, dark
-energy, and proxy-fluid dark radiation.}
-\label{fig:flowchart}
-\end{figure*}
-
-This picture gives PTUM a structural unification property: the dark
-sector is not postulated as a collection of disconnected components,
-but emerges from one creation event.
-
-%============================================================
-\section{Effective field theory and equations of motion}
-\label{sec:eft}
-%============================================================
+\paragraph{Status of the earlier scale estimate.}
+The previously quoted sufficient condition
+$V_0\lesssim10^{58}\,\mathrm{GeV}^4$ came from the pre-revision
+activation sign and a coarse homogeneous scan. It is not a
+demonstrated bound for the current waterfall model. The revised
+exact-endpoint, high-resolution scan must be completed before
+claiming either a no-go result or a viable quartic parameter window.
 
 \subsection{Conventions}
 \label{sec:conventions}
@@ -310,14 +201,16 @@ Throughout this paper we use the metric signature \((-+++)\), i.e.\
 flat FRW reads \(ds^2=-dt^2+a^2(t)d\mathbf{x}^2\), and the Einstein
 equation is written as
 \begin{equation}
-G_{\mu\nu} = \frac{1}{M_{\rm Pl}^2}\,T_{\mu\nu},
-\qquad
-M_{\rm Pl}=(8\pi G)^{-1/2}\simeq 2.435\times10^{18}\,\mathrm{GeV},
+\begin{aligned}
+G_{\mu\nu} &= \frac{1}{M_{\rm Pl}^2}\,T_{\mu\nu},\\
+M_{\rm Pl} &= (8\pi G)^{-1/2}
+\simeq 2.435\times10^{18}\,\mathrm{GeV}.
+\end{aligned}
 \end{equation}
 with the energy-momentum tensor defined by
 \(T_{\mu\nu}=-\frac{2}{\sqrt{-g}}\frac{\delta(\sqrt{-g}\mathcal{L}_{\rm m})}
 {\delta g^{\mu\nu}}\), so that a canonical scalar
-\(\mathcal{L}=\tfrac12(\partial\phi)^2-V\) gives
+\(\mathcal{L}=-\tfrac12 g^{\mu\nu}\partial_\mu\phi\partial_\nu\phi-V\) gives
 \(\rho=\tfrac12\dot\phi^2+V\), \(p=\tfrac12\dot\phi^2-V\).
 Natural units \(c=\hbar=k_B=1\) are used; all dimensionful quantities
 are in powers of GeV. The Riemann tensor convention is
@@ -333,7 +226,7 @@ The minimal PTUM field content consists of four sectors:
 
 \begin{itemize}
 \item \(\Phi\): quantum fuel field,
-\item \(\psi\): activated string-like proxy mode,
+\item \(\psi\): activated scalar waterfall mode,
 \item \(\chi\): dark-matter field,
 \item \(\Phi_{\rm res}\): residual energy field (dark energy).
 \end{itemize}
@@ -347,7 +240,7 @@ The minimal PTUM field content consists of four sectors:
 \toprule
 Symbol & Sector & Effective role \\
 \midrule
-$\Phi$ & fuel field & accumulates and controls threshold crossing \\
+$\Phi$ & fuel field & rolls toward and controls threshold crossing \\
 $\psi$ & proxy activation mode & tachyonic activation; proxy-fluid radiation \\
 $\chi$ & dark-matter candidate & passive post-discharge matter-like sector \\
 $\Phi_{\rm res}$ & residual field & near-$\Lambda$ dark-energy-like sector \\
@@ -358,26 +251,32 @@ $\Delta N_{\rm fluid}$ & pfd abundance & maps proxy radiation to CMB/BBN observa
 
 \subsection{PTUM Lagrangian}
 
-The total effective Lagrangian is
+The scalar-sector Lagrangian used for the conservative
+pre-reheating homogeneous background is
 \begin{equation}
-\mathcal{L}_{\rm PTUM}
+\mathcal{L}_{\rm PTUM}^{(0)}
 =\mathcal{L}_{\rm fuel}
 +\mathcal{L}_{\rm activation}
 +\mathcal{L}_{\rm DM}
 +\mathcal{L}_{\rm DE}.
 \end{equation}
+The superscript \((0)\) denotes that the explicit Standard Model
+matter action and perturbative reheating interactions are not included
+in this background subsystem. Their role and the limitation of the
+present sector split are stated in
+Section~\ref{sec:microscopic_transfer}.
 
 The fuel sector is
 \begin{equation}
 \mathcal{L}_{\rm fuel}
-=\tfrac{1}{2}(\partial_\mu\Phi)^2
+=-\tfrac{1}{2}g^{\mu\nu}\partial_\mu\Phi\partial_\nu\Phi
 -V_{\rm eff}(\Phi),
 \end{equation}
 with
 \begin{equation}
 \begin{split}
 V_{\rm eff}(\Phi)
-&=V_0\!\left(1-e^{-\lambda\Phi^2}\right) \\
+&=V_0\!\left(1-e^{-\lambda_\Phi\Phi^2/M_{\rm Pl}^2}\right) \\
 &\quad +\frac{1}{64\pi^2}
 \sum_i n_i\,m_{{\rm eff},i}^4(\Phi)
 \left[\ln\frac{m_{{\rm eff},i}^2(\Phi)}{\mu_R^2}
@@ -406,7 +305,7 @@ field $\Phi$ to the other sectors:
 
 \begin{itemize}
 \item \textbf{Proxy sector:} The $\psi$ field has effective mass
-      $m_\psi^2(\Phi) = m^2(1 - \alpha\Phi^2/E_{\rm th}^2)$ with
+      $m_\psi^2(\Phi) = m_\psi^2(\alpha\Phi^2/E_{\rm th}^2 - 1)$ with
       $n_\psi = 1$ (real scalar).
 \item \textbf{Dark matter sector:} The $\chi$ field has effective mass
       $m_\chi^2(\Phi) = m_\chi^2 + 2g_{\rm DM}\Phi_{\rm res}^2$; at the
@@ -436,41 +335,41 @@ condition.
 The activation sector is
 \begin{equation}
 \mathcal{L}_{\rm activation}
-=\tfrac{1}{2}(\partial_\mu\psi)^2
--\frac{m^2}{2}\psi^2\!\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)
+=-\tfrac{1}{2}g^{\mu\nu}\partial_\mu\psi\partial_\nu\psi
+-\frac{m_\psi^2}{2}\psi^2\!\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)
 -\frac{\lambda_\psi}{4}\psi^4,
 \label{eq:lact}
 \end{equation}
 with effective mass
 \begin{equation}
 m_{\rm eff}^2(\Phi)
-=m^2\!\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right).
+=m_\psi^2\!\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right).
 \end{equation}
 Equivalently, the effective discharge trigger can be written as
 \begin{equation}
 \boxed{
  m_{\rm eff}^2(\Phi)<0
  \quad\Longleftrightarrow\quad
- |\Phi|>\Phi_c\equiv \frac{E_{\rm th}}{\sqrt{\alpha}} .
+ |\Phi|<\Phi_c\equiv \frac{E_{\rm th}}{\sqrt{\alpha}} .
 }
 \label{eq:ptum_threshold_box}
 \end{equation}
 This condition defines the transition from the dormant proxy phase to the
 activated proxy phase. It should be interpreted as an effective threshold
 criterion, not as a microscopic derivation of the pre-discharge background.
-Here, $E_{\rm th}$ is the dimensionful discharge threshold scale (naturally related to the creation energy $V_0^{1/4}$), and $\alpha$ is a dimensionless coupling constant. The tachyonic instability is triggered when the fuel field crosses the critical threshold $\Phi = E_{\rm th}/\sqrt{\alpha}$. The transition timescale is assumed to be much shorter than the local Hubble time ($H^{-1}$), allowing the discharge to be treated as a nearly instantaneous phase transition at the background level that partitions the available energy into the residual dark sector and standard radiation. For \(m_{\rm eff}^2>0\) the proxy mode is dormant; for \(m_{\rm eff}^2<0\) it is activated by the tachyonic instability.
+Here, $E_{\rm th}$ is the dimensionful discharge threshold scale (naturally related to the creation energy $V_0^{1/4}$), and $\alpha$ is a dimensionless coupling constant. The tachyonic instability is triggered when the fuel field rolls below the critical threshold $\Phi_c=E_{\rm th}/\sqrt{\alpha}$. The transition duration is not assumed to be negligible compared with the local Hubble time: for the threshold-matched benchmark the potential-only estimate is $3H_{c,V}/(2\mu)\simeq3.50$, while the exact endpoint including kinetic energy gives $3H_c/(2\mu)\simeq4.29$. The discharge and energy partition must therefore be evolved in the expanding background rather than imposed as an instantaneous event. For \(m_{\rm eff}^2>0\) the proxy mode is dormant; for \(m_{\rm eff}^2<0\) it is activated by the tachyonic instability.
 
 The dark-matter sector is
 \begin{equation}
 \mathcal{L}_{\rm DM}
-=\tfrac{1}{2}(\partial_\mu\chi)^2
+=-\tfrac{1}{2}g^{\mu\nu}\partial_\mu\chi\partial_\nu\chi
 -\tfrac{1}{2}m_\chi^2\chi^2
 -g_{\rm DM}\chi^2\Phi_{\rm res}^2,
 \end{equation}
 and the dark-energy sector is
 \begin{equation}
 \mathcal{L}_{\rm DE}
-=\tfrac{1}{2}(\partial_\mu\Phi_{\rm res})^2
+=-\tfrac{1}{2}g^{\mu\nu}\partial_\mu\Phi_{\rm res}\partial_\nu\Phi_{\rm res}
 -W(\Phi_{\rm res}),
 \end{equation}
 with
@@ -492,12 +391,12 @@ The field equations in a flat FRW universe,
 \begin{align}
 \ddot\Phi+3H\dot\Phi
 +\frac{\partial V_{\rm eff}}{\partial\Phi}
--\frac{\alpha m^2}{E_{\rm th}^2}\Phi\psi^2
++\frac{\alpha m_\psi^2}{E_{\rm th}^2}\Phi\psi^2
 &=0,
 \label{eq:frw1}
 \\
 \ddot\psi+3H\dot\psi
-+m^2\!\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi
++m_\psi^2\!\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi
 +\lambda_\psi\psi^3
 &=0,
 \label{eq:frw2}
@@ -518,21 +417,21 @@ The field equations in a flat FRW universe,
 \label{sec:eom_consistency}
 
 For completeness and internal consistency, we re-derive all
-equations of motion from the total Lagrangian
-\(\mathcal{L}_{\rm PTUM} = \mathcal{L}_{\rm fuel} +
+equations of motion from the conservative scalar-sector Lagrangian
+\(\mathcal{L}_{\rm PTUM}^{(0)} = \mathcal{L}_{\rm fuel} +
 \mathcal{L}_{\rm activation} + \mathcal{L}_{\rm DM} +
 \mathcal{L}_{\rm DE}\) using the Euler--Lagrange equations in a
 curved FRW background. The action is
 \begin{equation}
-S = \int d^4x\,\sqrt{-g}\,\mathcal{L}_{\rm PTUM},
+S = \int d^4x\,\sqrt{-g}\,\mathcal{L}_{\rm PTUM}^{(0)},
 \end{equation}
 with $\sqrt{-g} = a^3(t)$ in FRW.
 For a scalar field \(\phi\) with Lagrangian
-\(\mathcal{L} = \tfrac{1}{2}g^{\mu\nu}\partial_\mu\phi\partial_\nu\phi
+\(\mathcal{L} = -\tfrac{1}{2}g^{\mu\nu}\partial_\mu\phi\partial_\nu\phi
 - V(\phi)\), the Euler--Lagrange equation is
 \begin{equation}
 \frac{1}{\sqrt{-g}}\partial_\mu\left(\sqrt{-g}\,g^{\mu\nu}
-\partial_\nu\phi\right) + \frac{\partial V}{\partial\phi} = 0.
+\partial_\nu\phi\right) - \frac{\partial V}{\partial\phi} = 0.
 \end{equation}
 In FRW, \(g^{00}=-1\), \(g^{ij}=a^{-2}\delta^{ij}\), and for
 homogeneous fields \(\phi(t)\) this reduces to
@@ -544,43 +443,44 @@ Applying this to each sector:
 
 \begin{enumerate}
 \item \textbf{Fuel field \(\Phi\):} The potential is
-      \(V_{\rm eff}(\Phi) + \frac{1}{2}m^2(1-\alpha\Phi^2/E_{\rm th}^2)\psi^2\).
-      The derivative is
+      \(V_{\rm eff}(\Phi) +
+      \frac{1}{2}m_\psi^2(\alpha\Phi^2/E_{\rm th}^2-1)\psi^2\).
+      Its derivative is
       \begin{equation}
       \begin{split}
       &\frac{\partial}{\partial\Phi}\left[V_{\rm eff}(\Phi)
-      + \frac{m^2}{2}\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi^2\right] \\
+      + \frac{m_\psi^2}{2}\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi^2\right] \\
       &\quad= \frac{\partial V_{\rm eff}}{\partial\Phi}
-      - \frac{\alpha m^2}{E_{\rm th}^2}\Phi\psi^2.
+      + \frac{\alpha m_\psi^2}{E_{\rm th}^2}\Phi\psi^2.
       \end{split}
       \end{equation}
       The equation of motion is
       \begin{equation}
       \ddot\Phi + 3H\dot\Phi + \frac{\partial V_{\rm eff}}{\partial\Phi}
-      - \frac{\alpha m^2}{E_{\rm th}^2}\Phi\psi^2 = 0,
+      + \frac{\alpha m_\psi^2}{E_{\rm th}^2}\Phi\psi^2 = 0,
       \label{eq:Phi_eom}
       \end{equation}
-      which matches Eq.~\eqref{eq:frw1} (note the sign convention:
-      the interaction term in \(\mathcal{L}_{\rm activation}\) is
-      \(-\frac{m^2}{2}(1-\alpha\Phi^2/E_{\rm th}^2)\psi^2\), so
-      \(\partial\mathcal{L}/\partial\Phi = +\alpha m^2\Phi\psi^2/E_{\rm th}^2\),
-      giving \(-\partial V/\partial\Phi = -\alpha m^2\Phi\psi^2/E_{\rm th}^2\)
-      in the EOM).
+      consistent with the activation Lagrangian
+      \(-\frac{m_\psi^2}{2}(\alpha\Phi^2/E_{\rm th}^2-1)\psi^2\),
+      for which \(\partial\mathcal L/\partial\Phi
+      =-\alpha m_\psi^2\Phi\psi^2/E_{\rm th}^2\).
 
 \item \textbf{Proxy field \(\psi\):} The potential is
-      \(\frac{1}{2}m^2(1-\alpha\Phi^2/E_{\rm th}^2)\psi^2 +
-      \frac{\lambda_\psi}{4}\psi^4\). The derivative is
+      \(\frac{1}{2}m_\psi^2(\alpha\Phi^2/E_{\rm th}^2-1)\psi^2
+      +\frac{\lambda_\psi}{4}\psi^4\). Its derivative is
       \begin{equation}
       \begin{split}
-      &\frac{\partial}{\partial\psi}\left[\frac{m^2}{2}\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi^2
+      &\frac{\partial}{\partial\psi}\left[
+      \frac{m_\psi^2}{2}\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi^2
       + \frac{\lambda_\psi}{4}\psi^4\right] \\
-      &\quad= m^2\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi
+      &\quad= m_\psi^2\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi
       + \lambda_\psi\psi^3.
       \end{split}
       \end{equation}
       The equation of motion is
       \begin{equation}
-      \ddot\psi + 3H\dot\psi + m^2\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi
+      \ddot\psi + 3H\dot\psi
+      + m_\psi^2\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi
       + \lambda_\psi\psi^3 = 0,
       \end{equation}
       matching Eq.~\eqref{eq:frw2}.
@@ -619,7 +519,7 @@ Applying this to each sector:
 \end{enumerate}
 
 All four equations of motion are thus consistently derived from the
-total Lagrangian \(\mathcal{L}_{\rm PTUM}\). The energy-momentum
+total Lagrangian \(\mathcal{L}_{\rm PTUM}^{(0)}\). The energy-momentum
 tensor for each sector can be obtained via the standard variation
 \(T_{\mu\nu} = -\frac{2}{\sqrt{-g}}\frac{\delta(\sqrt{-g}\mathcal{L})}
 {\delta g^{\mu\nu}}\), and the covariant conservation
@@ -792,6 +692,83 @@ A numerical background solution, followed where necessary by nonlinear
 lattice evolution, is required to demonstrate that a chosen benchmark
 actually reaches and remains in this regime.
 
+\subsubsection{Linear waterfall modes across the threshold}
+\label{sec:linear_waterfall_modes}
+
+For the homogeneous \(\bar\psi=0\) background used in the linear mode
+calculation, and with the expectation value of the SM source operator
+neglected, the zero-field solution remains an exact classical solution
+even after the effective mass changes sign. The instability is then
+carried by Fourier fluctuations rather than represented by an arbitrary
+homogeneous classical seed. Linearizing about this background gives
+\begin{align}
+\delta\ddot\psi_k+3H\delta\dot\psi_k
+&+\left(\frac{k^2}{a^2}+m_{\rm eff}^2(\Phi(t))\right)\delta\psi_k
+=0,\nonumber\\
+m_{\rm eff}^2(\Phi)
+&=m_\psi^2
+\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right).
+\label{eq:waterfall_mode_eom}
+\end{align}
+With the canonical variable \(X_k=a^{3/2}\delta\psi_k\), the equation is
+\begin{equation}
+\ddot X_k+\Omega_k^2 X_k=0,\qquad
+\Omega_k^2=\frac{k^2}{a^2}+m_{\rm eff}^2
+-\frac{3}{2}\dot H-\frac{9}{4}H^2.
+\label{eq:waterfall_canonical_frequency}
+\end{equation}
+The expansion terms in \(\Omega_k^2\) are retained; consequently the
+canonical-frequency sign is not identified with the physical
+tachyonic condition \(k^2/a^2+m_{\rm eff}^2<0\).
+
+Initial conditions are imposed in the stable phase at a time \(t_i\)
+for which \(\Omega_{k,i}^2>0\) and the first-order adiabaticity measure
+\(|\dot\Omega_{k,i}/\Omega_{k,i}^2|\) is below the chosen numerical
+acceptance threshold. The first-order WKB vacuum is
+\begin{equation}
+\begin{aligned}
+X_k(t_i)&=\frac{1}{\sqrt{2\Omega_{k,i}}},\\
+\dot X_k(t_i)&=
+\left(-i\Omega_{k,i}
+-\frac{\dot\Omega_{k,i}}{2\Omega_{k,i}}\right)X_k(t_i).
+\end{aligned}
+\label{eq:waterfall_wkb_initial}
+\end{equation}
+with canonical Wronskian
+\begin{equation}
+X_k\dot X_k^*-\dot X_kX_k^*=i.
+\label{eq:waterfall_wronskian}
+\end{equation}
+Intermediate intervals with \(\Omega_k^2<0\) are integrated directly.
+An instantaneous occupation number is reported only if the final
+canonical frequency is real and positive, the final first-order WKB
+adiabaticity measure \(|\dot\Omega_{k,f}/\Omega_{k,f}^2|\) is below
+the declared numerical threshold (default 0.1), and the Wronskian drift
+is within the numerical tolerance \(10^{-7}\). Positive frequency
+alone does not define an adiabatic particle basis when the background
+is still varying rapidly. If either the final adiabaticity or the
+finite-precision Wronskian diagnostic fails, the occupation number and
+the associated finite-band number density are withheld. These are
+numerical reliability criteria, not physical constants.
+
+The implementation constructs the pre-threshold state from the
+single-field inflationary background and evolves the \(\bar\psi=0\)
+trajectory through \(\Phi_c\), using dimensionless variables
+\(\tau=\mu t\), \(H/\mu\), \(m_{\rm eff}^2/\mu^2\), and \(k/\mu\).
+A finite-band estimate,
+\begin{equation}
+n_{\rm com}^{\rm band}=
+\frac{1}{2\pi^2}\int_{k_{\min}}^{k_{\max}}dk\,k^2 n_k,
+\label{eq:waterfall_finite_band_number}
+\end{equation}
+does not include the uncomputed infrared or ultraviolet tails; momentum
+range and resolution convergence are required before any abundance
+interpretation. This is a linear calculation on a prescribed background:
+it does not include mode backreaction, rescattering, nonlinear
+fragmentation, or a self-consistent reheating history. It therefore
+establishes neither a nonlinear waterfall completion nor the later
+radiation-like equation of state by itself.
+
 \subsubsection{Perturbations and sound-speed terminology}
 
 For a canonical scalar field with Lagrangian
@@ -858,38 +835,27 @@ quartic-dominance and averaging conditions are independently established.
 The later CLASS results use the last regime as an effective closure and
 should be interpreted with this conditional status.
 
-\paragraph{Critical numerical finding:}
-Numerical integration of the coupled background equations
-(Eqs.~\ref{eq:Phi_eom}--\ref{eq:psi_eom_full}) with the benchmark
-parameters of this paper ($V_0\sim10^{64}\,\mathrm{GeV}^4$,
-$H_*\sim10^{13}\,\mathrm{GeV}$, $m_\psi\sim10^{13}\,\mathrm{GeV}$,
-$\lambda_\psi\sim0.1$) shows that the system is \textbf{overdamped}:
-$3H/(2\mu)\approx 25\gg1$. No oscillations occur; the field remains at
-$\psi=0$ (the top of the barrier) and $w_\psi=0$. The quartic-dominated
-regime with $w_\psi=1/3$ is \textbf{not achieved} with these parameters.
-Achieving the quartic regime requires $V_0\lesssim10^{58}\,\mathrm{GeV}^4$
-($H_*\lesssim10^{10}\,\mathrm{GeV}$) \emph{and} sufficient initial kinetic
-energy in $\psi$ to cross the barrier, \emph{and} continuing energy input
-from the rolling $\Phi$ field or rescattering. The proxy-fluid closure
-$w_\psi=1/3$, $c_{s,\psi}^2=1/3$, $\sigma_\psi=0$ is therefore a
-phenomenological ansatz conditional on parameters not realized in the
-stated benchmark. A full numerical background solution followed by
-nonlinear lattice evolution is required to demonstrate that any chosen
-benchmark actually reaches and remains in the quartic regime.
+\paragraph{Critical numerical status:}
+The earlier homogeneous benchmark scan used the superseded
+activation-mass sign and only 200 output samples over
+$20\mu^{-1}$. Its reported overdamping and quartic classifications
+are historical and are not treated as results for the revised
+waterfall model. The exact endpoint now gives
+$3H_c/(2\mu)\simeq4.29$ when the kinetic contribution at
+$\epsilon_H=1$ is included (the potential-only estimate is $3.50$),
+so the benchmark is strongly damped. However, the revised
+100-initial-condition scan uses 4001 output points per trajectory
+and must be inspected, together with timestep and solver-tolerance
+convergence, before assigning a late-time regime.
 
-\noindent\textbf{Unresolved tension between CMB normalization and the
-quartic regime.} The CMB normalization of the primordial spectrum fixes
-the discharge scale to $V_0^{1/4}\sim10^{15}$--$10^{16}\,\mathrm{GeV}$,
-i.e.\ $V_0\sim10^{60}$--$10^{64}\,\mathrm{GeV}^4$ (with
-$H_*\sim10^{13}\,\mathrm{GeV}$ at the benchmark point). The quartic
-regime, however, requires $V_0\lesssim10^{58}\,\mathrm{GeV}^4$
-($H_*\lesssim10^{10}\,\mathrm{GeV}$). These two requirements are
-mutually inconsistent within the present effective description: no
-single benchmark simultaneously satisfies the CMB normalization and
-realizes the oscillatory quartic regime in which $w_\psi=1/3$ emerges
-from first principles. The manuscript therefore treats
-$w_\psi=1/3$ as a phenomenological input to the Boltzmann code rather
-than a derived prediction at the stated benchmark.
+The scale tension between CMB normalization and a quartic proxy-fluid
+phase remains a research question, not a demonstrated no-go theorem.
+The quartic phase requires quartic potential dominance, rapid
+oscillations relative to expansion, controlled energy transfer and
+a perturbation-level closure derived from the underlying fields.
+The current Boltzmann analysis uses $w_\psi=1/3$ as a phenomenological
+closure; it is not a microscopic prediction of the present homogeneous
+post-threshold simulation.
 
 \noindent\textbf{Resolution scenarios (all currently VARSAYIM).}
 Three concrete routes could in principle reconcile the two scales,
@@ -902,22 +868,26 @@ $3H/(2\mu)$ below unity at $V_0\sim10^{64}\,\mathrm{GeV}^4$ without
 changing the CMB normalization. This requires a new background
 integration; no such run exists in the public script.
 \item \emph{Sustained energy injection:} rescattering of the rolling
-$\Phi$ field into $\psi$ (the $\alpha m^2\Phi^2\psi^2/E_{\rm th}^2$
+$\Phi$ field into $\psi$ (the $\alpha m_\psi^2\Phi^2\psi^2/E_{\rm th}^2$
 interaction) could maintain oscillations after barrier crossing even
-when the bare damping is large. The public scan
-(\texttt{ptum\_task1\_simulation.py}, 18 initial-condition points)
-finds \texttt{quartic\_achieved = False} in every scanned point, so
-this route is \textbf{not} realized by the scanned initial conditions
-(SAYISAL OLARAK DOĞRULANDI for the scanned set; not excluded in
-general).
-\item \emph{Reframed benchmark:} accept $w_\psi=0$ (overdamped, field
-pinned at the barrier top) at the CMB-normalized benchmark and treat
-the $w=1/3$ proxy-fluid as a separate, lower-$V_0$ phenomenological
-scenario tested against data on its own terms. This is the stance
-adopted for the Bayesian analysis in this manuscript: the
-$\Delta N_{\rm fluid}$ constraint is a constraint on the
-\emph{phenomenological} fluid component, not on a first-principles
-derivation at the benchmark point.
+when the bare damping is large. The revised 100-point high-resolution initial-condition scan is generated by
+\texttt{ptum\_task1\_scan.py} using the dimensionless fuel potential,
+independent discharge threshold, and local threshold Hubble scale.
+Its compact JSON output is published as a CI artifact. The earlier
+committed scan JSON was generated before these corrections and has
+been removed; its all-false quartic classification is not carried
+forward as a result for the corrected model. The revised scan must
+complete before making a statement about all 100 initial conditions.
+\item \emph{Reframed benchmark:} treat the CMB-normalized
+benchmark as a strongly damped, non-oscillatory waterfall candidate,
+but do not set $w_\psi=0$ by placing the field exactly at the
+tachyonically unstable origin. The seeded field evolution must
+determine its actual averaged equation of state. The $w=1/3$
+proxy-fluid remains a separate phenomenological scenario tested
+against data on its own terms. In the Bayesian analysis,
+$\Delta N_{\rm fluid}$ is a constraint on this phenomenological
+fluid component, not a first-principles prediction of the
+homogeneous waterfall calculation.
 \end{enumerate}
 Resolving the tension definitively (options (a) or (b)) requires a
 full numerical background solution plus nonlinear lattice evolution
@@ -928,7 +898,7 @@ and is left for future work.
 \label{subsec:ptum_operational_stability}
 
 The preceding subsections define PTUM as a threshold-triggered discharge
-mechanism: the fuel field $\Phi$ accumulates, the proxy field $\psi$ becomes
+mechanism: the fuel field $\Phi$ rolls toward its threshold, the proxy field $\psi$ becomes
 tachyonically active when its effective mass squared changes sign, and the
 post-discharge energy is partitioned into dark matter, residual dark energy,
 and proxy-fluid dark radiation.  The present subsection records the minimal
@@ -940,9 +910,9 @@ The discharge threshold is determined by the proxy-field effective mass,
 \begin{equation}
 m_{\rm eff}^2(\Phi)
 =
-m^2
+m_\psi^2
 \left(
-1-\frac{\alpha\Phi^2}{E_{\rm th}^2}
+\frac{\alpha\Phi^2}{E_{\rm th}^2}-1
 \right),
 \label{eq:PTUM_meff_operational}
 \end{equation}
@@ -953,8 +923,8 @@ so that the critical field value is
 \frac{E_{\rm th}}{\sqrt{\alpha}} .
 \label{eq:PTUM_critical_phi_operational}
 \end{equation}
-For $|\Phi|<\Phi_c$ the proxy sector is dormant, while for
-$|\Phi|>\Phi_c$ the tachyonic sign change activates the discharge channel.
+For $|\Phi|>\Phi_c$ the proxy sector is dormant, while for
+$|\Phi|<\Phi_c$ the tachyonic sign change activates the discharge channel.
 The activation potential may be written as
 \begin{equation}
 V_{\rm act}(\psi;\Phi)
@@ -1029,14 +999,23 @@ and the late-time expansion analysis below.
 The symmetry structure of the effective theory includes:
 
 \begin{itemize}
-\item an exact \(\mathbb{Z}_2\) symmetry \(\Phi\to-\Phi\),
-\item a spontaneously broken \(\mathbb{Z}_2\) symmetry
-      \(\psi\to-\psi\),
-\item an exact \(\mathbb{Z}_2\) symmetry \(\chi\to-\chi\) ensuring
-      dark-matter stability,
-\item an approximate shift symmetry
-      \(\Phi_{\rm res}\to\Phi_{\rm res}+c\) protecting the
-      dark-energy sector.
+\item An exact reflection symmetry \(\Phi\to-\Phi\) is respected by
+      the specified fuel potential and the \(\Phi^2\psi^2\) interaction.
+\item An exact reflection symmetry \(\chi\to-\chi\) is respected by
+      the displayed dark-matter action and protects the lightest
+      \(\chi\) excitation when no additional \(\chi\)-odd operator is added.
+\item The real-\(\psi\) scalar truncation has a \(\mathbb{Z}_2\)
+      symmetry \(\psi\to-\psi\). In the full EFT this symmetry is
+      explicitly broken when any \(C_f\ne0\), because
+      \(\psi\mathcal O_{\rm SM}/\Lambda\) is odd if SM fields are
+      untransformed. The Higgs portal alone is even in \(\psi\).
+      The induced vacuum bias and the fate of any domain-wall network
+      are not determined without the quantum/thermal effective
+      potential and an inhomogeneous calculation.
+\item No exact or technically protected shift symmetry is assumed
+      for \(\Phi_{\rm res}\): the specified \(W(\Phi_{\rm res})\)
+      explicitly breaks continuous shifts. Its small-slope behaviour
+      is a property of the chosen potential, not a symmetry proof.
 \end{itemize}
 
 \subsection{UV perspective and effective field theory scope}
@@ -1063,42 +1042,189 @@ arises in D-brane--anti-D-brane systems
 inter-brane separation plays the role of an inflaton, and brane
 annihilation ends inflation through tachyon condensation. In PTUM,
 $\Phi$ plays an analogous role to the inter-brane modulus, while
-$\psi$ corresponds to the open-string tachyon that becomes active
-once $\Phi$ crosses a critical threshold. We emphasise that this
-correspondence is at the level of structural analogy rather than
-rigorous derivation; a full embedding into a specific string
-compactification is left for future work.
+$\psi$ is a field-theory proxy inspired by the role of an
+open-string tachyon; it is not itself a string field, and the
+correspondence is not a derivation from string theory. A full
+embedding into a specific string compactification is left for
+future work.
+
+There is also a field-content issue that must be kept explicit.
+In the present truncation $\psi$ is a real scalar with an even
+potential. When $m_{\rm eff}^2<0$, its potential has two degenerate
+minima,
+\[
+\psi_{\rm min}=\pm\sqrt{-m_{\rm eff}^2/\lambda_\psi},
+\]
+so the scalar potential by itself has a $Z_2$ domain-wall
+problem in a spatially inhomogeneous waterfall. The dimension-five
+fermion-Higgs operator introduced below is odd in $\psi$ and can
+break this symmetry explicitly, but the induced vacuum bias and
+wall lifetime depend on its Wilson coefficients and any additional
+discrete charge assignments. This real-scalar model does not by
+itself produce cosmic strings; the string-theory analogy and the
+separate winding analysis of $\Phi_{\rm res}$ do not establish the
+absence of $\psi$ domain walls. A defect-safe completion requires
+an explicit symmetry-breaking analysis and an inhomogeneous defect
+network calculation. No defect-free or cosmic-string claim is made
+for the present truncation.
+
+For a fixed post-threshold value of $\Phi$, write
+$m_{\rm eff}^2=-\mu_{\rm eff}^2<0$ and
+$v=\mu_{\rm eff}/\sqrt{\lambda_\psi}$. Up to the constant
+minimum energy, the real-scalar potential is
+\begin{equation}
+V_\psi-V_{\min}
+=\frac{\lambda_\psi}{4}(\psi^2-v^2)^2.
+\end{equation}
+In the locally static, flat-space limit, its planar kink is
+\begin{equation}
+\begin{aligned}
+\psi_{\rm wall}(z)
+&=v\tanh\left(\frac{\mu_{\rm eff}z}{\sqrt2}\right),\\
+\sigma_{\rm wall}
+&=\int dz\,\left[
+\frac12(\partial_z\psi)^2+V_\psi-V_{\min}
+\right]\\
+&=\frac{2\sqrt2}{3}
+\frac{\mu_{\rm eff}^3}{\lambda_\psi}.
+\end{aligned}
+\label{eq:ptum_domain_wall_tension}
+\end{equation}
+This establishes the domain-wall topology and tension of the
+degenerate real-$\psi$ truncation; it is not a calculation of
+formation probability or of a cosmological defect network.
+
+To parameterize a possible explicit bias, consider the low-energy
+tilt $V_{\rm bias}=-\epsilon_{\rm bias}\psi$, where
+$[\epsilon_{\rm bias}]=3$. The stationary points obey
+\begin{equation}
+\lambda_\psi\psi^3-\mu_{\rm eff}^2\psi
+-\epsilon_{\rm bias}=0,
+\qquad
+|\epsilon_{\rm bias}|<
+\epsilon_{\rm crit}
+=\frac{2\mu_{\rm eff}^3}
+{3\sqrt{3\lambda_\psi}}
+\end{equation}
+for two local minima to coexist. In the small-bias limit their
+energy splitting is
+\begin{equation}
+\Delta V_{\rm vac}
+=2|\epsilon_{\rm bias}|v
++O(\epsilon_{\rm bias}^3).
+\end{equation}
+For a scaling wall network with
+$\rho_{\rm wall}\simeq\mathcal A\sigma_{\rm wall}H$,
+the order-of-magnitude estimates are
+\begin{equation}
+H_{\rm dom}\simeq
+\frac{\mathcal A\sigma_{\rm wall}}{3M_{\rm Pl}^2},
+\qquad
+H_{\rm ann}\sim
+\frac{\Delta V_{\rm vac}}{\sigma_{\rm wall}}.
+\end{equation}
+A necessary small-bias condition for annihilation before both
+wall domination and BBN is therefore
+\begin{equation}
+\Delta V_{\rm vac}
+\gtrsim\sigma_{\rm wall}
+\max(H_{\rm BBN},H_{\rm dom}).
+\label{eq:ptum_domain_wall_bias_bound}
+\end{equation}
+If the dimension-five operator supplies the tilt, its magnitude
+would be $|\epsilon_{\rm bias}|=
+|C\langle\mathcal O_{\rm SM}\rangle|/\Lambda$ in the chosen
+renormalized state. The odd operator explicitly breaks the
+Lagrangian-level reflection symmetry, but it does not fix this
+renormalized expectation value or guarantee that the bias exceeds
+the bound above. The Wilson coefficients, thermal state, operator
+renormalization and effective potential must be specified before
+a wall lifetime can be predicted.
+
+A limited finite-temperature contribution can be estimated if the
+plasma is in equilibrium in the broken electroweak phase, the fermion
+masses and Higgs expectation value are treated as fixed, and
+interactions beyond the ideal Dirac gas are neglected. Subtracting
+the zero-temperature vacuum condensate, a free Dirac species gives
+\begin{equation}
+\begin{aligned}
+\Delta_T\langle\bar f f\rangle
+&=\frac{2N_c m_f T^2}{\pi^2}
+\int_0^\infty dx\,\frac{x^2}{E_f(x)}
+\frac{1}{\exp(E_f(x))+1},\\
+E_f(x)&=\sqrt{x^2+(m_f/T)^2}.
+\end{aligned}
+\label{eq:ptum_thermal_fermion_condensate}
+\end{equation}
+For $m_f\ll T$ this approaches
+$\Delta_T\langle\bar f f\rangle\simeq N_c m_fT^2/6$.
+With the broken-phase scalar coupling
+\begin{equation}
+y_{\psi f}^{\rm eff}
+=\frac{\operatorname{Re}[(C_f)_{ii}]v_H}{\sqrt2\Lambda},
+\end{equation}
+where $v_H$ is the fixed broken-phase Higgs expectation value and
+$i$ labels a diagonal fermion mass eigenstate. The linear term in the
+thermal free energy is
+\begin{equation}
+\begin{aligned}
+\Delta V_T(\psi)
+&\supset \sum_f y_{\psi f}^{\rm eff}
+\Delta_T\langle\bar f f\rangle\,\psi .
+\end{aligned}
+\end{equation}
+In the convention $V_{\rm bias}=-\epsilon_{\rm bias}\psi$,
+\begin{equation}
+\epsilon_{\rm bias}^{(T)}
+=-\sum_f y_{\psi f}^{\rm eff}
+\Delta_T\langle\bar f f\rangle.
+\label{eq:ptum_thermal_bias}
+\end{equation}
+This is a conditional one-loop ideal-gas contribution only. It
+requires the broken-phase Higgs expectation value and an equilibrated
+fermion bath; it omits gauge/QCD corrections, thermal masses,
+finite chemical potentials, non-equilibrium production, the
+electroweak crossover, and the renormalized zero-temperature
+condensate. It is therefore not a prediction of the PTUM bias or
+wall lifetime. The Wilson matrices, cutoff, thermal history and
+operator renormalization remain necessary physical inputs.
+
+The auxiliary module \texttt{ptum\_defects.py} evaluates the exact two
+stationary minima of the tilted quartic potential, the spinodal
+source, the degenerate-wall tension, and the conditional
+annihilation/domination bounds. Its tests verify the kink equation,
+tension integral, small-bias splitting and loss of the false
+minimum at the spinodal point. These analytic diagnostics do not
+replace an expanding inhomogeneous network simulation; Gate 5
+remains open.
 
 \noindent\textbf{Swampland considerations.}
-The fuel potential $V(\Phi) = V_0(1 - e^{-\lambda\Phi^2})$ has
+For the dimensionless plateau parameter \(\lambda_\Phi\), define
+\(x=\lambda_\Phi\Phi^2/M_{\rm Pl}^2\). The tree-level fuel potential
+is \(V(\Phi)=V_0(1-e^{-x})\), and its dimensionless logarithmic slope is
 \begin{equation}
-\frac{|V'|}{V} = \frac{2\lambda\Phi e^{-\lambda\Phi^2}}{1-e^{-\lambda\Phi^2}}.
+M_{\rm Pl}\frac{|V_{,\Phi}|}{V}
+=\frac{2\lambda_\Phi|\Phi|}{M_{\rm Pl}}
+\frac{e^{-x}}{1-e^{-x}}.
 \end{equation}
-In the large-field asymptotic regime ($\lambda\Phi^2 \gg 1$),
-$|V'|/V \to 2\lambda\Phi \gtrsim \mathcal{O}(1)$ for $\Phi \gtrsim
-M_{\rm Pl}$, satisfying the de Sitter Swampland Conjecture
-\cite{Obied2018,Ooguri2019}. In the inflationary slow-roll regime,
-the field is at intermediate values $\lambda\Phi^2 \sim \mathcal{O}(1)$
-where the exponential is not yet saturated; here $|V'|/V \ll 1$ is
-maintained for the required $N_e \sim 50$--$60$ e-folds. The refined
-de Sitter conjecture, which allows $\min(\nabla_i \nabla_j V) \leq
--c'\,V/M_{\rm Pl}^2$, is satisfied throughout the slow-roll phase
-for $c' \sim \mathcal{O}(\eta)$. There is no contradiction: the
-swampland bound applies asymptotically at very large $\Phi$, while
-slow-roll occurs at intermediate field values where the potential is
-plateau-like. A systematic analysis of the full PTUM potential
-landscape against swampland criteria is deferred to future work.
+Both this slope and the dimensionless curvature
+\(M_{\rm Pl}^2V_{,\Phi\Phi}/V\) tend to zero as \(x\to\infty\).
+Consequently, the asymptotic plateau does \emph{not} satisfy a
+de Sitter gradient bound with a fixed positive order-one constant,
+nor does its asymptotic curvature establish the refined conjecture.
+The earlier statement that the slope tends to
+\(2\lambda_\Phi\Phi\) was incorrect because it omitted the
+exponential factor. No claim of swampland compliance is made here;
+any such assessment requires a specified conjecture, its constants,
+and a UV completion.
 
-\noindent\textbf{Field excursions and shift symmetry.}
-For small values of the coupling $\lambda \lesssim 0.05$, the fuel
-field undergoes super-Planckian excursions $\Delta\Phi > M_{\rm Pl}$
-during the inflationary phase. This is a generic feature of
-large-field inflation models and is not specific to PTUM. Such
-excursions can be protected against dangerous higher-dimensional
-operators by an approximate shift symmetry $\Phi \to \Phi + c$,
-which is broken only by the exponential potential. This is the same
-protective mechanism invoked in natural inflation
-\cite{Freese1990} and axion monodromy \cite{Silverstein2008} models.
+\noindent\textbf{Field excursions and UV control.}
+The leading slow-roll solutions below involve super-Planckian field
+excursions. The quadratic-exponential potential does not possess an
+exact shift symmetry \(\Phi\to\Phi+c\), and the present action does
+not provide a mechanism that protects such an approximate symmetry.
+Higher-dimensional operators and UV sensitivity therefore remain
+open issues rather than being declared controlled by a shift symmetry.
 
 \noindent\textbf{EFT validity summary.}
 As demonstrated in Section~\ref{sec:stability}, all PTUM energy
@@ -1129,76 +1255,128 @@ affect the observational predictions derived in this work.
 \subsubsection{Inflation-discharge connection}
 \label{sec:inflation_discharge}
 
-The end of inflation and the onset of the discharge are dynamically
-connected through the fuel field $\Phi$. During the slow-roll
-inflationary phase, $\Phi$ rolls down the plateau potential
-$V(\Phi) = V_0(1 - e^{-\lambda\Phi^2})$. The slow-roll parameters
-are
+We use the dimensionally consistent tree-level potential
+\begin{equation}
+V(\Phi)=V_0\left(1-e^{-x}\right),
+\qquad
+x\equiv\lambda_\Phi\frac{\Phi^2}{M_{\rm Pl}^2},
+\end{equation}
+where \(\lambda_\Phi\) is dimensionless. Writing
+\(u=\Phi/M_{\rm Pl}\), the potential slow-roll parameters are
 \begin{align}
-\epsilon_V &= \frac{1}{2}\left(\frac{V_{,\Phi}}{V}\right)^2
-= 2\lambda^2 \frac{\Phi^2 e^{-2\lambda\Phi^2}}{(1-e^{-\lambda\Phi^2})^2}, \notag\\
-\eta_V &= \frac{V_{,\Phi\Phi}}{V}
-= 2\lambda \frac{e^{-\lambda\Phi^2}(1-2\lambda\Phi^2)}{1-e^{-\lambda\Phi^2}}.
+\epsilon_V
+&=\frac{M_{\rm Pl}^2}{2}
+\left(\frac{V_{,\Phi}}{V}\right)^2
+=2\lambda_\Phi^2u^2
+\frac{e^{-2x}}{(1-e^{-x})^2},\\
+\eta_V
+&=M_{\rm Pl}^2\frac{V_{,\Phi\Phi}}{V}
+=2\lambda_\Phi
+\frac{e^{-x}(1-2x)}{1-e^{-x}}.
 \end{align}
-Inflation ends when $\epsilon_V \approx 1$ or $|\eta_V| \approx 1$.
-For $\lambda \sim 0.02$, this occurs at $\Phi_{\rm end} \sim
-M_{\rm Pl}/\sqrt{\lambda} \sim 7 M_{\rm Pl}$.
-
-The discharge threshold is at $\Phi_c = E_{\rm th}/\sqrt{\alpha}$.
-For the discharge to be triggered naturally at the end of inflation,
-we require $\Phi_{\rm end} \approx \Phi_c$. This gives a relation
-between the threshold scale and the inflationary parameters:
+The potential slow-roll proxy for the end is obtained by solving
+$\epsilon_V=1$. For $\lambda_\Phi=0.02$ this gives
 \begin{equation}
-E_{\rm th} \approx \sqrt{\alpha}\,\Phi_{\rm end}
-\sim \sqrt{\alpha}\,\frac{M_{\rm Pl}}{\sqrt{\lambda}}.
+\Phi_{\epsilon_V=1}\simeq1.387175\,M_{\rm Pl}.
 \end{equation}
-Since $E_{\rm th} \sim V_0^{1/4}$ and $V_0^{1/4} \sim 10^{15}$--$10^{16}$
-GeV from the primordial normalization, while $\Phi_{\rm end} \sim
-M_{\rm Pl}/\sqrt{\lambda} \sim 7 M_{\rm Pl} \sim 1.7 \times 10^{19}$ GeV
-for $\lambda \sim 0.02$, the relation $E_{\rm th} \approx \sqrt{\alpha}\,\Phi_{\rm end}$
-requires $\sqrt{\alpha} \sim 10^{15\text{--}16} / 10^{19} \sim 10^{-4}\text{--}10^{-3}$,
-i.e. $\alpha \sim 10^{-8}\text{--}10^{-6}$. This small value of $\alpha$
-is technically natural (protected by the approximate shift symmetry
-of the fuel field during inflation) and lies within the expected
-range for a dimensionless coupling generated by higher-dimensional
-operators. The parameter $\lambda \sim 0.02$--$0.1$ remains in its
-natural range for the PTUM creation sector.
-
-After inflation ends, the fuel field $\Phi$ continues to roll
-toward the minimum of its potential. The transition from the
-slow-roll regime to the fast-roll regime occurs when the field
-reaches $\Phi_c$. At this point, the effective mass of the proxy
-field $\psi$ changes sign, triggering the tachyonic instability.
-The timescale for the field to roll from $\Phi_{\rm end}$ to
-$\Phi_c$ is
+This is not the exact end of inflation. Integrating the canonical
+background equations and terminating at the Hubble-flow condition
+$\epsilon_H=3X^2=1$ gives
 \begin{equation}
-\Delta t_{\rm roll} \sim \int_{\Phi_c}^{\Phi_{\rm end}}
-\frac{d\Phi}{\dot\Phi} \sim \frac{\Phi_{\rm end} - \Phi_c}{\sqrt{2\epsilon_V} H M_{\rm Pl}}.
+\Phi_{\rm end}^{(H)}\simeq0.986228\,M_{\rm Pl},
+\qquad
+\epsilon_V(\Phi_{\rm end}^{(H)})\simeq2.01657.
 \end{equation}
-For $\Phi_{\rm end} \approx \Phi_c$, this timescale is short
-compared to the Hubble time, $\Delta t_{\rm roll} \ll H^{-1}$,
-ensuring that the discharge follows inflation without a prolonged
-intermediate phase.
+The earlier threshold match at $1.387175M_{\rm Pl}$ is crossed about
+$0.31852$ e-folds before the exact $\epsilon_H=1$ endpoint. The
+value $M_{\rm Pl}/\sqrt{\lambda_\Phi}\simeq7.07M_{\rm Pl}$ is merely
+the field value at which the exponent $x=1$.
 
-The energy released in the discharge is the potential energy
-difference between the inflationary plateau and the post-discharge
-vacuum:
+The leading potential-slow-roll table below uses the
+$\epsilon_V=1$ proxy endpoint and should be read as a first-order
+estimate. The threshold-matched coupled benchmark instead uses the
+exact Hubble-flow endpoint $\Phi_c=\Phi_{\rm end}^{(H)}$.
+\begin{center}
+\begin{tabular}{c|c|c|c|c}
+\(N_*\) & \(\Phi_*/M_{\rm Pl}\) & \(n_s\) & \(r\) &
+\(V_0^{1/4}\,[\mathrm{GeV}]\)\\
+\hline
+50 & 10.265 & 0.9547 & 0.0258 & \(1.34\times10^{16}\)\\
+55 & 10.535 & 0.9585 & 0.0211 & \(1.27\times10^{16}\)\\
+60 & 10.780 & 0.9618 & 0.0175 & \(1.21\times10^{16}\)
+\end{tabular}
+\end{center}
+The normalization uses \(A_s\simeq2.1\times10^{-9}\) and
+\(A_s=V_*/(24\pi^2M_{\rm Pl}^4\epsilon_*)\). These are tree-level,
+single-field slow-roll estimates; they are not a replacement for
+integrating the exact background or including reheating, loop
+corrections, and perturbations. In particular, the predicted tilt
+depends on \(N_*\), so the reheating history must be specified before
+claiming observational compatibility.
+
+The discharge threshold is independently defined by
 \begin{equation}
-\Delta V = V(\Phi_c) - V_{\rm res} \approx V_0 - V_{\rm res}
-\sim V_0,
+\Phi_c=\frac{E_{\rm th}}{\sqrt{\alpha}}.
 \end{equation}
-since $V_{\rm res}/V_0 \sim 10^{-108}$ is negligible. This energy
-is partitioned into the proxy-fluid dark radiation, dark matter,
-and residual dark energy as described in Section~\ref{sec:energy_momentum_conservation}.
+If the model requires the threshold to coincide with the end of
+inflation, this is an additional matching condition
+\(\Phi_c\simeq\Phi_{\rm end}\), giving
+\begin{equation}
+\alpha\simeq\left(\frac{E_{\rm th}}{\Phi_{\rm end}}\right)^2.
+\end{equation}
+For \(\lambda_\Phi=0.02\), matching to the exact
+$\epsilon_H=1$ endpoint $\Phi_c=0.986228M_{\rm Pl}$ and
+$E_{\rm th}=10^{15}$--$10^{16}\,\mathrm{GeV}$ gives
+$\alpha\simeq1.73\times10^{-7}$--$1.73\times10^{-5}$.
+The threshold is not fixed by \(\lambda_\Phi\) alone; it is an
+independent coupling/scale matching condition. The numerical
+simulation must use the same \(\Phi_c\) and \(\alpha\) as the
+inflationary calculation.
 
-The connection between inflation and discharge is therefore not an
-additional assumption but a consequence of the fuel field dynamics.
-The same field $\Phi$ that drives inflation also controls the
-discharge trigger, and the parameters that normalize the
-primordial spectrum ($V_0$, $\lambda$) also determine the discharge
-scale ($E_{\rm th}$, $\alpha$). This provides a unified description
-of the creation event from inflation through discharge to the hot
-Big Bang.
+A crucial energy-budget consequence follows. The older
+potential-slow-roll proxy $\epsilon_V=1$ gives
+$x_{\epsilon_V=1}\simeq0.0385$ and
+$V/V_0\simeq0.0378$, but the exact Hubble-flow endpoint has
+$x_H=\lambda_\Phi(\Phi_{\rm end}^{(H)}/M_{\rm Pl})^2
+\simeq0.01945$ and
+\begin{equation}
+\frac{V(\Phi_c)}{V_0}\simeq0.01926493.
+\end{equation}
+At $\epsilon_H=1$, the kinetic contribution is
+$K_{\rm end}/V_0\simeq0.00963246$, so the total single-field
+endpoint density is $\rho_{\rm end}/V_0\simeq0.02889739$.
+Neither value is unity. The earlier approximation
+$\Delta V\simeq V_0$ at the discharge threshold is therefore
+unsupported. The fraction transferred into radiation, $\psi$,
+$\chi$, and residual $\Phi$ must be accounted for in a single
+continuous coupled background solution. A short roll interval also
+cannot be inferred merely by setting
+$\Phi_c\simeq\Phi_{\rm end}^{(H)}$; it must be calculated from
+the coupled equations for a specified offset and initial velocity.
+
+The inflation-discharge connection is thus a parameter-matching
+hypothesis to be tested dynamically, not yet a demonstrated
+consequence of the present effective action. The same field may
+control both stages, but the threshold matching, energy partition,
+and duration of the transition require a self-consistent numerical
+solution.
+
+The canonical slow-roll trajectory has $\dot\Phi<0$ for $\Phi>0$ and
+moves from $\Phi_*/M_{\rm Pl}\simeq10.5$ toward
+$\Phi_{\rm end}^{(H)}/M_{\rm Pl}\simeq0.986228$. With the revised waterfall
+mass, $m_{\rm eff}^2>0$ for $|\Phi|>\Phi_c$ and
+$m_{\rm eff}^2<0$ for $|\Phi|<\Phi_c$. Matching
+$\Phi_c\simeq\Phi_{\rm end}$ therefore leaves the proxy massive and
+stable during observable slow roll and makes it tachyonic after
+$\Phi$ crosses below the threshold. The algebraic sign ordering now
+matches the intended dormant-to-waterfall chronology.
+
+The single-field inflation module still omits $\psi$ and does not
+calculate the growth of its quantum fluctuations or their backreaction
+through the crossing. The homogeneous two-field scan starts just
+below $\Phi_c$, on the already tachyonic side, and tests post-trigger
+relaxation rather than the onset itself. A fully dynamical
+threshold-trigger calculation remains outstanding.
 
 %============================================================
 \section{Primordial consistency of the creation sector}
@@ -1216,17 +1394,20 @@ Planck/BICEP-allowed region.
 
 At tree level, the fuel potential is
 \begin{equation}
-V(\Phi)=V_0\!\left(1-e^{-\lambda\Phi^2}\right).
+V(\Phi)=V_0\!\left(1-e^{-\lambda_\Phi\Phi^2/M_{\rm Pl}^2}\right).
 \label{eq:fuelpot}
 \end{equation}
+Here \(\lambda_\Phi\) is dimensionless and the field \(\Phi\) is
+dimensionful.
 This is a plateau-type potential: approximately quadratic at small
 \(\Phi\) and saturating to a constant at large \(\Phi\). Such
 plateau structures are strongly favored by CMB data~\cite{BICEPKeck2021}.
 
 We define the potential slow-roll parameters
 \begin{equation}
-\epsilon_V=\tfrac{1}{2}\!\left(\frac{V_{,\Phi}}{V}\right)^2,\qquad
-\eta_V=\frac{V_{,\Phi\Phi}}{V},
+\epsilon_V=\frac{M_{\rm Pl}^2}{2}
+\left(\frac{V_{,\Phi}}{V}\right)^2,\qquad
+\eta_V=M_{\rm Pl}^2\frac{V_{,\Phi\Phi}}{V}.
 \end{equation}
 and the standard approximate observables
 \begin{equation}
@@ -1256,53 +1437,59 @@ null prediction of PTUM.
 
 \subsection{Exact-background consistency}
 
-To verify the slow-roll treatment, an exact-background
-integration is reported (performed with the in-repository script
-\texttt{ptum\_task1\_simulation.py}, which is publicly available)
-using the bounded variable
+An exact-background calculation is reported using the
+dimensionless variables
 \begin{equation}
-X\equiv\frac{\dot\Phi}{\sqrt{6}\,H},\qquad \epsilon_H=3X^2.
+x\equiv\frac{\Phi}{M_{\rm Pl}},\qquad
+X\equiv\frac{\dot\Phi}{\sqrt{6}\,H M_{\rm Pl}},\qquad
+\epsilon_H=3X^2.
 \end{equation}
-The exact background equations in terms of \(N=\ln a\) are
+For a scalar-dominated flat-FRW background, the autonomous equations
+in \(N=\ln a\) are
 \begin{align}
-\frac{d\Phi}{dN}&=\sqrt{6}\,X,\\[4pt]
-\frac{dX}{dN}&=(1-X^2)\!\left(\sqrt{\tfrac{3}{2}}\,s(\Phi)-3X\right),
+\frac{dx}{dN}&=\sqrt{6}\,X,\\[4pt]
+\frac{dX}{dN}&=(1-X^2)\!
+\left(\sqrt{\tfrac{3}{2}}\,s(x)-3X\right),
 \end{align}
-where \(s(\Phi)\equiv-V_{,\Phi}/V\). For each \(\lambda\) we searched
-for an initial field value \(\Phi_i\) yielding \(N_{\rm end}\sim60\)
-and evaluated the observables 55 e-folds before the end. Results are
-given in Table~\ref{tab:exactscan}.
+where \(s(x)\equiv-M_{\rm Pl}V_{,\Phi}/V\) is dimensionless.
+The dimensionless scan is implemented in
+\texttt{ptum\_inflation\_background.py}. It solves for an initial field
+that gives 60 e-folds and evaluates first-order Hubble-flow observables
+55 e-folds before the end. The table values are generated by this
+script; the CI regression checks the full eight-point scan. For each \(\lambda_\Phi\), an initial
+field value \(\Phi_i\) was selected to obtain approximately 60
+e-folds, and observables were evaluated 55 e-folds before the end.
 
 \begin{table*}
 \caption{Exact-background primordial scan of the PTUM creation
-sector. The exact and slow-roll predictions agree to within
-\(\Delta n_s\simeq5\times10^{-4}\) and
-\(|\Delta r|/r\simeq1.5\%\). \emph{(SAYISAL OLARAK DOĞRULANDI with the
-public script \texttt{ptum\_task1\_simulation.py}.)}}
+sector. The exact-background Hubble-flow and slow-roll estimates agree
+to within \(\Delta n_s\simeq5\times10^{-4}\) and
+\(|\Delta r|/r\simeq1.5\%\). \emph{(AUTHOR-REPORTED; the dedicated
+integration code and outputs are not included in this repository.)}}
 \label{tab:exactscan}
 \centering
-\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}ccccccccc}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}cccccccc}
 \hline\noalign{\smallskip}
-\(\lambda\) & \(\Phi_i\) & \(N_{\rm end}\) & \(\Phi_*\) &
-\(\epsilon_*\) & \(n_s^{\rm ex}\) & \(n_s^{\rm SR}\) &
-\(r^{\rm ex}\) & Status \\
+\(\lambda_\Phi\) & \(\Phi_i/M_{\rm Pl}\) & \(N_{\rm end}\) & \(\Phi_*/M_{\rm Pl}\) &
+\(\epsilon_{1*}\) & \(n_s^{\rm HF}\) & \(n_s^{\rm SR}\) &
+\(r^{\rm HF}\) \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
-0.020 & 10.722 & 60.14 & 10.465 & \(1.37\times10^{-3}\) &
-0.9581 & 0.9576 & 0.02195 & Compat. \\
-0.050 &  8.325 & 59.96 &  8.185 & \(4.37\times10^{-4}\) &
-0.9565 & 0.9559 & 0.00699 & Boundary \\
-0.100 &  6.612 & 59.84 &  6.527 & \(1.72\times10^{-4}\) &
-0.9564 & 0.9559 & 0.00276 & Boundary \\
-0.200 &  5.137 & 60.38 &  5.078 & \(6.82\times10^{-5}\) &
-0.9570 & 0.9564 & 0.00109 & Compat. \\
-0.500 &  3.579 & 59.52 &  3.551 & \(2.08\times10^{-5}\) &
-0.9579 & 0.9574 & 0.000333 & Compat. \\
-1.000 &  2.691 & 59.32 &  2.673 & \(8.76\times10^{-6}\) &
-0.9586 & 0.9580 & 0.000140 & Compat. \\
-2.000 &  2.012 & 60.99 &  1.996 & \(3.77\times10^{-6}\) &
-0.9591 & 0.9586 & 0.000060 & Compat. \\
-5.000 &  1.350 & 58.88 &  1.344 & \(1.28\times10^{-6}\) &
-0.9597 & 0.9592 & 0.000020 & Compat. \\
+0.020 & 10.715 & 60.00 & 10.465 & \(1.372\times10^{-3}\) &
+0.95809 & 0.95759 & 0.021953 \\
+0.050 &  8.326 & 60.00 &  8.185 & \(4.366\times10^{-4}\) &
+0.95646 & 0.95589 & 0.006986 \\
+0.100 &  6.615 & 60.00 &  6.527 & \(1.723\times10^{-4}\) &
+0.95644 & 0.95586 & 0.002757 \\
+0.200 &  5.133 & 60.00 &  5.078 & \(6.824\times10^{-5}\) &
+0.95700 & 0.95642 & 0.001092 \\
+0.500 &  3.582 & 60.00 &  3.551 & \(2.082\times10^{-5}\) &
+0.95794 & 0.95738 & 0.0003331 \\
+1.000 &  2.693 & 60.00 &  2.673 & \(8.755\times10^{-6}\) &
+0.95859 & 0.95804 & 0.0001401 \\
+2.000 &  2.009 & 60.00 &  1.996 & \(3.771\times10^{-6}\) &
+0.95913 & 0.95859 & 0.00006034 \\
+5.000 &  1.352 & 60.00 &  1.344 & \(1.275\times10^{-6}\) &
+0.95969 & 0.95917 & 0.00002040 \\
 \noalign{\smallskip}\hline
 \end{tabular*}
 \end{table*}
@@ -1376,7 +1563,7 @@ where primes denote derivatives with respect to conformal time
 \end{equation}
 with the Hubble-flow parameters \(\epsilon_1 = -\dot H/H^2\),
 \(\epsilon_{n+1} = d\ln|\epsilon_n|/dN\). For the PTUM fuel potential
-\(V(\Phi) = V_0(1 - e^{-\lambda\Phi^2})\), these parameters are
+\(V(\Phi) = V_0(1 - e^{-\lambda_\Phi\Phi^2/M_{\rm Pl}^2})\), these parameters are
 computed exactly along the background trajectory.
 
 The authors report integrating the mode equation from deep inside the
@@ -1483,8 +1670,8 @@ not yet public.}
 \label{sec:lcdm_limit}
 
 The PTUM dark sector reduces to \(\Lambda\)CDM in a well-defined
-parameter limit (GÖSTERİLDİ at the level of the effective fluid
-description):
+parameter limit, as an algebraic property of the effective-fluid
+description:
 \begin{itemize}
 \item \textbf{pfd off:} \(\Delta N_{\rm fluid}\to0\) removes the proxy-fluid
 component entirely; the Boltzmann system then contains only CDM,
@@ -1494,10 +1681,11 @@ the \((\kappa,\lambda_{\rm res})\) plane where \(1+w_{\rm DE}<0.01\)
 (89.6\% of the scanned space, author-reported scan), the residual
 field is slow-rolling with \(w_{\rm DE}\approx-1\), i.e.\ an effective
 cosmological constant.
-\item \textbf{DM--DE decoupled:} with \(g_{\rm DM}\le10^{-3}\) the
-interaction ratio \(\mathcal{R}_{\rm int}<3\times10^{-6}\) (see
-Section~\ref{sec:dm_de_interaction}), so \(\chi\) behaves as standard
-pressureless CDM.
+\item \textbf{DM--DE decoupling condition:} the interaction is
+negligible only where the dimensionless diagnostic
+\(\mathcal{R}_{\rm int}\) in Section~\ref{sec:dm_de_interaction}
+is much smaller than unity. The earlier numerical bound has been
+withdrawn pending evaluation on an explicit background trajectory.
 \end{itemize}
 In this limit the background and perturbation equations are exactly
 those of \(\Lambda\)CDM with \(N_{\rm eff}=3.044\), which is the
@@ -1528,42 +1716,48 @@ than solves the cosmological constant problem.
 \subsection{Energy-momentum conservation and inter-sector transfer}
 \label{sec:energy_momentum_conservation}
 
-The discharge process partitions the available energy among the four
-sectors while respecting local energy-momentum conservation. The
-total energy-momentum tensor is conserved,
+The discharge process is intended to partition the available energy
+among the interacting fields while respecting local energy-momentum
+conservation. During the transition the microscopic sectors are
+$\Phi$, $\psi$, $\chi$, $\Phi_{\rm res}$ and the Standard Model
+fields. The later four-fluid description (SM radiation, dark matter,
+proxy-fluid radiation and residual dark energy) is an effective
+post-discharge regrouping, not the fundamental field split at every
+stage. The total energy-momentum tensor is conserved,
 \begin{equation}
-\nabla_\mu T^{\mu\nu}_{\rm total} = 0,
+\nabla_\mu T^{\mu\nu}_{\rm total}=0,
 \qquad
-T^{\mu\nu}_{\rm total} = \sum_i T^{\mu\nu}_i,
+T^{\mu\nu}_{\rm total}=\sum_i T_i^{\mu\nu}.
 \end{equation}
-where the sum runs over the four sectors: SM radiation (r), dark
-matter (c), pfd \(\psi\), and residual dark energy (de).  At the
-background level, this implies
+For a homogeneous FRW background this implies
 \begin{equation}
-\dot\rho_i + 3H(\rho_i + p_i) = Q_i,
-\end{equation}
-with $\sum_i Q_i = 0$ required by total conservation; the explicit
-closed $Q_i$ expressions, for which $\sum_i Q_i^\nu=0$ holds
-identically, are derived in Section~\ref{sec:microscopic_transfer}.
-Here \(Q_i\) represents the energy transfer rate into sector \(i\).
-At the perturbative level, the conservation law for each sector is
-\begin{equation}
-\nabla_\mu T^{\mu\nu}_i = Q_i^\nu,
+\dot\rho_i+3H(\rho_i+p_i)=Q_i^0,
 \qquad
-\sum_i Q_i^\nu = 0,
+\sum_i Q_i^0=0,
 \end{equation}
-with the transfer four-vector \(Q_i^\nu\) satisfying
-\(Q_i^0 = Q_i\) and \(Q_i^j = 0\) in the fluid rest frame.  The
-spatial components \(Q_i^j\) encode momentum transfer between
-sectors.  In the PTUM discharge scenario, the transfer is assumed to
-be nearly instantaneous at the background level (\(\Delta t \ll
-H^{-1}\)), so that the \(Q_i\) terms act as effective source terms
-during the transition and vanish thereafter.  The post-discharge
-evolution of each sector then follows the standard conservation laws
-with \(Q_i = 0\).  This formulation ensures that the energy
-partition is consistent with the covariant conservation of the total
-energy-momentum tensor, and it provides a framework for computing
-perturbative signatures of the discharge process in future work.
+where $Q_i^0$ is the contravariant time component of the transfer
+four-vector in the stated $(-+++)$ convention. At the covariant level,
+\begin{equation}
+\nabla_\mu T_i^{\mu\nu}=Q_i^\nu,
+\qquad
+\sum_i Q_i^\nu=0.
+\end{equation}
+The spatial components describe momentum exchange and need not vanish
+in a generic perturbed or inhomogeneous configuration; setting them
+to zero is an additional background/fluid-frame approximation, not
+a general identity.
+
+The transition duration is not assumed to satisfy
+$\Delta t\ll H^{-1}$. In particular, the threshold-matched benchmark
+has a damping ratio of order four, so the discharge must be evolved
+through the expanding background rather than imposed as an
+instantaneous event. The source terms are determined by the coupled
+field equations and the specified interaction history. They may become
+negligible after the relevant interactions switch off or the fields
+dynamically decouple, but this is a condition to be demonstrated, not
+an assumption built into the conservation law. The later effective
+four-fluid system is obtained only after a justified coarse-graining
+and energy-partition prescription.
 
 \subsubsection{Dark matter--dark energy interaction}
 \label{sec:dm_de_interaction}
@@ -1577,10 +1771,10 @@ and dark energy sectors are
 \begin{align}
 T^{\mu\nu}_{\rm DM} &= \partial^\mu\chi\partial^\nu\chi
 - g^{\mu\nu}\left[\tfrac12(\partial_\rho\chi)^2
-- \tfrac12 m_\chi^2\chi^2 - g_{\rm DM}\chi^2\Phi_{\rm res}^2\right], \\
++ \tfrac12 m_\chi^2\chi^2 + g_{\rm DM}\chi^2\Phi_{\rm res}^2\right], \\
 T^{\mu\nu}_{\rm DE} &= \partial^\mu\Phi_{\rm res}\partial^\nu\Phi_{\rm res}
 - g^{\mu\nu}\left[\tfrac12(\partial_\rho\Phi_{\rm res})^2
-- W(\Phi_{\rm res})\right].
++ W(\Phi_{\rm res})\right].
 \end{align}
 The interaction term contributes to the divergence of each
 energy-momentum tensor. Computing the covariant divergence yields
@@ -1591,197 +1785,779 @@ Q_{\rm DE}^\nu &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}.
 \end{align}
 At the background level in FRW, the energy transfer rates are
 \begin{align}
-Q_{\rm DM} &= -2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res}, \\
-Q_{\rm DE} &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res},
+Q_{\rm DM} &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res}, \\
+Q_{\rm DE} &= -2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res},
 \end{align}
-and \(Q_{\rm DM}+Q_{\rm DE}=0\) exactly (GÖSTERİLDİ; each interaction
-assigned once with opposite signs to the two exchanging sectors, as
-in Section~\ref{sec:microscopic_transfer}). The term
+and \(Q_{\rm DM}+Q_{\rm DE}=0\) exactly under the stated sector
+assignment, as derived in Section~\ref{sec:microscopic_transfer}. The term
 \(-2g_{\rm DM}\chi\Phi_{\rm res}^2\dot\chi\) that appeared in an
 earlier draft was a double-counting of the symmetric interaction
 variation and is not part of \(Q_{\rm DM}^\nu\). During the post-discharge
 evolution, the dark matter field \(\chi\) is non-relativistic and
-oscillates rapidly with frequency \(m_\chi\). With the closed
-transfer vector, the time-averaged energy transfer rate over one
-oscillation period is
+oscillates rapidly with frequency \(m_\chi\). The homogeneous
+transfer source obtained from the covariant current is
 \begin{equation}
-\langle Q_{\rm DM} \rangle
-= -2g_{\rm DM}\chi^2\Phi_{\rm res}\langle\dot\Phi_{\rm res}\rangle
-\sim g_{\rm DM}\Phi_{\rm res}^2 m_\chi \chi^2
-\sim g_{\rm DM}\Phi_{\rm res}^2 \rho_{\rm DM},
+Q_{\rm DM}^{0}
+=+2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res},
+\qquad Q_{\rm DE}^{0}=-Q_{\rm DM}^{0}.
 \end{equation}
-where the last estimate uses \(\langle\dot\Phi_{\rm res}\rangle\sim
-m_{\rm res}\Phi_{\rm res}\) for an oscillating residual field and
-\(\rho_{\rm DM}\simeq m_\chi\chi^2\). For the benchmark parameters
-\(g_{\rm DM} \lesssim 10^{-3}\), \(\Phi_{\rm res} \sim M_{\rm Pl}\),
-and \(m_\chi \sim 10^9\)--\(10^{13}\) GeV, the ratio of the
-interaction rate to the Hubble rate is
+If \(\Phi_{\rm res}\) varies slowly over a \(\chi\)-oscillation,
+averaging over the rapid \(\chi\) oscillations gives
 \begin{equation}
-\begin{split}
-\frac{\langle Q_{\rm DM} \rangle}{H\rho_{\rm DM}}
-&\sim \frac{g_{\rm DM}\Phi_{\rm res}^2 m_{\rm res}}{H M_{\rm Pl}^2}
-\lesssim 10^{-6}
-\left(\frac{g_{\rm DM}}{10^{-3}}\right)
-\left(\frac{m_{\rm res}}{10^{13}\,\mathrm{GeV}}\right) \\
-&\quad\times \left(\frac{10^{13}\,\mathrm{GeV}}{H}\right)
-\ll 1.
-\end{split}
+\langle Q_{\rm DM}^{0}\rangle_\chi
+\simeq 2g_{\rm DM}\Phi_{\rm res}\dot\Phi_{\rm res}
+\langle\chi^2\rangle_\chi,
+\qquad
+\rho_{\rm DM}\simeq m_\chi^2
+\langle\chi^2\rangle_\chi,
 \end{equation}
-Thus the DM-DE interaction is negligible for the background and
-linear perturbation evolution at late times, and the sectors evolve
-as effectively decoupled fluids with \(Q_i = 0\). The interaction
-becomes relevant only for the dark matter production mechanism
-during the discharge (parametric resonance, see
-Section~\ref{sec:dm_relic}), where the time-dependent
-\(\Phi_{\rm res}(t)\) drives resonant \(\chi\) production. This
-justifies the effective decoupling assumed in the Boltzmann
-implementation.
-
-\noindent\textbf{Numerical bound on the interaction.}
-To make the decoupling statement quantitative, the authors report
-evaluating the full transfer vector \(Q_{\rm DM}^\nu\) along the
-background trajectory for the benchmark parameter range
-\emph{(author-reported analytic estimate)}. The maximum
-dimensionless ratio
+where the second relation holds for a coherently oscillating,
+quadratic, non-relativistic scalar after averaging over its rapid
+oscillations. Consequently,
 \begin{equation}
-\mathcal{R}_{\rm int} \equiv \frac{|Q_{\rm DM}|}{H\rho_{\rm DM}}
-= \frac{2g_{\rm DM}\Phi_{\rm res}^2}{H}
-\left|\chi^2\frac{\dot\Phi_{\rm res}}{\Phi_{\rm res}}\right|
+\frac{|\langle Q_{\rm DM}^{0}\rangle_\chi|}
+{H\rho_{\rm DM}}
+\simeq
+\frac{2g_{\rm DM}|\Phi_{\rm res}
+\dot\Phi_{\rm res}|}{H m_\chi^2}.
+\label{eq:dmde_transfer_ratio}
 \end{equation}
-remains \(\mathcal{R}_{\rm int} < 3\times 10^{-6}\) for all
-benchmark points with \(g_{\rm DM} \le 10^{-3}\), \(m_\chi \le
-10^{13}\,\mathrm{GeV}\), and \(\Phi_{\rm res} \le M_{\rm Pl}\). This
-reportedly confirms that the interaction is dynamically negligible for
-the
-post-discharge cosmological evolution at the level of
-\(10^{-6}\) relative to the Hubble expansion rate. The interaction
-is retained in the Lagrangian solely for its role in the
-parametric-resonance production mechanism during the discharge
-event itself.
+If, in addition, the residual field has a characteristic variation
+\(|\dot\Phi_{\rm res}|\sim m_{\rm res}|\Phi_{\rm res}|\),
+this becomes
+\begin{equation}
+\frac{|\langle Q_{\rm DM}^{0}\rangle_\chi|}
+{H\rho_{\rm DM}}
+\sim
+\frac{2g_{\rm DM}m_{\rm res}\Phi_{\rm res}^{2}}
+{H m_\chi^{2}}.
+\end{equation}
+This is a conditional scaling estimate, not a numerical bound:
+its value depends on the actual residual-field trajectory, its
+amplitude and frequency, and the DM mass. The previous estimate
+\(\rho_{\rm DM}\simeq m_\chi\chi^2\) had the wrong mass
+dimension for an energy density, and the previous claimed
+\(10^{-6}\) suppression did not follow from the stated parameter
+ranges. Until the background trajectory and the correlated
+oscillation average are supplied, late-time decoupling must be treated
+as an assumption to be checked, not as an established numerical
+result. The interaction can still be relevant during the discharge,
+when the time-dependent \(\Phi_{\rm res}(t)\) may drive
+parametric production of \(\chi\).
 
 \subsubsection{Microscopic interactions for energy transfer}
 \label{sec:microscopic_transfer}
 
 The covariant energy-momentum transfer four-vectors $Q_i^\nu$ arise
-from the microscopic interactions in the PTUM Lagrangian. The total
-Lagrangian is
+from the microscopic interactions in the PTUM Lagrangian. The full interacting action is written schematically as
 \begin{equation}
-\mathcal{L}_{\rm PTUM} = \mathcal{L}_{\rm fuel} + \mathcal{L}_{\rm activation} + \mathcal{L}_{\rm DM} + \mathcal{L}_{\rm DE} + \mathcal{L}_{\rm rh},
+\mathcal{L}_{\rm full}
+=\mathcal{L}_{\rm PTUM}^{(0)}
++\mathcal{L}_{\rm SM}^{(0)}
++\mathcal{L}_{\rm rh},
 \end{equation}
-where the interaction terms are:
+Here \(\mathcal{L}_{\rm SM}^{(0)}\) denotes the minimally coupled,
+curved-spacetime chiral Standard Model action specified explicitly in
+Sec.~\ref{sec:sm_covariant_action}. The field representations,
+normalization, Higgs potential, gauge and fermion kinetic terms, and
+ordinary Yukawa matrices are fixed there. The present numerical
+background code still evolves only the conservative \(\Phi\)--\(\psi\)
+truncation; specifying the full action does not mean that the SM
+fields or reheating channels have already been numerically evolved.
+
+The homogeneous equations of motion
+Eqs.~(\ref{eq:frw1})--(\ref{eq:frw4}) describe the conservative scalar
+background before perturbative reheating becomes important. They omit
+the dimension-five source $\mathcal O_{\rm SM}/\Lambda$ and the
+Higgs-portal source $g_{\psi H}\psi H^\dagger H$. Once reheating is
+active, these operators must be included in the $\psi$, Higgs and
+fermion field equations, with their energy transfer evolved
+explicitly.
+
+The following lines identify the interaction terms already included in the scalar-sector Lagrangians and the additional reheating interactions; they are not to be added a second time to \(\mathcal{L}_{\rm full}\):
 \begin{align}
-\mathcal{L}_{\rm int}^{\psi\Phi} &= -\frac{1}{2}\alpha m^2 \frac{\Phi^2}{E_{\rm th}^2} \psi^2, \\
+\mathcal{L}_{\rm int}^{\psi\Phi} &= -\frac{1}{2}\alpha m_\psi^2 \frac{\Phi^2}{E_{\rm th}^2} \psi^2, \\
 \mathcal{L}_{\rm int}^{\chi\Phi_{\rm res}} &= -g_{\rm DM} \chi^2 \Phi_{\rm res}^2, \\
-\mathcal{L}_{\rm rh} &= -y_\psi \psi \bar{f} f - \frac{1}{2} g_\psi \psi^2 \phi_{\rm SM}^2.
+\mathcal{L}_{\rm rh} &= -\frac{\psi}{\Lambda}\mathcal{O}_{\rm SM}
+-\frac{1}{2}g_{\psi H}\psi^2 H^\dagger H,
 \end{align}
 
-The energy-momentum tensor for each sector is $T_i^{\mu\nu} = \frac{2}{\sqrt{-g}}\frac{\delta(\sqrt{-g}\mathcal{L}_i)}{\delta g_{\mu\nu}}$. The covariant divergence gives the transfer vectors. Each interaction term in the total Lagrangian contributes once to the divergence of the total tensor; assigning each contribution with opposite signs to the two exchanging sectors yields the closed system:
+\paragraph{Gauge-invariance scope of the reheating operators.}
+Assume $\psi$ is a real Standard Model gauge singlet and $H$
+is the Standard Model Higgs doublet. The chiral-fermion interaction
+is written with the gauge-invariant dimension-five operator
 \begin{align}
-Q_\psi^\nu &= +\alpha m^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi
- + y_\psi \psi \bar{f}\gamma^\nu f
- + g_\psi \psi^2 \phi_{\rm SM} \partial^\nu\phi_{\rm SM}, \\
-Q_\Phi^\nu &= -\alpha m^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi, \\
+\mathcal{O}_{\rm SM}={}&
+\bar Q_L C_d H d_R
++\bar Q_L C_u\widetilde H u_R
++\bar L_L C_e H e_R+\mathrm{h.c.},
+\\
+\mathcal{L}_{\psi{\rm SM}}^{(5)}
+={}&-\frac{\psi}{\Lambda}\mathcal{O}_{\rm SM},
+\end{align}
+where $C_{u,d,e}$ are dimensionless flavour matrices and
+$\widetilde H=i\sigma_2H^*$. After electroweak symmetry breaking,
+the effective scalar couplings are
+$y_{\psi f}^{\rm eff}=C_f v/(\sqrt{2}\Lambda)$, in a
+single-flavour mass basis. The shorthand $-y_\psi\psi\bar f f$
+is therefore only the broken-phase limit of this EFT, not a
+renormalizable chiral-SM interaction.
+
+The scalar portal is specified as the gauge-invariant operator
+$-\tfrac12g_{\psi H}\psi^2H^\dagger H$. It allows Higgs-pair
+production and coherent Higgs-mode excitation; by itself, an exact
+$\psi\mapsto-\psi$ symmetry forbids a single-$\psi$ decay. The
+dimension-five fermion operator is odd in $\psi$ and generally
+breaks that symmetry unless an additional discrete charge
+assignment is supplied. Its effect on the two-vacuum bias and
+domain-wall evolution must therefore be calculated rather than
+assumed.
+
+\subsubsection{Curved-space chiral Standard Model action}
+\label{sec:sm_covariant_action}
+
+We take the gauge group to be
+\(\mathcal G_{\rm SM}=SU(3)_c\times SU(2)_L\times U(1)_Y\),
+with electric charge normalized as \(Q_{\rm em}=T_3+Y\), three
+fermion generations, and no right-handed neutrino in the minimal
+field content. The representations are
+\begin{equation}
+\begin{array}{c|ccc}
+\text{field} & SU(3)_c & SU(2)_L & Y\\ \hline
+Q_L & \mathbf 3 & \mathbf 2 & 1/6\\
+u_R & \mathbf 3 & \mathbf 1 & 2/3\\
+d_R & \mathbf 3 & \mathbf 1 & -1/3\\
+L_L & \mathbf 1 & \mathbf 2 & -1/2\\
+e_R & \mathbf 1 & \mathbf 1 & -1\\
+H   & \mathbf 1 & \mathbf 2 & 1/2
+\end{array}
+\label{eq:sm_representations}
+\end{equation}
+The four PTUM scalars \(\Phi,\psi,\chi,\Phi_{\rm res}\) are real
+\((\mathbf 1,\mathbf 1,0)\) gauge singlets; the Higgs field \(H\) is
+a complex doublet. We use minimal curvature coupling: no
+\(\xi_\varphi\varphi^2R\) or \(\xi_H H^\dagger H R\) terms are included.
+
+Let \(e^a{}_\mu\) be a vierbein, \(e=\sqrt{-g}\),
+\(\gamma^\mu=e^\mu{}_a\gamma^a\), and
+\(\{\gamma^a,\gamma^b\}=-2\eta^{ab}\) for
+\(\eta_{ab}=\operatorname{diag}(-1,1,1,1)\).
+With \(\gamma^{ab}=\tfrac12[\gamma^a,\gamma^b]\), the spinor
+derivative contains the torsion-free spin connection and the
+appropriate gauge connection,
+\begin{equation}
+\begin{split}
+\mathscr D_\mu f
+=\Bigl(&\partial_\mu-\frac14\omega_{\mu ab}\gamma^{ab}
+-i g_s G_\mu^A T^A\\
+&-i g W_\mu^I t^I-i g'Y_f B_\mu\Bigr)f,
+\end{split}
+\label{eq:sm_spinor_derivative}
+\end{equation}
+where \(t^I=\tau^I/2\) on weak doublets and vanishes on singlets.
+For the Higgs doublet,
+\begin{equation}
+D_\mu H =
+\left(\partial_\mu-i g W_\mu^I\frac{\tau^I}{2}
+-i\frac{g'}{2}B_\mu\right)H .
+\end{equation}
+The gauge field strengths are
+\begin{align}
+G_{\mu\nu}^A&=2\partial_{[\mu}G_{\nu]}^A
++g_s f^{ABC}G_\mu^B G_\nu^C,\nonumber\\
+W_{\mu\nu}^I&=2\partial_{[\mu}W_{\nu]}^I
++g\epsilon^{IJK}W_\mu^J W_\nu^K,\qquad
+B_{\mu\nu}=2\partial_{[\mu}B_{\nu]} .
+\end{align}
+We define
+\begin{equation}
+\widetilde H=i\tau^2H^*,\qquad
+V_H(H)=-\mu_H^2H^\dagger H+\lambda_H(H^\dagger H)^2,
+\end{equation}
+with \(\mu_H^2>0\) and \(\lambda_H>0\), and the ordinary SM
+Yukawa potential
+\begin{equation}
+U_{{\rm SM},Y}=
+\bar Q_LY_dHd_R+\bar Q_LY_u\widetilde H u_R
++\bar L_LY_eHe_R+\mathrm{h.c.},
+\label{eq:sm_yukawa_potential}
+\end{equation}
+where \(Y_{u,d,e}\) are dimensionless complex \(3\times3\)
+flavour matrices. The curved-spacetime SM matter Lagrangian is
+\begin{align}
+\mathcal L_{\rm SM}^{(0)}={}&
+-\frac14G_{\mu\nu}^AG_A^{\mu\nu}
+-\frac14W_{\mu\nu}^IW_I^{\mu\nu}
+-\frac14B_{\mu\nu}B^{\mu\nu}\nonumber\\
+&-(D_\mu H)^\dagger D^\mu H-V_H(H)\nonumber\\
+&+\frac{i}{2}\sum_{\text{generations},\,f}
+\bar f\gamma^\mu\overleftrightarrow{\mathscr D}_\mu f
+-U_{{\rm SM},Y}.
+\label{eq:sm_curved_action}
+\end{align}
+Here \(f\in\{Q_L,u_R,d_R,L_L,e_R\}\), with the derivative
+appropriate to each representation, and
+\(\bar f\gamma^\mu\overleftrightarrow{\mathscr D}_\mu f
+\equiv\bar f\gamma^\mu\mathscr D_\mu f
+-(\mathscr D_\mu\bar f)\gamma^\mu f\).
+The gamma-matrix convention above makes the displayed \(i\)-weighted
+fermion kinetic term compatible with the \((-+++)\) metric.
+
+The complete classical matter action used to define the transfer
+bookkeeping is therefore
+\begin{align}
+S_{\rm matter}&=\int d^4x\sqrt{-g}\,
+\left[
+\mathcal L_{\rm PTUM}^{(0)}
++\mathcal L_{\rm SM}^{(0)}
+-U_Y-U_{\psi H}
+\right],\nonumber\\
+S_{\rm tot}&=S_{\rm EH}+S_{\rm matter}.
+\end{align}
+where
+\(S_{\rm EH}=\tfrac12M_{\rm Pl}^2\int d^4x\sqrt{-g}\,R\),
+\(U_Y=\psi\mathcal O_{\rm SM}/\Lambda\), and
+\(U_{\psi H}=\tfrac12g_{\psi H}\psi^2H^\dagger H\).
+The tree-level fuel potential in the numerical benchmark is
+\(V_\Phi=V_0[1-\exp(-\lambda_\Phi\Phi^2/M_{\rm Pl}^2)]\).
+The Coleman--Weinberg correction is not included in the present
+background integration; in particular, the real-time treatment of
+loop effects across the tachyonic branch is not specified here.
+
+The hypercharge contractions in the three PTUM fermion operators
+are explicitly neutral:
+\begin{align}
+Y(\bar Q_L H d_R)&=-\tfrac16+\tfrac12-\tfrac13=0,\nonumber\\
+Y(\bar Q_L\widetilde H u_R)&=-\tfrac16-\tfrac12+\tfrac23=0,\nonumber\\
+Y(\bar L_L H e_R)&=+\tfrac12+\tfrac12-1=0.
+\end{align}
+Their colour and weak-isospin indices contract to singlets through
+\(\overline{\mathbf3}\otimes\mathbf3\) and
+\(\mathbf2\otimes\mathbf2\), respectively. With canonical
+dimensions \([\Phi]=[\psi]=[\chi]=[\Phi_{\rm res}]=[H]=1\),
+\([f]=3/2\), and \([A_\mu]=1\), each term in
+\(\mathcal O_{\rm SM}\) has dimension four and
+\([U_Y]=[\psi]+[\mathcal O_{\rm SM}]-[\Lambda]=4\).
+The portal \(U_{\psi H}\), the \(\Phi^2\psi^2\) interaction,
+and the \(\chi^2\Phi_{\rm res}^2\) interaction also have dimension
+four. The independent parameter dimensions are
+\([m_\psi]=[m_\chi]=[E_{\rm th}]=[\Lambda]=[M_{\rm Pl}]
+=[\mu_H]=[\Lambda_{\rm NP}]=[f_{\rm res}]=1\),
+\([V_0]=[W_0]=4\),
+\([\alpha]=[\lambda_\Phi]=[\lambda_\psi]=[g_{\rm DM}]
+=[g_{\psi H}]=[\lambda_H]=[Y_f]=[C_f]=[g_s]=[g]=[g']=0\), and
+\([\kappa]=[\lambda_{\rm res}]=-2\), while \(S_E\) is dimensionless.
+Thus the chiral operator is a dimension-five EFT interaction with
+coefficient \(C_f/\Lambda\), not a renormalizable
+\(\psi\bar f f\) Yukawa coupling. Its Wilson matrices and cutoff
+remain free parameters; no numerical reheating rate follows until
+they are fixed.
+
+At tree level, variation with respect to the vierbein gives the
+symmetric Hilbert (Belinfante) tensor. Define
+\begin{align}
+T_{\rm gauge}^{\mu\nu}={}&
+\sum_A\left(G^{A\mu\rho}G^{A\nu}{}_\rho
+-\tfrac14g^{\mu\nu}G_{\rho\sigma}^AG_A^{\rho\sigma}\right)
+\nonumber\\
+&+\sum_I\left(W^{I\mu\rho}W^{I\nu}{}_\rho
+-\tfrac14g^{\mu\nu}W_{\rho\sigma}^IW_I^{\rho\sigma}\right)
+\nonumber\\
+&+B^{\mu\rho}B^\nu{}_\rho
+-\tfrac14g^{\mu\nu}B_{\rho\sigma}B^{\rho\sigma},\nonumber\\
+T_H^{\mu\nu}={}&
+(D^\mu H)^\dagger D^\nu H
++(D^\nu H)^\dagger D^\mu H\nonumber\\
+&-g^{\mu\nu}\left[(D_\rho H)^\dagger D^\rho H+V_H\right],
+\nonumber\\
+T_{f,\mathrm{kin}}^{\mu\nu}={}&
+-\frac{i}{4}\sum_{\text{generations},\,f}\Bigl[\nonumber\\
+&\bar f\gamma^\mu\overleftrightarrow{\mathscr D}^{\,\nu}f
+\nonumber\\
+&+\bar f\gamma^\nu\overleftrightarrow{\mathscr D}^{\,\mu}f
+\Bigr],\nonumber\\
+\mathcal K_f={}&
+\frac{i}{2}\sum_{\text{generations},\,f}\nonumber\\
+&\bar f\gamma^\rho\overleftrightarrow{\mathscr D}_{\rho}f,\nonumber\\
+T_{f,0}^{\mu\nu}={}&
+T_{f,\mathrm{kin}}^{\mu\nu}
++g^{\mu\nu}\left(\mathcal K_f-U_{{\rm SM},Y}\right),\nonumber\\
+T_{{\rm SM},0}^{\mu\nu}={}&
+T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}+T_{f,0}^{\mu\nu}.
+\label{eq:sm_hilbert_tensor}
+\end{align}
+The displayed \(T_{f,0}^{\mu\nu}\) is the off-shell symmetric
+Hilbert tensor from the torsion-free vierbein variation; the
+variation of the spin connection supplies the Belinfante
+symmetrization. Its trace term must be retained before applying
+the fermion equations of motion. Define
+\(U_{\rm tot,Y}=U_{{\rm SM},Y}+U_Y\). Since the PTUM operator
+\(U_Y=\psi\mathcal O_{\rm SM}/\Lambda\) is active in the full
+action, the fermion equations are those of \(U_{\rm tot,Y}\), not
+of the SM-only action:
+\begin{equation}
+i\gamma^\mu\mathscr D_\mu f
+=\frac{\partial U_{\rm tot,Y}}{\partial\bar f},
+\qquad
+-i(\mathscr D_\mu\bar f)\gamma^\mu
+=\frac{\partial U_{\rm tot,Y}}{\partial f}.
+\end{equation}
+Multiplying these equations by the corresponding chiral fields
+and summing over all independent fermions gives
+\begin{align}
+\mathcal K_f
+&=\frac12\sum_f\left[
+\bar f\frac{\partial U_{\rm tot,Y}}{\partial\bar f}
++\frac{\partial U_{\rm tot,Y}}{\partial f}f
+\right]\nonumber\\
+&=U_{{\rm SM},Y}+U_Y,
+\end{align}
+because every term in both Yukawa operators is bilinear in the
+fermion fields (one fermion and one conjugate fermion). The Higgs
+field is held fixed in this fermion variation; the Higgs portal
+does not enter these fermion equations. Therefore, on the full
+PTUM+SM fermion equations of motion,
+\begin{equation}
+T_{f,0}^{\mu\nu}
+=T_{f,\mathrm{kin}}^{\mu\nu}+g^{\mu\nu}U_Y.
+\end{equation}
+The distinct PTUM operator is assigned once to the SM sector,
+\(T_{\rm SM}^{\mu\nu}=T_{{\rm SM},0}^{\mu\nu}
+-g^{\mu\nu}U_Y\), and its two trace contributions cancel:
+\begin{equation}
+T_{\rm SM}^{\mu\nu}
+=T_{\rm gauge}^{\mu\nu}+T_H^{\mu\nu}
++T_{f,\mathrm{kin}}^{\mu\nu}
+\qquad\text{(on shell)}.
+\end{equation}
+Thus the compact kinetic expression is the full-interaction
+on-shell result; it is not obtained by applying SM-only equations
+of motion while \(U_Y\) is active. The ordinary Yukawa potential
+is already accounted for in the off-shell trace and its EOM
+reduction, so no separate \(-g^{\mu\nu}U_{{\rm SM},Y}\) term is
+added a second time.
+This is a classical tree-level EFT derivation. It does not include
+quantum trace anomalies, loop-induced curvature operators, or a
+renormalized in-in effective action, and the current homogeneous
+simulation does not evolve these SM fields.
+
+For small oscillations about a fixed broken-phase minimum,
+$\psi_{\min}=\pm\sqrt{-m_{\rm eff}^2/\lambda_\psi}$, the local
+curvature mass is $m_{\rm osc}^2=-2m_{\rm eff}^2$. If the EFT
+operator is treated perturbatively and $m_{\rm osc}>2m_f$, the
+conditional vacuum decay width is
+\begin{equation}
+\Gamma_{\psi\to f\bar f}=
+\frac{N_c|y_{\psi f}^{\rm eff}|^2m_{\rm osc}}{8\pi}
+\left(1-\frac{4m_f^2}{m_{\rm osc}^2}\right)^{3/2}.
+\end{equation}
+This formula is not a reheating prediction until $\Lambda$, the
+flavour matrices, the post-waterfall mass history, and competing
+Higgs-portal channels are fixed.
+
+The energy-momentum tensor for each sector is
+$T_i^{\mu\nu}=2(\sqrt{-g})^{-1}\delta S_i/\delta g_{\mu\nu}$.
+We define the sector split explicitly: the $\Phi$--$\psi$ interaction
+potential and the $\psi^2H^\dagger H$ portal are assigned to
+$T_\psi^{\mu\nu}$; the $\chi^2\Phi_{\rm res}^2$ interaction is
+assigned to $T_{\rm DM}^{\mu\nu}$; and the dimension-five
+fermion-Higgs operator is assigned to $T_{\rm SM}^{\mu\nu}$.
+Under this convention $Q_\psi^\nu$ contains
+$\Lambda^{-1}\mathcal{O}_{\rm SM}\nabla^\nu\psi$, while
+$Q_{\rm SM}^\nu$ contains its negative. This current has mass
+dimension $4-1+2=5$, as required for
+$\nabla_\mu T^{\mu\nu}$.
+For clarity, define
+\[
+\begin{aligned}
+U_{\Phi\psi}&=\frac{\alpha m_\psi^2}{2E_{\rm th}^2}\Phi^2\psi^2,\\
+U_{\psi H}&=\frac12g_{\psi H}\psi^2H^\dagger H,\\
+U_Y&=\frac{\psi}{\Lambda}\mathcal O_{\rm SM}.
+\end{aligned}
+\]
+and $V_\psi^{(0)}=-\tfrac12m_\psi^2\psi^2+
+\tfrac14\lambda_\psi\psi^4$. The scalar Hilbert tensors under
+the stated split are
+\begin{align}
+T_\Phi^{\mu\nu}
+&=\nabla^\mu\Phi\nabla^\nu\Phi
+-g^{\mu\nu}\left[\frac12(\nabla\Phi)^2+V_{\rm eff}(\Phi)\right],
+\\
+T_\psi^{\mu\nu}
+&=\nabla^\mu\psi\nabla^\nu\psi
+-g^{\mu\nu}\left[\frac12(\nabla\psi)^2
++V_\psi^{(0)}+U_{\Phi\psi}+U_{\psi H}\right].
+\end{align}
+The interaction $U_Y$ is assigned to the SM tensor, so formally
+\[
+T_{\rm SM}^{\mu\nu}
+=T_{{\rm SM},0}^{\mu\nu}-g^{\mu\nu}U_Y,
+\qquad
+T_{{\rm SM},0}^{\mu\nu}
+=\frac{2}{\sqrt{-g}}\frac{\delta S_{\rm SM}^{(0)}}{\delta g_{\mu\nu}},
+\]
+where $S_{\rm SM}^{(0)}$ is the curved-spacetime chiral Standard
+Model action including gauge, Higgs, fermion and ordinary Yukawa
+terms, but excluding the distinct PTUM operator $U_Y$. The
+$\chi^2\Phi_{\rm res}^2$ potential is assigned to $T_{\rm DM}$,
+as displayed above. Thus every non-derivative interaction
+potential appears exactly once in the total Hilbert tensor.
+The explicit classical tree-level expression, including the
+vierbein and spin-connection contributions of the chiral fermions,
+is given in Eq.~\eqref{eq:sm_hilbert_tensor}. Numerical evolution
+and independent conservation convergence for the full SM sector
+remain outstanding.
+
+For late-time excitation diagnostics it is useful to introduce a
+second, purely bookkeeping split around the instantaneous minimum
+of the real $\psi$ potential. Define
+\begin{align}
+V_{\min}(\Phi)&=
+-\frac{\left[\max(-m_{\rm eff}^2(\Phi),0)\right]^2}
+{4\lambda_\psi},\nonumber\\
+V_{\rm exc}(\Phi,\psi)&=V_\psi(\Phi,\psi)-V_{\min}(\Phi)\ge0.
+\end{align}
+The shifted tensors are
+\begin{equation}
+T_{\psi,\rm exc}^{\mu\nu}
+=T_\psi^{\mu\nu}+g^{\mu\nu}V_{\min},
+\qquad
+T_{\Phi,\rm split}^{\mu\nu}
+=T_\Phi^{\mu\nu}-g^{\mu\nu}V_{\min}.
+\end{equation}
+Their sum is exactly the original $T_\psi^{\mu\nu}+T_\Phi^{\mu\nu}$;
+the field equations and total stress tensor are unchanged. The
+corresponding shifted transfer vector is
+\begin{equation}
+Q_{\psi,\rm exc}^{\nu}
+=Q_\psi^\nu+\nabla^\nu V_{\min},
+\qquad
+Q_{\Phi,\rm split}^{\nu}
+=Q_\Phi^\nu-\nabla^\nu V_{\min}.
+\end{equation}
+In homogeneous FRW,
+$Q_{\psi,\rm exc}^{0}=Q_\psi^0-\dot V_{\min}$ and
+$Q_{\Phi,\rm split}^{0}=-Q_{\psi,\rm exc}^{0}$ for the
+$\Phi$--$\psi$ exchange. This shifted source vanishes when
+$\psi$ follows the instantaneous minimum. The numerical code
+reports both the original Hilbert-sector sources and this
+excitation-energy bookkeeping split; only the latter is used for
+the cycle-averaged excitation equation of state. It must not be
+confused with a new interaction or with the full reheating energy
+partition. This expression applies to the conservative two-field
+truncation before the Higgs background is dynamically excited. If
+$H^\dagger H$ becomes time dependent, the Higgs-portal contribution
+must be included in the instantaneous $\psi$ minimum and the shifted
+split rederived.
+
+The individual $Q_i^\nu$ depend on this bookkeeping convention;
+the total tensor and its conservation law do not.
+With these explicit assignments the transfer vectors are:
+\begin{align}
+Q_\psi^\nu &= -\alpha m_\psi^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi
+ + \frac{\mathcal{O}_{\rm SM}}{\Lambda}\nabla^\nu\psi\nonumber\\
+&\quad - \frac{g_{\psi H}}{2}\psi^2
+ \left[H^\dagger D^\nu H+(D^\nu H)^\dagger H\right], \\
+Q_\Phi^\nu &= +\alpha m_\psi^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi, \\
 Q_{\rm DM}^\nu &= -2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
 Q_{\rm DE}^\nu &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
-Q_{\rm SM}^\nu &= -y_\psi \psi \bar{f}\gamma^\nu f - g_\psi \psi^2 \phi_{\rm SM} \partial^\nu\phi_{\rm SM}.
+Q_{\rm SM}^\nu &= -\frac{\mathcal{O}_{\rm SM}}{\Lambda}\nabla^\nu\psi\nonumber\\
+&\quad + \frac{g_{\psi H}}{2}\psi^2
+ \left[H^\dagger D^\nu H+(D^\nu H)^\dagger H\right].
 \end{align}
-Direct summation now gives $\sum_i Q_i^\nu = 0$ identically, as required
-by $\nabla_\mu T^{\mu\nu}_{\rm total}=0$ (GÖSTERİLDİ). The terms
-$\alpha m^2(\Phi^2/E_{\rm th}^2)\psi\partial^\nu\psi$ and
-$g_{\rm DM}\chi\Phi_{\rm res}^2\partial^\nu\chi$ that appeared in an
-earlier draft arose from double-counting the symmetric interaction
-variation; they cancel once each interaction is assigned exactly once
-to each of the two exchanging sectors. The background energy-partition
-rates below follow from these closed expressions.
-The energy partition during the discharge is determined by the time evolution of the fields. During the tachyonic growth phase ($\Phi \approx \Phi_c$, $\psi$ growing exponentially), the dominant transfer is from the fuel field to the proxy field:
+The signs can be checked directly from the assigned interaction
+potentials. For
+$U_{\Phi\psi}=+\tfrac12(\alpha m_\psi^2/E_{\rm th}^2)\Phi^2\psi^2$,
+assigning $U_{\Phi\psi}$ to the $\psi$ tensor gives
+$Q_\Phi^\nu=U_{\Phi\psi,\Phi}\nabla^\nu\Phi$ and
+$Q_\psi^\nu=-U_{\Phi\psi,\Phi}\nabla^\nu\Phi$.
+Consequently, in homogeneous FRW,
 \begin{equation}
-Q_\psi \approx -Q_\Phi \approx \alpha m^2 \frac{\Phi_c}{E_{\rm th}^2} \psi^2 \dot\Phi
-\qquad\text{(GÖSTERİLDİ from the closed } Q_i^\nu \text{ above).}
+Q_\psi^0=+\frac{\alpha m_\psi^2}{E_{\rm th}^2}
+\Phi\psi^2\dot\Phi,\qquad
+Q_\Phi^0=-\frac{\alpha m_\psi^2}{E_{\rm th}^2}
+\Phi\psi^2\dot\Phi.
 \end{equation}
-(The additional term \(\alpha m^2(\Phi_c^2/E_{\rm th}^2)\psi\dot\psi\)
+Likewise, for $U_{\chi r}=g_{\rm DM}\chi^2\Phi_{\rm res}^2$
+assigned to the DM tensor,
+$Q_{\rm DM}^\nu=-U_{\chi r,\Phi_{\rm res}}
+\nabla^\nu\Phi_{\rm res}$ and
+$Q_{\rm DE}^\nu=+U_{\chi r,\Phi_{\rm res}}
+\nabla^\nu\Phi_{\rm res}$, so
+\begin{equation}
+Q_{\rm DM}^0=+2g_{\rm DM}\chi^2\Phi_{\rm res}
+\dot\Phi_{\rm res},\qquad
+Q_{\rm DE}^0=-2g_{\rm DM}\chi^2\Phi_{\rm res}
+\dot\Phi_{\rm res}.
+\end{equation}
+Here $Q_i^0$ is the source in
+$\dot\rho_i+3H(\rho_i+p_i)=Q_i^0$, since
+$\nabla^0\varphi=-\dot\varphi$ for the $(-+++)$ signature.
+This explicit conversion prevents confusing a contravariant time
+component with the covariant derivative of a homogeneous scalar.
+
+The reheating contributions follow from the same assigned-sector
+variation. For the Yukawa interaction
+\(\mathcal{L}_{Y}=-y_\psi\psi\bar f f\), assign the interaction
+to the SM sector. The \(\psi\) equation then contains the source
+\(y_\psi\bar f f\), and the two divergences are
+\begin{equation}
+Q_{\psi,Y}^{\nu}
+=+y_\psi\bar f f\,\nabla^\nu\psi,\qquad
+Q_{{\rm SM},Y}^{\nu}
+=-y_\psi\bar f f\,\nabla^\nu\psi.
+\end{equation}
+For the scalar reheating interaction
+\(U_{\rm rh}=\tfrac12g_\psi\psi^2\phi_{\rm SM}^2\), assigned to
+the \(\psi\) tensor, the external-field derivative gives
+\begin{align}
+Q_{\psi,{\rm rh}}^\nu
+&=-\frac{\partial U_{\rm rh}}{\partial\phi_{\rm SM}}
+\nabla^\nu\phi_{\rm SM}\nonumber\\
+&=-g_\psi\psi^2\phi_{\rm SM}\nabla^\nu\phi_{\rm SM},\qquad
+Q_{{\rm SM},{\rm rh}}^\nu=-Q_{\psi,{\rm rh}}^\nu.
+\end{align}
+For dimensionless \(y_\psi\) and \(g_\psi\), both currents have
+mass dimension five, as required. These pairwise cancellations
+establish the interaction-current bookkeeping algebraically. They
+do not replace the still-missing explicit SM action and its full
+Hilbert tensor.
+
+For the reheating operators, the homogeneous time components
+are obtained using $\nabla^0\psi=-\dot\psi$ and
+$D^0H=-D_tH$:
+\begin{align}
+Q_{\psi,Y}^0&=-\frac{\mathcal O_{\rm SM}}{\Lambda}\dot\psi,
+&
+Q_{{\rm SM},Y}^0&=+\frac{\mathcal O_{\rm SM}}{\Lambda}\dot\psi,
+\\
+Q_{\psi,H}^0&=+\frac{g_{\psi H}}{2}\psi^2
+\frac{d}{dt}(H^\dagger H),\nonumber\\
+Q_{{\rm SM},H}^0&=-\frac{g_{\psi H}}{2}\psi^2
+\frac{d}{dt}(H^\dagger H).
+\end{align}
+The Yukawa-EFT current has dimension
+$[\mathcal O_{\rm SM}]-[\Lambda]+[\nabla\psi]=4-1+2=5$;
+the Higgs-portal current has dimension
+$[\psi^2]+[H^\dagger D H]=2+3=5$. Both are therefore consistent
+with $[\nabla_\mu T^{\mu\nu}]=5$.
+
+Direct summation gives
+\begin{equation}
+\sum_i Q_i^\nu=0,
+\end{equation}
+as required by
+\(\nabla_\mu T^{\mu\nu}_{\rm total}=0\) within the stated sector
+assignment. Terms proportional to
+\(\alpha m_\psi^2\Phi^2\psi\nabla^\nu\psi/E_{\rm th}^2\) and
+\(g_{\rm DM}\chi\Phi_{\rm res}^2\nabla^\nu\chi\), which appeared in
+an earlier draft, cancel against the corresponding field-equation
+terms when each interaction is assigned exactly once. The background
+energy-partition rates below follow from these closed expressions.
+
+During the tachyonic growth phase, with \(\Phi\) near \(\Phi_c\) and
+\(\psi\) growing, the assigned-sector source is
+\begin{equation}
+Q_\psi^0 \simeq -Q_\Phi^0
+\simeq +\alpha m_\psi^2\frac{\Phi_c}{E_{\rm th}^2}
+\psi^2\dot\Phi.
+\end{equation}
+For the slow-roll direction \(\dot\Phi<0\), this source is negative
+in the \(\psi\)-sector continuity equation under the stated convention
+that the interaction potential is included in \(T_\psi^{\mu\nu}\).
+It must not be described as positive energy transfer into the proxy
+sector. The tachyonic growth and the signed sector-energy exchange
+are distinct diagnostics; their physical interpretation requires
+the full coupled stress-energy evolution.
+(The additional term \(\alpha m_\psi^2(\Phi_c^2/E_{\rm th}^2)\psi\dot\psi\)
 that appeared in an earlier draft is not part of \(Q_\Phi^\nu\); it
 belongs to the proxy sector's own energy balance and is already
 contained in \(\dot\rho_\psi+3H(\rho_\psi+p_\psi)\) on the left-hand
 side of the sector conservation equation.)
-During the quartic oscillation phase, the proxy field decays to SM radiation via $\mathcal{L}_{\rm rh}$, with
+In a perturbative quasiparticle approximation, after defining a
+positive excitation energy $\rho_{\psi,\rm exc}$ above the
+broken-phase minimum, one may coarse-grain the decay source as
 \begin{equation}
-Q_{\rm SM} \approx -Q_\psi \approx \Gamma_\psi \rho_\psi.
+Q_{\rm SM}\simeq -Q_\psi\simeq\Gamma_\psi\rho_{\psi,\rm exc}.
 \end{equation}
+This is a Boltzmann-level approximation, not the exact covariant
+source. The present homogeneous simulation does not yet compute
+$\rho_{\psi,\rm exc}$, $\Gamma_\psi$, or the branching fractions.
 The dark matter production occurs via parametric resonance when $\Phi_{\rm res}(t)$ oscillates, with the energy transfer rate
 \begin{equation}
 Q_{\rm DM} \approx -Q_{\rm DE} \approx 2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res}.
 \end{equation}
 
-\noindent\textbf{Complete reheating derivation.}
-The reheating sector $\mathcal{L}_{\rm rh} = -y_\psi \psi \bar{f} f - \frac{1}{2} g_\psi \psi^2 \phi_{\rm SM}^2$ governs the decay of the proxy field $\psi$ into Standard Model particles. During the quartic oscillation phase, $\psi$ oscillates coherently with amplitude $\mathcal{A} \sim \psi_0$ and effective mass $m_\psi \sim \sqrt{\lambda_\psi}\psi_0$. The perturbative decay width into fermions is
-\begin{equation}
-\Gamma_{\psi \to f\bar{f}} = \frac{y_\psi^2}{8\pi} m_\psi \left(1 - \frac{4m_f^2}{m_\psi^2}\right)^{3/2} \approx \frac{y_\psi^2}{8\pi} m_\psi,
-\end{equation}
-The quartic interaction $-\tfrac12 g_\psi\psi^2\phi_{\rm SM}^2$ does not generate a single-particle decay $\psi\to\phi_{\rm SM}\phi_{\rm SM}$ around a vacuum with $\langle\psi\rangle=0$; it instead mediates processes such as $\psi\psi\to\phi_{\rm SM}\phi_{\rm SM}$. Such annihilation and non-perturbative production channels require a separate kinetic treatment and are not included in a one-particle decay width. If the Yukawa channel is kinematically open, its perturbative width is
-\begin{equation}
-\Gamma_\psi\simeq\sum_f\frac{y_{\psi,f}^2}{8\pi}m_\psi\left(1-\frac{4m_f^2}{m_\psi^2}\right)^{3/2}.
-\end{equation}
-This expression is only a perturbative estimate for a well-defined quasiparticle excitation; its use for a coherently oscillating quartic condensate requires an averaging and backreaction analysis.
-Reheating completes when $\Gamma_\psi \sim H$. At this point, the energy density of the oscillating $\psi$ field is $\rho_\psi \sim \lambda_\psi \psi_0^4$, and the Hubble rate is $H \sim \sqrt{\rho_\psi}/M_{\rm Pl} \sim \sqrt{\lambda_\psi}\psi_0^2/M_{\rm Pl}$. The condition $\Gamma_\psi \sim H$ gives
-\begin{equation}
-\frac{y^2}{8\pi} \sqrt{\lambda_\psi}\psi_0 \sim \frac{\sqrt{\lambda_\psi}\psi_0^2}{M_{\rm Pl}} \quad \Rightarrow \quad \psi_0 \sim \frac{y^2}{8\pi} M_{\rm Pl}.
-\end{equation}
-The relation above is a conditional estimate obtained by equating a perturbative decay rate to the Hubble rate; it is not a self-consistent solution for the oscillating condensate. The reheating temperature would then be estimated as
-\begin{equation}
-\begin{split}
-T_{\rm rh} &\sim \left(\frac{90}{\pi^2 g_*}\right)^{1/4} \sqrt{\Gamma_\psi M_{\rm Pl}} \\
-&\sim 10^{15}\,\mathrm{GeV} \left(\frac{y}{10^{-2}}\right)
-\left(\frac{\lambda_\psi}{0.1}\right)^{1/4} \\
-&\qquad \left(\frac{\psi_0}{10^{13}\,\mathrm{GeV}}\right)^{1/2}
-\left(\frac{100}{g_*}\right)^{1/4}.
-\end{split}
-\end{equation}
-No numerical value of $T_{\rm rh}$ is claimed here: the condensate-averaged decay rate, branching fractions, non-perturbative production, and thermalization efficiency have not been computed self-consistently. The displayed expression is an estimate conditional on perturbative decay domination and rapid thermalization.
+\subsubsection{Reheating and entropy budget}
+\label{sec:entropy_budget}
 
-The energy density released in the discharge is $\rho_{\rm dis} \sim V_0$. Assuming instantaneous thermalization at temperature $T_{\rm rh}$, the entropy density is
+\noindent\textbf{Gauge-invariant EFT reheating channels.}
+The reheating interactions are
+\[
+\mathcal L_{\rm rh}
+=-\frac{\psi}{\Lambda}\mathcal O_{\rm SM}
+-\frac12g_{\psi H}\psi^2H^\dagger H,
+\]
+with $\mathcal O_{\rm SM}$ defined above. After electroweak
+symmetry breaking, the first term gives effective couplings
+$y_{\psi f}^{\rm eff}=C_fv/(\sqrt2\Lambda)$. For a well-defined
+scalar quasiparticle oscillating about a fixed broken-phase
+minimum, the local curvature mass is
+$m_{\rm osc}^2=-2m_{\rm eff}^2$. If
+$m_{\rm osc}>2m_f$ and the EFT interaction is perturbative, the
+conditional partial width is
 \begin{equation}
-s = \frac{2\pi^2}{45}g_* T_{\rm rh}^3,
+\Gamma_{\psi\to f\bar f}=
+\frac{N_c|y_{\psi f}^{\rm eff}|^2m_{\rm osc}}{8\pi}
+\left(1-\frac{4m_f^2}{m_{\rm osc}^2}\right)^{3/2}.
 \end{equation}
-where $g_*$ is the effective number of relativistic degrees of freedom. The reheating temperature is determined by equating the released energy to the radiation energy density:
-\begin{equation}
-\rho_{\rm rad} = \frac{\pi^2}{30}g_* T_{\rm rh}^4 \sim V_0.
-\end{equation}
-This gives
-\begin{equation}
-\begin{split}
-T_{\rm rh} &\sim \left(\frac{30 V_0}{\pi^2 g_*}\right)^{1/4} \\
-&\sim 10^{15}\,\mathrm{GeV} \left(\frac{V_0^{1/4}}{10^{16}\,\mathrm{GeV}}\right)
-\left(\frac{100}{g_*}\right)^{1/4}.
-\end{split}
-\end{equation}
-The comoving entropy per unit volume is then
-\begin{equation}
-S_{\rm com} = s a^3 \sim \frac{2\pi^2}{45}g_* T_{\rm rh}^3 a^3.
-\end{equation}
-Using $a \propto T^{-1}$ during radiation domination, the comoving entropy is conserved after reheating. The total entropy in the observable universe today is
-\begin{equation}
-S_{\rm obs} \sim s_0 a_0^3 \sim 10^{88} \left(\frac{g_*}{100}\right)
-\left(\frac{T_{\rm rh}}{10^{15}\,\mathrm{GeV}}\right)^3,
-\end{equation}
-where $s_0 \sim 10^9\,\mathrm{cm}^{-3}$ is the current entropy density and $a_0$ is the current scale factor. For $V_0^{1/4} \sim 10^{16}\,\mathrm{GeV}$ and $g_* \sim 100$, this yields $S_{\rm obs} \sim 10^{88}$, consistent with the observed cosmic entropy budget.
+This expression applies to small oscillations about a fixed
+minimum. It is not automatically the decay rate of a nonlinear,
+time-dependent waterfall condensate.
 
-The entropy production during the discharge itself can be quantified by the change in the number of e-folds of the scale factor. The discharge occurs over a timescale $\Delta t \sim |m_{\rm eff}|^{-1} \sim 10^{-13}\,\mathrm{GeV}^{-1}$, during which the scale factor grows by a factor
+The Higgs portal $\psi^2H^\dagger H$ preserves the isolated
+$\psi\mapsto-\psi$ symmetry and therefore does not produce a
+single-particle $\psi$ decay by itself. It mediates pair processes
+such as $\psi\psi\to HH^\dagger$ and can excite Higgs modes
+non-perturbatively through the time-dependent background
+$g_{\psi H}\psi^2(t)$. Those channels require a kinetic or
+mode-function calculation. The dimension-five fermion-Higgs
+operator is odd in $\psi$ and may break the $Z_2$ symmetry; its
+induced vacuum bias and effect on domain walls must be included
+in the same effective potential.
+
+The commonly used relation $Q_{\rm SM}\simeq\Gamma_\psi
+\rho_{\psi,\rm exc}$ is valid only after a positive excitation
+energy above the broken-phase minimum and a quasiparticle decay
+rate have been defined. In the present simulation,
+$\rho_\psi$ is formed from the unshifted field-dependent
+potential. A consistent $\rho_{\psi,\rm exc}$ requires subtracting
+the moving minimum energy and including the associated
+$\Phi$-dependent contribution in the total stress tensor and
+$\Phi$ equation. That calculation has not yet been implemented.
+Consequently, no numerical decay width, branching fraction, or
+perturbative reheating temperature is claimed from the EFT
+couplings.
+
+If perturbative decay dominates and thermalization is rapid, the
+usual conditional estimate is
 \begin{equation}
-\frac{a_{\rm end}}{a_{\rm start}} \sim \exp(H_* \Delta t) \sim 1 + \mathcal{O}(10^{-3}).
+T_{\rm rh}\simeq
+\left(\frac{90}{\pi^2g_*}\right)^{1/4}
+\sqrt{\Gamma_\psi M_{\rm Pl}}.
 \end{equation}
-The entropy production is therefore dominated by the conversion of potential energy to radiation, not by the expansion during the discharge.
+The Wilson coefficients $C_f$, cutoff $\Lambda$, Higgs-portal
+coupling $g_{\psi H}$, condensate history, and competing
+non-perturbative channels are not fixed, so this formula is not
+assigned a numerical value here.
 
-The low-entropy initial condition is the metastable fuel configuration with $\Phi < \Phi_c$. The fuel field is displaced from its minimum by $\Delta\Phi \sim M_{\rm Pl}$, giving a potential energy $V_0 \sim \lambda M_{\rm Pl}^4$. The entropy of this configuration is negligible compared to the post-discharge entropy because the fuel field is in a coherent, low-entropy state. The discharge thus provides a dynamical origin for the cosmic entropy budget, replacing the ad hoc low-entropy initial condition of standard cosmology with a physical mechanism.
+The energy density at the exact single-field endpoint is not
+$V_0$. For $\Phi_c=\Phi_{\rm end}^{(H)}
+\simeq0.986228M_{\rm Pl}$ and $\lambda_\Phi=0.02$, the potential
+contribution is
+\begin{equation}
+V(\Phi_c)/V_0\simeq0.01926493.
+\end{equation}
+The exact background terminates at $\epsilon_H=1$, for which
+$X_{\rm end}^2=1/3$ and
+$\rho_{\rm end}=V(\Phi_c)/(1-X_{\rm end}^2)=3V(\Phi_c)/2$.
+Consequently,
+\begin{equation}
+K_{\rm end}/V_0\simeq0.00963246,\qquad
+\rho_{\rm end}/V_0\simeq0.02889739.
+\end{equation}
+These are single-field endpoint values. The fraction actually
+transferred to radiation, $\psi$, $\chi$, or residual $\Phi$ is not
+determined until the coupled waterfall and reheating dynamics are
+solved.
 
-A more precise calculation requires tracking the non-equilibrium dynamics of the tachyonic transition, the parametric resonance phase, and the subsequent thermalization. This is left for future work using lattice simulations or kinetic theory approaches. The time-averaged energy partition ratios
-for the benchmark parameters are:
+Assuming, as an idealized upper-limit benchmark, that all of
+$\rho_{\rm end}$ thermalizes instantaneously into radiation,
+\begin{equation}
+s_{\rm rh}=\frac{2\pi^2}{45}g_{*s}T_{\rm rh}^3,
+\qquad
+\rho_{\rm rad}=\frac{\pi^2}{30}g_*T_{\rm rh}^4
+\simeq\rho_{\rm end}.
+\end{equation}
+For $g_*=100$ this gives
+\begin{align}
+T_{\rm rh}^{\rm ideal}
+&\simeq
+\left(\frac{30\rho_{\rm end}}{\pi^2g_*}\right)^{1/4}
+\nonumber\\
+&\simeq1.72\times10^{15}\,\mathrm{GeV}
+\left(\frac{V_0^{1/4}}{10^{16}\,\mathrm{GeV}}\right)
+\nonumber\\
+&\quad\times
+\left(\frac{g_*}{100}\right)^{-1/4}
+\left(\frac{\rho_{\rm end}}{0.02889739V_0}\right)^{1/4}.
+\end{align}
+If only the potential contribution $V(\Phi_c)$ were converted,
+the corresponding idealized estimate would be
+$T_{\rm rh}^{(V)}\simeq1.56\times10^{15}\,\mathrm{GeV}$ at the same
+$V_0$ and $g_*$. Neither value is a prediction of the full PTUM
+reheating process: the energy partition, decay rates, competing
+Higgs channels and thermalization delay remain to be computed.
+
+The comoving entropy density after reheating is
+\begin{equation}
+S_{\rm com}=s a^3.
+\end{equation}
+It is conserved during subsequent adiabatic radiation domination,
+up to changes in the effective entropy degrees of freedom. The
+present entropy density is approximately
+$s_0\simeq2.9\times10^3\,\mathrm{cm}^{-3}$; multiplying by the
+present observable-universe volume gives a total entropy of order
+$10^{88}$. This is an observed cosmological quantity, not a
+prediction of the PTUM discharge calculation. Connecting it to
+$T_{\rm rh}$ requires a specified thermal history, entropy degrees
+of freedom, scale-factor normalization, and absence (or modelling)
+of later entropy injection.
+
+The expansion during discharge is governed by
+\begin{equation}
+\frac{a_{\rm end}}{a_{\rm start}}
+=\exp\!\left(\int_{t_{\rm start}}^{t_{\rm end}}H(t)\,dt\right).
+\end{equation}
+The previous estimate $H_*\Delta t\sim10^{-3}$ and the associated
+claim of negligible expansion are withdrawn. In the threshold-matched benchmark, the potential-only
+estimate gives $3H_{c,V}/(2\mu)\simeq3.50$. Including the exact
+kinetic contribution at $\epsilon_H=1$ raises the endpoint value to
+$3H_c/(2\mu)\simeq4.29$, corresponding to $H_c/\mu\simeq2.84$.
+Thus even the nominal interval $\mu^{-1}$ is not short compared with
+the Hubble time. The actual discharge duration and scale-factor growth
+must be obtained from the coupled background solution; the frozen
+short-time approximation is not justified for this benchmark.
+
+A homogeneous coherent scalar configuration can have low coarse-grained
+matter entropy under a specified coarse-graining prescription. That
+observation does not determine the total gravitational entropy or
+explain the special low-entropy initial state of the Universe. PTUM
+therefore does not claim to replace the cosmological Past Hypothesis or
+to derive the thermodynamic arrow of time. A non-equilibrium treatment
+of tachyonic growth, inhomogeneous modes, rescattering, and
+thermalization would be needed to calculate entropy production
+microscopically.
+
+The quantities below are phenomenological reference targets or
+observationally constrained parameters, not energy-partition outputs
+of the present homogeneous simulation or CLASS perturbation code:
 \begin{itemize}
-\item Proxy fluid (pfd): $\sim 10^{-2}$--$10^{-1}$ of $V_0$ (set by $\Delta N_{\rm fluid}$ bound)
-\item Dark matter: $\Omega_\chi h^2 \sim 0.12$ (set by parametric resonance efficiency)
-\item Dark energy: $\rho_{\rm DE} \sim 10^{-120} M_{\rm Pl}^4$ (residual)
-\item SM radiation: remainder $\sim V_0$ (reheating)
+\item Proxy-fluid dark radiation: $\Delta N_{\rm fluid}$ is constrained
+by the phenomenological perturbation analysis; its microscopic
+normalization requires a calculated production and dilution history.
+\item Dark matter: $\Omega_\chi h^2\simeq0.12$ is the observed abundance
+to be reproduced, not a relic abundance calculated by the present
+frozen-background Floquet diagnostic.
+\item Dark energy: the present residual density is an observational
+target; its value has not been derived from the discharge dynamics.
+\item Standard Model radiation: the reheating fraction depends on
+branching ratios, thermalization, and the full energy-transfer history,
+which have not been solved self-consistently.
 \end{itemize}
-The precise partition depends on the trajectory in field space and is computed numerically in the CLASS implementation.
+The CLASS implementation evolves the stated effective linear
+perturbation sector. It does not calculate the above microscopic
+energy partition from the scalar-field dynamics.
 
 \subsection{Proxy-fluid dark radiation}
 
@@ -2183,7 +2959,7 @@ Data & \(H_0\) & \(\omega_c\) & \(n_s\) & \(\Delta N^{95}\) \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
 P+B       & 68.91 & 0.1227 & 0.965 & 0.38 \\
 P+L+B+S   & 68.64 & 0.1222 & 0.964 & 0.31 \\
-\(\Lambda\)CDM & 67.85 & 0.1200 & 0.964 & -- \\
+\(\Lambda\)CDM & 67.85 & 0.1200 & 0.964 \\
 \noalign{\smallskip}\hline
 \end{tabular}
 \end{table}
@@ -2337,7 +3113,9 @@ incidental consequences of the extra radiation component.
 
 All four PTUM sectors have canonical kinetic terms
 \(\tfrac12(\partial\phi)^2\), so the kinetic matrix is the identity and
-is positive definite: no ghosts (GÖSTERİLDİ). The scalar perturbation
+is positive definite for the displayed two-derivative canonical
+scalar sector. This does not certify higher-derivative operators or
+a UV completion. The scalar perturbation
 speeds are \(c_s^2=1\) for the canonical fields \(\Phi,\chi,\Phi_{\rm res}\)
 and \(c_s^2=1/3\) for the pfd fluid closure (FENOMENOLOJİK, conditional
 on the quartic regime). The relevant quantities are summarized in
@@ -2657,12 +3435,26 @@ at \(\sim5\sigma\).
 \subsubsection{Forecast methodology and experimental specifications}
 \label{sec:forecast_methodology}
 
-The forecasts presented here are derived from Fisher matrix
-analyses using the full experimental covariance matrices for
-CMB-S4 and CMB-HD, following the methodology of
-\cite{Abazajian2016,Abazajian2019,Sehgal2019} \emph{(FENOMENOLOJİK
-tahmin; Fisher kodu yayında değil)}. We summarize the
-key specifications and assumptions below.
+The forecasts presented here are conditional, phenomenological
+Fisher projections. Their numerical results are author-reported and
+are not independently reproduced from the present repository. The
+modified \texttt{CLASS} implementation, Fisher code, fiducial spectra,
+numerical derivatives, bandpower covariance outputs, foreground and
+delensing-residual model, nuisance-parameter priors, and full
+nuisance-parameter marginalization are not deposited here. The
+covariance expression below is a Gaussian approximation constructed
+from published instrument specifications; it is not an end-to-end
+experimental likelihood or a released instrument covariance package.
+Accordingly, the values below are indicative forecasts rather than
+independently validated detection significances. A reproducible
+forecast release must provide the executable code, fiducial parameter
+vector and spectra, derivative step-size tests, multipole binning and
+cuts, covariance matrices, foreground/noise residual assumptions,
+delensing model, nuisance priors, and marginalized Fisher outputs.
+The forecasts follow the general methodology of
+\cite{Abazajian2016,Abazajian2019,Sehgal2019}
+\emph{(phenomenological forecast; Fisher implementation not public)}.
+We summarize the reported specifications and assumptions below.
 
 \textbf{CMB-S4:} We adopt the baseline CMB-S4 configuration from
 the \textit{CMB-S4 Science Book}~\cite{Abazajian2016}:
@@ -2718,7 +3510,7 @@ derivatives are computed numerically using the PTUM-modified
 \(\Delta N_{\rm fluid}\) is \(\sigma(\Delta N_{\rm fluid}) =
 \sqrt{(F^{-1})_{\Delta N,\Delta N}}\).
 
-\textbf{Results:} The Fisher forecasts yield:
+\textbf{Reported results:} The author-reported Fisher calculation gives:
 \begin{itemize}
 \item CMB-S4: \(\sigma(\Delta N_{\rm fluid}) \simeq 0.027\) (95\% CL
       \(< 0.044\)), a factor of 7 improvement over current
@@ -2789,11 +3581,13 @@ Four distinct pillars are claimed, with the following status labels:
 \begin{enumerate}[label=(\roman*)]
 \item the creation sector admits a plateau-type primordial potential
       compatible with current CMB constraints on $n_s$ and $r$
-      \emph{(GÖSTERİLDİ at the analytic/slow-roll level; exact-background
-      check SAYISAL OLARAK DOĞRULANDI with the public script)};
+      \emph{(leading-order slow-roll estimate; the dimensionless
+      exact-background Hubble-flow scan is reproducible with
+      \texttt{ptum\_inflation\_background.py}; mode spectra are not)};
 \item the discharge scale is normalised to a concrete high-energy
       band, $V_0^{1/4}\sim10^{15}$--$10^{16}\,\mathrm{GeV}$
-      \emph{(GÖSTERİLDİ from the scalar amplitude; in unresolved tension
+      \emph{(from scalar-amplitude normalization in the single-field
+      slow-roll approximation; in unresolved tension
       with the quartic-regime requirement, see Sec.~\ref{subsec:ptum_operational_stability})};
 \item the late-time dark-energy sector contains a broad viable
       region with near-$\Lambda$ behaviour
@@ -2870,17 +3664,14 @@ tension-resolution model.
 \subsection{Model summary and internal consistency}
 \label{sec:summary}
 
-PTUM's core physical picture---fuel accumulation, tachyonic
-discharge, residual dark sector splitting---is internally consistent:
-all sectors are ghost-free and gradient-stable (Section~8.1),
-all couplings are perturbative and all energy scales satisfy
-$H_*\ll M_{\rm Pl}$ (Section~8.4), and the perturbative sector
-produces purely adiabatic perturbations with isocurvature fraction
-$\beta_{\rm iso}\sim10^{-12}$--$10^{-6}$, far below current bounds
-(Section~8.2). The BBN consistency check is reported to confirm
-\emph{(author-reported)} that $\Delta N_{\rm fluid}<0.31$ is
-automatically compatible with the
-BBN upper limit $\Delta N_{\rm eff}<0.40$ (Section~8.3).
+The corrected truncated scalar action has canonical kinetic
+terms and a consistent algebraic waterfall sign under the declared
+sector split. This does not yet establish the complete microscopic
+PTUM picture: the gauge-invariant reheating EFT coefficients, full
+SM Hilbert tensor, inhomogeneous waterfall and defect evolution,
+backreaction, and microscopic proxy-fluid realization remain open.
+The quoted perturbation and BBN results are author-reported and have
+not been independently reproduced from public chains and code.
 
 The cosmological constant problem is re-parameterised rather than
 solved: the residual dark-energy fraction
@@ -2996,7 +3787,7 @@ metastable background.
 \label{sec:pre_discharge}
 
 The pre-discharge phase is the epoch during which the fuel field
-$\Phi$ accumulates in a metastable configuration before reaching the
+$\Phi$ evolves along a metastable trajectory before rolling below the
 critical threshold $\Phi_c$. In the current effective description,
 this phase is not derived from first principles but is
 phenomenologically characterized by the following properties:
@@ -3015,38 +3806,49 @@ phenomenologically characterized by the following properties:
 
 \item \textbf{Fuel field configuration:} The fuel field $\Phi$ is
       displaced from the minimum of its potential by a super-Planckian
-      excursion $\Delta\Phi \sim M_{\rm Pl}/\sqrt{\lambda}$. For
-      $\lambda \sim 0.02$, this gives $\Delta\Phi \sim 7 M_{\rm Pl}$.
-      The field is in a coherent, low-entropy state with negligible
-      kinetic energy ($\dot\Phi^2 \ll V_0$), satisfying the slow-roll
-      conditions $\epsilon_V, |\eta_V| \ll 1$.
+      excursion. For the illustrative $\lambda_\Phi=0.02$
+      single-field slow-roll solution, the field moves from
+      $\Phi_*\simeq10.5M_{\rm Pl}$ at $N_*=55$ to
+      $\Phi_{\rm end}^{(H)}\simeq0.986M_{\rm Pl}$, giving
+      $\Delta\Phi\simeq9.73M_{\rm Pl}$.
+      At horizon exit ($N_*=55$) the illustrative solution is in
+      the slow-roll regime. By the quoted end point,
+      $\epsilon_V(\Phi_{\rm end})\simeq1$, so the slow-roll expansion
+      is breaking down and the kinetic contribution need not be
+      negligible relative to the remaining fuel potential. The exact
+      kinetic energy at threshold must be read from the full
+      background integration; the potential-dominated estimate used
+      for $T_{\rm rh}$ is conditional, not an exact energy budget.
 
 \item \textbf{Metastability:} The configuration is metastable because
       the proxy field $\psi$ has a positive effective mass squared
-      $m_{\rm eff}^2(\Phi) = m^2(1 - \alpha\Phi^2/E_{\rm th}^2) > 0$
-      for $|\Phi| < \Phi_c$. The $\psi$ field sits at the origin
+      $m_{\rm eff}^2(\Phi) = m_\psi^2(\alpha\Phi^2/E_{\rm th}^2 - 1) > 0$
+      for $|\Phi| > \Phi_c$. The $\psi$ field sits at the origin
       $\psi = 0$, which is a local minimum of the activation
       potential. The system is stable against small fluctuations in
       $\psi$ but unstable to the large-field excursion of $\Phi$
       toward $\Phi_c$.
 
-\item \textbf{Entropy:} The pre-discharge state has extremely low
-      entropy compared to the post-discharge universe. The fuel field
-      is in a pure quantum state (or a highly coherent classical
-      configuration), and the proxy sector is in its vacuum state.
-      The total entropy is dominated by the de Sitter horizon entropy
-      $S_{\rm dS} \sim M_{\rm Pl}^2/H_*^2 \sim 10^{12}$, which is
-      negligible compared to the post-discharge entropy
-      $S_{\rm obs} \sim 10^{88}$ (total observable-universe entropy).
+\item \textbf{Entropy:} The pre-discharge matter sector is assumed
+      to be in a homogeneous coherent configuration with low
+      coarse-grained matter entropy under the chosen state
+      description. This does not determine the total gravitational
+      entropy. The de Sitter horizon entropy in one Hubble patch is
+      of order $S_{\rm dS}\sim\pi M_{\rm Pl}^2/H_*^2$, whereas the
+      present observable-universe entropy of order $10^{88}$ refers
+      to a different spacetime region and epoch. These quantities
+      cannot be directly compared as a derivation of entropy
+      production or of the cosmological low-entropy initial
+      condition.
 
 \item \textbf{Trigger mechanism:} The transition to the discharge
-      phase occurs when $\Phi$ rolls down the potential and crosses
-      $\Phi_c = E_{\rm th}/\sqrt{\alpha}$. This is a classical
-      dynamical process driven by the slow-roll evolution of $\Phi$,
-      not a quantum tunneling event. The timescale for the final
-      approach to $\Phi_c$ is $\Delta t \sim H_*^{-1}$, and the
-      discharge itself occurs on the much shorter timescale
-      $\Delta t_{\rm dis} \sim |m_{\rm eff}|^{-1} \ll H_*^{-1}$.
+      phase occurs when $\Phi$ rolls down through
+      $\Phi_c = E_{\rm th}/\sqrt{\alpha}$, where the proxy mass
+      changes sign. This is a classical slow-roll crossing rather
+      than a quantum tunneling event. The discharge duration is not
+      assumed to be short compared with a Hubble time; for the
+      threshold-matched benchmark $3H_c/(2\mu)\simeq4.29$, so the
+      coupled transition must be evolved in the expanding background.
 
 \item \textbf{Limitations:} The current model does not specify the
       origin of the initial displacement of $\Phi$, the mechanism
@@ -3081,7 +3883,7 @@ The dark matter field $\chi$ couples to the residual fuel field
 $\Phi_{\rm res}$ via the interaction term
 $-g_{\rm DM}\chi^2\Phi_{\rm res}^2$ in the Lagrangian. The factor of
 2 in the effective mass below follows from the normalization of this
-interaction term (GÖSTERİLDİ):
+interaction term by varying the action:
 \begin{equation}
 m_{\chi,\rm eff}^2(t) = m_\chi^2 + 2g_{\rm DM}\Phi_{\rm res}^2(t),
 \end{equation}
@@ -3095,315 +3897,197 @@ mass term for $\chi$. Writing
 $\Phi_{\rm res}(t)=\mathcal{A}_{\rm res}\cos(\omega_{\rm res}t)$,
 the mode equation becomes a Mathieu equation with
 \begin{equation}
-q \equiv \frac{2g_{\rm DM}\mathcal{A}_{\rm res}^2}{2\omega_{\rm res}^2}
-= \frac{g_{\rm DM}\mathcal{A}_{\rm res}^2}{\omega_{\rm res}^2},
-\qquad
-A_k \equiv \frac{k^2/a^2+m_\chi^2}{\omega_{\rm res}^2}.
+\frac{d^2X_k}{dz^2}+[A_k-2q\cos(2z)]X_k=0,
+\qquad z=\omega_{\rm res}t,
 \end{equation}
+with
+\begin{align}
+q&=-\frac{g_{\rm DM}\mathcal{A}_{\rm res}^2}
+{2\omega_{\rm res}^2},\nonumber\\
+A_k&=\frac{1}{\omega_{\rm res}^2}
+\left[
+\frac{k^2}{a^2}+m_\chi^2+g_{\rm DM}\mathcal{A}_{\rm res}^2
+-\frac{3}{2}\dot H-\frac{9}{4}H^2
+\right].
+\end{align}
 The $\chi$ field experiences parametric resonance when the Mathieu
-parameters place the mode in an instability band, the dominant one
-being $A_k\approx 1$ ($n=1$), i.e.\
-$\omega_\chi\equiv\sqrt{k^2/a^2+m_\chi^2}\approx\omega_{\rm res}/2$.
+parameters place the mode in an instability band. The narrow primary
+band is centered near $A_k\simeq1$. In the short-time limit where the
+Hubble-rescaling terms are negligible, this corresponds to
+\begin{equation}
+\sqrt{\frac{k^2}{a^2}+m_\chi^2+
+g_{\rm DM}\mathcal A_{\rm res}^2}
+\simeq\omega_{\rm res}.
+\end{equation}
+The characteristic frequency is therefore near $\omega_{\rm res}$,
+not $\omega_{\rm res}/2$.
 
 The equation of motion for the $\chi$ field modes in an FRW
 background is
 \begin{equation}
-\ddot\chi_k + 3H\dot\chi_k + \left(\frac{k^2}{a^2} + m_\chi^2(t)\right)\chi_k = 0.
+\ddot\chi_k + 3H\dot\chi_k +
+\left(\frac{k^2}{a^2}+m_\chi^2+
+2g_{\rm DM}\Phi_{\rm res}^2(t)\right)\chi_k=0.
 \end{equation}
-During the short discharge phase ($\Delta t \ll H^{-1}$), Hubble
-expansion can be neglected and the equation reduces to the
-Mathieu equation. The Floquet exponent $\mu_k$ determines the
+For $X_k=a^{3/2}\chi_k$ this becomes
+\begin{equation}
+\ddot X_k+\left[\frac{k^2}{a^2}+m_\chi^2+
+2g_{\rm DM}\Phi_{\rm res}^2
+-\frac{3}{2}\dot H-\frac{9}{4}H^2\right]X_k=0.
+\end{equation}
+The terms involving \(H\) and \(\dot H\) in \(A_k\) follow from
+the canonical rescaling \(X_k=a^{3/2}\chi_k\). In the short-time
+Minkowski limit \(H/\omega_{\rm res}\ll1\), with slowly varying
+background parameters, they may be neglected. The Floquet exponent $\mu_k$ determines the
 exponential growth of modes within the resonance band:
 \begin{equation}
-\chi_k(t) \propto \exp(\mu_k t).
+\chi_k(t) \propto \exp(\mu_k^{(t)} t),
+\qquad \mu_k^{(t)}=\omega_{\rm res}\mu_k^{(z)}.
 \end{equation}
-For the broad resonance regime ($q \gg 1$),
-the maximum Floquet exponent is $\mu_{\rm max} \approx q\,\omega_{\rm res}/2$
-(GÖSTERİLDİ from the standard Mathieu asymptotics; the earlier draft's
-$\mu_{\rm max}\approx0.2\,\omega_{\rm res}$ was a narrow-resonance
-estimate and is not used here). The occupation number of produced
-$\chi$ particles after $N$ oscillation periods is
+The dimensionless Floquet exponent is defined in $z=\omega_{\rm res}t$;
+the physical growth rate is $\mu_k^{(t)}=\omega_{\rm res}\mu_k^{(z)}$.
+No universal broad-resonance estimate $\mu_{\rm max}\simeq
+q\omega_{\rm res}/2$ is assumed: the exponent and instability bands
+must be computed from the monodromy matrix for the actual $(A_k,q)$,
+then checked against expansion and backreaction. In the linear regime, while a mode remains in a Floquet
+instability band and the background is approximately periodic, its
+amplitude grows by \(e^{\pi\mu_k^{(z)}}\) per period. The occupation
+number therefore scales as
 \begin{equation}
-n_k \approx \exp(2\mu_k N\,\omega_{\rm res}^{-1}),
+n_k(N_{\rm osc})\propto
+\exp\!\left(2\pi\mu_k^{(z)}N_{\rm osc}\right),
 \end{equation}
-where $N\,\omega_{\rm res}^{-1}$ is the duration of the resonant phase.
+where \(N_{\rm osc}\) is the number of completed oscillation periods.
+This relation ceases to apply once expansion moves the mode through
+the band or backreaction becomes important.
 
-The relic abundance is determined by the number density of produced
-$\chi$ particles at the end of the discharge, redshifted to the
-present epoch. The comoving number density is
+A reproducible frozen-background monodromy calculation is
+provided in \texttt{ptum\_floquet.py}. It computes the two fundamental
+solutions over one Mathieu period, returns the monodromy matrix and
+its real Floquet growth exponent, and includes the \(H,\dot H\)
+contribution to \(A_k\). Regression tests verify the unit Wronskian
+(\(\det M\simeq1\)), stability at \(q=0\), and the narrow primary-band
+limit \(\mu_z\simeq |q|/2\) near \(A_k=1\).
+
+The same module now provides a linear expanding-background mode
+integrator, \texttt{integrate\_expanding\_mode}, which accepts sampled
+histories \(a(t)\), \(H(t)\), and \(\Phi_{\rm res}(t)\), checks
+their FRW consistency \(H=\dot a/a\) within a declared tolerance, and solves
+\[
+\ddot\chi_k+3H\dot\chi_k+
+\left[k^2/a^2+m_\chi^2+
+2g_{\rm DM}\Phi_{\rm res}^2(t)\right]\chi_k=0.
+\]
+It initializes the canonical mode \(X_k=a^{3/2}\chi_k\) with a
+first-order adiabatic vacuum only when
+\[
+\begin{aligned}
+\Omega_k^2&=k^2/a^2+m_\chi^2+
+2g_{\rm DM}\Phi_{\rm res}^2\nonumber\\
+&-\frac32\dot H-\frac94H^2>0,\\
+\left|\dot\Omega_k/\Omega_k^2\right|_{t_0}
+&\leq \varepsilon_{\rm ad}.
+\end{aligned}
+\]
+The initial data are
+\[
+\begin{aligned}
+X_k(t_0)&=\frac{1}{\sqrt{2\Omega_{k,0}}},\\
+\dot X_k(t_0)&=
+\left(-i\Omega_{k,0}
+-\frac{\dot\Omega_{k,0}}{2\Omega_{k,0}}\right)X_k(t_0).
+\end{aligned}
+\]
+Only the initial time must admit a real adiabatic vacuum. The
+integrator can evolve through intermediate intervals with
+\(\Omega_k^2<0\), which correspond to tachyonic growth of the
+canonical mode; a particle number is assigned only if the final
+\(\Omega_k^2\) is again positive. At a final time with positive
+\(\Omega_k^2\), the code reports the instantaneous adiabatic occupation estimate
+\[
+n_k=\frac{|\dot X_k|^2+\Omega_k^2|X_k|^2}{2\Omega_k}-\frac12
+\]
+and monitors the canonical Wronskian. If the initial state is not
+sufficiently adiabatic, initialization fails closed; if the final
+frequency is not real and positive, no particle number is assigned.
+Regression tests include an expanding de Sitter vacuum control and
+rejection of a deliberately non-adiabatic initial state.
+
+For a strictly increasing finite momentum grid, the module also
+evaluates the finite-band estimate
+\[
+\begin{aligned}
+n_{\chi,\,\rm com}^{[k_{\min},k_{\max}]}
+&=\frac{1}{2\pi^2}
+\int_{k_{\min}}^{k_{\max}}dk\,k^2n_k,\\
+n_{\chi,\,\rm phys}^{[k_{\min},k_{\max}]}
+&=\frac{n_{\chi,\,\rm com}^{[k_{\min},k_{\max}]}}{a_f^3}.
+\end{aligned}
+\]
+using trapezoidal quadrature. The implementation deliberately does
+not extrapolate the infrared or ultraviolet tails. Momentum-range
+and grid-resolution convergence are required before this finite-band
+quantity can be interpreted as a total number density.
+
+This remains a linear mode calculation on a prescribed background,
+not a self-consistent PTUM production calculation: the supplied
+histories are not generated by the coupled \(\Phi_{\rm res}\), DM,
+SM and waterfall equations. Backreaction, rescattering, nonlinear
+fragmentation, a converged full-spectrum abundance, and entropy
+dilution remain outstanding. The overdamped benchmark caveat above
+therefore still applies.
+
+The comoving number density must be obtained from the momentum
+distribution rather than from a universal \(\omega_{\rm res}^3\)
+prefactor:
 \begin{equation}
-n_\chi \sim \frac{1}{(2\pi)^3}\int d^3k\, n_k \sim \frac{\omega_{\rm res}^3}{(2\pi)^3}
-\exp(2\mu_{\rm max}N\,\omega_{\rm res}^{-1}).
+\begin{aligned}
+n_\chi^{\rm com}(t)
+&=\frac{1}{2\pi^2}\int_0^\infty dk\,k^2 n_k(t),\\
+n_\chi^{\rm phys}(t)&=\frac{n_\chi^{\rm com}(t)}{a^3(t)}.
+\end{aligned}
 \end{equation}
-The present-day dark matter density is
-\begin{equation}
-\begin{split}
-\Omega_\chi h^2 &= \frac{m_\chi n_\chi}{\rho_{\rm crit}/h^2}
-\sim 0.12 \left(\frac{m_\chi}{10^{12}\,{\rm GeV}}\right)
-\left(\frac{\omega_{\rm res}}{10^{13}\,{\rm GeV}}\right)^3 \\
-&\quad\times \exp(2\mu_{\rm max}N\,\omega_{\rm res}^{-1}).
-\end{split}
-\end{equation}
-Matching the observed $\Omega_\chi h^2 \approx 0.12$ then fixes the
-required number of e-folds of resonant growth,
-$2\mu_{\rm max}N\,\omega_{\rm res}^{-1}\sim\ln(10^2\text{--}10^3)$,
-rather than being an automatic output of natural parameter choices.
-A full numerical integration of the mode equations including Hubble
-expansion and backreaction is required for precise predictions and
-is left for future work (EKSİK: no public code performs this
-integration).
+The present abundance then requires the post-production expansion
+and entropy history. No numerical \(\Omega_\chi h^2\) follows from
+the local Floquet exponent alone. The former closed-form estimate
+that directly normalized \(\Omega_\chi h^2\) to 0.12 is withdrawn;
+a physical relic abundance remains uncomputed until the expanding
+mode system, momentum integral, backreaction, and reheating history
+are solved consistently.
 
 \noindent\textbf{Clarification: parametric resonance target vs. CLASS evolution.}
-The value $\Omega_\chi h^2 \sim 0.12$ derived above is a \emph{target
-benchmark} for the parametric resonance production mechanism during
-the discharge event; note that parametric resonance presupposes the
-oscillatory (quartic-dominated) regime of $\Phi_{\rm res}$, which is
-not achieved at the stated benchmark parameters (overdamped,
-$3H/(2\mu)\approx25$; see the abstract and
-Section~\ref{subsec:ptum_operational_stability}). It is \emph{not} an output of the CLASS
-Boltzmann code. The CLASS implementation evolves the dark matter
-sector \emph{after} the discharge, using the post-discharge initial
-conditions (energy density, equation of state) as inputs. The
-parametric resonance calculation is a separate pre-CLASS step that
-determines the initial dark matter abundance. The two are
-consistent if the parametric resonance produces the correct initial
-$\rho_\chi$ for the CLASS evolution. The benchmark parameters are
-chosen such that this consistency holds, but a full self-consistent
-calculation coupling the non-equilibrium resonance dynamics to the
-post-discharge Boltzmann evolution is left for future work.
+The observed value \(\Omega_\chi h^2\simeq0.12\) is a target that a
+microscopic production calculation must reproduce; it is not a
+result derived in this work. The CLASS implementation evolves the
+post-discharge cosmological perturbations and requires the initial
+dark-matter abundance as an input. It does not calculate the
+pre-discharge parametric production. The required link is therefore
+a separate calculation of the expanding \(\chi_k\) modes, their
+occupation spectrum, the momentum-integrated abundance, and the
+subsequent entropy dilution. That calculation has not yet been
+completed. Moreover, the stated benchmark is overdamped
+(\(3H_c/(2\mu)\approx4.29\) for the threshold-matched estimate; the plateau-scale ratio is \(3H_*/(2\mu)\approx25\)) and does not realize the coherent
+oscillatory regime assumed by the simple Floquet reduction. Thus the
+present manuscript does not establish that its benchmark produces
+the observed dark-matter abundance or that the pre-CLASS and
+post-discharge descriptions have been matched.
 
-\noindent\textbf{Reconciling $\Phi_{\rm res}$ dual role.}
-The residual field $\Phi_{\rm res}$ plays two distinct roles:
-\begin{enumerate}
-\item \textbf{During discharge:} $\Phi_{\rm res}$ oscillates with
-      frequency $\omega_{\rm res} \sim 10^{13}$ GeV, driving
-      parametric resonance for $\chi$ production. This is a
-      high-frequency, large-amplitude oscillation.
-\item \textbf{Post-discharge (late universe):} $\Phi_{\rm res}$
-      settles into its minimum and acts as a dark energy field with
-      mass $m_{\rm res} \sim H_0 \sim 10^{-33}$ eV, giving
-      $w_{\rm DE} \approx -1$.
-\end{enumerate}
-These are not contradictory: the high-frequency oscillations during
-the discharge are damped by Hubble expansion and particle production
-on a timescale $\Delta t \sim \omega_{\rm res}^{-1} \ll H_*^{-1}$.
-After the discharge, the field relaxes to its minimum and its
-late-time dynamics are governed by the shallow residual potential
-$W(\Phi_{\rm res})$. The transition from the oscillatory phase to
-the dark energy phase is a standard feature of scalar field
-cosmology (e.g., quintessence after reheating).
-
-The superheavy nature of $\chi$ ($m_\chi \gg 1$ TeV) implies that
-direct detection via nuclear recoils is not feasible. Indirect
-detection through annihilation products is also suppressed by the
-large mass. The primary observational signature would be through
-gravitational effects and possible topological defect formation
-during the discharge transition.
-
-\item[Dark energy and the cosmological constant.] 
-PTUM represents dark energy as a residual field $W(\Phi_{\rm res})$
-with near-$\Lambda$ behaviour over $\sim90\%$ of the scanned
-parameter space. Whether the extreme hierarchy
-$V_{\rm res}/V_0\sim10^{-108}$ admits a dynamical explanation
-remains an open problem; DESI and Euclid constraints on $w_0$--$w_a$
-will test the viable parameter region in the near future.
-
-\item[String theory and swampland.] 
-The tachyonic activation mechanism bears structural resemblance to
-open-string tachyon condensation in D-brane--anti-D-brane systems.
-A full string-theoretic embedding would require specifying the
-K\"ahler potential, flux background, and moduli stabilisation
-procedure. Swampland criteria (distance conjecture, de Sitter
-conjecture) provide additional consistency checks that PTUM
-satisfies in its inflationary phase.
-
-\item[Baryogenesis.] 
-The discharge is a departure from thermal equilibrium by definition,
-satisfying the third Sakharov condition. If the fuel field is extended
-to include CP-violating phases, the discharge transition can generate
-a net baryon number analogously to the Affleck--Dine mechanism.
-Quantitative realisation requires a dedicated analysis of the
-CP-violating sector.
-
-\item[Entropy production and the arrow of time.] 
-The discharge is irreversible and produces entropy. A rough estimate
-gives $S_{\rm obs}\sim10^{88}$ for the observed cosmic entropy
-budget, suggesting the discharge can account
-for the observed entropy without a separate low-entropy initial
-condition. A detailed entropy budget and its connection to the
-cosmogonically low-entropy fuel configuration remain to be
-quantified.
-
-\subsubsection{Entropy production budget}
-\label{sec:entropy_budget}
-
-The total entropy produced during the discharge can be estimated
-from the energy released and the temperature of the resulting
-radiation bath. The discharge converts the fuel field potential
-energy $V_0 \sim (10^{15}\text{--}10^{16}\,\mathrm{GeV})^4$ into
-radiation, dark matter, and dark energy. The dominant entropy
-production comes from the relativistic proxy-fluid component (pfd)
-and any additional radiation produced during reheating.
-
-\noindent\textbf{Phenomenological reheating sector.}
-We parametrize the reheating process by introducing a phenomenological
-coupling between the proxy field $\psi$ and Standard Model degrees of
-freedom. The Lagrangian includes a term
-\begin{equation}
-\mathcal{L}_{\rm rh} = -y_\psi \psi \bar{f} f - \frac{1}{2} g_\psi \psi^2 \phi_{\rm SM}^2,
-\end{equation}
-where $f$ represents SM fermions and $\phi_{\rm SM}$ represents SM
-scalars. During the quartic oscillation phase, $\psi$ decays
-perturbatively with a total decay width
-\begin{equation}
-\Gamma_\psi \sim \frac{y_\psi^2}{8\pi} m_\psi + \frac{g_\psi^2}{8\pi} m_\psi,
-\end{equation}
-where $m_\psi \sim \sqrt{\lambda_\psi}\psi_0$ is the effective mass
-during oscillations. Reheating completes when $\Gamma_\psi \sim H$,
-giving a reheating temperature
-\begin{equation}
-\begin{split}
-T_{\rm rh} &\sim \left(\frac{90}{\pi^2 g_*}\right)^{1/4}
-\sqrt{\Gamma_\psi M_{\rm Pl}} \\
-&\sim 10^{15}\,\mathrm{GeV} \left(\frac{\Gamma_\psi}{10^{13}\,\mathrm{GeV}}\right)^{1/2}
-\left(\frac{100}{g_*}\right)^{1/4}.
-\end{split}
-\end{equation}
-For the benchmark parameters $\lambda_\psi \sim 0.1$, $\psi_0 \sim
-10^{13}\,\mathrm{GeV}$, and perturbative couplings $y_\psi, g_\psi
-\sim 10^{-3}$--$10^{-2}$, the parametric estimate gives
-$\Gamma_\psi \sim 10^{10}$--$10^{11}\,\mathrm{GeV}$
-and $T_{\rm rh} \sim 10^{14}$--$10^{15}\,\mathrm{GeV}$, consistent
-with the instantaneous thermalization estimate below
-\emph{(order-of-magnitude parametric estimate, VARSAYIM-based decay
-width; not a lattice-derived value)}.
-
-The energy density released in the discharge is $\rho_{\rm dis}
-\sim V_0$. Assuming instantaneous thermalization at temperature
-$T_{\rm rh}$, the entropy density is
-\begin{equation}
-s = \frac{2\pi^2}{45}g_* T_{\rm rh}^3,
-\end{equation}
-where $g_*$ is the effective number of relativistic degrees of
-freedom. The reheating temperature is determined by equating the
-released energy to the radiation energy density:
-\begin{equation}
-\rho_{\rm rad} = \frac{\pi^2}{30}g_* T_{\rm rh}^4 \sim V_0.
-\end{equation}
-This gives
-\begin{equation}
-\begin{split}
-T_{\rm rh} &\sim \left(\frac{30 V_0}{\pi^2 g_*}\right)^{1/4} \\
-&\sim 10^{15}\,\mathrm{GeV} \left(\frac{V_0^{1/4}}{10^{16}\,\mathrm{GeV}}\right)
-\left(\frac{100}{g_*}\right)^{1/4}.
-\end{split}
-\end{equation}
-The comoving entropy (entropy per comoving volume, $s a^3$) is then
-\begin{equation}
-S_{\rm com} = s a^3 \sim \frac{2\pi^2}{45}g_* T_{\rm rh}^3 a^3.
-\end{equation}
-Using $a \propto T^{-1}$ during radiation domination, the comoving
-entropy is conserved after reheating. The total entropy in the
-observable universe today is
-\begin{equation}
-S_{\rm obs} \sim s_0 a_0^3 \sim 10^{88} \left(\frac{g_*}{100}\right)
-\left(\frac{T_{\rm rh}}{10^{15}\,\mathrm{GeV}}\right)^3,
-\end{equation}
-where $s_0 \sim 10^9\,\mathrm{cm}^{-3}$ is the current entropy
-density and $a_0$ is the current scale factor. For $V_0^{1/4} \sim
-10^{16}\,\mathrm{GeV}$ and $g_* \sim 100$, this yields
-$S_{\rm obs} \sim 10^{88}$, consistent with the observed cosmic
-entropy budget.
-
-The entropy production during the discharge itself can be
-quantified by the change in the number of e-folds of the scale
-factor. The discharge occurs over a timescale $\Delta t \sim
-|m_{\rm eff}|^{-1} \sim 10^{-13}\,\mathrm{GeV}^{-1}$, during which
-the scale factor grows by a factor
-\begin{equation}
-\frac{a_{\rm end}}{a_{\rm start}} \sim \exp(H_* \Delta t) \sim
-1 + \mathcal{O}(10^{-3}).
-\end{equation}
-The entropy production is therefore dominated by the conversion of
-potential energy to radiation, not by the expansion during the
-discharge.
-
-The low-entropy initial condition is the metastable fuel
-configuration with $\Phi < \Phi_c$. The fuel field is displaced from
-its minimum by $\Delta\Phi \sim M_{\rm Pl}$, giving a potential
-energy $V_0 \sim \lambda M_{\rm Pl}^4$. The entropy of this
-configuration is negligible compared to the post-discharge entropy
-because the fuel field is in a coherent, low-entropy state. The
-discharge thus provides a dynamical origin for the cosmic entropy
-budget, replacing the ad hoc low-entropy initial condition of
-standard cosmology with a physical mechanism.
-
-A more precise calculation requires tracking the non-equilibrium
-dynamics of the tachyonic transition, the parametric resonance
-phase, and the subsequent thermalization. This is left for future
-work using lattice simulations or kinetic theory approaches.
-
-\subsubsection{Non-linear lattice simulation of the tachyonic transition}
-\label{sec:lattice_simulation}
-
-The linear perturbation treatment of the tachyonic growth phase
-(Section~\ref{sec:tachyonic_to_quartic}) assumes that the field
-fluctuations remain small compared to the homogeneous background.
-To validate this assumption and capture non-linear effects such as
-bubble nucleation, defect formation, and mode-mode coupling, we
-performed non-linear lattice simulations of the tachyonic transition
-using the \texttt{LATTICEEASY} framework~\cite{Felder2000}.
-
-The simulation setup follows the PTUM discharge dynamics:
-\begin{itemize}
-\item Initial conditions: $\Phi = \Phi_c - \delta\Phi$ (just below
-      threshold), $\psi = \psi_{\rm vac} + \delta\psi$ with quantum
-      fluctuations $\delta\psi_k \sim H_*/2\pi$.
-\item Potential: $V(\Phi,\psi) = V_0(1-e^{-\lambda\Phi^2}) +
-      \frac{1}{2}m^2(1-\alpha\Phi^2/E_{\rm th}^2)\psi^2 +
-      \frac{1}{4}\lambda_\psi\psi^4$.
-\item Lattice: $N=512^3$ points, comoving box size $L \sim 10/H_*$,
-      conformal time step $\Delta\eta \sim 0.01/m_{\rm eff}$.
-\item Evolution: Full non-linear Klein-Gordon equations in expanding
-      FRW background with $H(t)$ from the energy density.
-\end{itemize}
-
-The manuscript reports that the simulations confirm the linear perturbation results; however, the present source archive does not include the lattice code, configuration files, raw field snapshots, or diagnostic outputs needed for independent reproduction. The following items should therefore be read as author-reported results rather than independently auditable numerical evidence:
-\begin{itemize}
-\item The tachyonic growth rate matches the linear prediction
-      $\Gamma_k \approx \sqrt{|m_{\rm eff}^2| - k^2/a^2}$ for
-      $k \lesssim a|m_{\rm eff}|$.
-\item The transition to quartic oscillations occurs at $\psi \sim
-      \psi_0 \equiv \sqrt{m^2/\lambda_\psi}$ as predicted.
-\item Non-linear effects (mode coupling, bubble formation) become
-      significant only after $\psi$ reaches $\mathcal{O}(\psi_0)$,
-      i.e., at the end of the linear growth phase.
-\item The energy transfer from $\Phi$ to $\psi$ is consistent with
-      the background transfer rate $Q_\psi \approx -Q_\Phi$ derived
-      in Section~\ref{sec:microscopic_transfer}.
-\item No topological defects or long-lived inhomogeneities are
-      produced for the benchmark parameters; the transition is
-      homogeneous on super-horizon scales.
-\end{itemize}
-
-These reported results are suggestive but do not, in the absence of the
-simulation artifacts, independently validate the instantaneous-discharge
-approximation ($\Delta t \ll H^{-1}$) or the linear perturbation
-treatment used in CLASS. The lattice calculation should be treated as
-unverified until the code version, input parameters, random seeds,
-convergence tests, raw outputs, and analysis scripts are released with
-the reproducibility package (Section~\ref{app:code-availability}).
+\noindent\textbf{Conditional roles of \(\Phi_{\rm res}\).}
+In a parameter regime where the residual field is displaced and
+undergoes coherent oscillations, its time-dependent amplitude can
+drive \(\chi\)-mode resonance during the discharge. After sufficient
+damping, the same field may approach a shallow region of
+\(W(\Phi_{\rm res})\) and behave as a dark-energy-like component.
+This is a conditional scenario, not a demonstrated trajectory for
+the overdamped benchmark. The transition between the high-frequency
+oscillatory regime and the late-time slowly varying regime requires
+a single background solution with specified initial conditions,
+energy transfer, and expansion history. Until that solution is
+computed, the two roles are model assumptions rather than a
+quantitatively established evolution.
 
 \end{description}
 
-In summary, PTUM reframes dark energy as a residual-field sector,
-dark matter as a superheavy discharge-product candidate, and the hot
-Big Bang as a finite-energy trigger event within an effective
-cosmological framework. The research
-programme outlined here addresses the questions that this first step
-raises but does not resolve.
-
-%============================================================
 \subsection{Limitations and honest boundaries}
 \label{sec:limits}
 
@@ -3533,7 +4217,7 @@ The main conclusions of this work are as follows:
       observational discriminator of PTUM. \emph{However, the
       underlying quartic oscillatory regime that would derive
       $w_\psi=1/3$ from first principles is not realized at the
-      benchmark parameters (overdamped, $3H/(2\mu)\approx25$), so the
+      benchmark parameters (overdamped, $3H_c/(2\mu)\approx4.29$), so the
       closure is a phenomenological input, not a derived prediction
       at the stated benchmark.}
 
@@ -3818,11 +4502,11 @@ equations are dimensionally consistent in natural units.}
 \hline\noalign{\smallskip}
 Equation & Quantity & Dimensions \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
-\(V(\Phi) = V_0(1-e^{-\lambda\Phi^2})\) & \(V_0\) & \([{\rm GeV}]^4\) \\
-& \(\lambda\) & \([{\rm GeV}]^{-2}\) \\
+\(V(\Phi) = V_0(1-e^{-\lambda_\Phi\Phi^2/M_{\rm Pl}^2})\) & \(V_0\) & \([{\rm GeV}]^4\) \\
+& \(\lambda_\Phi\) & dimensionless \\
 & \(\Phi\) & \([{\rm GeV}]\) \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
-\(\epsilon_V = \frac{1}{2}(V_{,\Phi}/V)^2\) & \(\epsilon_V\) & dimensionless \\
+\(\epsilon_V = \frac{M_{\rm Pl}^2}{2}(V_{,\Phi}/V)^2\) & \(\epsilon_V\) & dimensionless \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
 \(A_s = \frac{V_*}{24\pi^2 M_{\rm Pl}^4 \epsilon_*}\) & \(A_s\) & dimensionless \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
@@ -3904,327 +4588,87 @@ ESS & Effective sample size & Sec.~7.1.3 \\
 \subsection{Code availability and reproducibility}
 \label{app:code-availability}
 
-The manuscript source, final figure artifacts, claim-boundary notes,
-and reproducibility scaffold will be made publicly available at
-\url{https://github.com/ErdemEsa/ptum-cosmology.git} upon acceptance
-(the repository is not yet public at the time of writing). The release
-will include the public PTUM code-release structure and a clean
-\texttt{CLASS}~v3.2.0 patch for the proxy-fluid dark-radiation sector.
-The patch introduces the effective-fluid parameter
-$\Delta N_{\rm fluid}$, the associated background contribution, and the
-linear perturbation variables for a perfect-fluid dark-radiation
-component with $w=1/3$, $c_s^2=1/3$, and $\sigma=0$. It was generated as
-a path-limited diff against a clean \texttt{CLASS}~v3.2.0 baseline and
-has been checked with \texttt{git apply --check} against the corresponding
-clean source tree. Once the repository is public, it will provide the
-manuscript archive and the PTUM-modified \texttt{CLASS} patch needed to
-inspect and re-apply the core Boltzmann-code implementation.
+The current canonical manuscript and figure package is maintained at
+\url{https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-}.
+A legacy release note points to
+\url{https://github.com/ErdemEsa/ptum-cosmology.git}; however, that
+repository returned HTTP 404 through the GitHub API during the
+2026-11-13 review. This does not establish whether it is private,
+renamed, or otherwise inaccessible, but its contents could not be
+verified.
+
+The current repository contains a binary \texttt{PTUM.zip}, but the
+CLASS patch is not exposed as an individually reviewable source file
+in the tracked root inventory, and the archive has not been inspected
+in this review. Therefore the earlier statement that a PTUM
+\texttt{CLASS}~v3.2.0 patch is publicly available and apply-check
+verified is \textbf{unverified}. The exact patch, target CLASS commit,
+checksum, application command, and clean-tree apply log must be
+provided in an accessible source location before that claim can be
+restored.
 
 The production-level \texttt{Cobaya} configuration files and full MCMC
-chains are pending and will be added to the reproducibility release
-upon acceptance; they are not yet public. The planned release will
-contain:
-\begin{itemize}
-\item \texttt{cobaya/ptum.yaml} -- Main Cobaya configuration with
-      Planck 2018 TTTEEE-lite, low-\(\ell\) EE, lensing, BAO, and
-      Pantheon+ likelihoods.
-\item \texttt{\detokenize{cobaya/ptum_prior_variants.yaml}} --
-      Configurations for prior sensitivity tests
-      (Uniform\([0,0.5]\), Uniform\([0,1]\), Uniform\([0,3]\) on
-      \(\Delta N_{\rm fluid}\)).
-\item \texttt{\detokenize{chains/ptum_planck_bao_pantheon/}} --
-      Four converged MCMC chains (500,000 samples each after burn-in)
-      with Gelman-Rubin \(R-1 < 0.01\) and ESS \(> 5000\) for all
-      parameters.
-\item \texttt{\detokenize{chains/ptum_nested_sampling/}} -- PolyChord nested
-      sampling chains with 2000 live points, log-evidence
-      \(\ln\mathcal{Z}_{\rm PTUM} = -1198.61 \pm 0.12\).
-\item \texttt{\detokenize{scripts/reproduce_figures.py}} -- Planned
-      computation pipeline that will regenerate all figures from the
-      final CLASS/Cobaya chains \emph{(not yet released)}.
-\item \texttt{Dockerfile} -- Reproducible environment with pinned
-      dependencies: \texttt{CLASS}~v3.2.0, \texttt{Cobaya}~3.3.0,
-      \texttt{PolyChord}~1.17.0, \texttt{CAMB}~1.5.0, Python 3.11,
-      and all required cosmology packages.
-\end{itemize}
+chains are not present as individually reviewable files in the current
+repository snapshot. They remain pending or external-archive items.
+Consequently, the current public package does not yet establish an
+end-to-end reproducible Bayesian pipeline. The reported observational
+constraints should be treated as author-reported until the complete
+configuration, likelihood data references, priors, chains, and
+post-processing scripts are available and independently rerun.
 
-To reproduce the full analysis:
-\begin{verbatim}
-docker build -t ptum-cosmology .
-docker run -v $(pwd)/output:/output \
-    ptum-cosmology \
-    python scripts/reproduce_figures.py \
-    --all
-\end{verbatim}
+\subsection{Nonlinear lattice validation: current status}
+\label{app:lattice-status}
 
-This regenerates all figures (including Figure~\ref{fig:gamma} with
-\(c=0.3854\), \(\gamma(0)=0.722\)), runs the MCMC and nested sampling
-analyses, and produces the complete set of posterior constraints and
-diagnostics reported in the paper. The Docker image ensures bitwise
-reproducibility across platforms.
+A nonlinear lattice calculation is required to establish whether the
+tachyonic waterfall develops the inhomogeneous spectrum, rescattering,
+and coarse-grained equation of state assumed by the later dark-sector
+description. However, the current canonical repository snapshot does
+not expose an individually reviewable PTUM lattice solver, its complete
+initial-condition prescription, raw field configurations, or the
+diagnostic outputs needed to reproduce such a calculation. The
+existence of a historical archive or a description of a simulation
+workflow is not, by itself, evidence that the calculation can be
+reproduced.
 
-\subsubsection{Independent CLASS/CAMB reproduction}
-\label{app:class_camb_reproduction}
+Accordingly, this manuscript does \emph{not} claim that a
+$256^3$ or $512^3$ PTUM lattice run, sub-percent energy-conservation
+test, nonlinear Floquet measurement, relic-density determination,
+defect census, or entropy calculation has been independently verified
+from the current public package. Numerical values previously associated
+with those outputs are withdrawn from the verified-results record
+until the source, inputs, outputs, and convergence evidence are made
+available. They must not be used as quantitative support for the
+present conclusions.
 
-The authors report cross-code agreement between \texttt{CLASS}~v3.2.0
-and \texttt{CAMB}~1.5.0 at the $<0.1\%$ level for $C_\ell^{TT,EE,TE}$
-spectra across all $\ell < 5000$ and $\Delta N_{\rm fluid} \le 1$
-(Section~\ref{app:class_validation}, test 5); this comparison has not
-been independently reproduced because the code and chains are not yet
-released. The planned reproducibility package will include:
-\begin{itemize}
-\item \texttt{class/ptum.patch} -- The PTUM patch for \texttt{CLASS}~v3.2.0
-\item \texttt{camb/ptum.patch} -- The equivalent patch for \texttt{CAMB}~1.5.0
-\item \texttt{\detokenize{scripts/compare_class_camb.py}} -- Script that runs both
-      codes and produces the cross-code comparison plots
-\item \texttt{\detokenize{output/class_camb_comparison/}} -- Pre-computed comparison
-      outputs for verification
-\end{itemize}
-Once independently reproduced, this comparison would validate that
-the PTUM proxy-fluid implementation is not code-specific and that the
-physical predictions are robust across Boltzmann solvers.
+\paragraph{Minimum requirements for a reproducible lattice result.}
+A future release must include: (i) the exact solver source and version,
+(ii) the complete covariant potential and all evolved fields,
+(iii) the lattice action and discretization, box size, grid spacing,
+time integrator, stability/CFL criterion, and boundary conditions,
+(iv) a vacuum or other physically justified initial-state prescription
+with its UV cutoff and renormalization/subtraction scheme, (v) fixed
+random seeds and machine-readable run configuration, (vi) time-resolved
+total and sector energy diagnostics including the expansion work term,
+(vii) power spectra and occupation-number definitions, (viii) defect
+identification rules where applicable, and (ix) resolution, volume,
+timestep, and ensemble convergence studies. Raw outputs and checksums
+must accompany any quoted numerical result.
 
-\subsubsection{MCMC and PolyChord verification with released code}
-\label{app:mcmc_polychord_verification}
+\paragraph{Scope of the calculations currently present.}
+The public Python implementation contains a homogeneous two-field
+$(\Phi,\psi)$ background solver and a linear $\chi_k$ mode solver on
+externally supplied expanding-FRW histories. These are useful
+preparatory calculations, but they are not a nonlinear lattice
+simulation of the four-field system. They do not establish
+backreaction, rescattering, thermalization, a relic abundance, or a
+defect probability. The proxy-fluid closure therefore remains
+phenomenological pending the calculations listed above.
 
-Once released, the Docker image and chains will enable verification of
-the numerical claims; at present these are reported by the authors and
-have not been independently reproduced:
-\begin{itemize}
-\item \textbf{MCMC convergence:} The chains in
-      \texttt{\detokenize{chains/ptum_planck_bao_pantheon/}} can be loaded with
-      \texttt{getdist} and the Gelman-Rubin $R-1$ and ESS diagnostics
-      reproduced exactly as reported in Section~\ref{sec:mcmc_diagnostics}.
-\item \textbf{PolyChord evidence:} The nested sampling chains in
-      \texttt{\detokenize{chains/ptum_nested_sampling/}} reproduce the log-evidence
-      $\ln\mathcal{Z}_{\rm PTUM} = -1198.61 \pm 0.12$ and
-      $\ln\mathcal{Z}_{\Lambda{\rm CDM}} = -1198.48 \pm 0.11$ when
-      analyzed with \texttt{anesthetic} or \texttt{getdist}.
-\item \textbf{Posterior constraints:} The marginalized constraints on
-      all parameters (Table~\ref{tab:datasplit}, Eq.~\ref{eq:bound})
-      are reproduced to within the Monte Carlo uncertainty.
-\item \textbf{Profile likelihood:} No frequentist profile likelihood
-      has been computed; Fig.~\ref{fig:profile_dN} shows a binned
-      maximum-posterior envelope only.
-\end{itemize}
-The verification scripts are planned to be included in the repository
-and to run automatically as part of the Docker-based reproduction
-pipeline once the repository is made public.
-
-%------------------------------------------------------------
-\section{Appendix figures and consistency diagnostics}
-\label{app:figures}
-%------------------------------------------------------------
-
-The following figures are included in this appendix because they
-directly support the main-text consistency analysis. The library-final
-version is therefore self-contained and does not require the obsolete
-external supplementary-material pointer.
-
-%--- Appendix Figure A1 ---
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig_BBN_consistency.pdf}
-\caption{BBN consistency check for PTUM. The shaded region shows
-the BBN-allowed range $\Delta N_{\rm eff}<0.40$ from primordial
-helium and deuterium abundances~\cite{Fields2020,Cyburt2016}. The
-vertical line marks the PTUM 95\% upper limit
-$\Delta N_{\rm fluid}<0.31$, which lies well within the
-BBN-allowed region. At the maximum allowed pfd abundance, the
-predicted shift in $Y_p$ is approximately $1.1\sigma$.}
-\label{fig:bbn}
-\end{figure}
-
-%--- Appendix Figure A2 ---
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{fig_fluid_vs_freestream.pdf}
-\caption{Comparison of CMB $TT$ (left) and $EE$ (right) power
-spectrum residuals for PTUM proxy-fluid dark radiation
-($\sigma=0$, solid) and free-streaming dark radiation
-($\sigma\neq0$, dashed) at $\Delta N=0.10$. The free-streaming
-component produces a characteristic phase shift of the acoustic
-peaks, while the proxy-fluid shifts peak amplitudes without
-displacing their positions. The distinction is especially
-pronounced in $EE$ at $\ell>1000$. \emph{(Author-reported figure;
-modified CLASS code not yet public.)}}
-\label{fig:fluid_vs_fs}
-\end{figure*}
-
-%--- Appendix Figure A3 ---
-\begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{lcdm_vs_ptum_triangle.pdf}
-\caption{Comparison of marginalised posterior distributions for
-$\Lambda$CDM (blue) and PTUM (red) from the full data
-combination. The standard parameters are consistent between the
-two models. PTUM shows a mild broadening in $\omega_{\rm cdm}$
-and $H_0$ due to the degeneracy with $\Delta N_{\rm fluid}$, and
-a systematic upward shift of $H_0$ by
-$\sim0.8\;\mathrm{km\,s^{-1}\,Mpc^{-1}}$. \emph{(Author-reported;
-chains not yet public.)}}
-\label{fig:lcdm_vs_ptum}
-\end{figure*}
-
-%--- Appendix Figure A4 ---
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig_perturbation_stability.pdf}
-\caption{Linear perturbation stability diagnostics for all PTUM
-sectors. Top: squared sound speed $c_s^2$ as a function of scale
-factor, confirming $c_s^2>0$ (no gradient instability) throughout.
-Bottom: effective squared mass confirming the absence of tachyonic
-instabilities. All sectors are ghost-free by construction.
-\emph{(Author-reported figure; modified CLASS code not yet public.)}}
-\label{fig:stability}
-\end{figure}
-
-%--- Appendix Figure A5 ---
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{fig_eft_validity.pdf}
-\caption{EFT validity diagnostics for PTUM. The inflationary
-Hubble scale $H_*$, potential energy $V_0^{1/4}$, slow-roll
-parameters $\epsilon$ and $|\eta|$, and coupling constants are
-shown as functions of $\lambda$. All quantities satisfy EFT
-consistency: $H_*\ll M_{\rm Pl}$, $V_0<M_{\rm Pl}^4$,
-$\epsilon,|\eta|\ll1$, and perturbative couplings. For
-$\lambda\lesssim0.05$ the field excursion is super-Planckian,
-protectable by an approximate shift
-symmetry~\cite{Freese1990,Silverstein2008}.}
-\label{fig:eft}
-\end{figure}
-
-%------------------------------------------------------------
-\section{Lattice simulation outputs and reproducibility}
-\label{app:lattice}
-
-This appendix documents the lattice simulation outputs that
-support the PTUM discharge dynamics and parametric resonance
-calculations. \textbf{Status label: reported by the authors, not
-independently reproduced;} the lattice code and raw outputs are not
-yet part of the public release, so the numerical values below
-($\mu=0.198\pm0.005$, $\Omega_\chi h^2=0.118\pm0.015$, and related
-quantities) cannot currently be verified by third parties. These
-simulations are planned for the reproducibility package and can be
-regenerated once the code is released.
-
-\subsection{Lattice setup}
-
-The discharge dynamics and parametric resonance are simulated
-using a modified version of \texttt{LATTICEEASY}~\cite{Felder2000}
-adapted for the PTUM field content. The simulation evolves the
-full non-linear field equations for $\Phi$, $\psi$, $\chi$, and
-$\Phi_{\rm res}$ in an expanding FRW background:
-
-\begin{align}
-\ddot\Phi + 3H\dot\Phi - \frac{\nabla^2}{a^2}\Phi + \frac{\partial V}{\partial\Phi} &= 0,\\
-\ddot\psi + 3H\dot\psi - \frac{\nabla^2}{a^2}\psi + \frac{\partial V}{\partial\psi} &= 0,\\
-\ddot\chi + 3H\dot\chi - \frac{\nabla^2}{a^2}\chi + \frac{\partial V}{\partial\chi} &= 0,\\
-\ddot\Phi_{\rm res} + 3H\dot\Phi_{\rm res} - \frac{\nabla^2}{a^2}\Phi_{\rm res} + \frac{\partial V}{\partial\Phi_{\rm res}} &= 0,
-\end{align}
-
-with the potential
-\begin{equation}
-\begin{split}
-V &= V_0(1-e^{-\lambda\Phi^2}) + \frac{1}{2}m_\psi^2\psi^2
-+ \frac{\lambda_\psi}{4}\psi^4 + \frac{1}{2}m_\chi^2\chi^2 \\
-&\quad + g_{\rm DM}\chi^2\Phi_{\rm res}^2 + W(\Phi_{\rm res}).
-\end{split}
-\end{equation}
-
-The lattice parameters are:
-\begin{itemize}
-\item \textbf{Grid size:} $N^3 = 256^3$ (convergence tested up to $512^3$)
-\item \textbf{Box size:} $L = 10/H_*$ (comoving)
-\item \textbf{Time stepping:} Adaptive 4th-order Runge-Kutta with CFL condition
-\item \textbf{Initial conditions:} Quantum fluctuations on top of homogeneous background at $t=0$ (discharge trigger)
-\end{itemize}
-
-\subsection{Key outputs}
-
-The following lattice outputs are included in the reproducibility
-release (\texttt{output/lattice/}):
-
-\begin{enumerate}
-\item \textbf{Energy density evolution:} $\rho_\Phi(t)$, $\rho_\psi(t)$,
-      $\rho_\chi(t)$, $\rho_{\rm res}(t)$, $\rho_{\rm rad}(t)$ showing
-      the discharge energy transfer from $\Phi$ to $\psi$, $\chi$, and
-      radiation. The total energy is conserved to $<0.1\%$.
-
-\item \textbf{Field power spectra:} $P_\Phi(k,t)$, $P_\psi(k,t)$,
-      $P_\chi(k,t)$ at multiple time slices showing the growth of
-      $\chi$ modes in the parametric resonance band. The resonance
-      peak at $k_{\rm res} \approx \omega_{\rm res}/2$ is clearly
-      resolved.
-
-\item \textbf{Occupation numbers:} $n_k(t)$ for $\chi$ field modes,
-      confirming exponential growth with Floquet exponent
-      $\mu_{\rm max} \approx 0.2\,\omega_{\rm res}$ in the broad
-      resonance regime ($q \gg 1$).
-
-\item \textbf{Equation of state:} $w_\psi(t)$, $w_\chi(t)$,
-      $w_{\rm res}(t)$ showing the transition from oscillatory
-      ($w \approx 0$) to radiation-like ($w \approx 1/3$) for the
-      proxy fluid, and the approach to $w \approx -1$ for the
-      residual field.
-
-\item \textbf{Topological defect detection:} Winding number
-      analysis for $\Phi_{\rm res}$ field configurations, showing
-      defect formation probability $<10^{-3}$ per Hubble volume for
-      benchmark parameters.
-
-\item \textbf{Entropy production:} Entropy $S(t)$ from the lattice
-      energy-momentum tensor, confirming
-      $S_{\rm obs} \sim 10^{88}$ (total observable-universe entropy).
-\end{enumerate}
-
-\subsection{Reproduction instructions}
-
-The lattice simulations can be reproduced using the Docker image:
-
-\begin{verbatim}
-docker run -v $(pwd)/output:/output \
-    ptum-cosmology \
-    python scripts/run_lattice.py \
-    --grid 256 --box 10
-\end{verbatim}
-
-The script \texttt{\detokenize{scripts/run_lattice.py}} generates all
-outputs listed above and saves them to \texttt{output/lattice/}. The
-simulation takes approximately 2 hours on a modern CPU (8 cores).
-Convergence tests with $512^3$ grid are included in
-\texttt{\detokenize{scripts/convergence_test.py}}.
-
-\subsection{Validation against analytic results}
-
-The authors report that the lattice outputs have been validated against
-the analytic predictions in Sections~\ref{sec:dm_relic} and
-\ref{sec:entropy_budget} \emph{(author-reported; lattice code not yet
-public)}:
-
-\begin{itemize}
-\item \textbf{Parametric resonance:} The lattice Floquet exponent
-      $\mu_{\rm max}^{\rm lattice} = 0.198 \pm 0.005\,\omega_{\rm res}$
-      matches the analytic $\mu_{\rm max} \approx 0.2\,\omega_{\rm res}$.
-
-\item \textbf{Relic abundance:} The lattice $\Omega_\chi h^2$ for
-      benchmark parameters is $0.118 \pm 0.015$, consistent with the
-      analytic target $0.12$.
-
-\item \textbf{Energy conservation:} Total energy conserved to
-      $<0.1\%$ throughout the simulation, validating the numerical
-      scheme.
-
-\item \textbf{Reheating temperature:} The lattice radiation
-      temperature at thermalization matches $T_{\rm rh} \sim
-      10^{14}$--$10^{15}$ GeV from the analytic estimate.
-\end{itemize}
-
-These lattice results are reported to provide non-perturbative
-confirmation of the analytic discharge dynamics and parametric
-resonance calculations used in the main text \emph{(author-reported;
-not independently reproduced)}.
+\paragraph{Reproduction status.}
+No Docker command, runtime estimate, grid-convergence claim, or
+historical lattice output is presented here as a reproduction recipe.
+Such instructions will be added only alongside a versioned solver and
+a clean-checkout reproduction log.
 
 %============================================================
 % REFERENCES

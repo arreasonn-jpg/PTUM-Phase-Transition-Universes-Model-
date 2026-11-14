@@ -1,74 +1,262 @@
-# PTUM Claim Boundary v1.2 CLEAN (updated with Task 1 numerical findings)
+# PTUM Claim Boundary and Verification Status
 
-## Safe core claim
+**Snapshot:** 2026-11-13  
+**Canonical repository:** https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-  
+**Scientific correction branch:** `ptum/scientific-consistency-fixes-2026-11-13`
 
-PTUM is an effective phenomenological cosmological framework in which a threshold-triggered discharge event can generate a dark-matter candidate sector, a residual near-Lambda dark-energy-like sector, and a proxy-fluid dark-radiation component.
+## 1. Safe core claim
 
-The sharp observational discriminator is the difference between fluid-like dark radiation and free-streaming relativistic species. In the effective linear proxy-fluid closure, the pfd component has
+PTUM is an effective phenomenological cosmological framework that parametrizes a threshold-triggered discharge and candidate dark-matter, residual dark-energy-like, and proxy-fluid dark-radiation sectors. The current homogeneous numerical model evolves only the `Phi-psi` subsystem. It does not yet establish the microscopic production of all sectors, their energy partition, or the complete post-discharge thermal history.
 
-```text
-w = 1/3, c_s^2 = 1/3, sigma = 0
-```
+The proxy-fluid component is currently an effective linear closure with
+[
+w=1/3,qquad c_s^2=1/3,qquad sigma=0.
+]
+This closure gives a different CMB response from free-streaming radiation, but it remains phenomenological. The current waterfall benchmark has not demonstrated a stable quartic oscillatory regime or derived the closure from microscopic field dynamics.
 
-and therefore does not produce the neutrino-like CMB acoustic phase shift associated with free-streaming radiation.
+## 2. Observational status
 
-## Current-data status
+The manuscript reports the benchmark values
+[
+Deltachi^2equivchi^2_{m PTUM}-chi^2_{Lambda{m CDM}}=+0.26,
+qquad
+Delta{m AIC}=+2.26,
+]
+and
+[
+Delta N_{m fluid}<0.31quad (95% 	ext{ credibility}).
+]
+These are **author-reported, not independently reproduced**. The exact CLASS patch, production Cobaya configuration, likelihood settings, and MCMC chains are not yet available as a fully inspectable, reproducible public pipeline. Under the stated sign convention, the positive differences weakly favor the simpler (Lambda)CDM benchmark, not PTUM.
 
-The benchmark analysis gives
+The observational constraint applies to the phenomenological proxy-fluid perturbation model. It must not be presented as a measurement of a microscopically calculated PTUM discharge abundance.
 
-```text
-Delta chi^2 = -0.26
-Delta AIC = +2.26
-Delta N_fluid < 0.31 at 95% credibility
-```
+## 3. Scalar action, threshold, and sign conventions
 
-This should be framed as follows:
+The manuscript uses metric signature ((-+++)), canonical scalar kinetic terms, and the waterfall mass
+[
+m_{m eff}^2(Phi)
+=m_psi^2left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right),
+qquad
+\Phi_c=\frac{E_{\rm th}}{\sqrt\alpha}.
+]
+Thus the proxy is stable for (|\Phi|>\Phi_c) and tachyonic for (|\Phi|<\Phi_c). The interaction potential in the scalar action is
+[
+U_{\Phi\psi}=+\frac12\frac{\alpha m_\psi^2}{E_{\rm th}^2}\Phi^2\psi^2.
+]
+The fuel equation, Hilbert-sector split, and signed transfer rates are written for this convention. For the stated split, (Q_\psi^0<0) when (\Phi>0) and (\dot\Phi<0); this signed source must not be described as positive energy injection into the proxy sector.
 
-```text
-Current data show a weak preference for LambdaCDM while leaving PTUM viable as a falsifiable effective extension.
-```
+For (\lambda_\Phi=0.02), the exact canonical inflation endpoint is defined by (\epsilon_H=1):
+[
+\Phi_{\rm end}^{(H)}/M_{\rm Pl}\simeq0.98622808.
+]
+The older potential slow-roll proxy (\epsilon_V=1) gives approximately (1.387175M_{\rm Pl}) and is not the exact endpoint. Threshold-matched scans use the exact Hubble-flow endpoint. At that endpoint,
+[
+V_{\rm end}/V_0\simeq0.01926493,quad
+K_{\rm end}/V_0\simeq0.00963246,quad
+\rho_{\rm end}/V_0\simeq0.02889739.
+]
+The exact endpoint damping estimate is (3H_c/(2\mu)\simeq4.29); the potential-only estimate is approximately (3.50). Both indicate an overdamped threshold-matched benchmark. The plateau estimate is approximately (3H_*/(2\mu)\simeq25).
 
-It should not be framed as positive evidence that current data prefer PTUM.
+## 4. Homogeneous numerical status
 
-## Critical numerical finding (Task 1)
+The revised scan uses two scenarios:
+- high-scale threshold-matched benchmark, (V_0=10^{64}\,\mathrm{GeV}^4);
+- low-scale underdamped control, (V_0=10^{56}\,\mathrm{GeV}^4).
 
-**The quartic-dominated regime (w=1/3) is NOT achieved with the benchmark parameters stated in the paper.**
+Each scenario has a (5\times5\times2) initial-condition grid, giving 50 trajectories per scenario and 100 total. Each trajectory uses 4001 output samples over (20\mu^{-1}). Fuel velocities at each post-threshold offset are taken from the integrated single-field FRW trajectory rather than from the potential slow-roll formula evaluated after the endpoint.
 
-Numerical integration of the coupled background equations with:
-- $V_0 \sim 10^{64}\,\mathrm{GeV}^4$ ($H_* \sim 10^{13}\,\mathrm{GeV}$)
-- $m_\psi \sim 10^{13}\,\mathrm{GeV}$, $\lambda_\psi \sim 0.1$
-- $\psi(t_c)=0$, $\dot{\psi}(t_c)=0$ (field at top of barrier)
+This remains a homogeneous **post-threshold sensitivity scan**. It does not evolve the coupled threshold crossing, quantum vacuum seeds, inhomogeneous tachyonic growth, rescattering, or backreaction. Exactly zero classical (\psi) initial data remain invariant under the deterministic homogeneous equations; they are not quantum-vacuum seeds.
 
-Shows the system is **overdamped**: $3H/(2\mu) \approx 25 \gg 1$. The field remains at $\psi=0$ with $w_\psi=0$. The quartic regime is never reached.
+The latest observed scan attempt was cancelled when a newer commit superseded its workflow run. No complete 100-row artifact has been validated. No regime conclusion from the revised 100-point scan is currently claimed.
 
-Achieving the quartic regime requires:
-1. $V_0 \lesssim 10^{58}\,\mathrm{GeV}^4$ ($H_* \lesssim 10^{10}\,\mathrm{GeV}$) for underdamped oscillations
-2. Sufficient initial kinetic energy in $\psi$ to cross the barrier
-3. Continuing energy input from rolling $\Phi$ field or rescattering
+## 5. Energy-momentum tensors and Standard Model EFT
 
-The proxy-fluid closure $w=1/3$, $c_s^2=1/3$, $\sigma=0$ is therefore a **phenomenological ansatz conditional on parameters not realized in the stated benchmark**. The observational discriminator applies *if* the quartic regime is realized; it is not a prediction of the benchmark parameters alone. The Bayesian constraints on $\Delta N_{\rm fluid}$ should be interpreted as constraints on the *phenomenological proxy-fluid model*, not as constraints on the microscopic PTUM discharge dynamics with the stated benchmark parameters.
+The manuscript specifies a minimally coupled classical tree-level action for Einstein gravity, the four real PTUM singlets, the complex Higgs doublet, three chiral SM generations, and the (SU(3)_c\times SU(2)_L\times U(1)_Y) gauge fields. The ordinary SM Yukawa matrices are separated from the gauge-invariant dimension-five PTUM operators (\psi\mathcal O_{\rm SM}/\Lambda).
 
-## Claims intentionally not made
+The sector assignment is explicit. The displayed on-shell symmetric chiral-fermion tensor includes the ordinary SM Yukawa equations of motion, so the ordinary Yukawa potential is not added a second time as a separate metric term. The distinct PTUM operator (U_Y), which is outside (S_{\rm SM}^{(0)}), is assigned once through
+[
+T_{\rm SM}^{\mu\nu}=T_{{\rm SM},0}^{\mu\nu}-g^{\mu\nu}U_Y.
+]
+Gauge-representation, hypercharge, non-Abelian singlet, and canonical-dimension checks are implemented in `ptum_covariant_action.py`.
 
-PTUM does not claim to be:
+This closes the **classical tree-level action specification** only. Independent vierbein variation, numerical divergence checks with all SM/Higgs/fermion fields active, quantum corrections, EFT/UV matching, and thermal evolution remain incomplete. The current numerical background does not evolve the SM fields.
 
-- a UV-complete derivation of the pre-discharge background,
-- a solution of the cosmological-constant problem,
-- a unique microscopic theory of the dark sector,
-- a replacement for LambdaCDM already favored by current data,
-- a proof of any external cross-project mechanism.
+## 6. Resonance and dark-matter abundance
 
-## v1.1 cleanup
+The repository contains:
+- a frozen-background Mathieu monodromy/Floquet solver;
+- a linear expanding-background (\chi_k) integrator on supplied (a(t),H(t),\Phi_{\rm res}(t)) histories;
+- an adiabatic-vacuum initialization check, (H=\dot a/a) consistency check, and Wronskian monitor;
+- a finite-band trapezoidal momentum integral over an explicitly supplied (k)-grid.
 
-All external cross-project terminology has been removed from the PTUM manuscript. The paper now stands as a self-contained effective cosmology model.
+The mode integrator can pass through intermediate intervals with negative canonical frequency squared, but requires a real adiabatic initial state and assigns an instantaneous particle number only when the final canonical frequency is positive. The finite-band integral does not extrapolate unresolved infrared or ultraviolet tails.
+
+These tools are **linear calculations on externally supplied backgrounds**, not a self-consistent PTUM production simulation. There is no converged momentum-range/grid result, no self-consistent (\Phi_{\rm res}) history, no backreaction or rescattering, no nonlinear fragmentation, and no entropy-dilution calculation. No numerical (\Omega_\chi h^2) or relic abundance is claimed. The overdamped threshold-matched benchmark does not currently establish the coherent oscillatory history assumed by the simple Floquet treatment.
+
+## 7. Proxy-fluid and defect boundaries
+
+The real (\psi) waterfall potential has two degenerate tachyonic minima,
+[
+\psi_{\min}=\pm\sqrt{-m_{\rm eff}^2/\lambda_\psi}.
+]
+A spatially inhomogeneous transition can therefore produce (Z_2) domain walls. The model does not derive cosmic strings from this real-scalar truncation. The odd dimension-five fermion-Higgs operator may explicitly break (Z_2), but the induced vacuum bias and wall lifetime depend on Wilson coefficients and any additional discrete charge assignments; neither has been calculated. No defect-free claim is made.
+
+Likewise, (w=1/3,c_s^2=1/3,\sigma=0) is not a demonstrated microscopic attractor. It remains a conditional phenomenological closure until field-level perturbations, sound speed, anisotropic stress, and stability are derived and converged.
+
+## 8. Reproducibility and current CI boundary
+
+The latest branch contains **51 regression tests**, including scalar/action checks, FRW diagnostics, frozen Floquet tests, expanding-mode vacuum and Wronskian checks, FRW history consistency, intermediate tachyonic evolution, and finite-band momentum-grid validation.
+
+The latest previously completed workflow run (43400134268) passed its 43-test Python regression step but failed the LaTeX job because `mathrsfs` was not loaded for `\mathscr D_\mu`. The package was added, the on-shell SM tensor double-counting issue was corrected, and further mode tests were added. A new workflow run (43405427845) has been triggered for the latest branch; at the time of this snapshot it is pending, so the 51-test suite, 100-trajectory scan, and corrected LaTeX build are **not yet claimed as passing**.
+
+The tracked `main.pdf` is an older library artifact and is not the current compiled manuscript. Fresh PDF and scan outputs must come from the CI artifacts. Generated LaTeX auxiliary files and stale scan summaries are excluded from the correction branch.
+
+The historical repository URL `https://github.com/ErdemEsa/ptum-cosmology.git` returned HTTP 404 during the 2026-11-13 API review. The current repository does not expose the CLASS patch as an individually reviewable tracked source file, and the archive contents have not been verified. Public availability and apply-check success for that patch are therefore **UNVERIFIED**. See `PTUM_REPRODUCIBILITY_NOTES.md`.
+
+## 9. Historical results that must not be reused
+
+The earlier 36-point scan used the superseded activation-mass sign and the older (\epsilon_V=1) threshold estimate. Its classifications are historical only and do not validate the current waterfall convention. Likewise, the older (1.387175M_{\rm Pl}) threshold, the former 18-point scan description, and the previous universal Floquet/relic estimates are superseded.
+
+## 10. Claims intentionally not made
+
+PTUM is not claimed to be:
+- a UV-complete or quantum-renormalized theory;
+- a first-principles derivation of the pre-discharge background or a solution to the cosmological-constant problem;
+- a completed coupled inflation-to-waterfall calculation with quantum seeds and backreaction;
+- a microscopic derivation of the proxy-fluid closure;
+- a converged parametric-resonance relic-abundance calculation;
+- a fully evolved SM reheating and entropy history;
+- an independently reproduced CLASS/Cobaya observational pipeline;
+- a defect-free real-scalar waterfall model.
+
+## 11. 10/10 acceptance rule
+
+The ten evidence gates and their statuses are maintained in
+`PTUM_10_OF_10_ACCEPTANCE.md`. PTUM is not 10/10 until all gates are met,
+the latest full CI and LaTeX build pass, the complete 100-trajectory scan
+is inspected and converged, and every quantitative scientific claim is
+reproducible from a clean checkout.
 
 
-## v1.2 corrected code-availability update
+## 2026-11-14 final particle-basis boundary
 
-The exact public repository is:
+An instantaneous mode occupation is now accepted only when the final
+canonical frequency is positive, the final first-order WKB measure
+$|\\dot\\Omega_k/\\Omega_k^2|$ is at most 0.1 by default, and the
+canonical Wronskian passes its declared tolerance. A positive final
+frequency is not sufficient when the background remains rapidly
+time-dependent. If the final WKB test or Wronskian test fails, the
+occupation is withheld as NaN and the finite-band number-density
+integral is withheld for the affected spectrum. The threshold is a
+numerical reliability choice and must be varied in a convergence study.
 
-```text
-https://github.com/ErdemEsa/ptum-cosmology.git
-```
+This additional guard does not promote the linear mode calculation to
+a relic prediction. The calculation still uses a prescribed
+single-field background, a finite momentum interval, and no mode
+backreaction, rescattering, nonlinear fragmentation, thermalization,
+or entropy dilution. The full 100-trajectory homogeneous scan also
+remains distinct from a quantum-seeded inhomogeneous waterfall.
 
-The repository contains the public PTUM `CLASS v3.2.0` patch. This supports a code-availability claim for the core Boltzmann-code implementation. It does not by itself complete the full public Bayesian pipeline, because production Cobaya YAML files and full MCMC chains remain pending or external-archive items.
+The last verified CI checkpoint is workflow 43501562655 on the
+previous head: 72 tests passed, the four-trajectory two-scale smoke
+scan passed, and the LaTeX build passed with zero overfull-box warnings.
+The branch now has 75 tests after the final-WKB correction; those
+newest tests and code are pending a fresh CI run. The smoke artifact's
+two nonzero-seed trajectories did not establish quartic domination or
+a stable radiation-like proxy-fluid phase. No full-scan, relic-density,
+or microscopic proxy-fluid claim is added.
+
+
+## 12. 2026-11-14 verification update
+
+The final-WKB manuscript regression was corrected in commit
+`82ab0f26014de58634386efd1d90b635f6ec9e45`: the test now checks the
+manuscript's actual statement that both the mode occupation and its
+associated finite-band number density are withheld when the final
+particle-basis validity conditions fail.
+
+Workflow `43580982470` completed successfully on that commit:
+- 75 Python regression tests passed;
+- the four-trajectory, two-scale CI smoke scan completed with four
+  successful integrations and zero integration failures;
+- each energy-scale scenario contained one
+  `insufficient_oscillation_data` result and one `non_quartic` result;
+- the manuscript compiled and its PDF artifact was uploaded.
+
+The LaTeX build still emits Underfull \\hbox and two float-placement
+warnings, although no Overfull \\hbox warning was reported. These are
+not treated as a clean-warning build. The four-row smoke scan does not
+replace the 100-row high-resolution scan and cannot establish a physical
+quartic regime.
+
+The previous workflow `43580694626` failed only at the stale source
+assertion (74 passed, 1 failed); the corrected branch head is verified
+by `43580982470`. No full 100-trajectory artifact has yet been inspected.
+The full scan, independent time-grid and solver-tolerance convergence,
+inhomogeneous backreaction, rescattering, defect evolution, and
+self-consistent relic/entropy calculation remain open. The project is
+not 10/10.
+
+
+### 2026-11-14 latest-head checkpoint
+
+The latest PR head at this checkpoint is
+`d4f5f8b37a526c6fba35d19cb9c0396710da2e1a`. Workflow
+`43582227619` passed 75 Python regression tests, all four CI smoke
+integrations, and the LaTeX build. The high- and low-scale smoke
+scenarios each contained one `insufficient_oscillation_data` and one
+`non_quartic` result; no quartic-dominated radiation-like phase was
+established.
+
+The LaTeX build is successful but not warning-free: the log contains
+numerous Underfull \\hbox messages and two distinct float-placement
+warnings; no Overfull \\hbox or LaTeX error was reported.
+
+An isolated scan branch
+`ptum/full-scan-2026-11-14-r2` was created from the latest PR head
+and received manifest commit
+`c101aaed58e44c9f0159ebb806a84d670cd892e2`. No completed 100-row
+artifact has yet been inspected or validated. The full scan remains
+a homogeneous post-threshold sensitivity study, not a quantum-seeded
+inhomogeneous waterfall or a relic calculation.
+
+
+## 2026-11-14 tilted-domain-wall diagnostic boundary
+
+The analytic defect module now returns the dimensionful locations of the
+true and false stationary minima for a tilted quartic potential. These
+are algebraic stationary points of a frozen-background potential; they
+are not a prediction of the bias. At or above the spinodal source the
+metastable minimum no longer exists and both minimum-location fields are
+reported as unavailable.
+
+The bias source
+\[
+\epsilon_{\rm bias}=|C|\,|\langle\mathcal O_{\rm SM}\rangle|/\Lambda
+\]
+still depends on a renormalized operator expectation value, Wilson
+coefficient, cutoff, and thermal history that have not been calculated
+for PTUM. The kink tension and annihilation/domination estimates remain
+conditional order-of-magnitude diagnostics. No defect formation
+probability, network scaling solution, annihilation history, or
+BBN-safe realization is claimed.
+
+
+## 2026-11-14 conditional thermal fermion bias
+
+A zero-temperature-subtracted ideal-gas expression is now implemented
+for the finite-temperature scalar condensate of a free equilibrium
+Dirac species in the broken electroweak phase. With fixed mass and the diagonal real mass-basis coupling
+$m_f(\psi)=m_f+\operatorname{Re}[(C_f)_{ii}]v_H\psi/(\sqrt2\Lambda)$,
+where $v_H$ is the fixed broken-phase Higgs expectation value and
+$i$ labels a diagonal fermion mass eigenstate, it gives the conditional
+thermal linear coefficient in the convention
+$V_{\rm bias}=-\epsilon_{\rm bias}\psi$.
+
+This estimate is not the PTUM bias prediction. It assumes a fixed
+broken-phase Higgs expectation value, equilibrium free fermions and
+zero chemical potential, and omits gauge/QCD corrections, thermal
+masses, the electroweak crossover, non-equilibrium reheating, and
+the renormalized vacuum condensate. The Wilson matrices, cutoff,
+thermal history and operator renormalization remain unspecified.
+No defect-wall annihilation time or BBN-safe network is claimed.

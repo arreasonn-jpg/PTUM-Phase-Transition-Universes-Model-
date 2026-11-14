@@ -2,35 +2,44 @@
 """
 PTUM Task 1: Tachyonic-to-Quartic Transition Numerical Simulation
 
-This module implements the coupled background evolution equations for the
-PTUM discharge dynamics to determine whether and under what conditions
-the proxy field ψ transitions to a quartic-dominated oscillatory regime
-with radiation-like equation of state (w = 1/3).
+This module is a homogeneous two-field truncation of the PTUM
+discharge sector. It evolves only the fuel field Phi and proxy field psi.
+The Friedmann source is rho_Phi + rho_psi; dark matter chi, residual
+dark energy Phi_res, Standard Model radiation, fermions, and their
+backreaction are NOT integrated here. It therefore tests the local
+two-field tachyonic-to-quartic dynamics, not the complete cosmological
+history or the post-discharge relic abundance.
 
-Equations (from main.tex Sec 3.5.6, Eqs 3.18-3.21):
-  Φ̈ + 3HΦ̇ + ∂V_eff/∂Φ - (αm²/E_th²)Φψ² = 0
-  ψ̈ + 3Hψ̇ + m²(1 - αΦ²/E_th²)ψ + λ_ψψ³ = 0
-  H² = (1/3M_Pl²)(ρ_Φ + ρ_ψ + ρ_χ + ρ_res + ρ_rad)
+Equations (from the revised hybrid-waterfall action in main.tex):
+  Phi_ddot + 3H Phi_dot + dV_eff/dPhi
+      + (alpha m_psi^2/E_th^2) Phi psi^2 = 0
+  psi_ddot + 3H psi_dot
+      + m_psi^2(alpha Phi^2/E_th^2 - 1)psi
+      + lambda_psi psi^3 = 0
+  H^2 = (rho_Phi + rho_psi)/(3 M_Pl^2)
 
-Energy densities:
-  ρ_Φ = ½Φ̇² + V_eff(Φ) + ½m²(1 - αΦ²/E_th²)ψ²
-  ρ_ψ = ½ψ̇² + ½m²(1 - αΦ²/E_th²)ψ² + ¼λ_ψψ⁴
+The waterfall mass is positive for |Phi| > Phi_c and tachyonic for
+|Phi| < Phi_c. The interaction potential is
+U_int = +alpha*m_psi^2*Phi^2*psi^2/(2 E_th^2), assigned once to rho_psi.
 
-Shifted potential for ψ (energy measured from minimum):
-  U(ψ) = ¼λ_ψ(ψ² - ψ₀²)²,  ψ₀² = μ²/λ_ψ,  μ² = |m_eff²|
+Energy densities (interaction potential assigned once, to psi):
+  rho_Phi = 1/2 Phi_dot^2 + V_eff(Phi)
+  rho_psi = 1/2 psi_dot^2 + 1/2 m_eff^2(Phi) psi^2
+            + 1/4 lambda_psi psi^4
 
 Diagnostics:
-  w_ψ = (½ψ̇² - U) / (½ψ̇² + U)
-  Q = λ_ψ⟨ψ⁴⟩ / μ²⟨ψ²⟩  (quartic dominance parameter)
-  Virial ratio V = ⟨ψ̇²⟩ / (4⟨U⟩)
+  Q = lambda_psi <psi^4> / <|m_eff^2(Phi)| psi^2>, per half-cycle
+  R_vir = <K> / (2<V_4>), tending to 1 for quartic oscillations
+  C_FRW = d rho_total/dt + 3H(rho_total+p_total)
 """
 
 import numpy as np
 from scipy.integrate import solve_ivp
 from dataclasses import dataclass
-from typing import Optional, Tuple, List, Dict
+from typing import Optional, Tuple, List, Dict, Callable
 import json
 import os
+import math
 
 # Physical constants (natural units: c = ħ = k_B = 1)
 M_PL = 2.435e18  # GeV (reduced Planck mass)
@@ -41,30 +50,25 @@ GEV_TO_S = 6.582e-25  # 1 GeV^-1 = 6.582e-25 s
 class PTUMParameters:
     """PTUM model parameters for the discharge simulation."""
     # Inflation/discharge parameters
-    V0: float = 1e56          # GeV^4, plateau height ~ (10^14 GeV)^4 (for underdamped)
-    lambda_phi: float = 0.02  # Fuel potential parameter
-    
+    V0: float = 1e56          # GeV^4, plateau height ~ (10^14 GeV)^4
+    lambda_phi: float = 0.02  # Dimensionless plateau-shape parameter
+    Phi_c: float = 0.9862280831209068 * M_PL # GeV, independent critical field; match to Phi_end
+
     # Activation sector parameters
     m_psi: float = 1e13       # GeV, bare mass of ψ
     lambda_psi: float = 0.1   # Quartic coupling
     E_th: float = 1e16        # GeV, threshold scale
-    
-    # Derived: alpha from Phi_c = M_Pl/sqrt(lambda_phi) ~ 1.7e19 GeV
-    @property
-    def Phi_c(self) -> float:
-        """Critical threshold Φ_c = M_Pl / sqrt(lambda_phi)"""
-        return M_PL / np.sqrt(self.lambda_phi)
-    
+
     @property
     def alpha(self) -> float:
-        """Threshold coupling α = (E_th/Φ_c)²"""
+        """Threshold coupling fixed by m_eff^2(Phi_c)=0: alpha=(E_th/Phi_c)^2."""
         return (self.E_th / self.Phi_c)**2
     
     @property
     def mu_sq(self) -> float:
-        """μ² = |m_eff²| at Φ = 1.01 Φ_c (just past threshold)"""
-        Phi = 1.01 * self.Phi_c
-        m_eff_sq = self.m_psi**2 * (1 - self.alpha * Phi**2 / self.E_th**2)
+        """Tachyonic scale |m_eff²| just below the threshold at 0.99 Phi_c."""
+        Phi = 0.99 * self.Phi_c
+        m_eff_sq = self.m_psi**2 * (self.alpha * Phi**2 / self.E_th**2 - 1)
         return m_eff_sq  # negative
     
     @property
@@ -83,14 +87,39 @@ class PTUMParameters:
         return np.sqrt(self.V0 / 3) / M_PL
     
     @property
+    def H_threshold_potential(self) -> float:
+        """Potential-dominated Hubble estimate evaluated at Phi=Phi_c."""
+        x = self.lambda_phi * (self.Phi_c / M_PL)**2
+        V_c = self.V0 * (-np.expm1(-x))
+        return np.sqrt(V_c / (3.0 * M_PL**2))
+
+    @property
+    def H_threshold_exact_end(self) -> float:
+        """H at epsilon_H=1 when Phi_c is matched to the exact inflation endpoint.
+
+        At epsilon_H=1 for a canonical scalar, X^2=1/3 and rho=3V/2.
+        """
+        return np.sqrt(1.5) * self.H_threshold_potential
+
+    @property
+    def damping_ratio_potential(self) -> float:
+        """Potential-only estimate 3 H_V(Phi_c)/(2 mu)."""
+        return 3.0 * self.H_threshold_potential / (2.0 * self.mu)
+
+    @property
+    def damping_ratio_plateau(self) -> float:
+        """3 H_star/(2 mu), a plateau-scale estimate, not the local trigger value."""
+        return 3.0 * self.H_star / (2.0 * self.mu)
+
+    @property
     def damping_ratio(self) -> float:
-        """3H/(2μ) - determines underdamped (<1) vs overdamped (>1)"""
-        return 3 * self.H_star / (2 * self.mu)
+        """Exact-endpoint 3 H_c/(2 mu), assuming Phi_c is epsilon_H=1."""
+        return 3.0 * self.H_threshold_exact_end / (2.0 * self.mu)
 
 
 @dataclass
 class InitialConditions:
-    """Initial conditions at threshold crossing t = t_c."""
+    """Initial conditions for the post-threshold homogeneous evolution."""
     Phi: float           # Φ(t_c) = Φ_c (at threshold)
     Phi_dot: float       # Φ̇(t_c) from slow-roll
     psi: float           # ψ(t_c) - homogeneous mode
@@ -100,25 +129,63 @@ class InitialConditions:
     k_modes: Optional[np.ndarray] = None
 
 
+def waterfall_transfer_rate(
+    Phi: np.ndarray | float,
+    psi: np.ndarray | float,
+    Phi_dot: np.ndarray | float,
+    params: PTUMParameters,
+) -> tuple[np.ndarray | float, np.ndarray | float]:
+    """Return homogeneous Q_psi^0 and Q_Phi^0 for the declared sector split.
+
+    The interaction potential U_int=+alpha*m_psi^2*Phi^2*psi^2/(2 E_th^2)
+    is assigned to T_psi. With (-+++), Q_psi^0=+U_int,Phi*Phi_dot
+    and Q_Phi^0=-Q_psi^0. For Phi>0 and Phi_dot<0, Q_psi^0 is negative.
+    """
+    coefficient = params.alpha * params.m_psi**2 / params.E_th**2
+    q_psi = coefficient * np.asarray(Phi) * np.asarray(psi)**2 * np.asarray(Phi_dot)
+    q_phi = -q_psi
+    if np.ndim(q_psi) == 0:
+        return float(q_psi), float(q_phi)
+    return q_psi, q_phi
+
+
 def veff_phi(Phi: float, params: PTUMParameters) -> float:
-    """Effective potential for fuel field: V_eff(Φ) = V0(1 - exp(-λΦ²))"""
-    return params.V0 * (1 - np.exp(-params.lambda_phi * Phi**2))
+    """Tree-level fuel potential with dimensionless exponent.
+
+    lambda_phi is dimensionless; M_PL/sqrt(lambda_phi) is the
+    characteristic plateau field scale. The discharge threshold Phi_c
+    is an independent parameter fixed through alpha=(E_th/Phi_c)**2.
+    """
+    x = params.lambda_phi * (Phi / M_PL)**2
+    return params.V0 * (-np.expm1(-x))
 
 
 def dveff_dphi(Phi: float, params: PTUMParameters) -> float:
-    """Derivative of V_eff wrt Φ"""
-    return params.V0 * 2 * params.lambda_phi * Phi * np.exp(-params.lambda_phi * Phi**2)
+    """Analytic derivative of the dimensionally consistent fuel potential."""
+    x = params.lambda_phi * (Phi / M_PL)**2
+    return (2.0 * params.V0 * params.lambda_phi * Phi / M_PL**2
+            * np.exp(-x))
 
 
 def meff_sq_psi(Phi: float, params: PTUMParameters) -> float:
-    """Effective mass squared for ψ: m²(1 - αΦ²/E_th²)"""
-    return params.m_psi**2 * (1 - params.alpha * Phi**2 / params.E_th**2)
+    """Waterfall mass: positive above Phi_c and tachyonic below it."""
+    return params.m_psi**2 * (params.alpha * Phi**2 / params.E_th**2 - 1)
 
 
 def rho_phi(Phi: float, Phi_dot: float, psi: float, params: PTUMParameters) -> float:
-    """Energy density of fuel field Φ"""
-    m_eff_sq = meff_sq_psi(Phi, params)
-    return 0.5 * Phi_dot**2 + veff_phi(Phi, params) + 0.5 * m_eff_sq * psi**2
+    """Fuel-sector density; the interaction potential is assigned only to ψ."""
+    return 0.5 * Phi_dot**2 + veff_phi(Phi, params)
+
+
+def pressure_phi(Phi: float, Phi_dot: float, params: PTUMParameters) -> float:
+    """Pressure of the canonical fuel field Φ."""
+    return 0.5 * Phi_dot**2 - veff_phi(Phi, params)
+
+
+def rho_total(Phi: float, Phi_dot: float, psi: float, psi_dot: float,
+              params: PTUMParameters, rho_other: float = 0.0) -> float:
+    """Total homogeneous density; the Φ-ψ interaction is counted exactly once."""
+    return rho_phi(Phi, Phi_dot, psi, params) + rho_psi(Phi, psi, psi_dot, params) + rho_other
 
 
 def rho_psi(Phi: float, psi: float, psi_dot: float, params: PTUMParameters) -> float:
@@ -133,24 +200,91 @@ def pressure_psi(Phi: float, psi: float, psi_dot: float, params: PTUMParameters)
     return 0.5 * psi_dot**2 - 0.5 * m_eff_sq * psi**2 - 0.25 * params.lambda_psi * psi**4
 
 
-def shifted_potential_psi(psi: float, params: PTUMParameters) -> float:
-    """U(ψ) = ¼λ_ψ(ψ² - ψ₀²)² - energy measured from minimum"""
-    psi_0 = params.psi_0
-    return 0.25 * params.lambda_psi * (psi**2 - psi_0**2)**2
+def psi_minimum_squared(Phi: np.ndarray | float, params: PTUMParameters):
+    """Instantaneous |psi_min(Phi)|^2, zero in the unbroken phase."""
+    m_eff_sq = meff_sq_psi(Phi, params)
+    return np.maximum(-np.asarray(m_eff_sq), 0.0) / params.lambda_psi
+
+
+def psi_minimum_potential(Phi: np.ndarray | float, params: PTUMParameters):
+    """Potential value at the instantaneous global minimum of V_psi."""
+    m_eff_sq = np.asarray(meff_sq_psi(Phi, params))
+    return -(np.maximum(-m_eff_sq, 0.0) ** 2) / (4.0 * params.lambda_psi)
+
+
+def psi_excitation_potential(
+    Phi: np.ndarray | float,
+    psi: np.ndarray | float,
+    params: PTUMParameters,
+):
+    """V_psi(Phi,psi)-V_psi(Phi,psi_min(Phi)); non-negative by construction."""
+    m_eff_sq = np.asarray(meff_sq_psi(Phi, params))
+    psi_arr = np.asarray(psi)
+    psi_min_sq = psi_minimum_squared(Phi, params)
+    raw_potential = 0.5 * m_eff_sq * psi_arr**2 + 0.25 * params.lambda_psi * psi_arr**4
+    shifted_double_well = 0.25 * params.lambda_psi * (psi_arr**2 - psi_min_sq)**2
+    return np.where(m_eff_sq < 0.0, shifted_double_well, raw_potential)
+
+
+def psi_excitation_energy(
+    Phi: np.ndarray | float,
+    psi: np.ndarray | float,
+    psi_dot: np.ndarray | float,
+    params: PTUMParameters,
+):
+    return 0.5 * np.asarray(psi_dot)**2 + psi_excitation_potential(Phi, psi, params)
+
+
+def psi_excitation_pressure(
+    Phi: np.ndarray | float,
+    psi: np.ndarray | float,
+    psi_dot: np.ndarray | float,
+    params: PTUMParameters,
+):
+    return 0.5 * np.asarray(psi_dot)**2 - psi_excitation_potential(Phi, psi, params)
+
+
+def waterfall_excitation_transfer_rate(
+    Phi: np.ndarray | float,
+    psi: np.ndarray | float,
+    Phi_dot: np.ndarray | float,
+    params: PTUMParameters,
+):
+    """Q_psi^0 after moving V_min(Phi) from the psi sector to the Phi sector."""
+    Phi_arr = np.asarray(Phi)
+    psi_arr = np.asarray(psi)
+    Phi_dot_arr = np.asarray(Phi_dot)
+    m_eff_sq = np.asarray(meff_sq_psi(Phi_arr, params))
+    coupling = params.alpha * params.m_psi**2 / params.E_th**2
+    q_raw, _ = waterfall_transfer_rate(Phi_arr, psi_arr, Phi_dot_arr, params)
+    dVmin_dPhi = np.where(
+        m_eff_sq < 0.0,
+        -m_eff_sq * coupling * Phi_arr / params.lambda_psi,
+        0.0,
+    )
+    q_exc = np.asarray(q_raw) - dVmin_dPhi * Phi_dot_arr
+    q_phi = -q_exc
+    if np.ndim(q_exc) == 0:
+        return float(q_exc), float(q_phi)
+    return q_exc, q_phi
 
 
 def w_psi(Phi: float, psi: float, psi_dot: float, params: PTUMParameters) -> float:
-    """Equation of state parameter w_ψ = p_ψ/ρ_ψ"""
+    """Raw unshifted w_psi; NaN when the sector density is numerically zero."""
     p = pressure_psi(Phi, psi, psi_dot, params)
     rho = rho_psi(Phi, psi, psi_dot, params)
-    return p / rho if rho != 0 else 0.0
+    if not np.isfinite(rho) or abs(rho) <= np.finfo(float).tiny:
+        return float("nan")
+    return p / rho
 
 
 def hubble_rate(Phi: float, Phi_dot: float, psi: float, psi_dot: float, 
                 params: PTUMParameters, rho_other: float = 0.0) -> float:
     """Hubble rate H = sqrt(ρ_total/3M_Pl²)"""
-    rho_tot = rho_phi(Phi, Phi_dot, psi, params) + rho_psi(Phi, psi, psi_dot, params) + rho_other
-    return np.sqrt(max(rho_tot, 0) / (3 * M_PL**2))
+    rho_tot = rho_total(Phi, Phi_dot, psi, psi_dot, params, rho_other)
+    if not np.isfinite(rho_tot) or rho_tot <= 0.0:
+        raise ValueError(f"Non-positive or non-finite total density: {rho_tot}")
+    return np.sqrt(rho_tot / (3 * M_PL**2))
 
 
 def background_equations(t: float, y: np.ndarray, params: PTUMParameters) -> np.ndarray:
@@ -165,8 +299,9 @@ def background_equations(t: float, y: np.ndarray, params: PTUMParameters) -> np.
     # Hubble rate
     H = hubble_rate(Phi, Phi_dot, psi, psi_dot, params)
     
-    # Φ equation: Φ̈ + 3HΦ̇ + ∂V_eff/∂Φ - (αm²/E_th²)Φψ² = 0
-    Phi_ddot = -3 * H * Phi_dot - dveff_dphi(Phi, params) + \
+    # Waterfall coupling U_int=+alpha*m_psi^2*Phi^2*psi^2/(2 E_th^2):
+    # Phi_ddot + 3H Phi_dot + V_eff,Phi + alpha*m_psi^2*Phi*psi^2/E_th^2 = 0.
+    Phi_ddot = -3 * H * Phi_dot - dveff_dphi(Phi, params) - \
                (params.alpha * params.m_psi**2 / params.E_th**2) * Phi * psi**2
     
     # ψ equation: ψ̈ + 3Hψ̇ + m_eff²(Φ)ψ + λ_ψψ³ = 0
@@ -217,19 +352,106 @@ def run_simulation(params: PTUMParameters,
     
     rho_phi_arr = np.array([rho_phi(Phi[i], Phi_dot[i], psi[i], params) for i in range(len(t))])
     rho_psi_arr = np.array([rho_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
+    p_phi_arr = np.array([pressure_phi(Phi[i], Phi_dot[i], params) for i in range(len(t))])
     p_psi_arr = np.array([pressure_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
+    rho_total_arr = rho_phi_arr + rho_psi_arr
+    p_total_arr = p_phi_arr + p_psi_arr
+
+    # Diagnostic split around the instantaneous broken-phase minimum:
+    # move V_min(Phi) from the psi excitation sector into the Phi sector.
+    V_psi_min_arr = np.asarray(psi_minimum_potential(Phi, params), dtype=float)
+    rho_psi_exc_arr = 0.5 * psi_dot**2 + psi_excitation_potential(Phi, psi, params)
+    p_psi_exc_arr = 0.5 * psi_dot**2 - psi_excitation_potential(Phi, psi, params)
+    rho_phi_split_arr = rho_phi_arr + V_psi_min_arr
+    p_phi_split_arr = p_phi_arr - V_psi_min_arr
+    w_psi_exc_arr = np.divide(
+        p_psi_exc_arr,
+        rho_psi_exc_arr,
+        out=np.full_like(rho_psi_exc_arr, np.nan, dtype=float),
+        where=np.abs(rho_psi_exc_arr) > np.finfo(float).tiny,
+    )
+    Q_psi_exc0_arr, Q_Phi_split0_arr = waterfall_excitation_transfer_rate(
+        Phi, psi, Phi_dot, params
+    )
+
+    # Evaluate d(rho)/dt by the chain rule using the same RHS that evolves
+    # the fields. This avoids differencing a nearly constant, ~1e50 GeV^4
+    # vacuum density and dividing round-off noise by an almost-zero scale.
+    # It is an equation-consistency diagnostic, not an independent solver test.
+    coupling = params.alpha * params.m_psi**2 / params.E_th**2
+    m_eff_sq_arr = np.array([meff_sq_psi(x, params) for x in Phi])
+    dV_dPhi_arr = np.array([dveff_dphi(x, params) for x in Phi])
+    Phi_ddot_arr = -3.0 * H * Phi_dot - dV_dPhi_arr - coupling * Phi * psi**2
+    psi_ddot_arr = -3.0 * H * psi_dot - m_eff_sq_arr * psi - params.lambda_psi * psi**3
+    dm_eff_sq_dPhi_arr = 2.0 * coupling * Phi
+    rho_dot_chain_rule = (
+        Phi_dot * (Phi_ddot_arr + dV_dPhi_arr)
+        + psi_dot * psi_ddot_arr
+        + m_eff_sq_arr * psi * psi_dot
+        + 0.5 * dm_eff_sq_dPhi_arr * Phi_dot * psi**2
+        + params.lambda_psi * psi**3 * psi_dot
+    )
+    # For canonical homogeneous scalars rho + p = Phi_dot^2 + psi_dot^2;
+    # evaluate this directly to avoid subtracting two vacuum-sized arrays.
+    expansion_term = 3.0 * H * (Phi_dot**2 + psi_dot**2)
+    continuity_residual = rho_dot_chain_rule + expansion_term
+    continuity_scale = np.abs(rho_dot_chain_rule) + np.abs(expansion_term)
+    continuity_residual_relative = np.divide(
+        continuity_residual,
+        continuity_scale,
+        out=np.zeros_like(continuity_residual),
+        where=continuity_scale > 0.0
+    )
+    # A second normalization referenced to the total background energy
+    # remains well-conditioned when rho_dot and 3H(rho+p) both approach
+    # zero in a vacuum-dominated, nearly static solution.
+    background_energy_scale = np.maximum(
+        np.abs(H) * np.abs(rho_total_arr),
+        np.finfo(float).tiny,
+    )
+    continuity_residual_background_relative = (
+        continuity_residual / background_energy_scale
+    )
+
+    Q_psi0_arr, Q_Phi0_arr = waterfall_transfer_rate(
+        Phi, psi, Phi_dot, params
+    )
+
+    # Keep the sampled finite-difference estimate as a separate convergence
+    # diagnostic. It is expected to be noisy when rho is vacuum dominated.
+    rho_dot_finite_difference = np.gradient(rho_total_arr, t)
+    continuity_residual_finite_difference = rho_dot_finite_difference + expansion_term
+    continuity_scale_finite_difference = (
+        np.abs(rho_dot_finite_difference) + np.abs(expansion_term)
+    )
+    continuity_residual_finite_difference_relative = np.divide(
+        continuity_residual_finite_difference,
+        continuity_scale_finite_difference,
+        out=np.full_like(continuity_residual_finite_difference, np.nan),
+        where=continuity_scale_finite_difference > 0.0
+    )
+    continuity_residual_finite_difference_background_relative = (
+        continuity_residual_finite_difference / background_energy_scale
+    )
     w_psi_arr = np.array([w_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
     
-    # Shifted potential and virial diagnostics
-    U_psi = np.array([shifted_potential_psi(psi[i], params) for i in range(len(t))])
-    virial_ratio = np.where(U_psi > 0, 0.5 * psi_dot**2 / U_psi, 0)
+    # Quartic diagnostics are evaluated over complete half-cycles.
+    # NaN denotes that no valid oscillation interval was available.
+    U_psi = 0.25 * params.lambda_psi * psi**4
+    virial_ratio = compute_quartic_virial_ratio(t, psi, psi_dot, params)
+    quadratic_virial_ratio = compute_quadratic_virial_ratio(
+        t, psi, psi_dot, Phi, params
+    )
+    Q_arr = compute_quartic_dominance(t, psi, psi_dot, params, Phi)
     
-    # Quartic dominance parameter Q = λ⟨ψ⁴⟩ / μ²⟨ψ²⟩
-    # Compute over oscillation periods (using zero crossings of psi_dot)
-    Q_arr = compute_quartic_dominance(t, psi, psi_dot, params)
-    
-    # Time-averaged w_psi over oscillation periods
-    w_avg, t_avg = compute_time_averaged_w(t, w_psi_arr, psi_dot)
+    # Average the excitation-sector equation of state, not the raw
+    # potential density whose moving minimum can be negative.
+    w_avg, t_avg = compute_time_averaged_w(
+        t, p_psi_exc_arr, rho_psi_exc_arr, psi_dot
+    )
+    w_avg_raw, t_avg_raw = compute_time_averaged_w(
+        t, p_psi_arr, rho_psi_arr, psi_dot
+    )
     
     return {
         'success': True,
@@ -241,98 +463,178 @@ def run_simulation(params: PTUMParameters,
         'H': H,
         'rho_phi': rho_phi_arr,
         'rho_psi': rho_psi_arr,
+        'rho_total': rho_total_arr,
+        'p_phi': p_phi_arr,
         'p_psi': p_psi_arr,
+        'p_total': p_total_arr,
+        'V_psi_min': V_psi_min_arr,
+        'rho_phi_split': rho_phi_split_arr,
+        'p_phi_split': p_phi_split_arr,
+        'rho_psi_exc': rho_psi_exc_arr,
+        'p_psi_exc': p_psi_exc_arr,
+        'Q_psi_exc0': Q_psi_exc0_arr,
+        'Q_Phi_split0': Q_Phi_split0_arr,
+        'continuity_residual': continuity_residual,
+        'continuity_residual_relative': continuity_residual_relative,
+        'continuity_residual_background_relative': continuity_residual_background_relative,
+        'Q_psi0': Q_psi0_arr,
+        'Q_Phi0': Q_Phi0_arr,
+        'continuity_residual_finite_difference': continuity_residual_finite_difference,
+        'continuity_residual_finite_difference_relative': continuity_residual_finite_difference_relative,
+        'continuity_residual_finite_difference_background_relative': continuity_residual_finite_difference_background_relative,
         'w_psi': w_psi_arr,
+        'w_psi_exc': w_psi_exc_arr,
         'w_psi_avg': w_avg,
+        'w_psi_avg_raw': w_avg_raw,
         't_avg': t_avg,
+        't_avg_raw': t_avg_raw,
         'U_psi': U_psi,
         'virial_ratio': virial_ratio,
+        'quadratic_virial_ratio': quadratic_virial_ratio,
         'Q': Q_arr,
         'params': params,
         'ic': ic
     }
 
 
-def compute_quartic_dominance(t: np.ndarray, psi: np.ndarray, 
-                              psi_dot: np.ndarray, params: PTUMParameters) -> np.ndarray:
-    """Compute quartic dominance parameter Q = λ⟨ψ⁴⟩/μ²⟨ψ²⟩ over oscillation periods."""
-    Q = np.zeros_like(t)
-    mu_sq = abs(params.mu_sq)
-    
-    # Find zero crossings of psi_dot (oscillation boundaries)
-    zero_crossings = np.where(np.diff(np.sign(psi_dot)))[0]
-    
-    if len(zero_crossings) < 2:
+def compute_quartic_dominance(t: np.ndarray, psi: np.ndarray,
+                              psi_dot: np.ndarray, params: PTUMParameters,
+                              Phi: Optional[np.ndarray] = None) -> np.ndarray:
+    """Return half-cycle Q = λ<ψ⁴>/<|m_eff²(Φ)| ψ²>; NaN means not measurable."""
+    Q = np.full_like(t, np.nan, dtype=float)
+    if Phi is None:
+        raise ValueError("Phi history is required for a time-local quartic diagnostic")
+    if len(Phi) != len(t):
+        raise ValueError("Phi and t must have the same length")
+
+    # Turning points delimit half-oscillations; signbit handles exact zeros robustly.
+    turning_points = np.where(np.diff(np.signbit(psi_dot)))[0]
+    if len(turning_points) < 2:
         return Q
-    
-    for i in range(len(zero_crossings) - 1):
-        start = zero_crossings[i]
-        end = zero_crossings[i + 1]
-        if end - start < 2:
+
+    for i in range(len(turning_points) - 1):
+        start, end = turning_points[i], turning_points[i + 1] + 1
+        if end - start < 3:
             continue
         psi_seg = psi[start:end]
-        psi4_avg = np.mean(psi_seg**4)
-        psi2_avg = np.mean(psi_seg**2)
-        if psi2_avg > 0:
-            Q_val = params.lambda_psi * psi4_avg / (mu_sq * psi2_avg)
-            Q[start:end] = Q_val
-    
-    # Fill remaining with last value
-    if len(zero_crossings) > 0:
-        last_idx = zero_crossings[-1]
-        Q[last_idx:] = Q[last_idx]
-    
+        mass_sq_seg = np.abs(meff_sq_psi(Phi[start:end], params))
+        numerator = params.lambda_psi * np.mean(psi_seg**4)
+        denominator = np.mean(mass_sq_seg * psi_seg**2)
+        if denominator > 0.0 and np.isfinite(denominator):
+            Q[start:end] = numerator / denominator
     return Q
 
 
-def compute_time_averaged_w(t: np.ndarray, w: np.ndarray, 
+def compute_quartic_virial_ratio(t: np.ndarray, psi: np.ndarray,
+                                psi_dot: np.ndarray,
+                                params: PTUMParameters) -> np.ndarray:
+    """Half-cycle <K>/(2<V4>) for a quartic oscillator; NaN if undefined."""
+    ratio = np.full_like(t, np.nan, dtype=float)
+    turning_points = np.where(np.diff(np.signbit(psi_dot)))[0]
+    for i in range(len(turning_points) - 1):
+        start, end = turning_points[i], turning_points[i + 1] + 1
+        if end - start < 3:
+            continue
+        kinetic_avg = 0.5 * np.mean(psi_dot[start:end]**2)
+        twice_potential_avg = 0.5 * params.lambda_psi * np.mean(psi[start:end]**4)
+        if twice_potential_avg > 0.0:
+            ratio[start:end] = kinetic_avg / twice_potential_avg
+    return ratio
+
+
+def compute_quadratic_virial_ratio(t: np.ndarray, psi: np.ndarray,
+                                      psi_dot: np.ndarray, Phi: np.ndarray,
+                                      params: PTUMParameters) -> np.ndarray:
+    """Half-cycle <K>/<V2> for a positive, slowly varying quadratic mode."""
+    if len(Phi) != len(t):
+        raise ValueError("Phi and t must have the same length")
+    ratio = np.full_like(t, np.nan, dtype=float)
+    m_eff_sq = np.array([meff_sq_psi(value, params) for value in Phi])
+    turning_points = np.where(np.diff(np.signbit(psi_dot)))[0]
+    for i in range(len(turning_points) - 1):
+        start, end = turning_points[i], turning_points[i + 1] + 1
+        if end - start < 3 or np.any(m_eff_sq[start:end] <= 0.0):
+            continue
+        kinetic_avg = 0.5 * np.mean(psi_dot[start:end]**2)
+        quadratic_potential_avg = 0.5 * np.mean(
+            m_eff_sq[start:end] * psi[start:end]**2
+        )
+        if quadratic_potential_avg > 0.0:
+            ratio[start:end] = kinetic_avg / quadratic_potential_avg
+    return ratio
+
+
+def compute_time_averaged_w(t: np.ndarray, pressure: np.ndarray,
+                            density: np.ndarray,
                             psi_dot: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-    """Compute time-averaged w_ψ over oscillation periods."""
-    zero_crossings = np.where(np.diff(np.sign(psi_dot)))[0]
-    
-    if len(zero_crossings) < 2:
+    """Compute cycle-averaged w as <p>/<rho>, not as <p/rho>.
+
+    Turning points of psi delimit half-oscillation intervals. The ratio of
+    separately averaged pressure and density is the physically relevant
+    coarse-grained equation of state; averaging the instantaneous ratio can
+    overweight epochs where rho is small.
+    """
+    turning_points = np.where(np.diff(np.signbit(psi_dot)))[0]
+
+    if len(turning_points) < 2:
         return np.array([]), np.array([])
-    
+
     w_avg = []
     t_avg = []
-    
-    for i in range(len(zero_crossings) - 1):
-        start = zero_crossings[i]
-        end = zero_crossings[i + 1]
+
+    for i in range(len(turning_points) - 1):
+        start = turning_points[i]
+        end = turning_points[i + 1] + 1
         if end - start < 2:
             continue
-        w_avg.append(np.mean(w[start:end]))
-        t_avg.append(0.5 * (t[start] + t[end]))
-    
-    return np.array(w_avg), np.array(t_avg)
+        rho_mean = float(np.mean(density[start:end]))
+        p_mean = float(np.mean(pressure[start:end]))
+        scale = max(float(np.max(np.abs(density[start:end]))),
+                    float(np.max(np.abs(pressure[start:end]))),
+                    np.finfo(float).tiny)
+        if not np.isfinite(rho_mean) or abs(rho_mean) <= 1.0e-14 * scale:
+            w_avg.append(np.nan)
+        else:
+            w_avg.append(p_mean / rho_mean)
+        t_avg.append(0.5 * (t[start] + t[end - 1]))
+
+    return np.asarray(w_avg), np.asarray(t_avg)
 
 
 def create_initial_conditions(params: PTUMParameters,
                               psi_init: float = 0.0,
                               psi_dot_init: float = 0.0,
-                              phi_offset: float = 0.0) -> InitialConditions:
+                              phi_offset: float = 0.0,
+                              Phi_dot_override: Optional[float] = None) -> InitialConditions:
     """
-    Create initial conditions at threshold crossing.
+    Create post-threshold initial conditions for the homogeneous evolution.
     
     Args:
         params: PTUM parameters
         psi_init: Initial ψ(t_c) [default 0 = top of barrier]
         psi_dot_init: Initial ψ̇(t_c) [default 0]
-        phi_offset: Offset from Φ_c (positive = already past threshold)
+        phi_offset: Positive offset places Φ below Φ_c, on the tachyonic side.
     
     Returns:
         InitialConditions object
     """
     Phi_c = params.Phi_c
-    Phi = Phi_c + phi_offset
+    # Positive offset means the field has rolled below the threshold.
+    Phi = Phi_c - phi_offset
     
-    # Slow-roll Φ̇ at threshold: Φ̇ ≈ -√(2ε_V) H M_Pl
-    # ε_V = ½(V'/V)²
-    V = veff_phi(Phi, params)
-    V_prime = dveff_dphi(Phi, params)
-    epsilon_V = 0.5 * (V_prime / V)**2 if V > 0 else 0.01
-    H = params.H_star
-    Phi_dot = -np.sqrt(2 * epsilon_V) * H * M_PL
+    if Phi_dot_override is None:
+        # Fallback for exploratory runs only. Production threshold scans
+        # should supply the velocity from the integrated inflationary
+        # background via ptum_inflation_background.state_at_field_value.
+        V = veff_phi(Phi, params)
+        V_prime = dveff_dphi(Phi, params)
+        epsilon_V = 0.5 * (M_PL * V_prime / V)**2 if V > 0 else 0.01
+        H = np.sqrt(V / (3.0 * M_PL**2)) if V > 0 else params.H_star
+        Phi_dot = -np.sqrt(2.0 * epsilon_V) * H * M_PL
+    else:
+        Phi_dot = float(Phi_dot_override)
+        if not np.isfinite(Phi_dot):
+            raise ValueError("Phi_dot_override must be finite")
     
     return InitialConditions(
         Phi=Phi,
@@ -345,15 +647,15 @@ def create_initial_conditions(params: PTUMParameters,
 def create_initial_conditions_underdamped(params: PTUMParameters,
                                            psi_init: float = 0.0,
                                            psi_dot_init: float = 0.0,
-                                           phi_ratio: float = 1.01) -> InitialConditions:
+                                           phi_ratio: float = 0.99) -> InitialConditions:
     """
-    Create initial conditions for underdamped regime (Phi > Phi_c).
+    Create initial conditions on the tachyonic side (Phi < Phi_c).
     
     Args:
         params: PTUM parameters
         psi_init: Initial ψ [default 0 = top of barrier]
         psi_dot_init: Initial ψ̇ [default 0]
-        phi_ratio: Φ/Φ_c ratio [default 1.01 = just past threshold]
+        phi_ratio: Φ/Φ_c ratio [default 0.99 = just below threshold]
     
     Returns:
         InitialConditions object
@@ -363,8 +665,8 @@ def create_initial_conditions_underdamped(params: PTUMParameters,
     # Slow-roll Φ̇
     V = veff_phi(Phi, params)
     V_prime = dveff_dphi(Phi, params)
-    epsilon_V = 0.5 * (V_prime / V)**2 if V > 0 else 0.01
-    H = params.H_star
+    epsilon_V = 0.5 * (M_PL * V_prime / V)**2 if V > 0 else 0.01
+    H = np.sqrt(V / (3.0 * M_PL**2)) if V > 0 else params.H_star
     Phi_dot = -np.sqrt(2 * epsilon_V) * H * M_PL
     
     return InitialConditions(
@@ -380,14 +682,36 @@ def run_parameter_scan(params: PTUMParameters,
                        psi_dot_init_range: List[float],
                        phi_offset_range: List[float],
                        t_max: float = 50.0,
-                       n_points: int = 500) -> List[Dict]:
+                       n_points: int = 500,
+                       phi_dot_init_by_offset: Optional[Dict[float, float]] = None,
+                       progress_interval: int = 0,
+                       progress_label: str = "scan",
+                       result_callback: Optional[Callable[[Dict], None]] = None
+                       ) -> List[Dict]:
     """
     Run parameter scan over initial conditions.
     
     Returns list of simulation results with success/failure classification.
     """
     results = []
-    
+    total_runs = (
+        len(psi_init_range) * len(psi_dot_init_range) * len(phi_offset_range)
+    )
+    completed_runs = 0
+    if progress_interval < 0:
+        raise ValueError("progress_interval must be non-negative")
+
+    def record_progress():
+        nonlocal completed_runs
+        completed_runs += 1
+        if progress_interval and (
+            completed_runs % progress_interval == 0 or completed_runs == total_runs
+        ):
+            print(
+                f"[{progress_label}] completed {completed_runs}/{total_runs} trajectories",
+                flush=True,
+            )
+
     # Time array (in units of 1/μ)
     mu = np.sqrt(abs(params.mu_sq))
     t_span = (0, t_max / mu)
@@ -396,7 +720,15 @@ def run_parameter_scan(params: PTUMParameters,
     for psi_init in psi_init_range:
         for psi_dot_init in psi_dot_init_range:
             for phi_offset in phi_offset_range:
-                ic = create_initial_conditions(params, psi_init, psi_dot_init, phi_offset)
+                phi_dot_override = (
+                    phi_dot_init_by_offset[phi_offset]
+                    if phi_dot_init_by_offset is not None
+                    else None
+                )
+                ic = create_initial_conditions(
+                    params, psi_init, psi_dot_init, phi_offset,
+                    Phi_dot_override=phi_dot_override
+                )
                 
                 try:
                     result = run_simulation(params, ic, t_span, t_eval)
@@ -410,9 +742,12 @@ def run_parameter_scan(params: PTUMParameters,
                         'phi_offset': phi_offset
                     }
                     results.append(result)
+                    if result_callback is not None:
+                        result_callback(result)
+                    record_progress()
                     
                 except Exception as e:
-                    results.append({
+                    failed_result = {
                         'success': False,
                         'error': str(e),
                         'ic_params': {
@@ -420,9 +755,94 @@ def run_parameter_scan(params: PTUMParameters,
                             'psi_dot_init': psi_dot_init,
                             'phi_offset': phi_offset
                         }
-                    })
+                    }
+                    results.append(failed_result)
+                    if result_callback is not None:
+                        result_callback(failed_result)
+                    record_progress()
     
     return results
+
+
+def _late_time_adiabaticity_diagnostic(result: Dict,
+                                       tail_fraction: float = 0.2,
+                                       min_half_cycles: int = 3) -> Dict:
+    """Estimate H/omega from complete late-time half-cycles.
+
+    Turning points are zero crossings of psi_dot. For adjacent extrema,
+    omega_half = pi / Delta_t. The reported ratio is interval-mean H divided
+    by this frequency. At least three complete half-cycles must lie in the
+    final 20% of the trajectory. H/omega < 0.1 is a conservative numerical
+    classifier choice, not a theorem or universal physical boundary.
+    """
+    t = np.asarray(result.get('t', []), dtype=float)
+    H = np.asarray(result.get('H', []), dtype=float)
+    psi_dot = np.asarray(result.get('psi_dot', []), dtype=float)
+    unavailable = {
+        'H_over_omega_max': float('nan'),
+        'H_over_omega_values': [],
+        'n_late_half_cycles': 0,
+        'adiabaticity_valid': False,
+    }
+    if (t.ndim != 1 or H.shape != t.shape or psi_dot.shape != t.shape
+            or len(t) < 8 or not np.all(np.isfinite(t))
+            or np.any(np.diff(t) <= 0.0)):
+        return unavailable
+    if not (0.0 < tail_fraction < 1.0) or min_half_cycles < 1:
+        raise ValueError("tail_fraction must be in (0, 1) and min_half_cycles >= 1")
+
+    tail_start = t[int(np.floor((1.0 - tail_fraction) * (len(t) - 1)))]
+    turning_times = []
+    # A zero is a turning point only when the derivative changes sign
+    # across it. This excludes tangential touches and unbracketed endpoints.
+    nonzero_indices = np.flatnonzero(np.isfinite(psi_dot) & (psi_dot != 0.0))
+    for left_index, right_index in zip(nonzero_indices[:-1], nonzero_indices[1:]):
+        if not np.all(np.isfinite(psi_dot[left_index:right_index + 1])):
+            continue
+        left, right = psi_dot[left_index], psi_dot[right_index]
+        if np.signbit(left) == np.signbit(right):
+            continue
+        if right_index == left_index + 1:
+            crossing = (t[left_index] - left *
+                        (t[right_index] - t[left_index]) / (right - left))
+        else:
+            # A sampled zero plateau is bracketed by opposite signs.
+            crossing = float(np.mean(t[left_index + 1:right_index]))
+        if (not turning_times or
+                crossing - turning_times[-1] > 1.0e-12 * max(1.0, abs(crossing))):
+            turning_times.append(float(crossing))
+
+    ratios = []
+    for start, end in zip(turning_times[:-1], turning_times[1:]):
+        if start < tail_start or end > t[-1] or end <= start:
+            continue
+        lo = max(0, int(np.searchsorted(t, start, side='left')) - 1)
+        hi = min(len(t) - 1, int(np.searchsorted(t, end, side='right')))
+        h_segment = H[lo:hi + 1]
+        if (len(h_segment) < 2 or not np.all(np.isfinite(h_segment))
+                or np.any(h_segment < 0.0)):
+            continue
+        half_period = end - start
+        omega = np.pi / half_period
+        ratio = float(np.mean(h_segment)) / omega
+        if np.isfinite(ratio):
+            ratios.append(float(ratio))
+
+    if len(ratios) < min_half_cycles:
+        return {
+            'H_over_omega_max': float('nan'),
+            'H_over_omega_values': ratios,
+            'n_late_half_cycles': len(ratios),
+            'adiabaticity_valid': False,
+        }
+    last_ratios = ratios[-min_half_cycles:]
+    maximum = float(max(last_ratios))
+    return {
+        'H_over_omega_max': maximum,
+        'H_over_omega_values': last_ratios,
+        'n_late_half_cycles': len(ratios),
+        'adiabaticity_valid': maximum < 0.1,
+    }
 
 
 def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
@@ -430,7 +850,7 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     Classify simulation outcome based on diagnostics.
     
     Returns classification dict with:
-    - regime: 'quartic', 'quadratic', 'tachyonic', 'barrier_crossing', 'failed'
+    - regime: 'quartic', 'quadratic_candidate', 'non_quartic', 'insufficient_oscillation_data', 'failed'
     - quartic_achieved: bool
     - w_final: final time-averaged w
     - Q_final: final quartic dominance
@@ -442,43 +862,97 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     w_avg = result['w_psi_avg']
     Q = result['Q']
     virial = result['virial_ratio']
-    
-    # Use last few oscillation averages
-    if len(w_avg) >= 3:
-        w_final = np.mean(w_avg[-3:])
-        Q_final = np.mean(Q[-len(w_avg)*10:]) if len(Q) > 0 else 0
-        virial_final = np.mean(virial[-len(w_avg)*10:]) if len(virial) > 0 else 0
+    quadratic_virial = result.get('quadratic_virial_ratio', np.array([]))
+    adiabaticity = _late_time_adiabaticity_diagnostic(result)
+
+    # Classify the late-time regime, not the whole trajectory.
+    # Q and virial are sampled diagnostics; use the final 20% of the run.
+    tail_start_q = int(0.8 * len(Q))
+    tail_start_v = int(0.8 * len(virial))
+    q_tail = Q[tail_start_q:] if len(Q) else np.array([])
+    v_tail = virial[tail_start_v:] if len(virial) else np.array([])
+    qv_tail = quadratic_virial[tail_start_v:] if len(quadratic_virial) else np.array([])
+    q_valid = q_tail[np.isfinite(q_tail)]
+    v_valid = v_tail[np.isfinite(v_tail)]
+    qv_valid = qv_tail[np.isfinite(qv_tail)]
+    w_final = float(np.mean(w_avg[-3:])) if len(w_avg) >= 3 else (
+        float(w_avg[-1]) if len(w_avg) else float("nan"))
+    Q_final = float(np.mean(q_valid)) if len(q_valid) else float("nan")
+    virial_final = float(np.mean(v_valid)) if len(v_valid) else float("nan")
+    quadratic_virial_final = float(np.mean(qv_valid)) if len(qv_valid) else float("nan")
+
+    # Do not classify a regime when the required diagnostics are unavailable.
+    diagnostics_valid = np.isfinite([w_final, Q_final, virial_final]).all()
+    # Q = lambda <psi^4>/<|m_eff^2| psi^2> is twice the
+    # quartic-to-tachyonic-quadratic potential-energy ratio:
+    # <V4>/<|V2|> = Q/2. Thus Q>2 is the energy-dominance boundary.
+    quartic_to_tachyonic_potential_ratio = 0.5 * Q_final
+    quartic_candidate_shape = (
+        diagnostics_valid and
+        quartic_to_tachyonic_potential_ratio > 1.0 and
+        abs(w_final - 1/3) < 0.05 and
+        abs(virial_final - 1) < 0.2
+    )
+    quadratic_candidate_shape = (
+        diagnostics_valid and abs(w_final) < 0.1 and Q_final < 1 and
+        np.isfinite(quadratic_virial_final) and
+        abs(quadratic_virial_final - 1.0) < 0.2
+    )
+    adiabaticity_measured = np.isfinite(adiabaticity['H_over_omega_max'])
+    quartic_achieved = (
+        quartic_candidate_shape and adiabaticity['adiabaticity_valid']
+    )
+
+    if not diagnostics_valid:
+        regime = 'insufficient_oscillation_data'
+    elif quartic_candidate_shape or quadratic_candidate_shape:
+        if not adiabaticity_measured:
+            regime = 'insufficient_oscillation_data'
+        elif not adiabaticity['adiabaticity_valid']:
+            regime = 'non_quartic'
+        elif quartic_candidate_shape:
+            regime = 'quartic'
+        else:
+            # Matter-like equation of state, quadratic virial balance, and
+            # adiabatic oscillations are required; this is not attractor proof.
+            regime = 'quadratic_candidate'
     else:
-        w_final = w_avg[-1] if len(w_avg) > 0 else 0
-        Q_final = Q[-1] if len(Q) > 0 else 0
-        virial_final = virial[-1] if len(virial) > 0 else 0
-    
-    # Classification criteria
-    quartic_achieved = (Q_final > 5 and 
-                        abs(w_final - 1/3) < 0.05 and 
-                        abs(virial_final - 1) < 0.2)
-    
-    if quartic_achieved:
-        regime = 'quartic'
-    elif abs(w_final) < 0.1 and Q_final < 1:
-        regime = 'quadratic'
-    elif w_final > 0.5:
-        regime = 'barrier_crossing'
-    else:
-        regime = 'transitional'
+        # w alone does not establish barrier crossing. In particular, a
+        # tachyonic/negative contribution can produce w > 1 without any
+        # direct measurement of a field-space barrier crossing.
+        regime = 'non_quartic'
     
     return {
         'regime': regime,
         'quartic_achieved': quartic_achieved,
         'w_final': float(w_final),
         'Q_final': float(Q_final),
+        'quartic_to_tachyonic_potential_ratio': float(quartic_to_tachyonic_potential_ratio),
         'virial_final': float(virial_final),
+        'quadratic_virial_final': float(quadratic_virial_final),
+        'H_over_omega_max': float(adiabaticity['H_over_omega_max']),
+        'H_over_omega_values': adiabaticity['H_over_omega_values'],
+        'n_late_half_cycles': int(adiabaticity['n_late_half_cycles']),
+        'adiabaticity_valid': bool(adiabaticity['adiabaticity_valid']),
         'n_oscillations': len(w_avg)
     }
 
 
+def _json_safe(value):
+    """Convert NumPy values and non-finite floats to strict JSON values."""
+    if isinstance(value, dict):
+        return {str(key): _json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(item) for item in value]
+    if isinstance(value, np.generic):
+        value = value.item()
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    return value
+
+
 def save_results(results: List[Dict], filepath: str):
-    """Save simulation results to JSON (excluding large arrays)."""
+    """Save a strict-JSON summary, excluding large time-series arrays."""
     # Create summary without full time series
     summary = []
     for r in results:
@@ -494,22 +968,29 @@ def save_results(results: List[Dict], filepath: str):
             
             summary.append({
                 'classification': class_dict,
+                'scan_metadata': _json_safe(r.get('scan_metadata', {})),
                 'ic_params': r['ic_params'],
-                'final_psi_amplitude': float(np.max(np.abs(r['psi']))),
+                'max_abs_psi_over_trajectory': float(np.max(np.abs(r['psi']))),
                 'final_Phi': float(r['Phi'][-1]),
-                'energy_conservation': float(np.max(np.abs(
-                    r['rho_phi'] + r['rho_psi'] - r['rho_phi'][0] - r['rho_psi'][0]
-                )))
+                'max_abs_relative_frw_continuity_residual': float(np.nanmax(
+                    np.abs(r['continuity_residual_relative'])
+                ))
             })
         else:
             summary.append({
                 'success': False,
                 'error': r.get('error', 'Unknown'),
+                'scan_metadata': _json_safe(r.get('scan_metadata', {})),
                 'ic_params': r['ic_params']
             })
     
-    with open(filepath, 'w') as f:
-        json.dump(summary, f, indent=2)
+    # Atomic replacement preserves the last complete checkpoint on interruption.
+    temporary_path = f"{filepath}.tmp"
+    with open(temporary_path, 'w', encoding='utf-8') as f:
+        json.dump(_json_safe(summary), f, indent=2, allow_nan=False)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(temporary_path, filepath)
 
 
 # ============================================================
@@ -522,7 +1003,7 @@ def run_baseline_tests():
     print("PTUM Task 1: Tachyonic-to-Quartic Transition Simulation")
     print("=" * 60)
     
-    # Paper benchmark parameters - UNDAMPED regime (V0=1e56)
+    # Low-scale control benchmark - underdamped regime (V0=1e56)
     params = PTUMParameters(
         V0=1e56,
         lambda_phi=0.02,
@@ -542,19 +1023,21 @@ def run_baseline_tests():
     print(f"  mu = {params.mu:.2e} GeV")
     print(f"  psi_0 = {params.psi_0:.2e} GeV")
     print(f"  H_* = {params.H_star:.2e} GeV")
-    print(f"  3H/(2mu) = {params.damping_ratio:.3f}")
+    print(f"  H_c (potential dominated) = {params.H_threshold_potential:.2e} GeV")
+    print(f"  3H_c/(2mu) = {params.damping_ratio:.3f}")
+    print(f"  3H_*/(2mu) = {params.damping_ratio_plateau:.3f}")
     
     # Time span: ~100 oscillations
     mu = params.mu
     t_span = (0, 200 / mu)
     t_eval = np.linspace(t_span[0], t_span[1], 20000)
     
-    # Test 1: Baseline - field at top of barrier with small quantum kick, Phi = 1.01 Phi_c
+    # Test 1: Waterfall field seeded just below the critical threshold
     print("\n" + "=" * 60)
-    print("Test 1: Baseline (psi=0.01*psi_0, psi_dot=0, Phi=1.01 Phi_c)")
+    print("Test 1: Waterfall seed (psi=0.01*psi_0, psi_dot=0, Phi=0.99 Phi_c)")
     print("=" * 60)
     
-    ic1 = create_initial_conditions_underdamped(params, psi_init=0.01*params.psi_0, psi_dot_init=0.0, phi_ratio=1.01)
+    ic1 = create_initial_conditions_underdamped(params, psi_init=0.01*params.psi_0, psi_dot_init=0.0, phi_ratio=0.99)
     result1 = run_simulation(params, ic1, t_span, t_eval)
     classification1 = classify_outcome(result1, params)
     
@@ -574,7 +1057,7 @@ def run_baseline_tests():
     print("=" * 60)
     
     psi_dot_init = 0.1 * mu * params.psi_0
-    ic2 = create_initial_conditions_underdamped(params, psi_init=0.01*params.psi_0, psi_dot_init=psi_dot_init, phi_ratio=1.01)
+    ic2 = create_initial_conditions_underdamped(params, psi_init=0.01*params.psi_0, psi_dot_init=psi_dot_init, phi_ratio=0.99)
     result2 = run_simulation(params, ic2, t_span, t_eval)
     classification2 = classify_outcome(result2, params)
     

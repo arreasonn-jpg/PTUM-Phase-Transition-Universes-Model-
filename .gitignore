@@ -1,0 +1,21 @@
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+
+# Python caches and test artifacts
+__pycache__/
+.pytest_cache/
+*.py[cod]
+.coverage
+htmlcov/
+
+# Generated numerical scan output
+ptum_inflation_scan.json
+
+task1_parameter_scan_results.json

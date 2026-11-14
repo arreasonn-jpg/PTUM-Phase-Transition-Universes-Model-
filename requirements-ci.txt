@@ -1,0 +1,9 @@
+# Exact Python 3.11 environment captured from the verified GitHub Actions runner.
+iniconfig==2.3.1
+numpy==2.4.6
+packaging==26.3
+pip==26.3
+pluggy==1.7.0
+Pygments==2.21.0
+pytest==9.2.0
+scipy==1.17.1
