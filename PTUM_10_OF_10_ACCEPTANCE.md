@@ -161,3 +161,51 @@ evidence for Gates 5, 6, or 8.
 Two regression tests were added to ensure that the manuscript keeps
 this boundary explicit and describes the proxy-fluid as a
 phenomenological closure. The new tests are awaiting the next CI run.
+
+
+## 2026-11-14 final particle-basis validity gate
+
+The expanding-background mode solver now distinguishes three independent
+conditions before reporting an instantaneous occupation number:
+(i) the final canonical frequency squared is positive;
+(ii) the final first-order WKB measure
+$|\\dot\\Omega_k/\\Omega_k^2|$ is no larger than the declared
+threshold (default 0.1); and (iii) the canonical Wronskian remains within
+the numerical tolerance. A positive final frequency by itself is not
+enough to define an adiabatic particle basis. If any condition fails,
+the mode occupation is NaN and a finite-band number density is withheld.
+The same validity flag is propagated through the waterfall spectrum and
+its fixed-band resolution helper.
+
+Two numerical regression tests cover a positive-frequency but rapidly
+varying final mass history, verifying that the mode occupation and
+spectrum density are withheld. A manuscript source test guards the
+claim boundary. The default threshold is a conservative numerical
+criterion, not a physical constant; convergence under changing this
+threshold remains required before a production result.
+
+### Verification checkpoint
+
+- Workflow run 43501562655, on the previous PR head
+  859353fcefcf7ced7efb434d98b31a1ffac97e8d, completed successfully:
+  **72 Python tests passed**, the four-trajectory two-scale smoke scan
+  passed, and the 41-page LaTeX manuscript compiled and was uploaded.
+  The final LaTeX log has zero reported Overfull \\hbox warnings.
+- The smoke-scan artifact contains exactly four trajectories, not the
+  full 100. The zero-seed rows remain exact classical invariant controls.
+  The two nonzero-seed rows were classified as non-quartic or
+  insufficient-oscillation-data; neither establishes the proxy-fluid
+  regime. These four rows are a CI smoke check only.
+- The final-WKB code, documentation and three new regression tests
+  bring the branch to 75 tests. They are newer than run 43501562655
+  and therefore remain **pending fresh CI verification**.
+- The complete 100-trajectory high-resolution scan has not yet produced
+  an inspected, validated artifact on the current PR head. No full-scan
+  regime conclusion is claimed.
+
+Gate 6 remains **NOT MET**. The mode calculation is still linear on a
+prescribed single-field background, has a finite momentum band, and
+contains no mode backreaction, rescattering, nonlinear fragmentation,
+or entropy dilution. Gates 5 and 7 remain **NOT MET**; the real-scalar
+$Z_2$ defect problem and microscopic proxy-fluid perturbation closure
+are unresolved. PTUM is not 10/10.
