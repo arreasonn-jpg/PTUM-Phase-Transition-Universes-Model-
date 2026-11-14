@@ -57,17 +57,20 @@ def test_delta_veff_from_reference_preserves_one_ulp_plateau_excursion():
     assert delta[0] == 0.0
     assert delta[1] > 0.0
 
-    x0 = np.longdouble(p.lambda_phi) * (
-        np.longdouble(phi0) / np.longdouble(M_PL)
-    ) ** 2
-    x1 = np.longdouble(p.lambda_phi) * (
-        np.longdouble(phi1) / np.longdouble(M_PL)
-    ) ** 2
-    expected = (
-        np.longdouble(p.V0)
-        * np.exp(-x0)
-        * (-np.expm1(-(x1 - x0)))
-    )
+    # Use Decimal as an independent high-precision oracle. Subtracting the
+    # nearly equal squared exponents in longdouble still loses meaningful
+    # digits on this one-ULP test case.
+    from decimal import Decimal, localcontext
+
+    with localcontext() as context:
+        context.prec = 80
+        dec = lambda value: Decimal.from_float(float(value))
+        phi0_d = dec(phi0)
+        phi1_d = dec(phi1)
+        mpl_d = dec(M_PL)
+        x0 = dec(p.lambda_phi) * (phi0_d / mpl_d) ** 2
+        x1 = dec(p.lambda_phi) * (phi1_d / mpl_d) ** 2
+        expected = dec(p.V0) * (-x0).exp() * (Decimal(1) - (-(x1 - x0)).exp())
     assert delta[1] == pytest.approx(float(expected), rel=2.0e-12)
 
 
