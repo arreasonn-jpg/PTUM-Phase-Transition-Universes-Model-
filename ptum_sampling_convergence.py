@@ -12,7 +12,7 @@ from ptum_task1_scan_worker import run_one_trajectory
 
 
 SAMPLE_COUNTS = (24001, 48001, 96001, 192001)
-FIELDS = ("Phi", "Phi_dot", "psi", "psi_dot", "H", "Q", "virial_ratio")
+FIELDS = ("Phi", "Phi_dot", "psi", "psi_dot", "H", "Q", "virial_ratio", "quadratic_virial_ratio")
 
 
 def json_safe(value):
