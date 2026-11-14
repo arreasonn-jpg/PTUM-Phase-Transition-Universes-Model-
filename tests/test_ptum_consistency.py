@@ -1295,3 +1295,13 @@ def test_expanding_spectrum_withholds_finite_band_density_if_final_basis_is_nona
     assert not result["all_particle_numbers_valid"]
     assert np.isnan(result["n_comoving_finite_band"])
     assert np.isnan(result["n_physical_finite_band"])
+
+
+
+def test_manuscript_requires_final_wkb_adiabaticity_for_particle_number():
+    from pathlib import Path
+
+    source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
+    assert "final first-order WKB" in source
+    assert r"\(|\dot\Omega_{k,f}/\Omega_{k,f}^2|\)" in source
+    assert "occupation number and the associated finite-band number density are withheld" in source
