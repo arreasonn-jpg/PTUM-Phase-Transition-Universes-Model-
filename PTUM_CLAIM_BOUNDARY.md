@@ -165,3 +165,34 @@ newest tests and code are pending a fresh CI run. The smoke artifact's
 two nonzero-seed trajectories did not establish quartic domination or
 a stable radiation-like proxy-fluid phase. No full-scan, relic-density,
 or microscopic proxy-fluid claim is added.
+
+
+## 12. 2026-11-14 verification update
+
+The final-WKB manuscript regression was corrected in commit
+`82ab0f26014de58634386efd1d90b635f6ec9e45`: the test now checks the
+manuscript's actual statement that both the mode occupation and its
+associated finite-band number density are withheld when the final
+particle-basis validity conditions fail.
+
+Workflow `43580982470` completed successfully on that commit:
+- 75 Python regression tests passed;
+- the four-trajectory, two-scale CI smoke scan completed with four
+  successful integrations and zero integration failures;
+- each energy-scale scenario contained one
+  `insufficient_oscillation_data` result and one `non_quartic` result;
+- the manuscript compiled and its PDF artifact was uploaded.
+
+The LaTeX build still emits Underfull \\hbox and two float-placement
+warnings, although no Overfull \\hbox warning was reported. These are
+not treated as a clean-warning build. The four-row smoke scan does not
+replace the 100-row high-resolution scan and cannot establish a physical
+quartic regime.
+
+The previous workflow `43580694626` failed only at the stale source
+assertion (74 passed, 1 failed); the corrected branch head is verified
+by `43580982470`. No full 100-trajectory artifact has yet been inspected.
+The full scan, independent time-grid and solver-tolerance convergence,
+inhomogeneous backreaction, rescattering, defect evolution, and
+self-consistent relic/entropy calculation remain open. The project is
+not 10/10.
