@@ -3,12 +3,12 @@ from ptum_task1_scan import expected_scan_count, expected_shard_count, shard_ind
 
 def test_full_scan_shards_are_disjoint_and_cover_all_trajectories():
     total = expected_scan_count("full")
-    shards = [shard_indices(total, 10, index) for index in range(10)]
+    shards = [shard_indices(total, 20, index) for index in range(20)]
     flattened = [item for shard in shards for item in shard]
     assert len(flattened) == total == 100
     assert len(set(flattened)) == total
     assert sorted(flattened) == list(range(total))
-    assert all(len(shard) == 10 for shard in shards)
+    assert all(len(shard) == 5 for shard in shards)
 
 
 def test_ci_scan_shards_cover_four_trajectories():
