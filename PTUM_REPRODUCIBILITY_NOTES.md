@@ -101,3 +101,20 @@ two-field background and linear modes on prescribed external
 background histories. The proxy-fluid closure remains phenomenological.
 Two regression tests now guard the manuscript's claim boundary; their
 latest CI result is pending.
+
+
+## Full high-resolution scan execution snapshot (2026-11-14)
+
+The full-scan execution branch ptum/full-scan-2026-11-14 was created
+from PR head f50e962b38deb991daedfce425c9a278c84d9f80. It differs from
+that head only by this execution record. The workflow is configured to
+run the full 5x5x2 initial-condition grid at each of the two energy
+scales (100 trajectories total), with 4001 output samples per
+trajectory over 20 mu^-1 and per-trajectory atomic checkpoints.
+
+The purpose of this isolated branch is to obtain the complete scan
+artifact without changing the draft PR branch or main. The full result
+is not accepted until the workflow completes, the final JSON and any
+checkpoint are downloaded and validated for exactly 100 unique rows,
+all integrations succeed, and the data are inspected. A partial
+checkpoint is evidence of progress only, not a completed scan.
