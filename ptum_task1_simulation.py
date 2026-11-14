@@ -316,7 +316,8 @@ def run_simulation(params: PTUMParameters,
                    t_span: Tuple[float, float],
                    t_eval: Optional[np.ndarray] = None,
                    rtol: float = 1e-9,
-                   atol: float = 1e-12) -> Dict:
+                   atol: float = 1e-12,
+                   solver_method: str = "Radau") -> Dict:
     """
     Run a single background simulation.
     
@@ -332,7 +333,7 @@ def run_simulation(params: PTUMParameters,
         t_eval=t_eval,
         rtol=rtol,
         atol=atol,
-        method='DOP853',  # High-order Runge-Kutta
+        method=solver_method,
         dense_output=True
     )
     
@@ -731,7 +732,7 @@ def run_parameter_scan(params: PTUMParameters,
                 )
                 
                 try:
-                    result = run_simulation(params, ic, t_span, t_eval)
+                    result = run_simulation(params, ic, t_span, t_eval, solver_method=solver_method)
                     
                     # Classify outcome
                     classification = classify_outcome(result, params)
