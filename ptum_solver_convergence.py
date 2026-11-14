@@ -21,15 +21,43 @@ FIELDS = ("Phi", "Phi_dot", "psi", "psi_dot", "H", "w_psi", "Q", "virial_ratio")
 
 
 def relative_max_difference(reference: np.ndarray, candidate: np.ndarray) -> float:
+    """Compare finite samples and require identical non-finite masks.
+
+    NaN values in w_psi are physically expected for an exactly unexcited
+    psi sector (0/0); they must not silently disappear from the comparison.
+    """
     a = np.asarray(reference, dtype=float)
     b = np.asarray(candidate, dtype=float)
     if a.shape != b.shape:
         raise ValueError(f"trajectory array shape mismatch: {a.shape} != {b.shape}")
-    finite = np.isfinite(a) & np.isfinite(b)
-    if not np.any(finite):
-        return 0.0 if np.array_equal(np.isnan(a), np.isnan(b)) else float("inf")
-    scale = max(float(np.max(np.abs(a[finite]))), np.finfo(float).tiny)
-    return float(np.max(np.abs(a[finite] - b[finite])) / scale)
+    finite_a = np.isfinite(a)
+    finite_b = np.isfinite(b)
+    if not np.array_equal(finite_a, finite_b):
+        raise ValueError("reference/candidate finite-value masks differ")
+    if not np.any(finite_a):
+        return 0.0
+    scale = max(float(np.max(np.abs(a[finite_a]))), np.finfo(float).tiny)
+    return float(np.max(np.abs(a[finite_a] - b[finite_a])) / scale)
+
+
+def json_safe(value):
+    """Convert NumPy containers/scalars and non-finite floats to strict JSON data.
+
+    Non-finite diagnostic values are represented as JSON null, never as the
+    non-standard NaN/Infinity tokens. The original arrays remain checked above.
+    """
+    if isinstance(value, dict):
+        return {str(key): json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [json_safe(item) for item in value]
+    if isinstance(value, np.ndarray):
+        return json_safe(value.tolist())
+    if isinstance(value, (np.integer,)):
+        return int(value)
+    if isinstance(value, (np.floating, float)):
+        number = float(value)
+        return number if np.isfinite(number) else None
+    return value
 
 
 def main() -> None:
@@ -87,7 +115,9 @@ def main() -> None:
             }
         report["trajectories"].append(entry)
 
-    Path(args.output).write_text(json.dumps(report, indent=2, allow_nan=False), encoding="utf-8")
+    Path(args.output).write_text(
+        json.dumps(json_safe(report), indent=2, allow_nan=False), encoding="utf-8"
+    )
     print(f"[convergence] wrote {args.output}", flush=True)
 
 
