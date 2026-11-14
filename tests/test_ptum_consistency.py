@@ -159,6 +159,22 @@ def test_frw_chain_rule_residual_closes_for_evolving_two_field_solution():
 
 
 
+def test_solver_controls_reject_nonpositive_or_nonfinite_values():
+    p = PTUMParameters(V0=1.0e50, m_psi=1.0e5, lambda_psi=0.1)
+    ic = InitialConditions(
+        Phi=0.9 * p.Phi_c, Phi_dot=0.0, psi=0.0, psi_dot=0.0
+    )
+    for kwargs in (
+        {"rtol": 0.0},
+        {"atol": float("nan")},
+        {"max_step": 0.0},
+        {"max_step": float("inf")},
+    ):
+        with pytest.raises(ValueError):
+            run_simulation(p, ic, (0.0, 1.0e-9), **kwargs)
+
+
+
 def test_cycle_averaged_equation_of_state_is_ratio_of_averages():
     t = np.arange(5.0)
     psi_dot = np.array([1.0, 1.0, -1.0, -1.0, 1.0])
@@ -293,9 +309,18 @@ def test_two_field_parameter_scan_returns_explicit_classification():
         phi_offset_range=[0.01 * p.Phi_c],
         t_max=1.0,
         n_points=40,
+        rtol=1.0e-8,
+        atol=1.0e-11,
+        max_step=0.025,
     )
     assert len(results) == 1
     assert results[0]["success"]
+    assert results[0]["solver_settings"] == {
+        "method": "DOP853",
+        "rtol": 1.0e-8,
+        "atol": 1.0e-11,
+        "max_step_dimensionless": 0.025,
+    }
     assert "regime" in results[0]["classification"]
     assert "quartic_achieved" in results[0]["classification"]
 
