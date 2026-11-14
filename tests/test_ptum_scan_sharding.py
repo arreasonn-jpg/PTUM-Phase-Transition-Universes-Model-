@@ -26,3 +26,42 @@ def test_shard_indices_reject_invalid_arguments():
         shard_indices(100, 0, 0)
     with pytest.raises(ValueError):
         shard_indices(100, 10, 10)
+
+
+def test_successful_scan_summary_preserves_success_flag(tmp_path):
+    import json
+    import numpy as np
+    from ptum_task1_simulation import save_results
+
+    output = tmp_path / "scan.json"
+    row = {
+        "success": True,
+        "classification": {"regime": "quartic", "quartic_achieved": True},
+        "scan_metadata": {"global_trajectory_index": 7},
+        "ic_params": {"psi_init": 1.0, "psi_dot_init": 0.0, "phi_offset": 0.1},
+        "psi": np.array([0.0, 1.0]),
+        "Phi": np.array([2.0, 1.9]),
+        "continuity_residual_relative": np.array([0.0, 1e-8]),
+    }
+
+    save_results([row], str(output))
+
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert payload[0]["success"] is True
+    assert payload[0]["scan_metadata"]["global_trajectory_index"] == 7
+    assert not (tmp_path / "scan.json.tmp").exists()
+
+
+def test_merger_accepts_serialized_successful_rows():
+    from ptum_merge_scan_shards import validate_and_merge
+
+    rows = [
+        {
+            "success": True,
+            "scan_metadata": {"global_trajectory_index": index},
+            "ic_params": {},
+        }
+        for index in [2, 0, 1]
+    ]
+    merged = validate_and_merge(rows, expected_count=3)
+    assert [row["scan_metadata"]["global_trajectory_index"] for row in merged] == [0, 1, 2]
