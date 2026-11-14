@@ -850,3 +850,41 @@ on `ptum/full-scan-2026-11-14-r2`, based on the earlier
 artifact has been inspected. Because the current PR head includes
 later defect-diagnostic changes, scan-source equivalence must be
 checked before treating that run as evidence.
+
+
+## 46. 2026-11-14 conditional ideal-gas thermal fermion bias
+
+Added `thermal_dirac_scalar_condensate` and
+`thermal_fermion_bias` to `ptum_defects.py`. For a free equilibrium
+Dirac species with degeneracy $4N_c$, fixed broken-phase mass $m_f$,
+and a real coupling $y_{\psi f}$ defined by
+$m_f(\psi)=m_f+y_{\psi f}\psi$, the zero-temperature-subtracted
+thermal condensate is evaluated from the Fermi-Dirac integral
+[
+\Delta_T\langle\bar f f\rangle
+=\frac{4N_c m_fT^2}{2\pi^2}
+\int_0^\infty dx\,
+\frac{x^2}{\sqrt{x^2+(m_f/T)^2}
+[\exp(\sqrt{x^2+(m_f/T)^2})+1]}.
+]
+For $m_f\ll T$ it tends to $N_cm_fT^2/6$. Since the thermal
+free-energy linear coefficient is
+$+\sum_f y_{\psi f}\Delta_T\langle\bar f f\rangle\,\psi$,
+the code returns
+$\epsilon_{\rm bias}^{(T)}
+=-\sum_f y_{\psi f}\Delta_T\langle\bar f f\rangle$
+for the convention $V_{\rm bias}=-\epsilon_{\rm bias}\psi$.
+
+Six regression tests cover the relativistic limit, mass/temperature
+scaling, zero limits, signed-coupling cancellation, input validation,
+and the manuscript's explicit assumptions. The manuscript now gives
+the same integral and caveat.
+
+This is a conditional one-loop ideal-gas estimate only. It assumes
+equilibrium, fixed broken-phase masses and Higgs expectation value,
+and zero chemical potential; it omits gauge/QCD corrections, thermal
+masses, the electroweak crossover, non-equilibrium production, and
+the renormalized T=0 condensate. No PTUM Wilson coefficients, cutoff
+or thermal history are assigned. The result does not predict the
+actual wall bias, network evolution, annihilation or BBN safety.
+The new tests and manuscript build await fresh CI.
