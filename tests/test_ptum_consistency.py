@@ -1004,7 +1004,7 @@ def test_manuscript_documents_linear_waterfall_mode_hierarchy():
         r"\label{eq:waterfall_wkb_initial}",
         r"\label{eq:waterfall_wronskian}",
         r"\label{eq:waterfall_finite_band_number}",
-        "occupation number is withheld",
+        "the occupation number and the associated finite-band number density are withheld",
         "does not include mode backreaction",
     ):
         assert required in normalized_source
