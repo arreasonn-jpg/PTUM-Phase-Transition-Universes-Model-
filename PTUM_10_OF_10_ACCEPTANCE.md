@@ -348,8 +348,9 @@ PR head; otherwise the scan must be rerun from the current source.
 The real-`psi` defect analysis now includes a finite-temperature,
 zero-temperature-subtracted ideal Dirac-gas contribution to the
 dimension-five operator bias. For a broken-phase mass eigenstate with
-fixed mass and real scalar coupling
-`m_f(psi)=m_f+y_psi_f psi`, the code evaluates the Fermi-Dirac
+fixed mass and diagonal real mass-basis coupling
+`y_psi_f=Re[(C_f)_ii] v_H/(sqrt(2) Lambda)`, with `v_H` the
+fixed broken-phase Higgs expectation value, the code evaluates the Fermi-Dirac
 integral for `Delta_T <bar(f)f>` and returns the signed source in
 the convention `V_bias=-epsilon_bias psi`. The relativistic limit
 is `Delta_T <bar(f)f> -> N_c m_f T^2/6`. The manuscript records the
