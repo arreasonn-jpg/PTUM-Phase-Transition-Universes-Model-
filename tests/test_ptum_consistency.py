@@ -1369,6 +1369,13 @@ def test_tilted_quartic_bias_matches_stationary_potential_at_moderate_bias():
     y_false = result["false_minimum"] / v
     b = epsilon * np.sqrt(lam) / mu**3
 
+    # Both returned field values must be stationary local minima of
+    # f(y)=y^4/4-y^2/2-b*y, not merely roots with the expected signs.
+    assert y_true**3 - y_true - b == pytest.approx(0.0, abs=2.0e-14)
+    assert y_false**3 - y_false - b == pytest.approx(0.0, abs=2.0e-14)
+    assert 3.0 * y_true**2 - 1.0 > 0.0
+    assert 3.0 * y_false**2 - 1.0 > 0.0
+
     def dimensionless_potential(y):
         return 0.25 * y**4 - 0.5 * y**2 - b * y
 
@@ -1390,6 +1397,8 @@ def test_domain_wall_bias_spinodal_removes_false_vacuum():
         reduced_planck_mass=2.435e18,
     )
     assert not result["metastable_vacuum_exists"]
+    assert result["true_minimum"] is None
+    assert result["false_minimum"] is None
     assert not result["small_bias_tension_approx_valid"]
     assert result["hubble_annihilation_estimate"] is None
     assert result["annihilation_before_bbn"] is None
