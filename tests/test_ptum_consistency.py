@@ -1539,6 +1539,14 @@ def test_wronskian_monitor_detects_transient_drift_even_if_endpoint_recovers():
     assert maximum_error == pytest.approx(0.1)
 
 
+def test_sampling_convergence_classification_differences_preserve_missing_values():
+    from ptum_sampling_convergence import finite_absolute_difference
+
+    assert finite_absolute_difference(3.0, 1.0) == pytest.approx(2.0)
+    assert finite_absolute_difference(None, 1.0) is None
+    assert finite_absolute_difference(float("nan"), 1.0) is None
+
+
 def test_wronskian_monitor_rejects_invalid_history_shapes_and_nonfinite_values():
     from ptum_floquet import _wronskian_drift_diagnostics
 
