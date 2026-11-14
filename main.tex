@@ -1078,14 +1078,16 @@ V_\psi-V_{\min}
 \end{equation}
 In the locally static, flat-space limit, its planar kink is
 \begin{equation}
-\psi_{\rm wall}(z)=v\tanh
-\left(\frac{\mu_{\rm eff}z}{\sqrt2}\right),
-\qquad
+\begin{aligned}
+\psi_{\rm wall}(z)
+&=v\tanh\left(\frac{\mu_{\rm eff}z}{\sqrt2}\right),\\
 \sigma_{\rm wall}
-=\int dz\,\left[\frac12(\partial_z\psi)^2+
-V_\psi-V_{\min}\right]
-=\frac{2\sqrt2}{3}
+&=\int dz\,\left[
+\frac12(\partial_z\psi)^2+V_\psi-V_{\min}
+\right]\\
+&=\frac{2\sqrt2}{3}
 \frac{\mu_{\rm eff}^3}{\lambda_\psi}.
+\end{aligned}
 \label{eq:ptum_domain_wall_tension}
 \end{equation}
 This establishes the domain-wall topology and tension of the
@@ -1139,7 +1141,7 @@ the bound above. The Wilson coefficients, thermal state, operator
 renormalization and effective potential must be specified before
 a wall lifetime can be predicted.
 
-The auxiliary module `ptum_defects.py` evaluates the exact two
+The auxiliary module \texttt{ptum\_defects.py} evaluates the exact two
 stationary minima of the tilted quartic potential, the spinodal
 source, the degenerate-wall tension, and the conditional
 annihilation/domination bounds. Its tests verify the kink equation,
