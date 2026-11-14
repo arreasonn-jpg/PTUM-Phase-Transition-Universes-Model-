@@ -1360,6 +1360,13 @@ def _json_safe(value):
     return value
 
 
+def _max_abs_finite(values):
+    """Maximum absolute finite value, or None when no finite sample exists."""
+    array = np.asarray(values, dtype=float)
+    finite = array[np.isfinite(array)]
+    return float(np.max(np.abs(finite))) if finite.size else None
+
+
 def save_results(results: List[Dict], filepath: str):
     """Save a strict-JSON summary, excluding large time-series arrays."""
     # Create summary without full time series
@@ -1381,9 +1388,26 @@ def save_results(results: List[Dict], filepath: str):
                 'ic_params': r['ic_params'],
                 'max_abs_psi_over_trajectory': float(np.max(np.abs(r['psi']))),
                 'final_Phi': float(r['Phi'][-1]),
-                'max_abs_relative_frw_continuity_residual': float(np.nanmax(
-                    np.abs(r['continuity_residual_relative'])
-                ))
+                # Keep the legacy key as an alias, but expose the
+                # normalization and independent finite-difference check.
+                'max_abs_relative_frw_continuity_residual': _max_abs_finite(
+                    r['continuity_residual_relative']
+                ),
+                'max_abs_chain_rule_relative_frw_continuity_residual': _max_abs_finite(
+                    r['continuity_residual_relative']
+                ),
+                'max_abs_chain_rule_background_relative_frw_continuity_residual': _max_abs_finite(
+                    r['continuity_residual_background_relative']
+                ),
+                'max_abs_finite_difference_frw_continuity_residual': _max_abs_finite(
+                    r['continuity_residual_finite_difference']
+                ),
+                'max_abs_finite_difference_relative_frw_continuity_residual': _max_abs_finite(
+                    r['continuity_residual_finite_difference_relative']
+                ),
+                'max_abs_finite_difference_background_relative_frw_continuity_residual': _max_abs_finite(
+                    r['continuity_residual_finite_difference_background_relative']
+                )
             })
         else:
             summary.append({
