@@ -137,6 +137,29 @@ def scan_momentum(
 
 
 
+def _wronskian_drift_diagnostics(
+    canonical_mode: np.ndarray,
+    canonical_mode_dot: np.ndarray,
+) -> tuple[np.ndarray, float, float]:
+    """Return W(t), endpoint drift and maximum-in-time relative drift.
+
+    The canonical Wronskian is constant for the linear mode equation. A
+    final-time-only check can miss a temporary numerical excursion that later
+    returns close to its initial value, so validity is based on the maximum
+    drift over the complete integration history.
+    """
+    mode = np.asarray(canonical_mode, dtype=complex)
+    mode_dot = np.asarray(canonical_mode_dot, dtype=complex)
+    if (mode.ndim != 1 or mode_dot.shape != mode.shape or len(mode) < 2
+            or not np.all(np.isfinite(mode)) or not np.all(np.isfinite(mode_dot))):
+        raise ValueError("canonical mode histories must be finite 1D arrays of equal length")
+    wronskian = mode * np.conjugate(mode_dot) - np.conjugate(mode) * mode_dot
+    initial_scale = max(float(abs(wronskian[0])), np.finfo(float).tiny)
+    endpoint_error = float(abs(wronskian[-1] - wronskian[0]) / initial_scale)
+    maximum_error = float(np.max(np.abs(wronskian - wronskian[0])) / initial_scale)
+    return wronskian, endpoint_error, maximum_error
+
+
 def integrate_expanding_mode(
     t: Iterable[float],
     scale_factor: Iterable[float],
@@ -319,11 +342,10 @@ def integrate_expanding_mode(
     X_dot = a_arr**1.5 * (
         chi_dot + 1.5 * hubble_from_scale_factor * chi
     )
-    wronskian = X * np.conjugate(X_dot) - np.conjugate(X) * X_dot
-    wronskian_relative_error = float(
-        abs(wronskian[-1] - 1j) / max(abs(wronskian[0]), np.finfo(float).tiny)
+    wronskian, wronskian_relative_error, wronskian_max_relative_error = (
+        _wronskian_drift_diagnostics(X, X_dot)
     )
-    wronskian_valid = wronskian_relative_error <= wronskian_tolerance
+    wronskian_valid = wronskian_max_relative_error <= wronskian_tolerance
 
     final_omega_sq = float(omega_canonical_sq[-1])
     if final_omega_sq > 0.0:
@@ -357,6 +379,7 @@ def integrate_expanding_mode(
         "initial_adiabaticity": initial_adiabaticity,
         "background_hubble_consistency_max_relative": max_hubble_consistency_error,
         "wronskian_relative_error": wronskian_relative_error,
+        "wronskian_max_relative_error": wronskian_max_relative_error,
         "wronskian_valid": bool(wronskian_valid),
         "wronskian_tolerance": float(wronskian_tolerance),
         "final_frequency_valid": final_frequency_valid,

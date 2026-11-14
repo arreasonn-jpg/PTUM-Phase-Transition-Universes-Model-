@@ -969,6 +969,7 @@ def test_waterfall_mode_uses_adiabatic_vacuum_and_preserves_wronskian():
     assert mode["wronskian_valid"]
     assert mode["particle_number_valid"]
     assert mode["wronskian_relative_error"] < 1.0e-7
+    assert mode["wronskian_max_relative_error"] < 1.0e-7
 
 
 
@@ -1418,3 +1419,27 @@ def test_exact_zero_waterfall_branch_is_explicitly_marked_as_invariant_control()
     assert classification["regime"] == "insufficient_oscillation_data"
     assert classification["exact_classical_invariant_control"]
     assert "exact homogeneous psi=0" in classification["classification_note"].lower()
+
+
+def test_wronskian_monitor_detects_transient_drift_even_if_endpoint_recovers():
+    from ptum_floquet import _wronskian_drift_diagnostics
+
+    canonical_mode = np.ones(3, dtype=complex)
+    canonical_mode_dot = np.array([-0.5j, -0.55j, -0.5j], dtype=complex)
+    wronskian, endpoint_error, maximum_error = _wronskian_drift_diagnostics(
+        canonical_mode, canonical_mode_dot
+    )
+    assert wronskian[0] == pytest.approx(1j)
+    assert endpoint_error == pytest.approx(0.0)
+    assert maximum_error == pytest.approx(0.1)
+
+
+def test_wronskian_monitor_rejects_invalid_history_shapes_and_nonfinite_values():
+    from ptum_floquet import _wronskian_drift_diagnostics
+
+    with pytest.raises(ValueError, match="equal length"):
+        _wronskian_drift_diagnostics(np.ones(3), np.ones(2))
+    with pytest.raises(ValueError, match="finite"):
+        _wronskian_drift_diagnostics(
+            np.array([1.0, np.nan]), np.array([1j, 1j])
+        )
