@@ -1417,4 +1417,4 @@ def test_exact_zero_waterfall_branch_is_explicitly_marked_as_invariant_control()
     classification = classify_outcome(result, PTUMParameters())
     assert classification["regime"] == "insufficient_oscillation_data"
     assert classification["exact_classical_invariant_control"]
-    assert "exact homogeneous psi=0" in classification["classification_note"]
+    assert "exact homogeneous psi=0" in classification["classification_note"].lower()
