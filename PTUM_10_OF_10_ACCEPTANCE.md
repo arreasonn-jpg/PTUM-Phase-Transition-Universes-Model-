@@ -309,3 +309,35 @@ This does not change Gate 5: the analytic tilted-potential minima and
 flat-space kink do not determine the renormalized SM condensate, the
 actual bias, the expanding defect-network evolution, or its formation
 probability. Gate 5 remains **NOT MET**.
+
+## 2026-11-14 fresh verification after tilted-minimum API fix
+
+Workflow `43585095937` completed successfully on the current PR
+head `3f78946668bd43d59953ead562abf158105ec595`:
+- **83/83 Python regression tests passed**.
+- The two-scale CI smoke scan completed all four integrations with
+  zero integration failures.
+- Each scenario still contained one
+  `insufficient_oscillation_data` and one `non_quartic` result;
+  no quartic proxy-fluid phase was demonstrated.
+- The 42-page manuscript PDF compiled and was uploaded.
+- The final LaTeX pass reported no Overfull `\\hbox` warnings and
+  no unresolved-reference warning, but retained numerous Underfull
+  `\\hbox` warnings and two `h`-to-`ht` float-placement warnings.
+  This is a successful build, not a warning-free build.
+
+The regression failure in workflow `43584145515` (82 passed, one
+`KeyError`) is resolved by returning the exact stationary minima
+from `domain_wall_bias_diagnostics` and testing their stationarity,
+positive curvature and spinodal disappearance. Gate 10 remains
+**PARTIAL** because manuscript warnings remain and the full reproducible
+100-trajectory scan has not yet been inspected.
+
+The isolated full scan run `43582371029` on
+`ptum/full-scan-2026-11-14-r2` remains in progress at the time of this
+checkpoint. It was launched from the earlier PR head
+`d4f5f8b37a526c6fba35d19cb9c0396710da2e1a`, before the latest
+domain-wall diagnostic API correction. No full-scan artifact is
+available yet. Its output may be used only after verifying that the
+scan-relevant source and configuration are identical to the current
+PR head; otherwise the scan must be rerun from the current source.
