@@ -1147,12 +1147,13 @@ masses and Higgs expectation value are treated as fixed, and
 interactions beyond the ideal Dirac gas are neglected. Subtracting
 the zero-temperature vacuum condensate, a free Dirac species gives
 \begin{equation}
+\begin{aligned}
 \Delta_T\langle\bar f f\rangle
-=\frac{4N_c m_f T^2}{2\pi^2}
-\int_0^\infty dx\,
-\frac{x^2}
-{\sqrt{x^2+(m_f/T)^2}
-\left[\exp\!\left(\sqrt{x^2+(m_f/T)^2}\right)+1\right]}.
+&=\frac{2N_c m_f T^2}{\pi^2}
+\int_0^\infty dx\,\frac{x^2}{E_f(x)}
+\frac{1}{\exp(E_f(x))+1},\\
+E_f(x)&=\sqrt{x^2+(m_f/T)^2}.
+\end{aligned}
 \label{eq:ptum_thermal_fermion_condensate}
 \end{equation}
 For $m_f\ll T$ this approaches
