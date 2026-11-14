@@ -1,0 +1,90 @@
+name: PTUM solver convergence study
+
+on:
+  push:
+    branches:
+      - 'ptum/independent-trajectory-scan-*'
+    paths:
+      - '.github/workflows/ptum-solver-convergence.yml'
+      - 'ptum_solver_convergence.py'
+      - 'ptum_task1_scan_worker.py'
+      - 'ptum_task1_simulation.py'
+      - 'ptum_inflation_background.py'
+      - 'tests/test_ptum_consistency.py'
+
+permissions:
+  contents: read
+
+jobs:
+  solver-convergence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        trajectory: [90, 94, 98]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      - name: Install scan dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+      - name: Run four solver configurations
+        run: >-
+          python ptum_solver_convergence.py
+          --indices ${{ matrix.trajectory }}
+          --t-max 480
+          --n-points 96001
+          --output convergence_${{ matrix.trajectory }}.json
+      - name: Upload convergence report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ptum-solver-convergence-${{ matrix.trajectory }}
+          path: convergence_${{ matrix.trajectory }}.json
+          if-no-files-found: ignore
+          retention-days: 90
+
+  aggregate-convergence:
+    if: always()
+    needs: [solver-convergence]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Download convergence reports
+        uses: actions/download-artifact@v7
+        with:
+          pattern: ptum-solver-convergence-*
+          path: convergence-results
+          merge-multiple: true
+      - name: Validate convergence reports
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          files = sorted(Path("convergence-results").glob("convergence_*.json"))
+          if len(files) != 3:
+              raise SystemExit(f"Expected 3 trajectory reports, found {len(files)}")
+          for path in files:
+              data = json.loads(path.read_text(encoding="utf-8"))
+              if len(data.get("trajectories", [])) != 1:
+                  raise SystemExit(f"Invalid report structure: {path}")
+              print(path, "validated")
+          PY
+      - name: Upload combined convergence reports
+        if: always() && hashFiles('convergence-results/*.json') != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: ptum-solver-convergence-reports
+          path: convergence-results/*.json
+          if-no-files-found: error
+          retention-days: 90
