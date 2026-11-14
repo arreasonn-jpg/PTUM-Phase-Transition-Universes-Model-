@@ -803,3 +803,27 @@ received manifest commit
 duration, exact epsilon_H threshold, and integrated single-field fuel
 velocity prescription. No completed workflow result or final 100-row
 artifact has yet been verified; no full-scan regime claim is made.
+
+
+## 44. 2026-11-14 tilted-domain-wall diagnostic return-value correction
+
+The first CI run after adding the moderate-bias stationary-potential
+regression exposed an API defect, not a physics failure:
+`domain_wall_bias_diagnostics` called the exact stationary solver but
+omitted its `true_minimum` and `false_minimum` values from the returned
+dictionary. Workflow `43584145515` therefore reported 82 passed and
+one failed with `KeyError: 'true_minimum'`.
+
+The public diagnostic now returns both dimensionful minima when the
+metastable vacuum exists, and returns `None` for both at/above the
+spinodal. The regression checks that the dimensionless roots satisfy
+`y^3-y-b=0), that both have positive local curvature
+`3y^2-1>0`, and that their direct potential difference matches the
+cancellation-safe analytic vacuum bias. The spinodal regression checks
+that neither minimum is reported after metastability is lost.
+
+This change makes the existing analytic calculation inspectable; it
+does not promote the physical defect gate. The renormalized SM
+condensate, Wilson coefficient, thermal history, defect formation,
+network evolution, annihilation and backreaction remain uncomputed.
+The correction and tests await a fresh CI run.
