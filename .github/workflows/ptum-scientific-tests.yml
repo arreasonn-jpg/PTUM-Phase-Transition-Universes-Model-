@@ -72,8 +72,8 @@ jobs:
         run: >-
           python ptum_task1_scan_worker.py
           --trajectory-index ${{ matrix.trajectory }}
-          --t-max 60
-          --n-points 12001
+          --t-max 120
+          --n-points 24001
           --output trajectory_${{ matrix.trajectory }}_result.json
       - name: Upload trajectory result immediately
         if: always()
