@@ -967,6 +967,7 @@ def save_results(results: List[Dict], filepath: str):
                     class_dict[k] = v
             
             summary.append({
+                'success': True,
                 'classification': class_dict,
                 'scan_metadata': _json_safe(r.get('scan_metadata', {})),
                 'ic_params': r['ic_params'],
