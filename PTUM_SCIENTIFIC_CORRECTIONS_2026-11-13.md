@@ -857,8 +857,10 @@ checked before treating that run as evidence.
 Added `thermal_dirac_scalar_condensate` and
 `thermal_fermion_bias` to `ptum_defects.py`. For a free equilibrium
 Dirac species with degeneracy $4N_c$, fixed broken-phase mass $m_f$,
-and a real coupling $y_{\psi f}$ defined by
-$m_f(\psi)=m_f+y_{\psi f}\psi$, the zero-temperature-subtracted
+and the diagonal real mass-basis coupling
+$y_{\psi f}^{\rm eff}=\operatorname{Re}[(C_f)_{ii}]v_H/(\sqrt2\Lambda)$
+in $m_f(\psi)=m_f+y_{\psi f}^{\rm eff}\psi$, the
+zero-temperature-subtracted
 thermal condensate is evaluated from the Fermi-Dirac integral
 [
 \Delta_T\langle\bar f f\rangle
