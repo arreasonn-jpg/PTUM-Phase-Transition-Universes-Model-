@@ -96,7 +96,8 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
                    profile: str = "full",
                    checkpoint_path: str | None = None,
                    shard_index: int = 0,
-                   shard_count: int = 1):
+                   shard_count: int = 1,
+                   solver_method: str = "Radau"):
     """Run a deterministic shard of the global scan, checkpointing each trajectory."""
     seed_scales, velocity_scales, phi_offsets = scan_profile_scales(profile)
     total = expected_scan_count(profile)
@@ -184,6 +185,7 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
             progress_interval=0,
             progress_label=f"{scenario_name}-trajectory-{global_index}",
             result_callback=record_checkpoint,
+            solver_method=solver_method,
         )
         all_results.extend(rows)
 
@@ -227,6 +229,7 @@ def main() -> None:
     parser.add_argument("--shard-count", type=int, default=1, help="Total number of deterministic scan shards")
     parser.add_argument("--t-max", type=float, default=DEFAULT_T_MAX)
     parser.add_argument("--n-points", type=int, default=DEFAULT_N_POINTS)
+    parser.add_argument("--solver-method", choices=("DOP853", "Radau", "BDF"), default="Radau")
     parser.add_argument(
         "--profile", choices=("ci", "full"), default="full",
         help="Use four fast CI smoke trajectories or the full 100-trajectory scan",
@@ -237,6 +240,7 @@ def main() -> None:
         t_max=args.t_max, n_points=args.n_points, profile=args.profile,
         checkpoint_path=args.checkpoint,
         shard_index=args.shard_index, shard_count=args.shard_count,
+        solver_method=args.solver_method,
     )
     # Persist the complete diagnostic summary before enforcing the CI gate,
     # so a failed run still leaves an inspectable artifact.
