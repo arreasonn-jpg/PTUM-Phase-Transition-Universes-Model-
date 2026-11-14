@@ -1141,6 +1141,43 @@ the bound above. The Wilson coefficients, thermal state, operator
 renormalization and effective potential must be specified before
 a wall lifetime can be predicted.
 
+A limited finite-temperature contribution can be estimated if the
+plasma is in equilibrium in the broken electroweak phase, the fermion
+masses and Higgs expectation value are treated as fixed, and
+interactions beyond the ideal Dirac gas are neglected. Subtracting
+the zero-temperature vacuum condensate, a free Dirac species gives
+\begin{equation}
+\Delta_T\langle\bar f f\rangle
+=\frac{4N_c m_f T^2}{2\pi^2}
+\int_0^\infty dx\,
+\frac{x^2}
+{\sqrt{x^2+(m_f/T)^2}
+\left[\exp\!\left(\sqrt{x^2+(m_f/T)^2}\right)+1\right]}.
+\label{eq:ptum_thermal_fermion_condensate}
+\end{equation}
+For $m_f\ll T$ this approaches
+$\Delta_T\langle\bar f f\rangle\simeq N_c m_fT^2/6$.
+With the broken-phase scalar coupling
+$y_{\psi f}^{\rm eff}=\operatorname{Re}(C_f)v_H/(\sqrt2\Lambda)$,
+the corresponding linear term in the thermal free energy is
+$+\sum_f y_{\psi f}^{\rm eff}
+\Delta_T\langle\bar f f\rangle\,\psi$.
+In the convention $V_{\rm bias}=-\epsilon_{\rm bias}\psi$,
+\begin{equation}
+\epsilon_{\rm bias}^{(T)}
+=-\sum_f y_{\psi f}^{\rm eff}
+\Delta_T\langle\bar f f\rangle.
+\label{eq:ptum_thermal_bias}
+\end{equation}
+This is a conditional one-loop ideal-gas contribution only. It
+requires the broken-phase Higgs expectation value and an equilibrated
+fermion bath; it omits gauge/QCD corrections, thermal masses,
+finite chemical potentials, non-equilibrium production, the
+electroweak crossover, and the renormalized zero-temperature
+condensate. It is therefore not a prediction of the PTUM bias or
+wall lifetime. The Wilson matrices, cutoff, thermal history and
+operator renormalization remain necessary physical inputs.
+
 The auxiliary module \texttt{ptum\_defects.py} evaluates the exact two
 stationary minima of the tilted quartic potential, the spinodal
 source, the degenerate-wall tension, and the conditional
