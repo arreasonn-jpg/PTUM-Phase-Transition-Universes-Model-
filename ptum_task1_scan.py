@@ -76,51 +76,75 @@ def build_initial_condition_grid(params: PTUMParameters, profile: str = "full"):
     return psi_init_range, psi_dot_init_range, phi_offset_range
 
 
+def shard_indices(total: int, shard_count: int, shard_index: int) -> list[int]:
+    """Return deterministic, disjoint trajectory indices for one shard."""
+    if total < 1:
+        raise ValueError("total must be positive")
+    if shard_count < 1:
+        raise ValueError("shard_count must be positive")
+    if not 0 <= shard_index < shard_count:
+        raise ValueError("shard_index must satisfy 0 <= index < shard_count")
+    return list(range(shard_index, total, shard_count))
+
+
+def expected_shard_count(profile: str, shard_count: int, shard_index: int) -> int:
+    return len(shard_indices(expected_scan_count(profile), shard_count, shard_index))
+
+
 def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
                    n_points: int = DEFAULT_N_POINTS,
                    profile: str = "full",
-                   checkpoint_path: str | None = None):
-    """Run the selected scan profile at both high and low energy scales."""
+                   checkpoint_path: str | None = None,
+                   shard_index: int = 0,
+                   shard_count: int = 1):
+    """Run a deterministic shard of the global scan, checkpointing each trajectory."""
     seed_scales, velocity_scales, phi_offsets = scan_profile_scales(profile)
+    total = expected_scan_count(profile)
+    selected_indices = set(shard_indices(total, shard_count, shard_index))
     all_results = []
     checkpoint_results = []
 
-    def record_checkpoint(row, metadata):
-        row["scan_metadata"] = metadata
-        checkpoint_results.append(row)
-        if checkpoint_path is not None:
-            save_results(checkpoint_results, checkpoint_path)
-        ic = row.get("ic_params", {})
-        print(
-            f"[scan] completed trajectory {len(checkpoint_results)}/"
-            f"{expected_scan_count(profile)} ({metadata['scenario']}): "
-            f"psi={ic.get('psi_init')}, psi_dot={ic.get('psi_dot_init')}, "
-            f"phi_offset={ic.get('phi_offset')}, success={row.get('success')}",
-            flush=True,
-        )
-
+    # Build the same stable global ordering regardless of shard count.
+    specs = []
     for scenario_name, params in build_scan_scenarios():
         psi_init_range, psi_dot_init_range, phi_offset_range = (
             build_initial_condition_grid(params, profile=profile)
         )
-        # Initialize Phi_dot from the same single-field FRW trajectory
-        # that defines the exact epsilon_H=1 endpoint. Each post-threshold
-        # offset is reached by integrating beyond that endpoint, rather than
-        # assigning a potential-slow-roll velocity at the displaced field.
         phi_dot_init_by_offset = {}
         for offset in phi_offset_range:
             x_target = (params.Phi_c - offset) / M_PL
-            state = state_at_field_value(
-                params.lambda_phi, x_target, V0=params.V0
-            )
+            state = state_at_field_value(params.lambda_phi, x_target, V0=params.V0)
             phi_dot_init_by_offset[offset] = state["Phi_dot"]
+        for psi_init in psi_init_range:
+            for psi_dot_init in psi_dot_init_range:
+                for phi_offset in phi_offset_range:
+                    specs.append({
+                        "scenario": scenario_name,
+                        "params": params,
+                        "psi_init": psi_init,
+                        "psi_dot_init": psi_dot_init,
+                        "phi_offset": phi_offset,
+                        "phi_dot_init": phi_dot_init_by_offset[phi_offset],
+                    })
 
-        print(
-            f"[scan] starting {scenario_name}: {len(psi_init_range) * len(psi_dot_init_range) * len(phi_offset_range)} trajectories",
-            flush=True,
-        )
+    if len(specs) != total:
+        raise RuntimeError(f"Internal scan-grid mismatch: expected {total}, built {len(specs)}")
+
+    for global_index, spec in enumerate(specs):
+        if global_index not in selected_indices:
+            continue
+        scenario_name = spec["scenario"]
+        params = spec["params"]
+        ic_params = {
+            "psi_init": spec["psi_init"],
+            "psi_dot_init": spec["psi_dot_init"],
+            "phi_offset": spec["phi_offset"],
+        }
         metadata = {
             "scenario": scenario_name,
+            "global_trajectory_index": global_index,
+            "shard_index": shard_index,
+            "shard_count": shard_count,
             "V0_GeV4": params.V0,
             "Phi_c_over_Mpl": params.Phi_c / M_PL,
             "exact_endpoint_damping_ratio": params.damping_ratio,
@@ -136,22 +160,34 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
             "quantum_vacuum_seeded": False,
             "zero_seed_rows_are_exact_classical_invariant_controls": True,
         }
+
+        def record_checkpoint(row, meta=metadata):
+            row["scan_metadata"] = dict(meta)
+            checkpoint_results.append(row)
+            if checkpoint_path is not None:
+                save_results(checkpoint_results, checkpoint_path)
+            print(
+                f"[scan] completed shard {shard_index + 1}/{shard_count}, "
+                f"global trajectory {meta['global_trajectory_index'] + 1}/{total} "
+                f"({meta['scenario']}): success={row.get('success')}",
+                flush=True,
+            )
+
         rows = run_parameter_scan(
             params,
-            psi_init_range,
-            psi_dot_init_range,
-            phi_offset_range,
+            [spec["psi_init"]],
+            [spec["psi_dot_init"]],
+            [spec["phi_offset"]],
             t_max=t_max,
             n_points=n_points,
-            phi_dot_init_by_offset=phi_dot_init_by_offset,
-            progress_interval=10,
-            progress_label=scenario_name,
-            result_callback=lambda row, meta=metadata: record_checkpoint(row, meta),
+            phi_dot_init_by_offset={spec["phi_offset"]: spec["phi_dot_init"]},
+            progress_interval=0,
+            progress_label=f"{scenario_name}-trajectory-{global_index}",
+            result_callback=record_checkpoint,
         )
-        print(f"[scan] finished {scenario_name}", flush=True)
         all_results.extend(rows)
-    return all_results
 
+    return all_results
 
 def validate_scan_results(results, expected_count: int | None = None):
     """Fail closed unless every trajectory in the selected profile succeeds."""
@@ -187,6 +223,8 @@ def main() -> None:
         "--checkpoint", default=None,
         help="Atomically save a compact partial summary after each completed trajectory",
     )
+    parser.add_argument("--shard-index", type=int, default=0, help="Zero-based scan shard index")
+    parser.add_argument("--shard-count", type=int, default=1, help="Total number of deterministic scan shards")
     parser.add_argument("--t-max", type=float, default=DEFAULT_T_MAX)
     parser.add_argument("--n-points", type=int, default=DEFAULT_N_POINTS)
     parser.add_argument(
@@ -198,11 +236,13 @@ def main() -> None:
     results = run_scan_suite(
         t_max=args.t_max, n_points=args.n_points, profile=args.profile,
         checkpoint_path=args.checkpoint,
+        shard_index=args.shard_index, shard_count=args.shard_count,
     )
     # Persist the complete diagnostic summary before enforcing the CI gate,
     # so a failed run still leaves an inspectable artifact.
     save_results(results, args.output)
-    validate_scan_results(results, expected_count=expected_scan_count(args.profile))
+    expected_here = expected_shard_count(args.profile, args.shard_count, args.shard_index)
+    validate_scan_results(results, expected_count=expected_here)
 
     for scenario_name, _params in build_scan_scenarios():
         scenario_rows = [
@@ -221,7 +261,8 @@ def main() -> None:
         print(f"  Late-time regimes: {dict(regimes)}")
 
     print(f"Scan profile: {args.profile}")
-    print(f"Total scan points: {len(results)}")
+    print(f"Shard: {args.shard_index + 1}/{args.shard_count}")
+    print(f"Shard scan points: {len(results)}")
     print(f"Summary written to: {args.output}")
 
 
