@@ -63,15 +63,26 @@ def load_followup_rows(
             raise RuntimeError(f"trajectory {index}: invalid regime {regime!r}")
         if not isinstance(classification.get("quartic_achieved"), bool):
             raise RuntimeError(f"trajectory {index}: missing quartic_achieved boolean")
-        for key in ("max_abs_psi_over_trajectory", "final_Phi",
-                    "max_abs_relative_frw_continuity_residual"):
+        for key in (
+            "max_abs_psi_over_trajectory",
+            "final_Phi",
+            "max_abs_chain_rule_background_relative_frw_continuity_residual",
+            "max_abs_finite_difference_background_relative_frw_continuity_residual",
+        ):
             if not _finite_number(row.get(key)):
                 raise RuntimeError(f"trajectory {index}: {key} must be finite")
-        residual = float(row["max_abs_relative_frw_continuity_residual"])
+        # The chain-rule residual is a same-RHS algebraic diagnostic. Its
+        # dynamic-term normalization can become ill-conditioned when both
+        # terms approach zero, so acceptance is based on the independently
+        # sampled finite-difference residual normalized to the total background.
+        residual = float(
+            row["max_abs_finite_difference_background_relative_frw_continuity_residual"]
+        )
         if residual < 0 or residual > max_continuity_residual:
             raise RuntimeError(
-                f"trajectory {index}: continuity residual {residual:.3e} "
-                f"exceeds limit {max_continuity_residual:.3e}"
+                f"trajectory {index}: background-normalized finite-difference "
+                f"continuity residual {residual:.3e} exceeds limit "
+                f"{max_continuity_residual:.3e}"
             )
         exact_control = classification.get("exact_classical_invariant_control") is True
         if exact_control:
@@ -132,7 +143,29 @@ def load_followup_rows(
 def build_followup_report(rows: list[dict]) -> dict:
     regimes = Counter(row["classification"]["regime"] for row in rows)
     scenarios = Counter(row["scan_metadata"]["scenario"] for row in rows)
-    residuals = [float(row["max_abs_relative_frw_continuity_residual"]) for row in rows]
+    chain_rule_relative = [
+        float(row["max_abs_chain_rule_relative_frw_continuity_residual"])
+        for row in rows
+        if _finite_number(row.get("max_abs_chain_rule_relative_frw_continuity_residual"))
+    ]
+    chain_rule_background_relative = [
+        float(row["max_abs_chain_rule_background_relative_frw_continuity_residual"])
+        for row in rows
+    ]
+    finite_difference_absolute = [
+        float(row["max_abs_finite_difference_frw_continuity_residual"])
+        for row in rows
+        if _finite_number(row.get("max_abs_finite_difference_frw_continuity_residual"))
+    ]
+    finite_difference_relative = [
+        float(row["max_abs_finite_difference_relative_frw_continuity_residual"])
+        for row in rows
+        if _finite_number(row.get("max_abs_finite_difference_relative_frw_continuity_residual"))
+    ]
+    finite_difference_background_relative = [
+        float(row["max_abs_finite_difference_background_relative_frw_continuity_residual"])
+        for row in rows
+    ]
     transient_rows = [
         row for row in rows
         if row["classification"]["transient_quartic_episode_detected"]
@@ -168,8 +201,24 @@ def build_followup_report(rows: list[dict]) -> dict:
                  if _finite_number(c.get("transient_quartic_last_episode_end_mu_inverse"))),
                 default=None
             ),
-            "max_abs_relative_frw_continuity_residual": max(residuals),
-            "median_abs_relative_frw_continuity_residual": statistics.median(residuals),
+            "max_abs_chain_rule_relative_frw_continuity_residual": (
+                max(chain_rule_relative) if chain_rule_relative else None
+            ),
+            "max_abs_chain_rule_background_relative_frw_continuity_residual": max(
+                chain_rule_background_relative
+            ),
+            "max_abs_finite_difference_frw_continuity_residual": (
+                max(finite_difference_absolute) if finite_difference_absolute else None
+            ),
+            "max_abs_finite_difference_relative_frw_continuity_residual": (
+                max(finite_difference_relative) if finite_difference_relative else None
+            ),
+            "max_abs_finite_difference_background_relative_frw_continuity_residual": max(
+                finite_difference_background_relative
+            ),
+            "median_abs_finite_difference_background_relative_frw_continuity_residual": (
+                statistics.median(finite_difference_background_relative)
+            ),
         },
         "trajectories": rows,
         "interpretation": (
@@ -190,7 +239,8 @@ def write_markdown_report(report: dict, output: str | Path) -> None:
         f"- Late-time quartic classifications: **{summary['late_time_quartic_count']}**",
         f"- Transient quartic-like episodes: **{summary['transient_quartic_episode_count']}**",
         f"- Transient episode indices: **{summary['transient_episode_indices']}**",
-        f"- Maximum relative FRW continuity residual: **{summary['max_abs_relative_frw_continuity_residual']:.3e}**",
+        f"- Maximum finite-difference background-relative FRW residual: **{summary['max_abs_finite_difference_background_relative_frw_continuity_residual']:.3e}**",
+        f"- Maximum chain-rule dynamic-relative FRW residual: **{summary['max_abs_chain_rule_relative_frw_continuity_residual']:.3e}**",
         "",
         "| Index | Offset (GeV) | Initial psi_dot (GeV^2) | Late regime | w_final | Q_final | Virial | H/omega max | Transient half-cycles | Duration (mu^-1) | Episode intervals (mu^-1) |",
         "|---:|---:|---:|---|---:|---:|---:|---:|---:|---:|---|",
@@ -224,7 +274,10 @@ def main() -> None:
     parser.add_argument("--input-dir", default="extended-scan-results")
     parser.add_argument("--output-json", default="ptum_transient_followup_results.json")
     parser.add_argument("--output-markdown", default="ptum_transient_followup_report.md")
-    parser.add_argument("--max-continuity-residual", type=float, default=1.0e-8)
+    parser.add_argument(
+        "--max-continuity-residual", type=float, default=1.0e-8,
+        help="maximum accepted finite-difference residual normalized to the total background",
+    )
     args = parser.parse_args()
     rows = load_followup_rows(
         args.input_dir, max_continuity_residual=args.max_continuity_residual
