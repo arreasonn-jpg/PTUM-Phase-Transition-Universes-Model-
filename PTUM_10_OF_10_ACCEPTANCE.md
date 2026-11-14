@@ -209,3 +209,19 @@ contains no mode backreaction, rescattering, nonlinear fragmentation,
 or entropy dilution. Gates 5 and 7 remain **NOT MET**; the real-scalar
 $Z_2$ defect problem and microscopic proxy-fluid perturbation closure
 are unresolved. PTUM is not 10/10.
+
+
+## 2026-11-14 fresh CI verification (supersedes earlier pending checkpoint)
+
+The manuscript wording regression introduced with the final-WKB particle-basis guard was initially stale: workflow 43580694626 reported 74 passed and one failed because the test expected the older phrase "occupation number is withheld", while the manuscript correctly states that both the occupation number and associated finite-band number density are withheld. The regression assertion was aligned to the actual manuscript wording in commit 82ab0f26014de58634386efd1d90b635f6ec9e45.
+
+Fresh PR workflow 43580982470 on that head completed successfully:
+- Python regression suite: **75 passed**.
+- Two-scale CI smoke scan: four of four integrations succeeded (two per scenario).
+- Both scenarios returned one `insufficient_oscillation_data` and one `non_quartic` classification. No quartic proxy-fluid realization was demonstrated.
+- LaTeX manuscript build and PDF artifact upload: passed.
+- The LaTeX log contains no reported Overfull \\hbox warnings, but it still contains Underfull \\hbox warnings and two float-placement warnings (`h` changed to `ht`). Gate 10 therefore remains PARTIAL rather than clean.
+
+This is a four-trajectory smoke scan only. The 100-trajectory full scan, its strict-JSON artifact, solver-tolerance/time-grid convergence, and classification-stability checks remain outstanding. The full scan must run on an isolated `ptum/full-scan-*` branch so it cannot supersede or cancel the PR workflow.
+
+Gate 10 remains **PARTIAL**. Gates 2--9 retain the statuses in the matrix above; no acceptance gate is promoted by a passing software-only smoke run. PTUM remains **NOT 10/10**.
