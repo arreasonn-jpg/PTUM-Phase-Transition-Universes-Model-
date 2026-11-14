@@ -1244,3 +1244,54 @@ def test_manuscript_describes_proxy_fluid_as_a_phenomenological_closure():
 
     source = Path("main.tex").read_text(encoding="utf-8")
     assert "specifies a phenomenological linear proxy-fluid perturbation closure" in source
+
+
+
+def test_expanding_mode_withholds_particle_number_for_nonadiabatic_final_basis():
+    from ptum_floquet import integrate_expanding_mode
+
+    t = np.linspace(0.0, 1.0, 501)
+    mass_sq = 1.0 + 10.0 * t**2
+    result = integrate_expanding_mode(
+        t=t,
+        scale_factor=np.ones_like(t),
+        hubble=np.zeros_like(t),
+        phi_res=np.zeros_like(t),
+        k_comoving=0.0,
+        m_chi=0.0,
+        g_dm=0.0,
+        effective_mass_sq=mass_sq,
+        max_initial_adiabaticity=0.1,
+        max_final_adiabaticity=0.1,
+    )
+    assert result["integration_success"]
+    assert result["final_frequency_valid"]
+    assert result["wronskian_valid"]
+    assert result["final_adiabaticity"] > 0.1
+    assert not result["final_adiabaticity_valid"]
+    assert not result["particle_number_valid"]
+    assert np.isnan(result["particle_number"])
+
+
+def test_expanding_spectrum_withholds_finite_band_density_if_final_basis_is_nonadiabatic():
+    from ptum_floquet import integrate_expanding_spectrum
+
+    t = np.linspace(0.0, 1.0, 501)
+    mass_sq = 1.0 + 10.0 * t**2
+    result = integrate_expanding_spectrum(
+        k_values=[0.0, 0.1],
+        t=t,
+        scale_factor=np.ones_like(t),
+        hubble=np.zeros_like(t),
+        phi_res=np.zeros_like(t),
+        m_chi=0.0,
+        g_dm=0.0,
+        effective_mass_sq=mass_sq,
+        max_initial_adiabaticity=0.1,
+        max_final_adiabaticity=0.1,
+    )
+    assert result["all_final_frequencies_valid"]
+    assert result["all_wronskians_valid"]
+    assert not result["all_particle_numbers_valid"]
+    assert np.isnan(result["n_comoving_finite_band"])
+    assert np.isnan(result["n_physical_finite_band"])
