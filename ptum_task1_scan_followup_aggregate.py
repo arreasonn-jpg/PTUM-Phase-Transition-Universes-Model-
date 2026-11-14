@@ -11,8 +11,11 @@ from pathlib import Path
 from typing import Iterable
 
 
-EXPECTED_INDICES = tuple(range(90, 100))
-EXPECTED_SCENARIO = "low_scale_underdamped_control"
+EXPECTED_INDICES = tuple(range(100))
+EXPECTED_SCENARIOS = {
+    "high_scale_threshold_matched",
+    "low_scale_underdamped_control",
+}
 ALLOWED_REGIMES = {
     "quartic", "quadratic_candidate", "non_quartic",
     "insufficient_oscillation_data", "failed",
@@ -28,7 +31,7 @@ def load_followup_rows(
     expected_indices: Iterable[int] = EXPECTED_INDICES,
     max_continuity_residual: float = 1.0e-8,
 ) -> list[dict]:
-    """Load, validate and order the extended 90..99 trajectory summaries."""
+    """Load, validate and order the extended 0..99 trajectory summaries."""
     expected = tuple(expected_indices)
     if not expected or len(set(expected)) != len(expected):
         raise ValueError("expected_indices must be a non-empty sequence of unique indices")
@@ -70,12 +73,30 @@ def load_followup_rows(
                 f"trajectory {index}: continuity residual {residual:.3e} "
                 f"exceeds limit {max_continuity_residual:.3e}"
             )
-        for key in ("w_final", "Q_final", "virial_final"):
-            if not _finite_number(classification.get(key)):
-                raise RuntimeError(f"trajectory {index}: classification.{key} must be finite")
+        exact_control = classification.get("exact_classical_invariant_control") is True
+        if exact_control:
+            if regime != "insufficient_oscillation_data":
+                raise RuntimeError(
+                    f"trajectory {index}: exact invariant control must have "
+                    "insufficient_oscillation_data regime"
+                )
+            if classification.get("transient_quartic_episode_detected") is not False:
+                raise RuntimeError(
+                    f"trajectory {index}: exact invariant control cannot have a transient episode"
+                )
+        else:
+            if regime == "insufficient_oscillation_data":
+                raise RuntimeError(
+                    f"trajectory {index}: insufficient oscillation data without an exact control"
+                )
+            for key in ("w_final", "Q_final", "virial_final"):
+                if not _finite_number(classification.get(key)):
+                    raise RuntimeError(
+                        f"trajectory {index}: classification.{key} must be finite"
+                    )
         if not isinstance(classification.get("transient_quartic_episode_detected"), bool):
             raise RuntimeError(f"trajectory {index}: missing transient episode diagnostic")
-        if metadata.get("scenario") != EXPECTED_SCENARIO:
+        if metadata.get("scenario") not in EXPECTED_SCENARIOS:
             raise RuntimeError(f"trajectory {index}: unexpected scenario {metadata.get('scenario')!r}")
         by_index[index] = row
 
@@ -85,6 +106,16 @@ def load_followup_rows(
         raise RuntimeError(f"follow-up index mismatch; missing={missing}, unexpected={unexpected}")
 
     rows = [by_index[index] for index in expected]
+    if set(expected) == set(EXPECTED_INDICES):
+        scenario_counts = Counter(row["scan_metadata"]["scenario"] for row in rows)
+        required_counts = Counter({
+            "high_scale_threshold_matched": 50,
+            "low_scale_underdamped_control": 50,
+        })
+        if scenario_counts != required_counts:
+            raise RuntimeError(
+                f"unexpected full-scan scenario distribution: {dict(scenario_counts)}"
+            )
     horizons = {row["scan_metadata"].get("t_max_over_mu_inverse") for row in rows}
     resolutions = {row["scan_metadata"].get("n_output_points") for row in rows}
     if len(horizons) != 1 or not all(_finite_number(x) for x in horizons):
@@ -153,7 +184,7 @@ def write_markdown_report(report: dict, output: str | Path) -> None:
     lines = [
         "# PTUM long-horizon transient-quartic follow-up",
         "",
-        f"- Validated trajectories: **{summary['validated_trajectories']} / 10**",
+        f"- Validated trajectories: **{summary['validated_trajectories']} / {summary['validated_trajectories']}**",
         f"- Horizon: **{report['scan_definition']['horizon_mu_inverse']} mu^-1**",
         f"- Output points per trajectory: **{report['scan_definition']['output_points']}**",
         f"- Late-time quartic classifications: **{summary['late_time_quartic_count']}**",
@@ -173,10 +204,13 @@ def write_markdown_report(report: dict, output: str | Path) -> None:
             f"{episode['start_mu_inverse']:.2f}-{episode['end_mu_inverse']:.2f}"
             for episode in c.get("transient_quartic_episodes", [])
         ) or "none"
+        w_text = "n/a" if not _finite_number(c.get("w_final")) else f"{c['w_final']:.4f}"
+        q_text = "n/a" if not _finite_number(c.get("Q_final")) else f"{c['Q_final']:.4f}"
+        virial_text = "n/a" if not _finite_number(c.get("virial_final")) else f"{c['virial_final']:.4f}"
         lines.append(
             f"| {row['scan_metadata']['trajectory_index']} | {ic['phi_offset']:.4e} | "
-            f"{ic['psi_dot_init']:.4e} | {c['regime']} | {c['w_final']:.4f} | "
-            f"{c['Q_final']:.4f} | {c['virial_final']:.4f} | {h_text} | "
+            f"{ic['psi_dot_init']:.4e} | {c['regime']} | {w_text} | "
+            f"{q_text} | {virial_text} | {h_text} | "
             f"{c.get('transient_quartic_max_consecutive_half_cycles', 0)} | "
             f"{c.get('transient_quartic_max_episode_duration_mu_inverse', 0.0):.3f} | "
             f"{episode_text} |"
