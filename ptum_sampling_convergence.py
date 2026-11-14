@@ -54,6 +54,18 @@ def finite_residual_summary(values: np.ndarray) -> dict:
     }
 
 
+def finite_absolute_difference(left, right):
+    """Return an absolute difference only when both values are finite numbers."""
+    try:
+        left_value = float(left)
+        right_value = float(right)
+    except (TypeError, ValueError):
+        return None
+    if not (np.isfinite(left_value) and np.isfinite(right_value)):
+        return None
+    return abs(left_value - right_value)
+
+
 def relative_difference_summary(candidate, reference) -> dict:
     candidate = np.asarray(candidate, dtype=float)
     reference = np.asarray(reference, dtype=float)
@@ -116,6 +128,7 @@ def main() -> None:
         base_count = SAMPLE_COUNTS[0]
         base = runs[base_count]
         base_t = np.asarray(base["t"], dtype=float)
+        finest_classification = runs[SAMPLE_COUNTS[-1]].get("classification", {})
         comparisons = {}
         for count in SAMPLE_COUNTS:
             row = runs[count]
@@ -139,9 +152,31 @@ def main() -> None:
             residual = row.get("continuity_residual_finite_difference_relative")
             if residual is None:
                 raise KeyError("missing continuity_residual_finite_difference_relative")
+            classification = row.get("classification", {})
             comparisons[str(count)] = {
                 "finite_difference_residual": finite_residual_summary(residual),
-                "classification": row.get("classification", {}),
+                "classification": classification,
+                "classification_difference_vs_finest": {
+                    "late_time_regime_match": (
+                        classification.get("regime") == finest_classification.get("regime")
+                    ),
+                    "quartic_achieved_match": (
+                        classification.get("quartic_achieved")
+                        == finest_classification.get("quartic_achieved")
+                    ),
+                    "transient_episode_count_match": (
+                        classification.get("transient_quartic_episode_count")
+                        == finest_classification.get("transient_quartic_episode_count")
+                    ),
+                    "max_consecutive_half_cycles_abs_difference": finite_absolute_difference(
+                        classification.get("transient_quartic_max_consecutive_half_cycles"),
+                        finest_classification.get("transient_quartic_max_consecutive_half_cycles"),
+                    ),
+                    "max_episode_duration_abs_difference_mu_inverse": finite_absolute_difference(
+                        classification.get("transient_quartic_max_episode_duration_mu_inverse"),
+                        finest_classification.get("transient_quartic_max_episode_duration_mu_inverse"),
+                    ),
+                },
                 "max_relative_difference_vs_coarsest_on_common_grid": {
                     field: relative_difference_summary(
                         np.asarray(row[field], dtype=float)[::stride],
