@@ -87,7 +87,7 @@ def main() -> None:
             }
         report["trajectories"].append(entry)
 
-    Path(args.output).write_text(json.dumps(report, indent=2, allow_nan=False) + "\\n", encoding="utf-8")
+    Path(args.output).write_text(json.dumps(report, indent=2, allow_nan=False), encoding="utf-8")
     print(f"[convergence] wrote {args.output}", flush=True)
 
 
