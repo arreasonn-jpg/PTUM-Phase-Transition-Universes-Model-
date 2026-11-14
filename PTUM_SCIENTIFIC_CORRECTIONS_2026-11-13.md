@@ -827,3 +827,26 @@ does not promote the physical defect gate. The renormalized SM
 condensate, Wilson coefficient, thermal history, defect formation,
 network evolution, annihilation and backreaction remain uncomputed.
 The correction and tests await a fresh CI run.
+
+
+## 45. 2026-11-14 fresh CI verification of defect diagnostics
+
+After the stationary-minimum API correction, workflow `43585095937`
+passed on commit `3f78946668bd43d59953ead562abf158105ec595`:
+83 Python tests passed; the four-trajectory, two-scale smoke scan
+completed with four successful integrations and no integration
+failures; and the 42-page manuscript PDF compiled and uploaded.
+The smoke classifications remained one
+`insufficient_oscillation_data` and one `non_quartic` in each
+scenario. These are software and homogeneous-background checks only.
+
+The final LaTeX pass has no Overfull `\\hbox` or unresolved-reference
+warning, but retains numerous Underfull `\\hbox` warnings and two
+float-placement warnings. Gate 10 remains PARTIAL.
+
+The isolated 100-trajectory workflow `43582371029` is still running
+on `ptum/full-scan-2026-11-14-r2`, based on the earlier
+`d4f5f8b37a526c6fba35d19cb9c0396710da2e1a` source. No full-scan
+artifact has been inspected. Because the current PR head includes
+later defect-diagnostic changes, scan-source equivalence must be
+checked before treating that run as evidence.
