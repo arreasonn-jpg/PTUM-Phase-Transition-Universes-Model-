@@ -5,12 +5,13 @@ on:
     branches:
       - main
       - 'ptum/full-scan-*'
+      - 'ptum/resilient-scan-*'
   pull_request:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/ptum/full-scan-')) && format('ptum-full-scan-{0}', github.ref) || format('ptum-scientific-{0}', github.event.pull_request.number || github.ref) }}
-  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/heads/ptum/full-scan-') }}
+  group: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/resilient-scan-')) && format('ptum-full-scan-{0}', github.ref) || format('ptum-scientific-{0}', github.event.pull_request.number || github.ref) }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/heads/ptum/full-scan-') && !startsWith(github.ref, 'refs/heads/ptum/resilient-scan-') }}
 
 permissions:
   contents: read
@@ -34,10 +35,10 @@ jobs:
       - name: Run PTUM regression tests
         run: python -m pytest -q tests/test_ptum_consistency.py
       - name: Run four-trajectory two-scale CI smoke scan
-        if: github.event_name != 'workflow_dispatch' && !(github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-'))
+        if: github.event_name != 'workflow_dispatch' && !(github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/resilient-scan-')))
         run: python ptum_task1_scan.py --profile ci --output task1_parameter_scan_ci.json
       - name: Upload two-scale CI smoke summary
-        if: always() && github.event_name != 'workflow_dispatch' && !(github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-'))
+        if: always() && github.event_name != 'workflow_dispatch' && !(github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/resilient-scan-')))
         uses: actions/upload-artifact@v7
         with:
           name: ptum-two-scale-ci-smoke
@@ -46,9 +47,14 @@ jobs:
           retention-days: 30
 
   full-waterfall-scan:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-'))
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/resilient-scan-')))
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -60,19 +66,51 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-ci.txt
-      - name: Run complete 100-trajectory high-resolution waterfall scan
+      - name: Run deterministic 10-trajectory scan shard
         run: >-
           python ptum_task1_scan.py --profile full
+          --shard-index ${{ matrix.shard }} --shard-count 10
+          --output task1_parameter_scan_shard_${{ matrix.shard }}.json
+          --checkpoint task1_parameter_scan_checkpoint_${{ matrix.shard }}.json
+      - name: Upload shard result and checkpoint
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ptum-two-field-scan-shard-${{ matrix.shard }}
+          path: |
+            task1_parameter_scan_shard_${{ matrix.shard }}.json
+            task1_parameter_scan_checkpoint_${{ matrix.shard }}.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  merge-full-scan:
+    if: always() && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/resilient-scan-')))
+    needs: [full-waterfall-scan]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Download all available shard artifacts
+        uses: actions/download-artifact@v7
+        with:
+          pattern: ptum-two-field-scan-shard-*
+          path: scan-artifacts
+          merge-multiple: true
+      - name: Validate and merge exactly 100 trajectories
+        run: >-
+          python ptum_merge_scan_shards.py
+          --input-dir scan-artifacts
           --output task1_parameter_scan_results.json
-          --checkpoint task1_parameter_scan_checkpoint.json
-      - name: Upload full and incremental two-field scan summaries
+          --expected-count 100
+      - name: Upload consolidated scan summary
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: ptum-two-field-full-scan
-          path: |
-            task1_parameter_scan_results.json
-            task1_parameter_scan_checkpoint.json
+          path: task1_parameter_scan_results.json
           if-no-files-found: ignore
           retention-days: 30
 
