@@ -1451,7 +1451,7 @@ def test_transient_followup_aggregator_validates_and_summarizes_ten_rows(tmp_pat
             json.dumps([row]), encoding="utf-8"
         )
 
-    rows = load_followup_rows(tmp_path)
+    rows = load_followup_rows(tmp_path, expected_indices=range(90, 100))
     report = build_followup_report(rows)
     assert len(rows) == 10
     assert report["scan_definition"]["horizon_mu_inverse"] == pytest.approx(480.0)
@@ -1459,6 +1459,49 @@ def test_transient_followup_aggregator_validates_and_summarizes_ten_rows(tmp_pat
     assert report["summary"]["transient_quartic_episode_count"] == 5
     assert report["summary"]["late_time_quartic_count"] == 0
     assert report["summary"]["max_abs_relative_frw_continuity_residual"] == pytest.approx(1e-12)
+
+
+def test_transient_followup_aggregator_accepts_exact_invariant_controls(tmp_path):
+    import json
+    from ptum_task1_scan_followup_aggregate import (
+        load_followup_rows, build_followup_report, write_markdown_report,
+    )
+
+    row = {
+        "classification": {
+            "regime": "insufficient_oscillation_data",
+            "quartic_achieved": False,
+            "w_final": None,
+            "Q_final": None,
+            "virial_final": None,
+            "exact_classical_invariant_control": True,
+            "transient_quartic_episode_detected": False,
+            "transient_quartic_episode_count": 0,
+            "transient_quartic_max_episode_duration_mu_inverse": 0.0,
+        },
+        "scan_metadata": {
+            "trajectory_index": 0,
+            "scenario": "high_scale_threshold_matched",
+            "t_max_over_mu_inverse": 480.0,
+            "n_output_points": 96001,
+        },
+        "ic_params": {"psi_dot_init": 0.0, "phi_offset": 1.0e16},
+        "max_abs_psi_over_trajectory": 0.0,
+        "final_Phi": 1.0,
+        "max_abs_relative_frw_continuity_residual": 1.0e-12,
+    }
+    (tmp_path / "extended_trajectory_0_result.json").write_text(
+        json.dumps([row]), encoding="utf-8"
+    )
+    rows = load_followup_rows(tmp_path, expected_indices=(0,))
+    report = build_followup_report(rows)
+    output = tmp_path / "report.md"
+    write_markdown_report(report, output)
+    assert report["summary"]["validated_trajectories"] == 1
+    assert report["summary"]["late_time_regime_counts"] == {
+        "insufficient_oscillation_data": 1
+    }
+    assert "n/a" in output.read_text(encoding="utf-8")
 
 
 def test_transient_followup_aggregator_rejects_bad_continuity_residual(tmp_path):
