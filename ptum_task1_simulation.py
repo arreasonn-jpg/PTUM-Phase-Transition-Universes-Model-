@@ -773,22 +773,47 @@ def compute_quartic_virial_ratio(t: np.ndarray, psi: np.ndarray,
 def compute_quadratic_virial_ratio(t: np.ndarray, psi: np.ndarray,
                                       psi_dot: np.ndarray, Phi: np.ndarray,
                                       params: PTUMParameters) -> np.ndarray:
-    """Half-cycle <K>/<V2> for a positive, slowly varying quadratic mode."""
-    if len(Phi) != len(t):
-        raise ValueError("Phi and t must have the same length")
-    ratio = np.full_like(t, np.nan, dtype=float)
-    m_eff_sq = np.array([meff_sq_psi(value, params) for value in Phi])
-    turning_points = _turning_point_indices(psi_dot)
-    for i in range(len(turning_points) - 1):
-        start, end = turning_points[i], turning_points[i + 1] + 1
-        if end - start < 3 or np.any(m_eff_sq[start:end] <= 0.0):
-            continue
-        kinetic_avg = 0.5 * np.mean(psi_dot[start:end]**2)
-        quadratic_potential_avg = 0.5 * np.mean(
-            m_eff_sq[start:end] * psi[start:end]**2
+    """Time-integrated half-cycle <K>/<V2> for a positive quadratic mode."""
+    times = np.asarray(t, dtype=float)
+    field = np.asarray(psi, dtype=float)
+    velocity = np.asarray(psi_dot, dtype=float)
+    phi = np.asarray(Phi, dtype=float)
+    ratio = np.full_like(times, np.nan, dtype=float)
+    if (times.ndim != 1 or field.shape != times.shape
+            or velocity.shape != times.shape or phi.shape != times.shape):
+        raise ValueError("t, psi, psi_dot, and Phi must be matching one-dimensional arrays")
+    if (len(times) < 3 or not np.all(np.isfinite(times))
+            or np.any(np.diff(times) <= 0.0)):
+        raise ValueError("t must be finite and strictly increasing")
+    if not (np.all(np.isfinite(field)) and np.all(np.isfinite(velocity))
+            and np.all(np.isfinite(phi))):
+        raise ValueError("psi, psi_dot, and Phi histories must be finite")
+
+    turning_points = _turning_point_times(times, velocity)
+    for start_time, end_time in zip(turning_points[:-1], turning_points[1:]):
+        segment_t, psi_seg = _interpolated_half_cycle_samples(
+            times, field, start_time, end_time
         )
-        if quadratic_potential_avg > 0.0:
-            ratio[start:end] = kinetic_avg / quadratic_potential_avg
+        _, velocity_seg = _interpolated_half_cycle_samples(
+            times, velocity, start_time, end_time
+        )
+        _, phi_seg = _interpolated_half_cycle_samples(
+            times, phi, start_time, end_time
+        )
+        if len(segment_t) < 3:
+            continue
+        mass_sq_seg = meff_sq_psi(phi_seg, params)
+        if np.any(mass_sq_seg <= 0.0):
+            continue
+        kinetic_integral = trapezoid(velocity_seg**2, segment_t)
+        quadratic_potential_integral = trapezoid(
+            mass_sq_seg * psi_seg**2, segment_t
+        )
+        if (quadratic_potential_integral > 0.0
+                and np.isfinite(quadratic_potential_integral)):
+            left = int(np.searchsorted(times, start_time, side="left"))
+            right = int(np.searchsorted(times, end_time, side="right"))
+            ratio[left:right] = kinetic_integral / quadratic_potential_integral
     return ratio
 
 
