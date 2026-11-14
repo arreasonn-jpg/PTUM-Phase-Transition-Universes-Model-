@@ -284,3 +284,28 @@ specified, and no expanding inhomogeneous network, formation probability,
 wall evolution, backreaction or rescattering has been computed. Gate 5
 therefore remains **NOT MET**. The new tests and manuscript change are
 pending the next CI result.
+
+
+## 2026-11-14 tilted-domain-wall diagnostic API regression
+
+Workflow `43584145515` on PR head
+`5d5247163e52effb8c4edeff26b9cc99a16f0ff4` ran 83 tests and reported
+82 passed, 1 failed. The failure was a real public-API omission:
+`_tilted_minima` computed the dimensionful true and false stationary
+minima, but `domain_wall_bias_diagnostics` did not return those two
+values. The moderate-bias regression therefore raised `KeyError:
+'true_minimum'`. No physics tolerance was involved.
+
+The diagnostic now exposes `true_minimum` and `false_minimum` as
+dimensionful field values, and returns `None` for both when the
+metastable minimum disappears at/above the spinodal. The regression
+now checks the stationary cubic
+`y^3-y-b=0`, positive curvature `3y^2-1>0` at both minima, the
+direct potential difference, and the spinodal absence of both minima.
+The correction is on the authorized PR branch; a fresh full CI run is
+required before marking Gate 10's software status improved.
+
+This does not change Gate 5: the analytic tilted-potential minima and
+flat-space kink do not determine the renormalized SM condensate, the
+actual bias, the expanding defect-network evolution, or its formation
+probability. Gate 5 remains **NOT MET**.
