@@ -1446,6 +1446,11 @@ def test_transient_followup_aggregator_validates_and_summarizes_ten_rows(tmp_pat
             "max_abs_psi_over_trajectory": 2.0e13,
             "final_Phi": 3.0e18,
             "max_abs_relative_frw_continuity_residual": 1.0e-12,
+            "max_abs_chain_rule_relative_frw_continuity_residual": 1.0e-12,
+            "max_abs_chain_rule_background_relative_frw_continuity_residual": 1.0e-15,
+            "max_abs_finite_difference_frw_continuity_residual": 1.0e-12,
+            "max_abs_finite_difference_relative_frw_continuity_residual": 1.0e-10,
+            "max_abs_finite_difference_background_relative_frw_continuity_residual": 1.0e-14,
         }
         (tmp_path / f"extended_trajectory_{index}_result.json").write_text(
             json.dumps([row]), encoding="utf-8"
@@ -1458,7 +1463,8 @@ def test_transient_followup_aggregator_validates_and_summarizes_ten_rows(tmp_pat
     assert report["scan_definition"]["output_points"] == 96001
     assert report["summary"]["transient_quartic_episode_count"] == 5
     assert report["summary"]["late_time_quartic_count"] == 0
-    assert report["summary"]["max_abs_relative_frw_continuity_residual"] == pytest.approx(1e-12)
+    assert report["summary"]["max_abs_chain_rule_relative_frw_continuity_residual"] == pytest.approx(1e-12)
+    assert report["summary"]["max_abs_finite_difference_background_relative_frw_continuity_residual"] == pytest.approx(1e-14)
 
 
 def test_transient_followup_aggregator_accepts_exact_invariant_controls(tmp_path):
@@ -1488,7 +1494,12 @@ def test_transient_followup_aggregator_accepts_exact_invariant_controls(tmp_path
         "ic_params": {"psi_dot_init": 0.0, "phi_offset": 1.0e16},
         "max_abs_psi_over_trajectory": 0.0,
         "final_Phi": 1.0,
-        "max_abs_relative_frw_continuity_residual": 1.0e-12,
+        "max_abs_relative_frw_continuity_residual": 1.3e-8,
+        "max_abs_chain_rule_relative_frw_continuity_residual": 1.3e-8,
+        "max_abs_chain_rule_background_relative_frw_continuity_residual": 1.0e-20,
+        "max_abs_finite_difference_frw_continuity_residual": 1.0e-12,
+        "max_abs_finite_difference_relative_frw_continuity_residual": None,
+        "max_abs_finite_difference_background_relative_frw_continuity_residual": 1.0e-16,
     }
     (tmp_path / "extended_trajectory_0_result.json").write_text(
         json.dumps([row]), encoding="utf-8"
@@ -1521,7 +1532,12 @@ def test_transient_followup_aggregator_rejects_bad_continuity_residual(tmp_path)
         "ic_params": {"psi_dot_init": 0.0, "phi_offset": 1.0e16},
         "max_abs_psi_over_trajectory": 1.0,
         "final_Phi": 1.0,
-        "max_abs_relative_frw_continuity_residual": 1.0e-3,
+        "max_abs_relative_frw_continuity_residual": 1.0e-12,
+        "max_abs_chain_rule_relative_frw_continuity_residual": 1.0e-12,
+        "max_abs_chain_rule_background_relative_frw_continuity_residual": 1.0e-15,
+        "max_abs_finite_difference_frw_continuity_residual": 1.0e-3,
+        "max_abs_finite_difference_relative_frw_continuity_residual": 1.0e-3,
+        "max_abs_finite_difference_background_relative_frw_continuity_residual": 1.0e-3,
     }
     (tmp_path / "extended_trajectory_90_result.json").write_text(
         json.dumps([row]), encoding="utf-8"
