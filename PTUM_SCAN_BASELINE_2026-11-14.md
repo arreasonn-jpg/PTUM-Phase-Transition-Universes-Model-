@@ -34,3 +34,8 @@ The low-scale grid contains promising quartic-like candidates. For example, traj
 The workflow has been configured to rerun the full 100-point grid with `tau_max = 60` and `12001` output samples. This longer horizon is intended to test whether quartic-like candidates accumulate enough late-time cycles to pass the existing classifier. No extended-horizon result is claimed until that run and aggregation complete.
 
 The homogeneous scan is a classical two-field truncation. It is not a quantum-vacuum-seeded inhomogeneous lattice calculation and does not establish a relic-abundance prediction.
+
+
+## Workflow correction
+
+The extended scan command is kept as plain shell arguments. YAML comments are placed outside the folded shell command so they cannot swallow the time-horizon or output-path arguments.
