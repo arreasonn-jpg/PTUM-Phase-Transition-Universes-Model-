@@ -779,3 +779,27 @@ The complete 100-trajectory scan and its artifact are still outstanding.
 No output-grid or solver-tolerance convergence, physical inhomogeneous
 waterfall completion, backreaction, rescattering, relic abundance, or
 entropy dilution is claimed from this workflow.
+
+
+## 43. Latest-head CI and isolated full-scan record (2026-11-14)
+
+After the three scientific-status documents were synchronized, PR head
+`d4f5f8b37a526c6fba35d19cb9c0396710da2e1a` passed workflow
+`43582227619`: 75 Python tests passed, all four two-scale smoke
+integrations succeeded, and the manuscript PDF compiled and uploaded.
+Each smoke scenario still classified one trajectory as
+`insufficient_oscillation_data` and one as `non_quartic`; this does
+not demonstrate a quartic proxy-fluid phase.
+
+The LaTeX log has no reported Overfull \\hbox warnings or errors, but
+does contain numerous Underfull \\hbox warnings and two distinct
+float-placement warnings. The build is successful, not warning-free.
+
+The isolated full-scan branch
+`ptum/full-scan-2026-11-14-r2` was created from that PR head and
+received manifest commit
+`c101aaed58e44c9f0159ebb806a84d670cd892e2`. The manifest fixes the
+100-row 5x5x2-by-two-scales profile, 4001 output samples, 20 mu^-1
+duration, exact epsilon_H threshold, and integrated single-field fuel
+velocity prescription. No completed workflow result or final 100-row
+artifact has yet been verified; no full-scan regime claim is made.
