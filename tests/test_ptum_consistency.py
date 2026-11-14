@@ -1244,3 +1244,23 @@ def test_manuscript_describes_proxy_fluid_as_a_phenomenological_closure():
 
     source = Path("main.tex").read_text(encoding="utf-8")
     assert "specifies a phenomenological linear proxy-fluid perturbation closure" in source
+
+
+
+def test_independent_scan_worker_maps_all_100_unique_trajectory_indices():
+    from ptum_task1_scan_worker import trajectory_coordinates
+
+    mapped = [trajectory_coordinates(index) for index in range(100)]
+    assert len(mapped) == 100
+    assert len(set(mapped)) == 100
+    assert mapped[0] == (0, 0, 0, 0)
+    assert mapped[49] == (0, 4, 4, 1)
+    assert mapped[50] == (1, 0, 0, 0)
+    assert mapped[99] == (1, 4, 4, 1)
+
+
+def test_independent_scan_worker_rejects_out_of_range_indices():
+    from ptum_task1_scan_worker import trajectory_coordinates
+
+    with pytest.raises(ValueError, match="trajectory index"):
+        trajectory_coordinates(100)

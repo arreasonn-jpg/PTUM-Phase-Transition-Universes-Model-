@@ -5,15 +5,17 @@ on:
     branches:
       - main
       - 'ptum/full-scan-*'
+      - 'ptum/independent-trajectory-scan-*'
   pull_request:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/ptum/full-scan-')) && format('ptum-full-scan-{0}', github.ref) || format('ptum-scientific-{0}', github.event.pull_request.number || github.ref) }}
-  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/heads/ptum/full-scan-') }}
+  group: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/independent-trajectory-scan-')) && format('ptum-full-scan-{0}', github.ref) || format('ptum-scientific-{0}', github.event.pull_request.number || github.ref) }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/heads/ptum/full-scan-') && !startsWith(github.ref, 'refs/heads/ptum/independent-trajectory-scan-') }}
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   python-regression:
@@ -34,10 +36,10 @@ jobs:
       - name: Run PTUM regression tests
         run: python -m pytest -q tests/test_ptum_consistency.py
       - name: Run four-trajectory two-scale CI smoke scan
-        if: github.event_name != 'workflow_dispatch' && !(github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-'))
+        if: github.event_name != 'workflow_dispatch' && !(github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/independent-trajectory-scan-')))
         run: python ptum_task1_scan.py --profile ci --output task1_parameter_scan_ci.json
       - name: Upload two-scale CI smoke summary
-        if: always() && github.event_name != 'workflow_dispatch' && !(github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-'))
+        if: always() && github.event_name != 'workflow_dispatch' && !(github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/independent-trajectory-scan-')))
         uses: actions/upload-artifact@v7
         with:
           name: ptum-two-scale-ci-smoke
@@ -46,9 +48,14 @@ jobs:
           retention-days: 30
 
   full-waterfall-scan:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-'))
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/independent-trajectory-scan-')))
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        trajectory: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -60,21 +67,46 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-ci.txt
-      - name: Run complete 100-trajectory high-resolution waterfall scan
+      - name: Run isolated trajectory
         run: >-
-          python ptum_task1_scan.py --profile full
-          --output task1_parameter_scan_results.json
-          --checkpoint task1_parameter_scan_checkpoint.json
-      - name: Upload full and incremental two-field scan summaries
+          python ptum_task1_scan_worker.py
+          --trajectory-index ${{ matrix.trajectory }}
+          --output trajectory_${{ matrix.trajectory }}_result.json
+      - name: Upload trajectory result immediately
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: ptum-two-field-full-scan
-          path: |
-            task1_parameter_scan_results.json
-            task1_parameter_scan_checkpoint.json
+          name: ptum-trajectory-${{ matrix.trajectory }}
+          path: trajectory_${{ matrix.trajectory }}_result.json
           if-no-files-found: ignore
           retention-days: 30
+
+  aggregate-waterfall-scan:
+    if: always() && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/independent-trajectory-scan-')))
+    needs: [full-waterfall-scan]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Download every completed trajectory artifact
+        uses: actions/download-artifact@v7
+        with:
+          pattern: ptum-trajectory-*
+          path: scan-results
+          merge-multiple: true
+      - name: Validate and combine all 100 trajectories
+        run: python ptum_task1_scan_aggregate.py --input-dir scan-results --expected 100
+      - name: Upload combined scan report
+        if: always() && hashFiles('task1_parameter_scan_results.json') != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: ptum-two-field-combined-scan
+          path: task1_parameter_scan_results.json
+          if-no-files-found: error
+          retention-days: 90
 
   latex-build:
     runs-on: ubuntu-latest
