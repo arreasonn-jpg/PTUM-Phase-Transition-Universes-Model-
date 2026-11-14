@@ -318,15 +318,15 @@ def delta_veff_from_reference(Phi: np.ndarray, Phi_reference: float,
     reference = float(Phi_reference)
     if not np.all(np.isfinite(phi)) or not np.isfinite(reference):
         raise ValueError("Phi and Phi_reference must be finite")
-    phi_ratio = phi / M_PL
     reference_ratio = reference / M_PL
     x_initial = params.lambda_phi * reference_ratio**2
-    # Factor x^2-x0^2 as (x-x0)(x+x0). This preserves tiny field
-    # excursions that disappear when two O(1) squares are subtracted.
+    # Preserve adjacent-float field excursions: subtract Phi in field units
+    # before normalization. Subtracting Phi/M_PL ratios first can quantize a
+    # one-ULP displacement and introduce a percent-level error in Delta V.
     x_delta = (
         params.lambda_phi
-        * (phi_ratio - reference_ratio)
-        * (phi_ratio + reference_ratio)
+        * ((phi - reference) / M_PL)
+        * ((phi + reference) / M_PL)
     )
     return params.V0 * np.exp(-x_initial) * (-np.expm1(-x_delta))
 
