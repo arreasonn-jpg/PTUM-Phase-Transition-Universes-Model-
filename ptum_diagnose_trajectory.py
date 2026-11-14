@@ -2,7 +2,7 @@
 """Compare IVP solvers on one exact deterministic PTUM scan trajectory.
 
 This is a diagnostic only: it never changes physical parameters or equations.
-# [diagnose-trajectory] verify solver argument propagation after scan API correction.
+# Full validation gate: [run-full-scan] executes the complete 100-row Radau scan.
 """
 # Diagnostic baseline: preserve scan initial conditions and physical parameters.
 import argparse
