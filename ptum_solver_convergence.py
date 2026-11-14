@@ -112,6 +112,9 @@ def main() -> None:
                 "max_abs_relative_frw_chain_rule_residual": float(
                     np.nanmax(np.abs(candidate["continuity_residual_background_relative"]))
                 ),
+                "max_abs_relative_frw_finite_difference_residual": float(
+                    np.nanmax(np.abs(candidate["continuity_residual_finite_difference_relative"]))
+                ),
             }
         report["trajectories"].append(entry)
 
