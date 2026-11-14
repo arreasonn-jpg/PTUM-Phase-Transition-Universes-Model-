@@ -1506,6 +1506,7 @@ def test_manuscript_thermal_domain_wall_bias_keeps_ideal_gas_scope_explicit():
     manuscript = Path("main.tex").read_text(encoding="utf-8")
     assert "eq:ptum_thermal_fermion_condensate" in manuscript
     assert "eq:ptum_thermal_bias" in manuscript
+    assert "Re}[(C_f)_{ii}]" in manuscript
     assert "ideal-gas contribution only" in manuscript
     assert "electroweak crossover" in manuscript
     assert "not a prediction of the PTUM bias or" in manuscript
