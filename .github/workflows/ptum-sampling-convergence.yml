@@ -36,7 +36,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-ci.txt
       - name: Run output-sampling density study
-        run: |
+        run: >-
           python ptum_sampling_convergence.py
           --indices ${{ matrix.trajectory }}
           --t-max 480
@@ -47,5 +47,5 @@ jobs:
         with:
           name: ptum-sampling-convergence-${{ matrix.trajectory }}
           path: sampling_${{ matrix.trajectory }}.json
-          if-no-files-found: ignore
+          if-no-files-found: error
           retention-days: 90
