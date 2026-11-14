@@ -1349,8 +1349,8 @@ def test_transient_followup_aggregator_validates_and_summarizes_ten_rows(tmp_pat
             "scan_metadata": {
                 "trajectory_index": index,
                 "scenario": "low_scale_underdamped_control",
-                "t_max_over_mu_inverse": 240.0,
-                "n_output_points": 48001,
+                "t_max_over_mu_inverse": 480.0,
+                "n_output_points": 96001,
             },
             "ic_params": {"psi_dot_init": 0.0, "phi_offset": 1.0e16},
             "max_abs_psi_over_trajectory": 2.0e13,
@@ -1364,6 +1364,8 @@ def test_transient_followup_aggregator_validates_and_summarizes_ten_rows(tmp_pat
     rows = load_followup_rows(tmp_path)
     report = build_followup_report(rows)
     assert len(rows) == 10
+    assert report["scan_definition"]["horizon_mu_inverse"] == pytest.approx(480.0)
+    assert report["scan_definition"]["output_points"] == 96001
     assert report["summary"]["transient_quartic_episode_count"] == 5
     assert report["summary"]["late_time_quartic_count"] == 0
     assert report["summary"]["max_abs_relative_frw_continuity_residual"] == pytest.approx(1e-12)
