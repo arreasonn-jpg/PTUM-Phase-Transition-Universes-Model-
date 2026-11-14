@@ -195,6 +195,17 @@ def domain_wall_bias_diagnostics(
         "epsilon_critical": epsilon_critical,
         "bias_ratio_to_spinodal": float(tilted["bias_ratio_to_spinodal"]),
         "metastable_vacuum_exists": bool(tilted["metastable_vacuum_exists"]),
+        # Return the stationary locations as part of the public diagnostic.
+        # They are dimensionful field values; both are None beyond the
+        # spinodal where the metastable minimum no longer exists.
+        "true_minimum": (
+            None if tilted["true_minimum"] is None
+            else float(tilted["true_minimum"])
+        ),
+        "false_minimum": (
+            None if tilted["false_minimum"] is None
+            else float(tilted["false_minimum"])
+        ),
         "vacuum_bias": delta_v,
         "small_bias_tension_approx_valid": small_bias_valid,
         "hubble_annihilation_estimate": h_ann,
