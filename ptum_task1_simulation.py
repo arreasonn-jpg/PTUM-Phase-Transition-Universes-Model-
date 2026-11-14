@@ -795,36 +795,57 @@ def compute_quadratic_virial_ratio(t: np.ndarray, psi: np.ndarray,
 def compute_time_averaged_w(t: np.ndarray, pressure: np.ndarray,
                             density: np.ndarray,
                             psi_dot: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-    """Compute cycle-averaged w as <p>/<rho>, not as <p/rho>.
+    """Compute <p>/<rho> on complete half-cycles using time integration.
 
-    Turning points of psi delimit half-oscillation intervals. The ratio of
-    separately averaged pressure and density is the physically relevant
-    coarse-grained equation of state; averaging the instantaneous ratio can
-    overweight epochs where rho is small.
+    Turning points are interpolated between output samples. Pressure and
+    density are integrated independently with trapezoidal quadrature, so the
+    result is a ratio of time averages and is not tied to the number of
+    output samples falling inside each half-cycle.
     """
-    turning_points = _turning_point_indices(psi_dot)
+    times = np.asarray(t, dtype=float)
+    pressure_values = np.asarray(pressure, dtype=float)
+    density_values = np.asarray(density, dtype=float)
+    velocity = np.asarray(psi_dot, dtype=float)
+    if (times.ndim != 1 or pressure_values.shape != times.shape
+            or density_values.shape != times.shape or velocity.shape != times.shape):
+        raise ValueError("t, pressure, density, and psi_dot must be matching one-dimensional arrays")
+    if (len(times) < 3 or not np.all(np.isfinite(times))
+            or np.any(np.diff(times) <= 0.0)):
+        raise ValueError("t must be finite and strictly increasing")
+    if not (np.all(np.isfinite(pressure_values))
+            and np.all(np.isfinite(density_values))
+            and np.all(np.isfinite(velocity))):
+        raise ValueError("pressure, density, and psi_dot histories must be finite")
 
+    turning_points = _turning_point_times(times, velocity)
     if len(turning_points) < 2:
         return np.array([]), np.array([])
 
     w_avg = []
     t_avg = []
-
-    for i in range(len(turning_points) - 1):
-        start = turning_points[i]
-        end = turning_points[i + 1] + 1
-        if end - start < 2:
+    for start_time, end_time in zip(turning_points[:-1], turning_points[1:]):
+        segment_t, pressure_seg = _interpolated_half_cycle_samples(
+            times, pressure_values, start_time, end_time
+        )
+        _, density_seg = _interpolated_half_cycle_samples(
+            times, density_values, start_time, end_time
+        )
+        if len(segment_t) < 3:
             continue
-        rho_mean = float(np.mean(density[start:end]))
-        p_mean = float(np.mean(pressure[start:end]))
-        scale = max(float(np.max(np.abs(density[start:end]))),
-                    float(np.max(np.abs(pressure[start:end]))),
-                    np.finfo(float).tiny)
-        if not np.isfinite(rho_mean) or abs(rho_mean) <= 1.0e-14 * scale:
+        duration = end_time - start_time
+        pressure_integral = float(trapezoid(pressure_seg, segment_t))
+        density_integral = float(trapezoid(density_seg, segment_t))
+        scale = max(
+            float(np.max(np.abs(density_seg))),
+            float(np.max(np.abs(pressure_seg))),
+            np.finfo(float).tiny,
+        ) * duration
+        if (not np.isfinite(density_integral)
+                or abs(density_integral) <= 1.0e-14 * scale):
             w_avg.append(np.nan)
         else:
-            w_avg.append(p_mean / rho_mean)
-        t_avg.append(0.5 * (t[start] + t[end - 1]))
+            w_avg.append(pressure_integral / density_integral)
+        t_avg.append(0.5 * (start_time + end_time))
 
     return np.asarray(w_avg), np.asarray(t_avg)
 
