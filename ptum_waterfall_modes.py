@@ -254,6 +254,7 @@ def converge_waterfall_band_resolution(
     estimates = []
     all_wronskians_valid = True
     all_final_frequencies_valid = True
+    all_particle_numbers_valid = True
     for count in counts:
         k_values = np.geomspace(k_min_over_mu, k_max_over_mu, count)
         spectrum = integrate_waterfall_spectrum(
@@ -272,6 +273,10 @@ def converge_waterfall_band_resolution(
             all_final_frequencies_valid
             and bool(spectrum["all_final_frequencies_valid"])
         )
+        all_particle_numbers_valid = (
+            all_particle_numbers_valid
+            and bool(spectrum["all_particle_numbers_valid"])
+        )
         estimates.append(float(spectrum["n_comoving_finite_band"]))
 
     relative_changes = []
@@ -284,6 +289,7 @@ def converge_waterfall_band_resolution(
         finite_estimates
         and all_wronskians_valid
         and all_final_frequencies_valid
+        and all_particle_numbers_valid
         and relative_changes
         and relative_changes[-1] <= relative_tolerance
     )
@@ -297,6 +303,7 @@ def converge_waterfall_band_resolution(
         "band_resolution_converged": band_resolution_converged,
         "all_wronskians_valid": all_wronskians_valid,
         "all_final_frequencies_valid": all_final_frequencies_valid,
+        "all_particle_numbers_valid": all_particle_numbers_valid,
         "uv_ir_tail_converged": False,
         "finite_band_only": True,
         "number_density_unit": "mu^3",
