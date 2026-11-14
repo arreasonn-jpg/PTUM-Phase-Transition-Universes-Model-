@@ -137,6 +137,23 @@ def test_quartic_virial_ratio_is_defined_only_on_complete_half_cycles():
 
 
 
+def test_quartic_virial_time_integral_converges_with_output_sampling_density():
+    p = PTUMParameters(lambda_psi=1.0)
+    estimates = []
+    for count in (321, 641, 1281):
+        t = np.linspace(0.0, 8.0 * np.pi, count)
+        psi = np.sin(t)
+        psi_dot = np.cos(t)
+        ratio = compute_quartic_virial_ratio(t, psi, psi_dot, p)
+        finite = ratio[np.isfinite(ratio)]
+        assert finite.size > 0
+        estimates.append(float(np.median(finite)))
+
+    # For psi=sin(t), integral(cos^2)/integral(sin^4) = 4/3.
+    assert estimates[-1] == pytest.approx(4.0 / 3.0, rel=2.0e-5)
+    assert abs(estimates[-1] - estimates[-2]) < abs(estimates[-2] - estimates[-3])
+
+
 def test_vacuum_dominated_near_static_background_satisfies_frw_continuity_diagnostic():
     p = PTUMParameters(V0=1.0e50, m_psi=1.0e5, lambda_psi=0.1)
     ic = InitialConditions(
