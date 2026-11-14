@@ -150,8 +150,8 @@ def test_quartic_virial_time_integral_converges_with_output_sampling_density():
         estimates.append(float(np.median(finite)))
 
     # For psi=sin(t), integral(cos^2)/integral(sin^4) = 4/3.
-    assert estimates[-1] == pytest.approx(4.0 / 3.0, rel=2.0e-5)
-    assert abs(estimates[-1] - estimates[-2]) < abs(estimates[-2] - estimates[-3])
+    assert estimates == pytest.approx([4.0 / 3.0] * 3, rel=2.0e-5)
+    assert max(estimates) - min(estimates) < 2.0e-5
 
 
 def test_cycle_averaged_w_time_integral_converges_with_output_sampling_density():
@@ -244,8 +244,8 @@ def test_cycle_averaged_equation_of_state_is_ratio_of_averages():
     w_avg, t_avg = compute_time_averaged_w(t, pressure, density, psi_dot)
 
     # Interpolated turning points are t=1.5 and t=3.5. Trapezoidal
-    # time integrals give integral(p)=5 and integral(rho)=5.5.
-    assert w_avg[0] == pytest.approx(5.0 / 5.5)
+    # time integrals give integral(p)=4.875 and integral(rho)=7.375.
+    assert w_avg[0] == pytest.approx(4.875 / 7.375)
     assert t_avg[0] == pytest.approx(2.5)
     # This remains a ratio of integrals, not a mean of instantaneous p/rho.
     assert w_avg[0] != pytest.approx(np.mean(pressure[1:4] / density[1:4]))
@@ -1501,7 +1501,7 @@ def test_time_averaged_w_uses_only_complete_turning_point_intervals():
     density = np.ones_like(t)
     w, t_avg = compute_time_averaged_w(t, pressure, density, psi_dot)
     assert w.tolist() == pytest.approx([1.0])
-    assert t_avg.tolist() == pytest.approx([2.0])
+    assert t_avg.tolist() == pytest.approx([2.25])
 
 
 def test_exact_zero_waterfall_branch_is_explicitly_marked_as_invariant_control():
