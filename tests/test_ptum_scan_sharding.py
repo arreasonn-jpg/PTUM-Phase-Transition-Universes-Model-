@@ -65,3 +65,35 @@ def test_merger_accepts_serialized_successful_rows():
     ]
     merged = validate_and_merge(rows, expected_count=3)
     assert [row["scan_metadata"]["global_trajectory_index"] for row in merged] == [0, 1, 2]
+
+
+def test_stiff_scan_trajectory_73_is_solver_stable():
+    import numpy as np
+    from ptum_diagnose_trajectory import get_spec
+    from ptum_task1_simulation import create_initial_conditions, run_simulation
+
+    scenario, params, psi_init, psi_dot_init, phi_offset, phi_dot = get_spec(72)
+    assert scenario == "low_scale_underdamped_control"
+    initial = create_initial_conditions(
+        params, psi_init, psi_dot_init, phi_offset,
+        Phi_dot_override=phi_dot,
+    )
+    mu = np.sqrt(abs(params.mu_sq))
+    t_span = (0.0, 20.0 / mu)
+    t_eval = np.linspace(*t_span, 4001)
+
+    radau = run_simulation(params, initial, t_span, t_eval, solver_method="Radau")
+    bdf = run_simulation(params, initial, t_span, t_eval, solver_method="BDF")
+
+    for result in (radau, bdf):
+        assert result["success"] is True
+        assert np.all(np.isfinite(result["rho_total"]))
+        assert np.all(result["rho_total"] > 0.0)
+        assert np.all(np.isfinite(result["continuity_residual_relative"]))
+
+    for key in ("Phi", "Phi_dot", "psi", "psi_dot", "rho_total"):
+        left = np.asarray(radau[key], dtype=float)
+        right = np.asarray(bdf[key], dtype=float)
+        scale = max(float(np.max(np.abs(left))), float(np.max(np.abs(right))), 1.0)
+        relative_max_difference = float(np.max(np.abs(left - right)) / scale)
+        assert relative_max_difference < 5.0e-5, (key, relative_max_difference)
