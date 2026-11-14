@@ -48,7 +48,7 @@ jobs:
           retention-days: 30
 
   full-waterfall-scan:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/independent-trajectory-scan-')))
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/independent-trajectory-scan-')) && contains(github.event.head_commit.message, '[full-scan]'))
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -85,7 +85,7 @@ jobs:
           retention-days: 30
 
   aggregate-waterfall-scan:
-    if: always() && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/independent-trajectory-scan-'))))
+    if: always() && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && (startsWith(github.ref, 'refs/heads/ptum/full-scan-') || startsWith(github.ref, 'refs/heads/ptum/independent-trajectory-scan-')) && contains(github.event.head_commit.message, '[full-scan]')))
     needs: [full-waterfall-scan]
     runs-on: ubuntu-latest
     timeout-minutes: 10

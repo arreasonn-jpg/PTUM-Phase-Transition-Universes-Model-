@@ -51,7 +51,7 @@ def run_one_trajectory(index: int, *, t_max: float = DEFAULT_T_MAX,
         "psi_seed_scales": list(seeds),
         "psi_velocity_scales": list(velocities),
         "phi_offset_scales": list(offsets),
-        "fuel_velocity_source": "integrated_single_field_FRW_trajectory",
+        "phi_velocity_source": "integrated_single_field_FRW_trajectory",
         "quantum_vacuum_seeded": False,
         "zero_seed_rows_are_exact_classical_invariant_controls": True,
     }

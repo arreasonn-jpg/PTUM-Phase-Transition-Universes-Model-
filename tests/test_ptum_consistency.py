@@ -1304,3 +1304,68 @@ def test_transient_quartic_episode_requires_three_consecutive_valid_half_cycles(
     rejected = _transient_quartic_episode_diagnostic(result)
     assert not rejected["transient_quartic_episode_detected"]
     assert rejected["transient_quartic_candidate_half_cycles"] == 0
+
+
+def test_transient_followup_aggregator_validates_and_summarizes_ten_rows(tmp_path):
+    import json
+    from ptum_task1_scan_followup_aggregate import load_followup_rows, build_followup_report
+
+    for index in range(90, 100):
+        row = {
+            "classification": {
+                "regime": "non_quartic",
+                "quartic_achieved": False,
+                "w_final": 0.39,
+                "Q_final": 5.9,
+                "virial_final": 0.81,
+                "transient_quartic_episode_detected": index % 2 == 0,
+                "transient_quartic_max_consecutive_half_cycles": 40 if index % 2 == 0 else 0,
+                "transient_quartic_max_episode_duration_mu_inverse": 30.0 if index % 2 == 0 else 0.0,
+            },
+            "scan_metadata": {
+                "trajectory_index": index,
+                "scenario": "low_scale_underdamped_control",
+                "t_max_over_mu_inverse": 120.0,
+                "n_output_points": 24001,
+            },
+            "ic_params": {"psi_dot_init": 0.0, "phi_offset": 1.0e16},
+            "max_abs_psi_over_trajectory": 2.0e13,
+            "final_Phi": 3.0e18,
+            "max_abs_relative_frw_continuity_residual": 1.0e-12,
+        }
+        (tmp_path / f"extended_trajectory_{index}_result.json").write_text(
+            json.dumps([row]), encoding="utf-8"
+        )
+
+    rows = load_followup_rows(tmp_path)
+    report = build_followup_report(rows)
+    assert len(rows) == 10
+    assert report["summary"]["transient_quartic_episode_count"] == 5
+    assert report["summary"]["late_time_quartic_count"] == 0
+    assert report["summary"]["max_abs_relative_frw_continuity_residual"] == pytest.approx(1e-12)
+
+
+def test_transient_followup_aggregator_rejects_bad_continuity_residual(tmp_path):
+    import json
+    from ptum_task1_scan_followup_aggregate import load_followup_rows
+
+    row = {
+        "classification": {
+            "regime": "non_quartic", "quartic_achieved": False,
+            "w_final": 0.0, "Q_final": 1.0, "virial_final": 0.0,
+            "transient_quartic_episode_detected": False,
+        },
+        "scan_metadata": {
+            "trajectory_index": 90, "scenario": "low_scale_underdamped_control",
+            "t_max_over_mu_inverse": 120.0, "n_output_points": 24001,
+        },
+        "ic_params": {"psi_dot_init": 0.0, "phi_offset": 1.0e16},
+        "max_abs_psi_over_trajectory": 1.0,
+        "final_Phi": 1.0,
+        "max_abs_relative_frw_continuity_residual": 1.0e-3,
+    }
+    (tmp_path / "extended_trajectory_90_result.json").write_text(
+        json.dumps([row]), encoding="utf-8"
+    )
+    with pytest.raises(RuntimeError, match="continuity residual"):
+        load_followup_rows(tmp_path, expected_indices=(90,))
