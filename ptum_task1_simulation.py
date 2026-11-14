@@ -322,30 +322,77 @@ def run_simulation(params: PTUMParameters,
     
     Returns dictionary with time series and diagnostics.
     """
-    y0 = np.array([ic.Phi, ic.Phi_dot, ic.psi, ic.psi_dot])
-    
+    # Integrate in dimensionless variables.  The physical state contains
+    # components separated by 17+ orders of magnitude (GeV fields and
+    # GeV^2 velocities); integrating that raw vector makes the adaptive
+    # error norm poorly balanced and can turn a stable trajectory into a
+    # numerically unresolved one.
+    #
+    #   tau = mu t, x = Phi/M_Pl, u = Phi_dot/(mu M_Pl)
+    #   z = psi/psi_0, v = psi_dot/(mu psi_0), psi_0 = mu/sqrt(lambda_psi)
+    #
+    # This is an exact change of variables, not a change to the model.
+    mu = float(params.mu)
+    psi_scale = float(params.psi_0)
+    if (not np.isfinite(mu) or mu <= 0.0 or
+            not np.isfinite(psi_scale) or psi_scale <= 0.0):
+        raise ValueError("Dimensionless integration requires finite positive mu and psi_0")
+    psi_ratio = psi_scale / M_PL
+    coupling = params.alpha * params.m_psi**2 / params.E_th**2
+
+    def dimensionless_background_equations(tau: float, state: np.ndarray,
+                                           model: PTUMParameters) -> np.ndarray:
+        x, u, z, v = state
+        Phi = M_PL * x
+        m_eff_ratio = meff_sq_psi(Phi, model) / mu**2
+        rho_bar = (
+            0.5 * u**2
+            + veff_phi(Phi, model) / (mu**2 * M_PL**2)
+            + 0.5 * psi_ratio**2 * (v**2 + m_eff_ratio * z**2 + 0.5 * z**4)
+        )
+        if not np.isfinite(rho_bar) or rho_bar <= 0.0:
+            raise ValueError(
+                f"Non-positive or non-finite dimensionless total density: {rho_bar}"
+            )
+        h = np.sqrt(rho_bar / 3.0)
+        dV_bar_dx = dveff_dphi(Phi, model) / (mu**2 * M_PL)
+        interaction_bar = coupling * x / model.lambda_psi
+        u_dot = -3.0 * h * u - dV_bar_dx - interaction_bar * z**2
+        v_dot = -3.0 * h * v - m_eff_ratio * z - z**3
+        return np.array([u, u_dot, v, v_dot], dtype=float)
+
+    y0 = np.array([
+        ic.Phi / M_PL,
+        ic.Phi_dot / (mu * M_PL),
+        ic.psi / psi_scale,
+        ic.psi_dot / (mu * psi_scale),
+    ], dtype=float)
+    tau_span = (mu * t_span[0], mu * t_span[1])
+    tau_eval = None if t_eval is None else np.asarray(t_eval, dtype=float) * mu
+
     sol = solve_ivp(
-        background_equations,
-        t_span,
+        dimensionless_background_equations,
+        tau_span,
         y0,
         args=(params,),
-        t_eval=t_eval,
+        t_eval=tau_eval,
         rtol=rtol,
         atol=atol,
-        method='DOP853',  # High-order Runge-Kutta
-        dense_output=True
+        method='DOP853',
+        dense_output=False,
+        max_step=0.05,
     )
-    
+
     if not sol.success:
         raise RuntimeError(f"Integration failed: {sol.message}")
-    
-    # Extract solution
-    t = sol.t
-    Phi = sol.y[0]
-    Phi_dot = sol.y[1]
-    psi = sol.y[2]
-    psi_dot = sol.y[3]
-    
+
+    # Restore the physical variables for all downstream diagnostics and
+    # serialized results.  The public result schema remains unchanged.
+    t = sol.t / mu
+    Phi = M_PL * sol.y[0]
+    Phi_dot = mu * M_PL * sol.y[1]
+    psi = psi_scale * sol.y[2]
+    psi_dot = mu * psi_scale * sol.y[3]
     # Compute diagnostics
     H = np.array([hubble_rate(Phi[i], Phi_dot[i], psi[i], psi_dot[i], params) 
                   for i in range(len(t))])

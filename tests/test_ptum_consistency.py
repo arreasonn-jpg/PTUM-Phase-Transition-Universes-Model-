@@ -1264,3 +1264,14 @@ def test_independent_scan_worker_rejects_out_of_range_indices():
 
     with pytest.raises(ValueError, match="trajectory index"):
         trajectory_coordinates(100)
+
+
+def test_low_scale_scan_trajectory_72_is_stable_in_dimensionless_solver():
+    from ptum_task1_scan_worker import run_one_trajectory
+
+    row = run_one_trajectory(72)
+    assert row["success"] is True
+    for key in ("Phi", "Phi_dot", "psi", "psi_dot", "H", "rho_total"):
+        values = np.asarray(row[key], dtype=float)
+        assert np.all(np.isfinite(values)), key
+    assert np.all(np.asarray(row["rho_total"]) > 0.0)
