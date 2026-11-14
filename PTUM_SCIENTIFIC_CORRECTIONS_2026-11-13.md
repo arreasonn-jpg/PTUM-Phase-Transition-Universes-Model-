@@ -890,3 +890,16 @@ the renormalized T=0 condensate. No PTUM Wilson coefficients, cutoff
 or thermal history are assigned. The result does not predict the
 actual wall bias, network evolution, annihilation or BBN safety.
 The new tests and manuscript build await fresh CI.
+
+
+## 47. 2026-11-14 thermal-bias LaTeX line-break correction
+
+The first complete build after adding the thermal ideal-gas bias
+equations passed, but its log audit found an Overfull `\\hbox`
+at the long inline expression for
+$y_{\psi f}^{\rm eff}=\operatorname{Re}[(C_f)_{ii}]v_H/(\sqrt2\Lambda)$.
+The coupling was moved into a display equation in commit
+`d9455781f0a643f6c1b2badc199bf2fb6fedcab7`. A new LaTeX build is
+required to verify that the overfull line is gone. The preceding
+build still had numerous Underfull `\\hbox` and two float-placement
+warnings; no warning-free claim is made.
