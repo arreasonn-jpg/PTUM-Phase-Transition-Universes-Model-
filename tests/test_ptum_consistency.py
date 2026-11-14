@@ -1534,10 +1534,10 @@ def test_transient_followup_aggregator_rejects_bad_continuity_residual(tmp_path)
         "final_Phi": 1.0,
         "max_abs_relative_frw_continuity_residual": 1.0e-12,
         "max_abs_chain_rule_relative_frw_continuity_residual": 1.0e-12,
-        "max_abs_chain_rule_background_relative_frw_continuity_residual": 1.0e-15,
-        "max_abs_finite_difference_frw_continuity_residual": 1.0e-3,
-        "max_abs_finite_difference_relative_frw_continuity_residual": 1.0e-3,
-        "max_abs_finite_difference_background_relative_frw_continuity_residual": 1.0e-3,
+        "max_abs_chain_rule_background_relative_frw_continuity_residual": 1.0e-3,
+        "max_abs_finite_difference_frw_continuity_residual": 1.0e-12,
+        "max_abs_finite_difference_relative_frw_continuity_residual": 1.0e-10,
+        "max_abs_finite_difference_background_relative_frw_continuity_residual": 1.0e-15,
     }
     (tmp_path / "extended_trajectory_90_result.json").write_text(
         json.dumps([row]), encoding="utf-8"
