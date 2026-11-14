@@ -136,3 +136,10 @@ The ten evidence gates and their statuses are maintained in
 the latest full CI and LaTeX build pass, the complete 100-trajectory scan
 is inspected and converged, and every quantitative scientific claim is
 reproducible from a clean checkout.
+
+
+## 2026-11-14 evidence update
+
+The 120-\(\mu^{-1}\) full grid contains 96 non-quartic outcomes and four exact zero-seed invariant controls. Five low-scale high-seed cases exhibit transient quartic-like intervals, but the 240-\(\mu^{-1}\) follow-up shows that none becomes a sustained late-time quartic regime. The proxy-fluid closure therefore remains conditional and phenomenological.
+
+The linear waterfall-mode implementation is an additional piece of evidence, not a nonlinear solution: its background is prescribed, it has no backreaction or rescattering, and the finite momentum band is not an independently converged relic-abundance calculation.

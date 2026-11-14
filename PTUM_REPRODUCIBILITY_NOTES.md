@@ -46,7 +46,7 @@ The workflow is `.github/workflows/ptum-scientific-tests.yml`; its Python depend
 
 Workflow run 43400134268 completed the then-current 43-test Python regression step successfully. Its LaTeX job failed because `main.tex` used `\mathscr D_\mu` without loading `mathrsfs`. The package has since been added, and regression tests now guard the package declaration and the SM Hilbert-tensor bookkeeping.
 
-The current correction branch contains 51 tests and has triggered workflow run 43405427845. At the time of this snapshot, that run is pending. The newest 51-test suite, 100-trajectory scan, and LaTeX build are therefore **not yet verified as passing**. The earlier scan attempt was cancelled when a newer commit superseded its run, and no complete scan artifact was validated.
+The latest observed branch contains 81 passing regression tests. Workflow run [43568345144](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/43568345144) passed the Python regression and LaTeX jobs. Full-grid run [43567382554](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/43567382554) validated 100/100 trajectories and aggregated them at \(120\,\mu^{-1}\). Targeted follow-up [43568345159](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/43568345159) validated ten trajectories at \(240\,\mu^{-1}\).
 
 ## 4. Requirements to make the CLASS/Cobaya claim reproducible
 
@@ -101,3 +101,17 @@ two-field background and linear modes on prescribed external
 background histories. The proxy-fluid closure remains phenomenological.
 Two regression tests now guard the manuscript's claim boundary; their
 latest CI result is pending.
+
+
+## 2026-11-14 current evidence snapshot
+
+- Branch: `ptum/independent-trajectory-scan-2026-11-14`
+- Latest source commit in this snapshot: `0e214d81707c464fb4bdbfc55be45c1d8113f727`
+- Python regression: 81 passed
+- LaTeX build: passed
+- Full homogeneous scan: 100/100 trajectories, 120 mu^-1, 24001 samples
+- Targeted long-horizon follow-up: 10/10 trajectories, 240 mu^-1, 48001 samples
+- Full scan late-time outcome: 96 non-quartic, 4 exact zero-seed invariant controls, 0 sustained quartic
+- Follow-up: five transient quartic-like episodes, 0 sustained late-time quartic classifications
+
+These checks establish software execution and the stated homogeneous/linear-mode diagnostics only. They do not establish a nonlinear waterfall, a defect-free transition, a microscopic proxy-fluid realization, a converged relic abundance, a full reheating history, or an independently reproduced observational pipeline.

@@ -11,9 +11,10 @@ Historical main.pdf: present, but predates current scientific corrections
 Cover letter and highlights: present
 Figure PDFs: present in figures/
 Journal class files: present
-Current LaTeX build: pending fresh CI verification
-Current 51-test suite: pending fresh CI verification
-100-trajectory scan: pending; no validated artifact
+Latest LaTeX build: PASS (workflow 43568345144)
+Latest Python regression: 81 passed (workflow 43568345144)
+100-trajectory scan at tau_max=120: PASS (workflow 43567382554)
+10-trajectory follow-up at tau_max=240: PASS (workflow 43568345159)
 ```
 
 ## CLASS/Cobaya code availability
@@ -45,9 +46,7 @@ matching, and provides homogeneous simulation and linear resonance
 diagnostics. These are not a complete nonlinear waterfall, reheating,
 relic-abundance, or observational reproduction pipeline.
 
-The branch contains 51 regression tests, but the latest full CI run
-is pending at this snapshot. The current LaTeX build and 100-trajectory
-scan are not claimed as passing. See
+The latest observed branch has 81 passing regression tests and a successful LaTeX build. The 100-trajectory scan at 120 mu^-1 and the targeted ten-trajectory follow-up at 240 mu^-1 both completed and passed aggregation. See
 `PTUM_10_OF_10_ACCEPTANCE.md`,
 `PTUM_CLAIM_BOUNDARY.md`, and
 `PTUM_REPRODUCIBILITY_NOTES.md` for the detailed evidence gates.
@@ -80,3 +79,8 @@ linear proxy-fluid closure. The closure is not a microscopic result.
 Two new manuscript-boundary regression tests have been added. Their
 status, the 100-trajectory scan, and the current LaTeX build must be
 checked in the latest GitHub Actions run before any pass is recorded.
+
+
+## 2026-11-14 evidence correction
+
+The full homogeneous scan now has a validated 100-row artifact at \(\tau_{\max}=120\). The ten selected low-scale high-seed cases were extended to \(\tau_{\max}=240\). No sustained late-time quartic classification was obtained; five transient quartic-like episodes were observed. These results strengthen the evidence boundary around the proxy-fluid closure but do not close the nonlinear waterfall, backreaction, defect, reheating, or observational reproducibility gaps.

@@ -267,3 +267,50 @@ Homogeneous mode: ψ₀(t_c) = 0, ψ̇₀(t_c) = 0 (or sample from distribution)
 **Prepared for**: PTUM Scientific Development & Independent Verification
 **Status**: Research plan ready for implementation
 **Next step**: Begin mathematical derivation and code implementation
+
+---
+
+## 2026-11-14 numerical update: extended scan and transient episodes
+
+The homogeneous scan has now been extended to 100 independent trajectories over
+\(\tau_{\max}=120\) with 24001 output samples. All 100 integrations and the
+aggregation passed. The late-time classifier found 96 non-quartic trajectories
+and four exact \(\psi=\dot\psi=0\) classical invariant controls. No sustained
+late-time quartic regime was certified.
+
+Five low-scale, high-seed trajectories (indices 90, 92, 94, 96 and 98) passed
+the independent per-half-cycle transient-quartic criteria for 22--26
+consecutive half-cycles. A paired ten-trajectory follow-up to
+\(\tau_{\max}=240\), with 48001 output samples, confirmed that these episodes
+end between approximately 34 and 40 \(\mu^{-1}\). At the final time all ten
+follow-up trajectories remain non-quartic. The transient result is therefore
+not evidence for a late-time quartic attractor.
+
+The oscillation diagnostics now use shared turning-point logic that interpolates
+genuine velocity sign reversals, ignores tangential zero touches and unbracketed
+final zeros, and explicitly treats a zero-velocity initial condition as the
+prescribed initial turning point. The regression suite contains 81 passing
+tests, including edge-case tests for this detector.
+
+### Updated interpretation
+
+1. The baseline high-scale threshold-matched sector remains non-quartic.
+2. The low-scale control permits long transient quartic-like intervals for
+   the largest tested \(\psi\)-seed and smaller \(\Phi\)-offset, but the
+   late-time equation of state and virial ratio move away from the quartic
+   conditions before \(\tau=240\).
+3. The paired larger-offset cases do not show the same transient episodes.
+4. The proxy-fluid closure \(w=c_s^2=1/3\) remains phenomenological and
+   conditional. It is not validated as a dynamical attractor.
+5. The separate linear waterfall-mode solver uses an adiabatic vacuum on a
+   prescribed single-field FRW background and checks the Wronskian. It still
+   omits nonlinear backreaction, rescattering, fragmentation and defects.
+
+### Reproducibility references
+
+- Full 100-trajectory scan: workflow
+  [43567382554](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/43567382554)
+- Ten-trajectory \(\tau_{\max}=240\) follow-up:
+  [43568345159](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/43568345159)
+- 81-test and LaTeX verification:
+  [43568345144](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/43568345144)
