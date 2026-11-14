@@ -1,0 +1,51 @@
+name: PTUM output-sampling convergence study
+
+on:
+  push:
+    branches:
+      - 'ptum/independent-trajectory-scan-*'
+    paths:
+      - '.github/workflows/ptum-sampling-convergence.yml'
+      - 'ptum_sampling_convergence.py'
+      - 'ptum_task1_scan_worker.py'
+      - 'ptum_task1_simulation.py'
+      - 'ptum_inflation_background.py'
+      - 'ptum_task1_scan.py'
+
+permissions:
+  contents: read
+
+jobs:
+  sampling-convergence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        trajectory: [94, 98]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      - name: Install scan dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+      - name: Run output-sampling density study
+        run: |
+          python ptum_sampling_convergence.py
+          --indices ${{ matrix.trajectory }}
+          --t-max 480
+          --output sampling_${{ matrix.trajectory }}.json
+      - name: Upload sampling report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ptum-sampling-convergence-${{ matrix.trajectory }}
+          path: sampling_${{ matrix.trajectory }}.json
+          if-no-files-found: ignore
+          retention-days: 90
