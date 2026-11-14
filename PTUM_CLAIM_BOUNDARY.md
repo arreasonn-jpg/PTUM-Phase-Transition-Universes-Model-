@@ -136,3 +136,32 @@ The ten evidence gates and their statuses are maintained in
 the latest full CI and LaTeX build pass, the complete 100-trajectory scan
 is inspected and converged, and every quantitative scientific claim is
 reproducible from a clean checkout.
+
+
+## 2026-11-14 final particle-basis boundary
+
+An instantaneous mode occupation is now accepted only when the final
+canonical frequency is positive, the final first-order WKB measure
+$|\\dot\\Omega_k/\\Omega_k^2|$ is at most 0.1 by default, and the
+canonical Wronskian passes its declared tolerance. A positive final
+frequency is not sufficient when the background remains rapidly
+time-dependent. If the final WKB test or Wronskian test fails, the
+occupation is withheld as NaN and the finite-band number-density
+integral is withheld for the affected spectrum. The threshold is a
+numerical reliability choice and must be varied in a convergence study.
+
+This additional guard does not promote the linear mode calculation to
+a relic prediction. The calculation still uses a prescribed
+single-field background, a finite momentum interval, and no mode
+backreaction, rescattering, nonlinear fragmentation, thermalization,
+or entropy dilution. The full 100-trajectory homogeneous scan also
+remains distinct from a quantum-seeded inhomogeneous waterfall.
+
+The last verified CI checkpoint is workflow 43501562655 on the
+previous head: 72 tests passed, the four-trajectory two-scale smoke
+scan passed, and the LaTeX build passed with zero overfull-box warnings.
+The branch now has 75 tests after the final-WKB correction; those
+newest tests and code are pending a fresh CI run. The smoke artifact's
+two nonzero-seed trajectories did not establish quartic domination or
+a stable radiation-like proxy-fluid phase. No full-scan, relic-density,
+or microscopic proxy-fluid claim is added.
