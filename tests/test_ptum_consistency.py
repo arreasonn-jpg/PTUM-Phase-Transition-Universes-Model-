@@ -31,6 +31,7 @@ from ptum_task1_simulation import (
     create_initial_conditions,
     run_simulation,
     finite_difference_continuity_diagnostic,
+    _sampled_time_derivative,
     delta_veff_from_reference,
     compute_time_averaged_w,
     classify_outcome,
@@ -72,6 +73,23 @@ def test_delta_veff_from_reference_preserves_one_ulp_plateau_excursion():
         x1 = dec(p.lambda_phi) * (phi1_d / mpl_d) ** 2
         expected = dec(p.V0) * (-x0).exp() * (Decimal(1) - (-(x1 - x0)).exp())
     assert delta[1] == pytest.approx(float(expected), rel=2.0e-12)
+
+
+def test_sampled_time_derivative_is_fourth_order_on_uniform_grid():
+    t = np.linspace(-1.0, 1.0, 17)
+    values = t**4 - 2.0 * t**3 + 3.0 * t**2 - t + 5.0
+    expected = 4.0 * t**3 - 6.0 * t**2 + 6.0 * t - 1.0
+
+    derivative = _sampled_time_derivative(t, values)
+    assert derivative == pytest.approx(expected, abs=2.0e-12)
+
+
+def test_sampled_time_derivative_uses_safe_fallback_on_nonuniform_grid():
+    t = np.linspace(0.0, 1.0, 17) ** 1.2
+    values = np.sin(t)
+    derivative = _sampled_time_derivative(t, values)
+    expected = np.gradient(values, t, edge_order=2)
+    assert derivative == pytest.approx(expected, abs=1.0e-14)
 
 
 def test_independent_finite_difference_continuity_closes_for_analytic_frw_history():
