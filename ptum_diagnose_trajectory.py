@@ -73,6 +73,7 @@ def run(method, spec, tmax, npoints):
                      if np.isfinite(energy(sol.y[:, i], p)["rho_total"])),
                     default=None,
                 ),
+                "final_state": [float(value) for value in sol.y[:, -1]],
             }
         except Exception as exc:
             report = {"success": False, "message": f"{type(exc).__name__}: {exc}"}
@@ -98,8 +99,19 @@ def main():
         "t_max_over_mu_inverse": args.t_max, "n_points": args.n_points,
         "rtol": 1e-9, "atol": 1e-12,
     }, flush=True)
+    reports = {}
     for method in args.methods:
-        print("SOLVER", method, run(method, spec, args.t_max, args.n_points), flush=True)
+        reports[method] = run(method, spec, args.t_max, args.n_points)
+        print("SOLVER", method, reports[method], flush=True)
+    if "Radau" in reports and "BDF" in reports:
+        left = reports["Radau"].get("final_state")
+        right = reports["BDF"].get("final_state")
+        if left is not None and right is not None:
+            left = np.asarray(left, dtype=float)
+            right = np.asarray(right, dtype=float)
+            scale = np.maximum(np.maximum(np.abs(left), np.abs(right)), 1.0)
+            print("RADAU_BDF_FINAL_STATE_RELATIVE_DIFFERENCE",
+                  (np.abs(left - right) / scale).tolist(), flush=True)
 
 
 if __name__ == "__main__":
