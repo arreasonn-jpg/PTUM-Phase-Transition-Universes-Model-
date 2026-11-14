@@ -1448,3 +1448,53 @@ def test_dimension_five_operator_vev_maps_to_dimension_three_bias_source():
     assert epsilon == pytest.approx(1.0e-4)
     with pytest.raises(ValueError):
         bias_from_operator_vev(operator_vev=1.0, cutoff=0.0)
+
+
+def test_thermal_dirac_condensate_has_correct_relativistic_limit():
+    from ptum_defects import thermal_dirac_scalar_condensate
+
+    mass = 1.0e-4
+    temperature = 1.0
+    nc = 3
+    value = thermal_dirac_scalar_condensate(mass, temperature, nc)
+    expected = nc * mass * temperature**2 / 6.0
+    assert value == pytest.approx(expected, rel=2.0e-6)
+
+
+def test_thermal_dirac_condensate_scales_as_mass_times_temperature_squared():
+    from ptum_defects import thermal_dirac_scalar_condensate
+
+    base = thermal_dirac_scalar_condensate(0.7, 1.4, 3)
+    scaled = thermal_dirac_scalar_condensate(1.4, 2.8, 3)
+    assert scaled == pytest.approx(8.0 * base, rel=2.0e-11)
+
+
+def test_thermal_dirac_condensate_vanishes_for_zero_mass_or_temperature():
+    from ptum_defects import thermal_dirac_scalar_condensate
+
+    assert thermal_dirac_scalar_condensate(0.0, 1.0, 3) == 0.0
+    assert thermal_dirac_scalar_condensate(1.0, 0.0, 3) == 0.0
+
+
+def test_thermal_fermion_bias_uses_signed_real_couplings_and_cancels():
+    from ptum_defects import thermal_fermion_bias
+
+    positive = thermal_fermion_bias([(0.5, 0.2, 1)], temperature=1.0)
+    negative = thermal_fermion_bias([(0.5, -0.2, 1)], temperature=1.0)
+    cancelled = thermal_fermion_bias(
+        [(0.5, 0.2, 1), (0.5, -0.2, 1)], temperature=1.0
+    )
+    assert positive["epsilon_bias"] < 0.0
+    assert negative["epsilon_bias"] > 0.0
+    assert cancelled["epsilon_bias"] == pytest.approx(0.0, abs=1.0e-14)
+    assert positive["uses_zero_temperature_subtracted_condensate"]
+    assert positive["ideal_equilibrium_dirac_gas_only"]
+
+
+def test_thermal_fermion_bias_rejects_invalid_degeneracy_and_temperature():
+    from ptum_defects import thermal_fermion_bias
+
+    with pytest.raises(ValueError):
+        thermal_fermion_bias([(0.5, 0.2, 1.5)], temperature=1.0)
+    with pytest.raises(ValueError):
+        thermal_fermion_bias([(0.5, 0.2, 1)], temperature=-1.0)
