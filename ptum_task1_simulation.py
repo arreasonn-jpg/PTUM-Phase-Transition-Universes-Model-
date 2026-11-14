@@ -687,7 +687,8 @@ def run_parameter_scan(params: PTUMParameters,
                        phi_dot_init_by_offset: Optional[Dict[float, float]] = None,
                        progress_interval: int = 0,
                        progress_label: str = "scan",
-                       result_callback: Optional[Callable[[Dict], None]] = None
+                       result_callback: Optional[Callable[[Dict], None]] = None,
+                       solver_method: str = "DOP853"
                        ) -> List[Dict]:
     """
     Run parameter scan over initial conditions.
