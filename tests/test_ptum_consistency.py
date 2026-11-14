@@ -1305,3 +1305,104 @@ def test_manuscript_requires_final_wkb_adiabaticity_for_particle_number():
     assert "final first-order WKB" in source
     assert r"\(|\dot\Omega_{k,f}/\Omega_{k,f}^2|\)" in source
     assert "occupation number and the associated finite-band number density are withheld" in source
+
+
+
+def test_real_psi_domain_wall_kink_solves_static_field_equation():
+    from ptum_defects import domain_wall_profile
+
+    mu = 3.0
+    lam = 0.2
+    v = mu / np.sqrt(lam)
+    z = np.linspace(-1.5 / mu, 1.5 / mu, 101)
+    h = 1.0e-4 / mu
+    psi = domain_wall_profile(z, mu, lam)
+    psi_plus = domain_wall_profile(z + h, mu, lam)
+    psi_minus = domain_wall_profile(z - h, mu, lam)
+    second_derivative = (psi_plus - 2.0 * psi + psi_minus) / h**2
+    residual = second_derivative - lam * psi * (psi**2 - v**2)
+    scale = mu**2 * v
+    assert np.max(np.abs(residual)) / scale < 2.0e-7
+
+
+def test_real_psi_domain_wall_tension_matches_profile_energy_integral():
+    from ptum_defects import domain_wall_energy_density, domain_wall_tension
+
+    mu = 2.5
+    lam = 0.15
+    z = np.linspace(-20.0 / mu, 20.0 / mu, 40001)
+    numerical = np.trapezoid(domain_wall_energy_density(z, mu, lam), z)
+    analytic = domain_wall_tension(mu, lam)
+    assert numerical == pytest.approx(analytic, rel=2.0e-8)
+
+
+def test_small_explicit_bias_splits_the_two_vacua_by_two_epsilon_v():
+    from ptum_defects import domain_wall_bias_diagnostics
+
+    mu = 1.0e4
+    lam = 0.1
+    epsilon_critical = 2.0 * mu**3 / (3.0 * np.sqrt(3.0 * lam))
+    epsilon = 1.0e-6 * epsilon_critical
+    result = domain_wall_bias_diagnostics(
+        mu, lam, epsilon, hubble_bbn=1.0e-20,
+        reduced_planck_mass=2.435e18,
+    )
+    expected = 2.0 * epsilon * mu / np.sqrt(lam)
+    assert result["metastable_vacuum_exists"]
+    assert result["small_bias_tension_approx_valid"]
+    assert result["vacuum_bias"] == pytest.approx(expected, rel=2.0e-6)
+
+
+def test_domain_wall_bias_spinodal_removes_false_vacuum():
+    from ptum_defects import domain_wall_bias_diagnostics
+
+    mu = 1.0e4
+    lam = 0.1
+    epsilon_critical = 2.0 * mu**3 / (3.0 * np.sqrt(3.0 * lam))
+    result = domain_wall_bias_diagnostics(
+        mu, lam, 1.01 * epsilon_critical, hubble_bbn=1.0e-20,
+        reduced_planck_mass=2.435e18,
+    )
+    assert not result["metastable_vacuum_exists"]
+    assert not result["small_bias_tension_approx_valid"]
+    assert result["hubble_annihilation_estimate"] is None
+    assert result["annihilation_before_bbn"] is None
+
+
+def test_zero_domain_wall_bias_cannot_annihilate_scaling_network():
+    from ptum_defects import domain_wall_bias_diagnostics
+
+    result = domain_wall_bias_diagnostics(
+        1.0e4, 0.1, 0.0, hubble_bbn=1.0e-20,
+        reduced_planck_mass=2.435e18,
+    )
+    assert result["vacuum_bias"] == pytest.approx(0.0, abs=1.0e-20)
+    assert result["hubble_annihilation_estimate"] == pytest.approx(0.0)
+    assert not result["annihilation_before_bbn"]
+    assert not result["annihilation_before_wall_domination"]
+
+
+def test_domain_wall_bias_required_source_can_annihilate_before_bbn():
+    from ptum_defects import domain_wall_bias_diagnostics
+
+    kwargs = dict(
+        mu_eff=1.0e4, lambda_psi=0.1,
+        hubble_bbn=1.0e-20, reduced_planck_mass=2.435e18,
+    )
+    threshold = domain_wall_bias_diagnostics(epsilon_bias=0.0, **kwargs)
+    epsilon = 2.0 * threshold["required_linear_source_for_bbn_and_domination"]
+    result = domain_wall_bias_diagnostics(epsilon_bias=epsilon, **kwargs)
+    assert result["small_bias_tension_approx_valid"]
+    assert result["annihilation_before_bbn"]
+    assert result["annihilation_before_wall_domination"]
+
+
+def test_dimension_five_operator_vev_maps_to_dimension_three_bias_source():
+    from ptum_defects import bias_from_operator_vev
+
+    epsilon = bias_from_operator_vev(
+        operator_vev=2.0e12, cutoff=1.0e16, wilson_coefficient=0.5
+    )
+    assert epsilon == pytest.approx(1.0e-4)
+    with pytest.raises(ValueError):
+        bias_from_operator_vev(operator_vev=1.0, cutoff=0.0)
