@@ -28,7 +28,9 @@ def trajectory_coordinates(index: int) -> tuple[int, int, int, int]:
 
 
 def run_one_trajectory(index: int, *, t_max: float = DEFAULT_T_MAX,
-                       n_points: int = DEFAULT_N_POINTS) -> dict:
+                       n_points: int = DEFAULT_N_POINTS,
+                       rtol: float = 1e-9, atol: float = 1e-12,
+                       max_step: float = 0.05) -> dict:
     scenario_index, seed_index, velocity_index, offset_index = trajectory_coordinates(index)
     scenario_name, params = build_scan_scenarios()[scenario_index]
     seeds, velocities, offsets = scan_profile_scales("full")
@@ -47,6 +49,10 @@ def run_one_trajectory(index: int, *, t_max: float = DEFAULT_T_MAX,
         "plateau_damping_ratio": params.damping_ratio_plateau,
         "t_max_over_mu_inverse": t_max,
         "n_output_points": n_points,
+        "solver_settings": {
+            "method": "DOP853", "rtol": rtol, "atol": atol,
+            "max_step_dimensionless": max_step,
+        },
         "scan_profile": "full",
         "psi_seed_scales": list(seeds),
         "psi_velocity_scales": list(velocities),
@@ -70,6 +76,9 @@ def run_one_trajectory(index: int, *, t_max: float = DEFAULT_T_MAX,
         phi_dot_init_by_offset={offset: state["Phi_dot"]},
         progress_interval=1,
         progress_label=f"trajectory-{index:03d}",
+        rtol=rtol,
+        atol=atol,
+        max_step=max_step,
     )
     row = rows[0]
     row["scan_metadata"] = metadata
@@ -82,9 +91,14 @@ def main() -> None:
     parser.add_argument("--output", default=None)
     parser.add_argument("--t-max", type=float, default=DEFAULT_T_MAX)
     parser.add_argument("--n-points", type=int, default=DEFAULT_N_POINTS)
+    parser.add_argument("--rtol", type=float, default=1e-9)
+    parser.add_argument("--atol", type=float, default=1e-12)
+    parser.add_argument("--max-step", type=float, default=0.05,
+                        help="Maximum dimensionless integration step in tau=mu*t")
     args = parser.parse_args()
     row = run_one_trajectory(
-        args.trajectory_index, t_max=args.t_max, n_points=args.n_points
+        args.trajectory_index, t_max=args.t_max, n_points=args.n_points,
+        rtol=args.rtol, atol=args.atol, max_step=args.max_step
     )
     output = args.output or f"trajectory_{args.trajectory_index:03d}_result.json"
     save_results([row], output)
