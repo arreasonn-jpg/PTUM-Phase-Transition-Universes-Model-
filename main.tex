@@ -741,12 +741,15 @@ X_k\dot X_k^*-\dot X_kX_k^*=i.
 \end{equation}
 Intermediate intervals with \(\Omega_k^2<0\) are integrated directly.
 An instantaneous occupation number is reported only if the final
-canonical frequency is real and positive and the Wronskian drift is
-within the numerical tolerance \(10^{-7}\). If strong tachyonic growth
-causes the finite-precision Wronskian diagnostic to fail, the occupation
-number is withheld rather than interpreted as a physical prediction.
-This threshold is a numerical reliability criterion, not a physical
-constant.
+canonical frequency is real and positive, the final first-order WKB
+adiabaticity measure \(|\dot\Omega_{k,f}/\Omega_{k,f}^2|\) is below
+the declared numerical threshold (default 0.1), and the Wronskian drift
+is within the numerical tolerance \(10^{-7}\). Positive frequency
+alone does not define an adiabatic particle basis when the background
+is still varying rapidly. If either the final adiabaticity or the
+finite-precision Wronskian diagnostic fails, the occupation number and
+the associated finite-band number density are withheld. These are
+numerical reliability criteria, not physical constants.
 
 The implementation constructs the pre-threshold state from the
 single-field inflationary background and evolves the \(\bar\psi=0\)
