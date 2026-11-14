@@ -892,6 +892,114 @@ def _late_time_adiabaticity_diagnostic(result: Dict,
     }
 
 
+def _transient_quartic_episode_diagnostic(
+    result: Dict,
+    min_consecutive_half_cycles: int = 3,
+) -> Dict:
+    """Identify transient quartic-like episodes without calling them attractors.
+
+    A half-cycle is a candidate only when the same conservative conditions
+    used by the late-time classifier hold simultaneously: Q>2,
+    |w-1/3|<0.05, |R_vir-1|<0.2, and H/omega<0.1.  A transient episode
+    requires at least three consecutive candidate half-cycles.
+    """
+    empty = {
+        "transient_quartic_candidate_half_cycles": 0,
+        "transient_quartic_max_consecutive_half_cycles": 0,
+        "transient_quartic_episode_count": 0,
+        "transient_quartic_episode_detected": False,
+        "transient_quartic_max_episode_duration_mu_inverse": 0.0,
+    }
+    if min_consecutive_half_cycles < 1:
+        raise ValueError("min_consecutive_half_cycles must be positive")
+
+    t = np.asarray(result.get("t", []), dtype=float)
+    H = np.asarray(result.get("H", []), dtype=float)
+    psi_dot = np.asarray(result.get("psi_dot", []), dtype=float)
+    Q = np.asarray(result.get("Q", []), dtype=float)
+    virial = np.asarray(result.get("virial_ratio", []), dtype=float)
+    w_avg = np.asarray(result.get("w_psi_avg", []), dtype=float)
+    t_avg = np.asarray(result.get("t_avg", []), dtype=float)
+    if (t.ndim != 1 or len(t) < 8 or H.shape != t.shape
+            or psi_dot.shape != t.shape or Q.shape != t.shape
+            or virial.shape != t.shape or not np.all(np.isfinite(t))
+            or np.any(np.diff(t) <= 0.0)):
+        return empty
+
+    turning_points = np.where(np.diff(np.signbit(psi_dot)))[0]
+    if len(turning_points) < 2 or len(w_avg) == 0:
+        return empty
+
+    candidate_intervals = []
+    for i, (left, right) in enumerate(zip(turning_points[:-1], turning_points[1:])):
+        if right - left < 2 or right <= left:
+            candidate_intervals.append((False, float(t[left]), float(t[right])))
+            continue
+        start, end = int(left), int(right) + 1
+        q_values = Q[start:end]
+        virial_values = virial[start:end]
+        h_values = H[start:end]
+        q_values = q_values[np.isfinite(q_values)]
+        virial_values = virial_values[np.isfinite(virial_values)]
+        h_values = h_values[np.isfinite(h_values)]
+        midpoint = 0.5 * (t[left] + t[right])
+        if len(t_avg) == len(w_avg) and len(t_avg):
+            w_index = int(np.argmin(np.abs(t_avg - midpoint)))
+            w_value = float(w_avg[w_index])
+        elif i < len(w_avg):
+            w_value = float(w_avg[i])
+        else:
+            w_value = float("nan")
+        q_value = float(np.mean(q_values)) if len(q_values) else float("nan")
+        virial_value = (
+            float(np.mean(virial_values)) if len(virial_values) else float("nan")
+        )
+        half_period = float(t[right] - t[left])
+        omega = np.pi / half_period
+        h_over_omega = (
+            float(np.mean(h_values)) / omega if len(h_values) else float("nan")
+        )
+        candidate = (
+            np.isfinite([q_value, virial_value, w_value, h_over_omega]).all()
+            and q_value > 2.0
+            and abs(w_value - 1.0 / 3.0) < 0.05
+            and abs(virial_value - 1.0) < 0.2
+            and h_over_omega < 0.1
+        )
+        candidate_intervals.append((bool(candidate), float(t[left]), float(t[right])))
+
+    runs = []
+    current = []
+    for interval in candidate_intervals:
+        if interval[0]:
+            current.append(interval)
+        elif current:
+            runs.append(current)
+            current = []
+    if current:
+        runs.append(current)
+
+    max_run = max((len(run) for run in runs), default=0)
+    episode_runs = [run for run in runs if len(run) >= min_consecutive_half_cycles]
+    params = result.get("params")
+    mu = float(getattr(params, "mu", 1.0))
+    if not np.isfinite(mu) or mu <= 0.0:
+        mu = 1.0
+    max_duration = max(
+        (sum(end - start for _, start, end in run) * mu for run in episode_runs),
+        default=0.0,
+    )
+    return {
+        "transient_quartic_candidate_half_cycles": int(
+            sum(candidate for candidate, _, _ in candidate_intervals)
+        ),
+        "transient_quartic_max_consecutive_half_cycles": int(max_run),
+        "transient_quartic_episode_count": int(len(episode_runs)),
+        "transient_quartic_episode_detected": bool(episode_runs),
+        "transient_quartic_max_episode_duration_mu_inverse": float(max_duration),
+    }
+
+
 def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     """
     Classify simulation outcome based on diagnostics.
@@ -981,7 +1089,8 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
         'H_over_omega_values': adiabaticity['H_over_omega_values'],
         'n_late_half_cycles': int(adiabaticity['n_late_half_cycles']),
         'adiabaticity_valid': bool(adiabaticity['adiabaticity_valid']),
-        'n_oscillations': len(w_avg)
+        'n_oscillations': len(w_avg),
+        **_transient_quartic_episode_diagnostic(result),
     }
 
 

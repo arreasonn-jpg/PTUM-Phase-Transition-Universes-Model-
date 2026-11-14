@@ -1275,3 +1275,32 @@ def test_low_scale_scan_trajectory_72_is_stable_in_dimensionless_solver():
         values = np.asarray(row[key], dtype=float)
         assert np.all(np.isfinite(values)), key
     assert np.all(np.asarray(row["rho_total"]) > 0.0)
+
+
+def test_transient_quartic_episode_requires_three_consecutive_valid_half_cycles():
+    from ptum_task1_simulation import _transient_quartic_episode_diagnostic
+
+    t = np.linspace(0.0, 8.0 * np.pi, 1601)
+    turning_points = np.where(np.diff(np.signbit(np.cos(t))))[0]
+    t_avg = np.array([
+        0.5 * (t[left] + t[right])
+        for left, right in zip(turning_points[:-1], turning_points[1:])
+    ])
+    result = {
+        "t": t,
+        "H": np.zeros_like(t),
+        "psi_dot": np.cos(t),
+        "Q": np.full_like(t, 3.0),
+        "virial_ratio": np.ones_like(t),
+        "w_psi_avg": np.full(len(t_avg), 1.0 / 3.0),
+        "t_avg": t_avg,
+    }
+    diagnostic = _transient_quartic_episode_diagnostic(result)
+    assert diagnostic["transient_quartic_episode_detected"]
+    assert diagnostic["transient_quartic_max_consecutive_half_cycles"] >= 3
+    assert diagnostic["transient_quartic_episode_count"] >= 1
+
+    result["w_psi_avg"] = np.full(len(t_avg), 0.5)
+    rejected = _transient_quartic_episode_diagnostic(result)
+    assert not rejected["transient_quartic_episode_detected"]
+    assert rejected["transient_quartic_candidate_half_cycles"] == 0
