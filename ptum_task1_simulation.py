@@ -317,7 +317,7 @@ def run_simulation(params: PTUMParameters,
                    t_eval: Optional[np.ndarray] = None,
                    rtol: float = 1e-9,
                    atol: float = 1e-12,
-                   solver_method: str = "Radau") -> Dict:
+                   solver_method: str = "DOP853") -> Dict:
     """
     Run a single background simulation.
     
