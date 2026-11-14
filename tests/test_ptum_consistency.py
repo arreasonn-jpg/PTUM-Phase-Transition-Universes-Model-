@@ -1299,6 +1299,16 @@ def test_transient_quartic_episode_requires_three_consecutive_valid_half_cycles(
     assert diagnostic["transient_quartic_episode_detected"]
     assert diagnostic["transient_quartic_max_consecutive_half_cycles"] >= 3
     assert diagnostic["transient_quartic_episode_count"] >= 1
+    assert diagnostic["transient_quartic_episodes"]
+    episode = diagnostic["transient_quartic_episodes"][0]
+    assert episode["end_mu_inverse"] > episode["start_mu_inverse"]
+    assert episode["half_cycles"] >= 3
+    assert episode["duration_mu_inverse"] == pytest.approx(
+        episode["end_mu_inverse"] - episode["start_mu_inverse"]
+    )
+    assert diagnostic["transient_quartic_last_episode_end_mu_inverse"] == pytest.approx(
+        diagnostic["transient_quartic_episodes"][-1]["end_mu_inverse"]
+    )
 
     result["w_psi_avg"] = np.full(len(t_avg), 0.5)
     rejected = _transient_quartic_episode_diagnostic(result)
@@ -1325,8 +1335,8 @@ def test_transient_followup_aggregator_validates_and_summarizes_ten_rows(tmp_pat
             "scan_metadata": {
                 "trajectory_index": index,
                 "scenario": "low_scale_underdamped_control",
-                "t_max_over_mu_inverse": 120.0,
-                "n_output_points": 24001,
+                "t_max_over_mu_inverse": 240.0,
+                "n_output_points": 48001,
             },
             "ic_params": {"psi_dot_init": 0.0, "phi_offset": 1.0e16},
             "max_abs_psi_over_trajectory": 2.0e13,

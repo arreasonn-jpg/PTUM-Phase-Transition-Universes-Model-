@@ -131,6 +131,12 @@ def build_followup_report(rows: list[dict]) -> dict:
                 (float(c.get("transient_quartic_max_episode_duration_mu_inverse", 0.0))
                  for c in classifications), default=0.0
             ),
+            "latest_transient_episode_end_mu_inverse": max(
+                (float(c.get("transient_quartic_last_episode_end_mu_inverse"))
+                 for c in classifications
+                 if _finite_number(c.get("transient_quartic_last_episode_end_mu_inverse"))),
+                default=None
+            ),
             "max_abs_relative_frw_continuity_residual": max(residuals),
             "median_abs_relative_frw_continuity_residual": statistics.median(residuals),
         },
@@ -155,20 +161,25 @@ def write_markdown_report(report: dict, output: str | Path) -> None:
         f"- Transient episode indices: **{summary['transient_episode_indices']}**",
         f"- Maximum relative FRW continuity residual: **{summary['max_abs_relative_frw_continuity_residual']:.3e}**",
         "",
-        "| Index | Offset (GeV) | Initial psi_dot (GeV^2) | Late regime | w_final | Q_final | Virial | H/omega max | Transient half-cycles | Duration (mu^-1) |",
-        "|---:|---:|---:|---|---:|---:|---:|---:|---:|---:|",
+        "| Index | Offset (GeV) | Initial psi_dot (GeV^2) | Late regime | w_final | Q_final | Virial | H/omega max | Transient half-cycles | Duration (mu^-1) | Episode intervals (mu^-1) |",
+        "|---:|---:|---:|---|---:|---:|---:|---:|---:|---:|---|",
     ]
     for row in report["trajectories"]:
         c = row["classification"]
         ic = row["ic_params"]
         h_over_omega = c.get("H_over_omega_max")
         h_text = "n/a" if h_over_omega is None else f"{h_over_omega:.4g}"
+        episode_text = "; ".join(
+            f"{episode['start_mu_inverse']:.2f}-{episode['end_mu_inverse']:.2f}"
+            for episode in c.get("transient_quartic_episodes", [])
+        ) or "none"
         lines.append(
             f"| {row['scan_metadata']['trajectory_index']} | {ic['phi_offset']:.4e} | "
             f"{ic['psi_dot_init']:.4e} | {c['regime']} | {c['w_final']:.4f} | "
             f"{c['Q_final']:.4f} | {c['virial_final']:.4f} | {h_text} | "
             f"{c.get('transient_quartic_max_consecutive_half_cycles', 0)} | "
-            f"{c.get('transient_quartic_max_episode_duration_mu_inverse', 0.0):.3f} |"
+            f"{c.get('transient_quartic_max_episode_duration_mu_inverse', 0.0):.3f} | "
+            f"{episode_text} |"
         )
     lines += ["", report["interpretation"], ""]
     Path(output).write_text("\n".join(lines), encoding="utf-8")

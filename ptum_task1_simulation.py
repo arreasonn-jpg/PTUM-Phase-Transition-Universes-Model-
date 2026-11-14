@@ -908,6 +908,8 @@ def _transient_quartic_episode_diagnostic(
         "transient_quartic_max_consecutive_half_cycles": 0,
         "transient_quartic_episode_count": 0,
         "transient_quartic_episode_detected": False,
+        "transient_quartic_episodes": [],
+        "transient_quartic_last_episode_end_mu_inverse": None,
         "transient_quartic_max_episode_duration_mu_inverse": 0.0,
     }
     if min_consecutive_half_cycles < 1:
@@ -985,8 +987,19 @@ def _transient_quartic_episode_diagnostic(
     mu = float(getattr(params, "mu", 1.0))
     if not np.isfinite(mu) or mu <= 0.0:
         mu = 1.0
+    episode_details = []
+    for run in episode_runs:
+        start_mu = float(run[0][1] * mu)
+        end_mu = float(run[-1][2] * mu)
+        duration_mu = float(sum(end - start for _, start, end in run) * mu)
+        episode_details.append({
+            "start_mu_inverse": start_mu,
+            "end_mu_inverse": end_mu,
+            "half_cycles": int(len(run)),
+            "duration_mu_inverse": duration_mu,
+        })
     max_duration = max(
-        (sum(end - start for _, start, end in run) * mu for run in episode_runs),
+        (episode["duration_mu_inverse"] for episode in episode_details),
         default=0.0,
     )
     return {
@@ -994,8 +1007,12 @@ def _transient_quartic_episode_diagnostic(
             sum(candidate for candidate, _, _ in candidate_intervals)
         ),
         "transient_quartic_max_consecutive_half_cycles": int(max_run),
-        "transient_quartic_episode_count": int(len(episode_runs)),
-        "transient_quartic_episode_detected": bool(episode_runs),
+        "transient_quartic_episode_count": int(len(episode_details)),
+        "transient_quartic_episode_detected": bool(episode_details),
+        "transient_quartic_episodes": episode_details,
+        "transient_quartic_last_episode_end_mu_inverse": (
+            episode_details[-1]["end_mu_inverse"] if episode_details else None
+        ),
         "transient_quartic_max_episode_duration_mu_inverse": float(max_duration),
     }
 
