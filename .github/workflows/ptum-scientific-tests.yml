@@ -67,11 +67,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-ci.txt
+      # Extended post-threshold horizon to test late-time oscillations.
       - name: Run isolated trajectory
         run: >-
           python ptum_task1_scan_worker.py
           --trajectory-index ${{ matrix.trajectory }}
-          # Extended post-threshold horizon to test late-time oscillations.
           --t-max 60
           --n-points 12001
           --output trajectory_${{ matrix.trajectory }}_result.json
