@@ -31,6 +31,7 @@ from ptum_task1_simulation import (
     create_initial_conditions,
     run_simulation,
     finite_difference_continuity_diagnostic,
+    delta_veff_from_reference,
     compute_time_averaged_w,
     classify_outcome,
 )
@@ -45,6 +46,29 @@ def _add_fast_adiabatic_oscillation_history(result, hubble=0.01, t_end=100.0):
         "psi_dot": -np.sin(t),
     })
     return result
+
+
+def test_delta_veff_from_reference_preserves_one_ulp_plateau_excursion():
+    p = PTUMParameters()
+    phi0 = 0.986 * p.Phi_c
+    phi1 = np.nextafter(phi0, np.inf)
+    delta = delta_veff_from_reference(np.array([phi0, phi1]), phi0, p)
+
+    assert delta[0] == 0.0
+    assert delta[1] > 0.0
+
+    x0 = np.longdouble(p.lambda_phi) * (
+        np.longdouble(phi0) / np.longdouble(M_PL)
+    ) ** 2
+    x1 = np.longdouble(p.lambda_phi) * (
+        np.longdouble(phi1) / np.longdouble(M_PL)
+    ) ** 2
+    expected = (
+        np.longdouble(p.V0)
+        * np.exp(-x0)
+        * (-np.expm1(-(x1 - x0)))
+    )
+    assert delta[1] == pytest.approx(float(expected), rel=2.0e-12)
 
 
 def test_independent_finite_difference_continuity_closes_for_analytic_frw_history():
