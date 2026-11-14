@@ -455,6 +455,13 @@ def integrate_expanding_spectrum(
     all_wronskians_valid = all(
         bool(mode["wronskian_valid"]) for mode in mode_results
     )
+    wronskian_endpoint_errors = np.asarray(
+        [mode["wronskian_relative_error"] for mode in mode_results], dtype=float
+    )
+    wronskian_max_errors = np.asarray(
+        [mode["wronskian_max_relative_error"] for mode in mode_results], dtype=float
+    )
+    maximum_wronskian_drift = float(np.max(wronskian_max_errors))
     if (all_final_frequencies_valid and all_wronskians_valid
             and np.all(np.isfinite(occupations))):
         n_comoving = float(
@@ -473,6 +480,9 @@ def integrate_expanding_spectrum(
         "n_physical_finite_band": n_physical,
         "all_final_frequencies_valid": all_final_frequencies_valid,
         "all_wronskians_valid": all_wronskians_valid,
+        "wronskian_errors": wronskian_endpoint_errors,
+        "wronskian_max_errors": wronskian_max_errors,
+        "maximum_wronskian_drift": maximum_wronskian_drift,
         "finite_band_only": True,
         "momentum_range": (float(k_arr[0]), float(k_arr[-1])),
     }

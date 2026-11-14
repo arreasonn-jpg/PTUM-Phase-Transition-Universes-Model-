@@ -1028,6 +1028,10 @@ def test_waterfall_finite_band_spectrum_reports_units_and_wronskian_status():
     )
     assert spectrum["finite_band_only"]
     assert spectrum["all_wronskians_valid"]
+    assert len(spectrum["wronskian_max_errors"]) == 3
+    assert spectrum["maximum_wronskian_drift"] == pytest.approx(
+        max(spectrum["wronskian_max_errors"])
+    )
     assert spectrum["number_density_unit"] == "mu^3"
     assert spectrum["momentum_unit"] == "mu"
     assert np.isfinite(spectrum["n_comoving_finite_band"])
@@ -1056,6 +1060,10 @@ def test_waterfall_band_resolution_helper_never_claims_uv_ir_convergence():
     assert result["resolution_counts"] == [4, 8]
     assert result["finite_band_only"]
     assert result["all_wronskians_valid"]
+    assert len(result["maximum_wronskian_drift_by_resolution"]) == 2
+    assert result["maximum_wronskian_drift"] == pytest.approx(
+        max(result["maximum_wronskian_drift_by_resolution"])
+    )
     assert result["uv_ir_tail_converged"] is False
     assert len(result["n_comoving_finite_band_estimates"]) == 2
     assert result["band_resolution_converged"] == (
@@ -1154,6 +1162,11 @@ def test_expanding_spectrum_integrates_finite_band_vacuum_control():
     )
     assert result["all_final_frequencies_valid"]
     assert result["finite_band_only"]
+    assert len(result["wronskian_errors"]) == 2
+    assert len(result["wronskian_max_errors"]) == 2
+    assert result["maximum_wronskian_drift"] == pytest.approx(
+        max(result["wronskian_max_errors"])
+    )
     assert result["n_comoving_finite_band"] == pytest.approx(0.0, abs=2.0e-7)
     assert result["n_physical_finite_band"] == pytest.approx(0.0, abs=2.0e-7)
     assert len(result["occupation_numbers"]) == 2

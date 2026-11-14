@@ -246,6 +246,7 @@ def converge_waterfall_band_resolution(
         raise ValueError("require 0<k_min<k_max and positive tolerances")
 
     estimates = []
+    maximum_wronskian_drifts = []
     all_wronskians_valid = True
     all_final_frequencies_valid = True
     for count in counts:
@@ -264,6 +265,9 @@ def converge_waterfall_band_resolution(
         all_final_frequencies_valid = (
             all_final_frequencies_valid
             and bool(spectrum["all_final_frequencies_valid"])
+        )
+        maximum_wronskian_drifts.append(
+            float(spectrum["maximum_wronskian_drift"])
         )
         estimates.append(float(spectrum["n_comoving_finite_band"]))
 
@@ -289,6 +293,8 @@ def converge_waterfall_band_resolution(
         "k_max_over_mu": float(k_max_over_mu),
         "band_resolution_converged": band_resolution_converged,
         "all_wronskians_valid": all_wronskians_valid,
+        "maximum_wronskian_drift_by_resolution": maximum_wronskian_drifts,
+        "maximum_wronskian_drift": max(maximum_wronskian_drifts, default=float("nan")),
         "all_final_frequencies_valid": all_final_frequencies_valid,
         "uv_ir_tail_converged": False,
         "finite_band_only": True,
