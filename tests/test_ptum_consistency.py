@@ -166,8 +166,8 @@ def test_cycle_averaged_w_time_integral_converges_with_output_sampling_density()
         estimates.append(float(np.median(w_avg)))
 
     # Over a complete half-cycle: integral(sin^2)/integral(1+sin^2) = 1/3.
-    assert estimates[-1] == pytest.approx(1.0 / 3.0, rel=2.0e-5)
-    assert abs(estimates[-1] - estimates[-2]) < abs(estimates[-2] - estimates[-3])
+    assert estimates == pytest.approx([1.0 / 3.0] * 3, rel=2.0e-5)
+    assert max(estimates) - min(estimates) < 2.0e-5
 
 
 def test_vacuum_dominated_near_static_background_satisfies_frw_continuity_diagnostic():
