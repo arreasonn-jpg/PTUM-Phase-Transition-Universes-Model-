@@ -196,3 +196,26 @@ The full scan, independent time-grid and solver-tolerance convergence,
 inhomogeneous backreaction, rescattering, defect evolution, and
 self-consistent relic/entropy calculation remain open. The project is
 not 10/10.
+
+
+### 2026-11-14 latest-head checkpoint
+
+The latest PR head at this checkpoint is
+`d4f5f8b37a526c6fba35d19cb9c0396710da2e1a`. Workflow
+`43582227619` passed 75 Python regression tests, all four CI smoke
+integrations, and the LaTeX build. The high- and low-scale smoke
+scenarios each contained one `insufficient_oscillation_data` and one
+`non_quartic` result; no quartic-dominated radiation-like phase was
+established.
+
+The LaTeX build is successful but not warning-free: the log contains
+numerous Underfull \\hbox messages and two distinct float-placement
+warnings; no Overfull \\hbox or LaTeX error was reported.
+
+An isolated scan branch
+`ptum/full-scan-2026-11-14-r2` was created from the latest PR head
+and received manifest commit
+`c101aaed58e44c9f0159ebb806a84d670cd892e2`. No completed 100-row
+artifact has yet been inspected or validated. The full scan remains
+a homogeneous post-threshold sensitivity study, not a quantum-seeded
+inhomogeneous waterfall or a relic calculation.
