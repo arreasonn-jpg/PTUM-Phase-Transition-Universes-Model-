@@ -34,7 +34,7 @@ Diagnostics:
 """
 
 import numpy as np
-from scipy.integrate import solve_ivp
+from scipy.integrate import solve_ivp, trapezoid
 from dataclasses import dataclass
 from typing import Optional, Tuple, List, Dict, Callable
 import json
@@ -671,48 +671,102 @@ def _turning_point_times(t: np.ndarray, psi_dot: np.ndarray) -> list[float]:
     return turning_times
 
 
+def _interpolated_half_cycle_samples(
+    t: np.ndarray,
+    values: np.ndarray,
+    start_time: float,
+    end_time: float,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Build a half-cycle segment with linearly interpolated turning-point endpoints."""
+    interior = (t > start_time) & (t < end_time)
+    segment_t = np.concatenate(([start_time], t[interior], [end_time]))
+    segment_values = np.interp(segment_t, t, values)
+    return segment_t, segment_values
+
+
 def compute_quartic_dominance(t: np.ndarray, psi: np.ndarray,
                               psi_dot: np.ndarray, params: PTUMParameters,
                               Phi: Optional[np.ndarray] = None) -> np.ndarray:
-    """Return half-cycle Q = λ<ψ⁴>/<|m_eff²(Φ)| ψ²>; NaN means not measurable."""
-    Q = np.full_like(t, np.nan, dtype=float)
+    """Return time-integrated half-cycle Q; NaN means not measurable.
+
+    Turning points are linearly interpolated between output samples and each
+    half-cycle uses trapezoidal time integration. This avoids treating every
+    output sample as an equally weighted quadrature point and reduces
+    artificial dependence on the requested t_eval density.
+    """
+    times = np.asarray(t, dtype=float)
+    field = np.asarray(psi, dtype=float)
+    velocity = np.asarray(psi_dot, dtype=float)
+    Q = np.full_like(times, np.nan, dtype=float)
     if Phi is None:
         raise ValueError("Phi history is required for a time-local quartic diagnostic")
-    if len(Phi) != len(t):
-        raise ValueError("Phi and t must have the same length")
+    phi = np.asarray(Phi, dtype=float)
+    if (times.ndim != 1 or field.shape != times.shape
+            or velocity.shape != times.shape or phi.shape != times.shape):
+        raise ValueError("t, psi, psi_dot, and Phi must be matching one-dimensional arrays")
+    if (len(times) < 3 or not np.all(np.isfinite(times))
+            or np.any(np.diff(times) <= 0.0)):
+        raise ValueError("t must be finite and strictly increasing")
+    if not (np.all(np.isfinite(field)) and np.all(np.isfinite(velocity))
+            and np.all(np.isfinite(phi))):
+        raise ValueError("psi, psi_dot, and Phi histories must be finite")
 
-    # Turning points delimit half-oscillations; signbit handles exact zeros robustly.
-    turning_points = _turning_point_indices(psi_dot)
+    turning_points = _turning_point_times(times, velocity)
     if len(turning_points) < 2:
         return Q
 
-    for i in range(len(turning_points) - 1):
-        start, end = turning_points[i], turning_points[i + 1] + 1
-        if end - start < 3:
+    for start_time, end_time in zip(turning_points[:-1], turning_points[1:]):
+        segment_t, psi_seg = _interpolated_half_cycle_samples(
+            times, field, start_time, end_time
+        )
+        _, phi_seg = _interpolated_half_cycle_samples(
+            times, phi, start_time, end_time
+        )
+        if len(segment_t) < 3:
             continue
-        psi_seg = psi[start:end]
-        mass_sq_seg = np.abs(meff_sq_psi(Phi[start:end], params))
-        numerator = params.lambda_psi * np.mean(psi_seg**4)
-        denominator = np.mean(mass_sq_seg * psi_seg**2)
+        mass_sq_seg = np.abs(meff_sq_psi(phi_seg, params))
+        numerator = params.lambda_psi * trapezoid(psi_seg**4, segment_t)
+        denominator = trapezoid(mass_sq_seg * psi_seg**2, segment_t)
         if denominator > 0.0 and np.isfinite(denominator):
-            Q[start:end] = numerator / denominator
+            left = int(np.searchsorted(times, start_time, side="left"))
+            right = int(np.searchsorted(times, end_time, side="right"))
+            Q[left:right] = numerator / denominator
     return Q
 
 
 def compute_quartic_virial_ratio(t: np.ndarray, psi: np.ndarray,
                                 psi_dot: np.ndarray,
                                 params: PTUMParameters) -> np.ndarray:
-    """Half-cycle <K>/(2<V4>) for a quartic oscillator; NaN if undefined."""
-    ratio = np.full_like(t, np.nan, dtype=float)
-    turning_points = _turning_point_indices(psi_dot)
-    for i in range(len(turning_points) - 1):
-        start, end = turning_points[i], turning_points[i + 1] + 1
-        if end - start < 3:
+    """Return time-integrated half-cycle <K>/(2<V4>); NaN if undefined."""
+    times = np.asarray(t, dtype=float)
+    field = np.asarray(psi, dtype=float)
+    velocity = np.asarray(psi_dot, dtype=float)
+    ratio = np.full_like(times, np.nan, dtype=float)
+    if (times.ndim != 1 or field.shape != times.shape
+            or velocity.shape != times.shape):
+        raise ValueError("t, psi, and psi_dot must be matching one-dimensional arrays")
+    if (len(times) < 3 or not np.all(np.isfinite(times))
+            or np.any(np.diff(times) <= 0.0)):
+        raise ValueError("t must be finite and strictly increasing")
+    if not (np.all(np.isfinite(field)) and np.all(np.isfinite(velocity))):
+        raise ValueError("psi and psi_dot histories must be finite")
+
+    turning_points = _turning_point_times(times, velocity)
+    for start_time, end_time in zip(turning_points[:-1], turning_points[1:]):
+        segment_t, psi_seg = _interpolated_half_cycle_samples(
+            times, field, start_time, end_time
+        )
+        _, velocity_seg = _interpolated_half_cycle_samples(
+            times, velocity, start_time, end_time
+        )
+        if len(segment_t) < 3:
             continue
-        kinetic_avg = 0.5 * np.mean(psi_dot[start:end]**2)
-        twice_potential_avg = 0.5 * params.lambda_psi * np.mean(psi[start:end]**4)
-        if twice_potential_avg > 0.0:
-            ratio[start:end] = kinetic_avg / twice_potential_avg
+        kinetic_integral = trapezoid(velocity_seg**2, segment_t)
+        quartic_integral = params.lambda_psi * trapezoid(psi_seg**4, segment_t)
+        if quartic_integral > 0.0 and np.isfinite(quartic_integral):
+            left = int(np.searchsorted(times, start_time, side="left"))
+            right = int(np.searchsorted(times, end_time, side="right"))
+            ratio[left:right] = kinetic_integral / quartic_integral
     return ratio
 
 
