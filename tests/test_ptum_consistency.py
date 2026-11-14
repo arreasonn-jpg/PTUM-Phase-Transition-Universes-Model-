@@ -437,6 +437,10 @@ def test_scan_summary_is_strict_json_and_nonfinite_values_become_null(tmp_path):
         "psi": np.array([0.0, 0.0]),
         "Phi": np.array([1.0, 1.0]),
         "continuity_residual_relative": np.array([0.0, 0.0]),
+        "continuity_residual_background_relative": np.array([0.0, 0.0]),
+        "continuity_residual_finite_difference": np.array([0.0, 0.0]),
+        "continuity_residual_finite_difference_relative": np.array([0.0, 0.0]),
+        "continuity_residual_finite_difference_background_relative": np.array([0.0, 0.0]),
     }
     output = tmp_path / "scan.json"
     save_results([result], str(output))
@@ -465,6 +469,10 @@ def test_scan_summary_replaces_checkpoint_atomically(tmp_path):
         "psi": np.array([0.0, 0.0]),
         "Phi": np.array([1.0, 1.0]),
         "continuity_residual_relative": np.array([0.0, 0.0]),
+        "continuity_residual_background_relative": np.array([0.0, 0.0]),
+        "continuity_residual_finite_difference": np.array([0.0, 0.0]),
+        "continuity_residual_finite_difference_relative": np.array([0.0, 0.0]),
+        "continuity_residual_finite_difference_background_relative": np.array([0.0, 0.0]),
     }
     output = tmp_path / "checkpoint.json"
     save_results([result], str(output))
