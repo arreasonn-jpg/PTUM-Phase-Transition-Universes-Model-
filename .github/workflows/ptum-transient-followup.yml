@@ -10,12 +10,14 @@ on:
       - 'ptum_task1_simulation.py'
       - 'ptum_task1_scan_followup_aggregate.py'
       - 'tests/test_ptum_consistency.py'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
   extended-transient-trajectories:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[extended-scan]')
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -51,7 +53,7 @@ jobs:
           retention-days: 30
 
   aggregate-extended-follow-up:
-    if: always()
+    if: always() && needs.extended-transient-trajectories.result != 'skipped'
     needs: [extended-transient-trajectories]
     runs-on: ubuntu-latest
     timeout-minutes: 10
