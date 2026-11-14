@@ -311,6 +311,26 @@ def background_equations(t: float, y: np.ndarray, params: PTUMParameters) -> np.
     return np.array([Phi_dot, Phi_ddot, psi_dot, psi_ddot])
 
 
+def delta_veff_from_reference(Phi: np.ndarray, Phi_reference: float,
+                              params: PTUMParameters) -> np.ndarray:
+    """Stable V_eff(Phi)-V_eff(Phi_reference) without subtracting near-equal squares."""
+    phi = np.asarray(Phi, dtype=float)
+    reference = float(Phi_reference)
+    if not np.all(np.isfinite(phi)) or not np.isfinite(reference):
+        raise ValueError("Phi and Phi_reference must be finite")
+    phi_ratio = phi / M_PL
+    reference_ratio = reference / M_PL
+    x_initial = params.lambda_phi * reference_ratio**2
+    # Factor x^2-x0^2 as (x-x0)(x+x0). This preserves tiny field
+    # excursions that disappear when two O(1) squares are subtracted.
+    x_delta = (
+        params.lambda_phi
+        * (phi_ratio - reference_ratio)
+        * (phi_ratio + reference_ratio)
+    )
+    return params.V0 * np.exp(-x_initial) * (-np.expm1(-x_delta))
+
+
 def finite_difference_continuity_diagnostic(
     t: np.ndarray,
     delta_rho: np.ndarray,
@@ -515,13 +535,12 @@ def run_simulation(params: PTUMParameters,
     # Independent sampled-history check: finite-difference the evolving
     # energy after removing only its time-independent initial offset. Compute
     # Delta V with expm1 to avoid cancellation against the large plateau V0.
-    x_initial = params.lambda_phi * (Phi[0] / M_PL)**2
-    x_delta = params.lambda_phi * (Phi / M_PL)**2 - x_initial
-    delta_veff = (
-        params.V0 * np.exp(-x_initial) * (-np.expm1(-x_delta))
+    delta_veff = delta_veff_from_reference(Phi, Phi[0], params)
+    delta_kinetic_phi = (
+        0.5 * (Phi_dot - Phi_dot[0]) * (Phi_dot + Phi_dot[0])
     )
     delta_rho_total = (
-        0.5 * (Phi_dot**2 - Phi_dot[0]**2)
+        delta_kinetic_phi
         + delta_veff
         + (rho_psi_arr - rho_psi_arr[0])
     )
