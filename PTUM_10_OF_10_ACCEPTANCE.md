@@ -341,3 +341,32 @@ domain-wall diagnostic API correction. No full-scan artifact is
 available yet. Its output may be used only after verifying that the
 scan-relevant source and configuration are identical to the current
 PR head; otherwise the scan must be rerun from the current source.
+
+
+## 2026-11-14 conditional finite-temperature fermion bias estimator
+
+The real-`psi` defect analysis now includes a finite-temperature,
+zero-temperature-subtracted ideal Dirac-gas contribution to the
+dimension-five operator bias. For a broken-phase mass eigenstate with
+fixed mass and real scalar coupling
+`m_f(psi)=m_f+y_psi_f psi`, the code evaluates the Fermi-Dirac
+integral for `Delta_T <bar(f)f>` and returns the signed source in
+the convention `V_bias=-epsilon_bias psi`. The relativistic limit
+is `Delta_T <bar(f)f> -> N_c m_f T^2/6`. The manuscript records the
+same integral and its sign convention.
+
+The implementation is explicitly conditional: equilibrium free
+Dirac gas, fixed broken-phase masses and Higgs expectation value,
+zero chemical potential, and no gauge/QCD corrections, thermal
+masses, electroweak crossover, non-equilibrium production or
+renormalized vacuum condensate. No Wilson coefficients, cutoff,
+thermal history or actual PTUM bias are assigned. The result is a
+parameterized one-loop estimate, not a wall-lifetime prediction.
+
+Six regressions cover the relativistic limit, dimensional scaling,
+zero-mass/zero-temperature limits, signed-coupling cancellation,
+input validation and manuscript claim boundaries. The branch now
+contains 89 Python tests by source count; the new tests and LaTeX
+equations await fresh CI. Gate 5 remains **NOT MET** because the
+actual bias and expanding inhomogeneous defect network are not
+calculated.
