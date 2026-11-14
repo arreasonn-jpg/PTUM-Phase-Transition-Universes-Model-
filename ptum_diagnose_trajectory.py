@@ -2,6 +2,7 @@
 """Compare IVP solvers on one exact deterministic PTUM scan trajectory.
 
 This is a diagnostic only: it never changes physical parameters or equations.
+# [diagnose-trajectory] compare production scan solver settings and convergence.
 """
 # Diagnostic baseline: preserve scan initial conditions and physical parameters.
 import argparse
