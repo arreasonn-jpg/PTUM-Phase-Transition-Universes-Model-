@@ -544,6 +544,76 @@ def run_simulation(params: PTUMParameters,
     }
 
 
+def _turning_point_indices(psi_dot: np.ndarray) -> np.ndarray:
+    """Return sampled boundaries for genuine velocity sign reversals.
+
+    An exactly zero initial velocity is retained as the prescribed initial
+    turning point. Interior zeros count only when bracketed by opposite
+    nonzero signs; tangential touches and an unbracketed final zero are ignored.
+    """
+    derivative = np.asarray(psi_dot, dtype=float)
+    if derivative.ndim != 1 or len(derivative) < 2:
+        return np.array([], dtype=int)
+
+    boundaries = []
+    if np.isfinite(derivative[0]) and derivative[0] == 0.0:
+        first_nonzero = np.flatnonzero(
+            np.isfinite(derivative) & (derivative != 0.0)
+        )
+        if len(first_nonzero):
+            boundaries.append(0)
+
+    nonzero_indices = np.flatnonzero(
+        np.isfinite(derivative) & (derivative != 0.0)
+    )
+    for left, right in zip(nonzero_indices[:-1], nonzero_indices[1:]):
+        if np.signbit(derivative[left]) == np.signbit(derivative[right]):
+            continue
+        if right > left + 1:
+            interior = derivative[left + 1:right]
+            if not np.all(np.isfinite(interior)) or not np.all(interior == 0.0):
+                continue
+            boundary = (left + right) // 2
+        else:
+            boundary = left
+        if not boundaries or boundary > boundaries[-1]:
+            boundaries.append(int(boundary))
+    return np.asarray(boundaries, dtype=int)
+
+
+def _turning_point_times(t: np.ndarray, psi_dot: np.ndarray) -> list[float]:
+    """Return interpolated times of genuine velocity reversals."""
+    times = np.asarray(t, dtype=float)
+    derivative = np.asarray(psi_dot, dtype=float)
+    if (times.ndim != 1 or derivative.shape != times.shape or len(times) < 2
+            or not np.all(np.isfinite(times)) or np.any(np.diff(times) <= 0.0)):
+        return []
+
+    turning_times = []
+    if np.isfinite(derivative[0]) and derivative[0] == 0.0:
+        if np.any(np.isfinite(derivative[1:]) & (derivative[1:] != 0.0)):
+            turning_times.append(float(times[0]))
+
+    nonzero_indices = np.flatnonzero(
+        np.isfinite(derivative) & (derivative != 0.0)
+    )
+    for left, right in zip(nonzero_indices[:-1], nonzero_indices[1:]):
+        if np.signbit(derivative[left]) == np.signbit(derivative[right]):
+            continue
+        if right > left + 1:
+            interior = derivative[left + 1:right]
+            if not np.all(np.isfinite(interior)) or not np.all(interior == 0.0):
+                continue
+            crossing = float(np.mean(times[left + 1:right]))
+        else:
+            fraction = -derivative[left] / (derivative[right] - derivative[left])
+            crossing = float(times[left] + fraction * (times[right] - times[left]))
+        if (not turning_times or
+                crossing - turning_times[-1] > 1.0e-12 * max(1.0, abs(crossing))):
+            turning_times.append(crossing)
+    return turning_times
+
+
 def compute_quartic_dominance(t: np.ndarray, psi: np.ndarray,
                               psi_dot: np.ndarray, params: PTUMParameters,
                               Phi: Optional[np.ndarray] = None) -> np.ndarray:
@@ -555,7 +625,7 @@ def compute_quartic_dominance(t: np.ndarray, psi: np.ndarray,
         raise ValueError("Phi and t must have the same length")
 
     # Turning points delimit half-oscillations; signbit handles exact zeros robustly.
-    turning_points = np.where(np.diff(np.signbit(psi_dot)))[0]
+    turning_points = _turning_point_indices(psi_dot)
     if len(turning_points) < 2:
         return Q
 
@@ -577,7 +647,7 @@ def compute_quartic_virial_ratio(t: np.ndarray, psi: np.ndarray,
                                 params: PTUMParameters) -> np.ndarray:
     """Half-cycle <K>/(2<V4>) for a quartic oscillator; NaN if undefined."""
     ratio = np.full_like(t, np.nan, dtype=float)
-    turning_points = np.where(np.diff(np.signbit(psi_dot)))[0]
+    turning_points = _turning_point_indices(psi_dot)
     for i in range(len(turning_points) - 1):
         start, end = turning_points[i], turning_points[i + 1] + 1
         if end - start < 3:
@@ -597,7 +667,7 @@ def compute_quadratic_virial_ratio(t: np.ndarray, psi: np.ndarray,
         raise ValueError("Phi and t must have the same length")
     ratio = np.full_like(t, np.nan, dtype=float)
     m_eff_sq = np.array([meff_sq_psi(value, params) for value in Phi])
-    turning_points = np.where(np.diff(np.signbit(psi_dot)))[0]
+    turning_points = _turning_point_indices(psi_dot)
     for i in range(len(turning_points) - 1):
         start, end = turning_points[i], turning_points[i + 1] + 1
         if end - start < 3 or np.any(m_eff_sq[start:end] <= 0.0):
@@ -621,7 +691,7 @@ def compute_time_averaged_w(t: np.ndarray, pressure: np.ndarray,
     coarse-grained equation of state; averaging the instantaneous ratio can
     overweight epochs where rho is small.
     """
-    turning_points = np.where(np.diff(np.signbit(psi_dot)))[0]
+    turning_points = _turning_point_indices(psi_dot)
 
     if len(turning_points) < 2:
         return np.array([]), np.array([])
@@ -839,25 +909,7 @@ def _late_time_adiabaticity_diagnostic(result: Dict,
         raise ValueError("tail_fraction must be in (0, 1) and min_half_cycles >= 1")
 
     tail_start = t[int(np.floor((1.0 - tail_fraction) * (len(t) - 1)))]
-    turning_times = []
-    # A zero is a turning point only when the derivative changes sign
-    # across it. This excludes tangential touches and unbracketed endpoints.
-    nonzero_indices = np.flatnonzero(np.isfinite(psi_dot) & (psi_dot != 0.0))
-    for left_index, right_index in zip(nonzero_indices[:-1], nonzero_indices[1:]):
-        if not np.all(np.isfinite(psi_dot[left_index:right_index + 1])):
-            continue
-        left, right = psi_dot[left_index], psi_dot[right_index]
-        if np.signbit(left) == np.signbit(right):
-            continue
-        if right_index == left_index + 1:
-            crossing = (t[left_index] - left *
-                        (t[right_index] - t[left_index]) / (right - left))
-        else:
-            # A sampled zero plateau is bracketed by opposite signs.
-            crossing = float(np.mean(t[left_index + 1:right_index]))
-        if (not turning_times or
-                crossing - turning_times[-1] > 1.0e-12 * max(1.0, abs(crossing))):
-            turning_times.append(float(crossing))
+    turning_times = _turning_point_times(t, psi_dot)
 
     ratios = []
     for start, end in zip(turning_times[:-1], turning_times[1:]):
@@ -928,23 +980,25 @@ def _transient_quartic_episode_diagnostic(
             or np.any(np.diff(t) <= 0.0)):
         return empty
 
-    turning_points = np.where(np.diff(np.signbit(psi_dot)))[0]
-    if len(turning_points) < 2 or len(w_avg) == 0:
+    turning_times = _turning_point_times(t, psi_dot)
+    if len(turning_times) < 2 or len(w_avg) == 0:
         return empty
 
     candidate_intervals = []
-    for i, (left, right) in enumerate(zip(turning_points[:-1], turning_points[1:])):
-        if right - left < 2 or right <= left:
-            candidate_intervals.append((False, float(t[left]), float(t[right])))
+    for i, (start_time, end_time) in enumerate(zip(turning_times[:-1], turning_times[1:])):
+        left = max(0, int(np.searchsorted(t, start_time, side="left")) - 1)
+        right = min(len(t) - 1, int(np.searchsorted(t, end_time, side="right")))
+        if right - left < 2 or end_time <= start_time:
+            candidate_intervals.append((False, float(start_time), float(end_time)))
             continue
-        start, end = int(left), int(right) + 1
-        q_values = Q[start:end]
-        virial_values = virial[start:end]
-        h_values = H[start:end]
+        segment = slice(left, right + 1)
+        q_values = Q[segment]
+        virial_values = virial[segment]
+        h_values = H[segment]
         q_values = q_values[np.isfinite(q_values)]
         virial_values = virial_values[np.isfinite(virial_values)]
         h_values = h_values[np.isfinite(h_values)]
-        midpoint = 0.5 * (t[left] + t[right])
+        midpoint = 0.5 * (start_time + end_time)
         if len(t_avg) == len(w_avg) and len(t_avg):
             w_index = int(np.argmin(np.abs(t_avg - midpoint)))
             w_value = float(w_avg[w_index])
@@ -956,7 +1010,7 @@ def _transient_quartic_episode_diagnostic(
         virial_value = (
             float(np.mean(virial_values)) if len(virial_values) else float("nan")
         )
-        half_period = float(t[right] - t[left])
+        half_period = float(end_time - start_time)
         omega = np.pi / half_period
         h_over_omega = (
             float(np.mean(h_values)) / omega if len(h_values) else float("nan")
@@ -968,7 +1022,7 @@ def _transient_quartic_episode_diagnostic(
             and abs(virial_value - 1.0) < 0.2
             and h_over_omega < 0.1
         )
-        candidate_intervals.append((bool(candidate), float(t[left]), float(t[right])))
+        candidate_intervals.append((bool(candidate), float(start_time), float(end_time)))
 
     runs = []
     current = []

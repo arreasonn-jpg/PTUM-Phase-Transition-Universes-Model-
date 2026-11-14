@@ -1379,3 +1379,24 @@ def test_transient_followup_aggregator_rejects_bad_continuity_residual(tmp_path)
     )
     with pytest.raises(RuntimeError, match="continuity residual"):
         load_followup_rows(tmp_path, expected_indices=(90,))
+
+
+def test_turning_point_helpers_ignore_tangential_and_unbracketed_zeroes():
+    from ptum_task1_simulation import _turning_point_indices, _turning_point_times
+
+    t = np.arange(8, dtype=float)
+    psi_dot = np.array([0.0, 1.0, 1.0, 0.0, 1.0, -1.0, -1.0, 0.0])
+    assert _turning_point_indices(psi_dot).tolist() == [0, 4]
+    assert _turning_point_times(t, psi_dot) == pytest.approx([0.0, 4.5])
+
+
+def test_time_averaged_w_uses_only_complete_turning_point_intervals():
+    from ptum_task1_simulation import compute_time_averaged_w
+
+    t = np.arange(8, dtype=float)
+    psi_dot = np.array([0.0, 1.0, 1.0, 0.0, 1.0, -1.0, -1.0, 0.0])
+    pressure = np.ones_like(t)
+    density = np.ones_like(t)
+    w, t_avg = compute_time_averaged_w(t, pressure, density, psi_dot)
+    assert w.tolist() == pytest.approx([1.0])
+    assert t_avg.tolist() == pytest.approx([2.0])
