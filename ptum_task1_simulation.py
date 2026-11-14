@@ -331,6 +331,37 @@ def delta_veff_from_reference(Phi: np.ndarray, Phi_reference: float,
     return params.V0 * np.exp(-x_initial) * (-np.expm1(-x_delta))
 
 
+def _sampled_time_derivative(t: np.ndarray, values: np.ndarray) -> np.ndarray:
+    """Differentiate sampled histories with a fourth-order uniform-grid stencil."""
+    steps = np.diff(t)
+    if (len(t) >= 5
+            and np.allclose(steps, steps[0], rtol=1.0e-10, atol=0.0)):
+        h = steps[0]
+        derivative = np.empty_like(values, dtype=float)
+        derivative[0] = (
+            -25.0 * values[0] + 48.0 * values[1] - 36.0 * values[2]
+            + 16.0 * values[3] - 3.0 * values[4]
+        ) / (12.0 * h)
+        derivative[1] = (
+            -3.0 * values[0] - 10.0 * values[1] + 18.0 * values[2]
+            - 6.0 * values[3] + values[4]
+        ) / (12.0 * h)
+        derivative[2:-2] = (
+            values[:-4] - 8.0 * values[1:-3]
+            + 8.0 * values[3:-1] - values[4:]
+        ) / (12.0 * h)
+        derivative[-2] = (
+            -values[-5] + 6.0 * values[-4] - 18.0 * values[-3]
+            + 10.0 * values[-2] + 3.0 * values[-1]
+        ) / (12.0 * h)
+        derivative[-1] = (
+            25.0 * values[-1] - 48.0 * values[-2] + 36.0 * values[-3]
+            - 16.0 * values[-4] + 3.0 * values[-5]
+        ) / (12.0 * h)
+        return derivative
+    return np.gradient(values, t, edge_order=2)
+
+
 def finite_difference_continuity_diagnostic(
     t: np.ndarray,
     delta_rho: np.ndarray,
@@ -354,7 +385,7 @@ def finite_difference_continuity_diagnostic(
     if (not all(np.all(np.isfinite(x)) for x in (t, delta_rho, H, rho_plus_p))
             or np.any(np.diff(t) <= 0.0)):
         raise ValueError("continuity diagnostic inputs must be finite with strictly increasing time")
-    rho_dot_fd = np.gradient(delta_rho, t, edge_order=2)
+    rho_dot_fd = _sampled_time_derivative(t, delta_rho)
     expansion = 3.0 * H * rho_plus_p
     residual = rho_dot_fd + expansion
     scale = np.abs(rho_dot_fd) + np.abs(expansion)
