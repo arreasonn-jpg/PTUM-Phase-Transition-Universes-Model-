@@ -64,10 +64,22 @@ def main() -> None:
             row = runs[count]
             t = np.asarray(row["t"], dtype=float)
             if count != base_count:
-                expected = np.linspace(0.0, args.t_max, base_count)
-                if not np.allclose(t[:: (count - 1) // (base_count - 1)], expected,
-                                   rtol=0.0, atol=1e-12):
-                    raise ValueError(f"trajectory {index}: {count}-point grid does not nest on base grid")
+                intervals = count - 1
+                base_intervals = base_count - 1
+                if intervals % base_intervals != 0:
+                    raise ValueError(
+                        f"trajectory {index}: {count}-point grid cannot be compared "
+                        f"on the {base_count}-point base grid"
+                    )
+                stride = intervals // base_intervals
+                # run_one_trajectory returns physical t, while t_max is
+                # specified in dimensionless mu*t units. Compare against the
+                # actual base grid instead of assuming t_max is physical time.
+                if not np.allclose(t[::stride], base_t, rtol=1e-12, atol=1e-14):
+                    raise ValueError(
+                        f"trajectory {index}: {count}-point grid does not nest "
+                        "on the actual base time grid"
+                    )
             residual = row.get("continuity_residual_finite_difference_relative")
             if residual is None:
                 raise KeyError("missing continuity_residual_finite_difference_relative")
