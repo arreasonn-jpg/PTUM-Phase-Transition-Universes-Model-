@@ -7,6 +7,7 @@ waterfall. All quantities use natural units (hbar=c=1).
 from __future__ import annotations
 
 import numpy as np
+from scipy.integrate import quad
 
 
 def _validate_positive(name: str, value: float) -> float:
@@ -80,6 +81,108 @@ def bias_from_operator_vev(
         raise ValueError("operator_vev and wilson_coefficient must be finite")
     return wilson_coefficient * operator_vev / cutoff
 
+
+
+def thermal_dirac_scalar_condensate(
+    mass: float,
+    temperature: float,
+    color_multiplicity: int = 1,
+) -> float:
+    """Return the finite-T ideal-gas contribution to <bar(f) f>.
+
+    The zero-temperature vacuum condensate is subtracted. For a free,
+    equilibrium Dirac species with g=4*N_c particle/antiparticle and spin
+    degrees of freedom,
+
+        Delta_T <bar(f) f> = 4*N_c*m*T^2/(2*pi^2) *
+            integral_0^inf dx x^2/[sqrt(x^2+(m/T)^2)
+            * (exp(sqrt(x^2+(m/T)^2))+1)].
+
+    Natural units are used. This is a one-loop free-gas contribution in a
+    fixed broken-phase mass basis; it omits gauge/QCD interactions, thermal
+    masses, finite chemical potential, non-equilibrium effects, the
+    electroweak crossover, and the renormalized T=0 condensate.
+    """
+    mass = _validate_nonnegative("mass", mass)
+    temperature = _validate_nonnegative("temperature", temperature)
+    nc_value = float(color_multiplicity)
+    if (not np.isfinite(nc_value) or nc_value < 1.0
+            or not nc_value.is_integer()):
+        raise ValueError("color_multiplicity must be a positive integer")
+    if mass == 0.0 or temperature == 0.0:
+        return 0.0
+
+    z = mass / temperature
+
+    def integrand(x: float) -> float:
+        energy = np.hypot(x, z)
+        boltzmann = np.exp(-energy)
+        fermi = boltzmann / (1.0 + boltzmann)
+        return x * x * fermi / energy
+
+    integral, _ = quad(
+        integrand, 0.0, np.inf, epsabs=1.0e-12,
+        epsrel=1.0e-10, limit=200,
+    )
+    return float(
+        4.0 * nc_value * mass * temperature**2
+        * integral / (2.0 * np.pi**2)
+    )
+
+
+def thermal_fermion_bias(
+    fermions: list[tuple[float, float, int]],
+    temperature: float,
+) -> dict[str, object]:
+    """Estimate the ideal-gas fermionic thermal tilt in the broken phase.
+
+    Each tuple is (Dirac mass, real scalar coupling y_psi_f, N_c), where
+    m_f(psi)=m_f+y_psi_f*psi. The thermal free-energy term is
+    V_T(psi) = V_T(0) + C_T*psi + O(psi^2), with
+    C_T=sum_f y_psi_f*Delta_T<bar(f)f>. The returned signed source follows
+    V_bias=-epsilon_bias*psi, hence epsilon_bias=-C_T.
+
+    The couplings may be supplied from the diagonal real part of
+    C_f*v(T)/(sqrt(2)*Lambda). Off-diagonal flavour expectation values
+    vanish in the unperturbed diagonal free-gas ensemble at this order.
+    This is a conditional ideal-gas estimate, not a PTUM thermal-history
+    prediction or a substitute for the interacting finite-T effective
+    action.
+    """
+    temperature = _validate_nonnegative("temperature", temperature)
+    linear_coefficient = 0.0
+    terms: list[dict[str, float | int]] = []
+    for index, item in enumerate(fermions):
+        if len(item) != 3:
+            raise ValueError(
+                "each fermion entry must be (mass, scalar_coupling, N_c)"
+            )
+        mass, scalar_coupling, nc = item
+        scalar_coupling = float(scalar_coupling)
+        if not np.isfinite(scalar_coupling):
+            raise ValueError("scalar_coupling must be finite")
+        condensate = thermal_dirac_scalar_condensate(
+            mass, temperature, nc
+        )
+        contribution = scalar_coupling * condensate
+        linear_coefficient += contribution
+        terms.append({
+            "index": index,
+            "mass": float(mass),
+            "scalar_coupling": scalar_coupling,
+            "color_multiplicity": int(nc),
+            "thermal_condensate": condensate,
+            "linear_potential_contribution": contribution,
+        })
+
+    return {
+        "temperature": temperature,
+        "linear_potential_coefficient": float(linear_coefficient),
+        "epsilon_bias": float(-linear_coefficient),
+        "species_terms": terms,
+        "uses_zero_temperature_subtracted_condensate": True,
+        "ideal_equilibrium_dirac_gas_only": True,
+    }
 
 def _tilted_minima(mu_eff: float, lambda_psi: float, epsilon_bias: float):
     """Solve the exact stationary cubic for the tilted double-well potential."""
