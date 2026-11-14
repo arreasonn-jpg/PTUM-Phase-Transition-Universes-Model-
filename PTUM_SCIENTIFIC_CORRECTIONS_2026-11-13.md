@@ -706,3 +706,46 @@ benchmark realizes such a history. The actual (Phi_{\\rm res})
 trajectory and its coupling to the expansion remain to be derived
 self-consistently. The branch now contains 51 regression tests; the
 latest tests and manuscript changes still await a fresh CI run.
+
+
+## 41. Final adiabatic particle-basis gate (2026-11-14)
+
+The expanding-background mode solver previously required a positive final
+canonical frequency and a conserved canonical Wronskian before reporting
+an instantaneous occupation number. That was not sufficient: an oscillator
+can have a real positive instantaneous frequency while its frequency is
+changing too rapidly for an adiabatic particle basis to be meaningful.
+
+The solver now evaluates the final first-order WKB measure
+$|\\dot\\Omega_{k,f}/\\Omega_{k,f}^2|$ from the derivative of the same
+canonical-frequency-squared spline used for the initial WKB state. The
+default acceptance threshold is 0.1, exposed as
+max_final_adiabaticity. A mode occupation is reported only if the final
+frequency is positive, this final adiabaticity gate passes, and the
+Wronskian remains within tolerance. The finite-band spectrum returns a
+NaN density unless every included mode passes all three checks. The
+waterfall wrapper and fixed-band resolution helper propagate the gate.
+
+The threshold 0.1 is a numerical reliability criterion, not a physical
+constant. A production result must be stable under tightening and varying
+this threshold, in addition to solver tolerance, time resolution and
+momentum-grid/range convergence.
+
+Two regression tests use a positive but rapidly varying mass history:
+the first confirms that the mode occupation is withheld despite a positive
+final frequency and valid Wronskian; the second confirms that the
+finite-band density is withheld when the included modes have no valid
+final adiabatic particle basis. A manuscript regression guards the
+corresponding claim boundary.
+
+The preceding workflow 43501562655 passed 72 tests, the four-trajectory
+two-scale smoke scan and the LaTeX build. The final-WKB change and its
+three new tests bring the branch to 75 tests, but are newer than that
+workflow and remain pending fresh CI verification.
+
+The smoke artifact contained only four trajectories. Its two zero-seed
+rows remained exact classical invariant controls; its two nonzero-seed
+rows were non-quartic or insufficient-oscillation-data. These results
+are a smoke-test check only, not evidence for or against the full
+100-point parameter grid. No full scan, nonlinear waterfall, relic
+abundance, or microscopic proxy-fluid conclusion is claimed.
