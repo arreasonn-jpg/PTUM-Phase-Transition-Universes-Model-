@@ -240,3 +240,21 @@ for PTUM. The kink tension and annihilation/domination estimates remain
 conditional order-of-magnitude diagnostics. No defect formation
 probability, network scaling solution, annihilation history, or
 BBN-safe realization is claimed.
+
+
+## 2026-11-14 conditional thermal fermion bias
+
+A zero-temperature-subtracted ideal-gas expression is now implemented
+for the finite-temperature scalar condensate of a free equilibrium
+Dirac species in the broken electroweak phase. With fixed mass and
+real coupling $m_f(\psi)=m_f+y_{\psi f}\psi$, it gives the
+conditional thermal linear coefficient in the convention
+$V_{\rm bias}=-\epsilon_{\rm bias}\psi$.
+
+This estimate is not the PTUM bias prediction. It assumes a fixed
+broken-phase Higgs expectation value, equilibrium free fermions and
+zero chemical potential, and omits gauge/QCD corrections, thermal
+masses, the electroweak crossover, non-equilibrium reheating, and
+the renormalized vacuum condensate. The Wilson matrices, cutoff,
+thermal history and operator renormalization remain unspecified.
+No defect-wall annihilation time or BBN-safe network is claimed.
