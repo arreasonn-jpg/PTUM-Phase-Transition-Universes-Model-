@@ -1068,6 +1068,86 @@ an explicit symmetry-breaking analysis and an inhomogeneous defect
 network calculation. No defect-free or cosmic-string claim is made
 for the present truncation.
 
+For a fixed post-threshold value of $\Phi$, write
+$m_{\rm eff}^2=-\mu_{\rm eff}^2<0$ and
+$v=\mu_{\rm eff}/\sqrt{\lambda_\psi}$. Up to the constant
+minimum energy, the real-scalar potential is
+\begin{equation}
+V_\psi-V_{\min}
+=\frac{\lambda_\psi}{4}(\psi^2-v^2)^2.
+\end{equation}
+In the locally static, flat-space limit, its planar kink is
+\begin{equation}
+\psi_{\rm wall}(z)=v\tanh
+\left(\frac{\mu_{\rm eff}z}{\sqrt2}\right),
+\qquad
+\sigma_{\rm wall}
+=\int dz\,\left[\frac12(\partial_z\psi)^2+
+V_\psi-V_{\min}\right]
+=\frac{2\sqrt2}{3}
+\frac{\mu_{\rm eff}^3}{\lambda_\psi}.
+\label{eq:ptum_domain_wall_tension}
+\end{equation}
+This establishes the domain-wall topology and tension of the
+degenerate real-$\psi$ truncation; it is not a calculation of
+formation probability or of a cosmological defect network.
+
+To parameterize a possible explicit bias, consider the low-energy
+tilt $V_{\rm bias}=-\epsilon_{\rm bias}\psi$, where
+$[\epsilon_{\rm bias}]=3$. The stationary points obey
+\begin{equation}
+\lambda_\psi\psi^3-\mu_{\rm eff}^2\psi
+-\epsilon_{\rm bias}=0,
+\qquad
+|\epsilon_{\rm bias}|<
+\epsilon_{\rm crit}
+=\frac{2\mu_{\rm eff}^3}
+{3\sqrt{3\lambda_\psi}}
+\end{equation}
+for two local minima to coexist. In the small-bias limit their
+energy splitting is
+\begin{equation}
+\Delta V_{\rm vac}
+=2|\epsilon_{\rm bias}|v
++O(\epsilon_{\rm bias}^3).
+\end{equation}
+For a scaling wall network with
+$\rho_{\rm wall}\simeq\mathcal A\sigma_{\rm wall}H$,
+the order-of-magnitude estimates are
+\begin{equation}
+H_{\rm dom}\simeq
+\frac{\mathcal A\sigma_{\rm wall}}{3M_{\rm Pl}^2},
+\qquad
+H_{\rm ann}\sim
+\frac{\Delta V_{\rm vac}}{\sigma_{\rm wall}}.
+\end{equation}
+A necessary small-bias condition for annihilation before both
+wall domination and BBN is therefore
+\begin{equation}
+\Delta V_{\rm vac}
+\gtrsim\sigma_{\rm wall}
+\max(H_{\rm BBN},H_{\rm dom}).
+\label{eq:ptum_domain_wall_bias_bound}
+\end{equation}
+If the dimension-five operator supplies the tilt, its magnitude
+would be $|\epsilon_{\rm bias}|=
+|C\langle\mathcal O_{\rm SM}\rangle|/\Lambda$ in the chosen
+renormalized state. The odd operator explicitly breaks the
+Lagrangian-level reflection symmetry, but it does not fix this
+renormalized expectation value or guarantee that the bias exceeds
+the bound above. The Wilson coefficients, thermal state, operator
+renormalization and effective potential must be specified before
+a wall lifetime can be predicted.
+
+The auxiliary module `ptum_defects.py` evaluates the exact two
+stationary minima of the tilted quartic potential, the spinodal
+source, the degenerate-wall tension, and the conditional
+annihilation/domination bounds. Its tests verify the kink equation,
+tension integral, small-bias splitting and loss of the false
+minimum at the spinodal point. These analytic diagnostics do not
+replace an expanding inhomogeneous network simulation; Gate 5
+remains open.
+
 \noindent\textbf{Swampland considerations.}
 For the dimensionless plateau parameter \(\lambda_\Phi\), define
 \(x=\lambda_\Phi\Phi^2/M_{\rm Pl}^2\). The tree-level fuel potential
