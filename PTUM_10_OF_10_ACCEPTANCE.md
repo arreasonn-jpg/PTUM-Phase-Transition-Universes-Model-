@@ -225,3 +225,35 @@ Fresh PR workflow 43580982470 on that head completed successfully:
 This is a four-trajectory smoke scan only. The 100-trajectory full scan, its strict-JSON artifact, solver-tolerance/time-grid convergence, and classification-stability checks remain outstanding. The full scan must run on an isolated `ptum/full-scan-*` branch so it cannot supersede or cancel the PR workflow.
 
 Gate 10 remains **PARTIAL**. Gates 2--9 retain the statuses in the matrix above; no acceptance gate is promoted by a passing software-only smoke run. PTUM remains **NOT 10/10**.
+
+
+## 2026-11-14 latest-head verification and full-scan isolation
+
+The documentation-only follow-up commits are on PR head
+`d4f5f8b37a526c6fba35d19cb9c0396710da2e1a`. Workflow
+`43582227619` completed successfully on this exact head:
+- **75 passed** in the Python regression suite;
+- four of four smoke integrations succeeded, with zero integration
+  failures;
+- each scenario still produced one `insufficient_oscillation_data`
+  and one `non_quartic` classification;
+- the LaTeX PDF build and artifact upload succeeded.
+
+The LaTeX log still contains numerous Underfull \\hbox warnings and
+two distinct `h`-to-`ht` float-placement warnings. No Overfull
+\\hbox warning or LaTeX error was reported. This is a successful
+build, not a warning-free manuscript. Gate 10 remains PARTIAL.
+
+An isolated full-scan execution branch,
+`ptum/full-scan-2026-11-14-r2`, was created from this PR head and
+received execution-manifest commit
+`c101aaed58e44c9f0159ebb806a84d670cd892e2`. It is configured to
+run the 100-trajectory full profile without modifying the PR branch
+or `main`. At this checkpoint, no completed run or validated 100-row
+artifact has been confirmed; the scan result is not yet evidence.
+
+No physical gate is promoted by the 75-test CI result. The coupled
+quantum-seeded inhomogeneous waterfall, nonlinear backreaction,
+rescattering, converged spectrum/relic calculation, proxy-fluid
+microphysics, thermal history, and independent CLASS/Cobaya
+reproduction remain unmet or partial as listed in the matrix.
