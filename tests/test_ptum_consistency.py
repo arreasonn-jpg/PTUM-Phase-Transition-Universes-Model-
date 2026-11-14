@@ -1400,3 +1400,21 @@ def test_time_averaged_w_uses_only_complete_turning_point_intervals():
     w, t_avg = compute_time_averaged_w(t, pressure, density, psi_dot)
     assert w.tolist() == pytest.approx([1.0])
     assert t_avg.tolist() == pytest.approx([2.0])
+
+
+def test_exact_zero_waterfall_branch_is_explicitly_marked_as_invariant_control():
+    result = {
+        "success": True,
+        "t": np.linspace(0.0, 1.0, 101),
+        "H": np.full(101, 0.1),
+        "psi": np.zeros(101),
+        "psi_dot": np.zeros(101),
+        "w_psi_avg": np.array([]),
+        "Q": np.full(101, np.nan),
+        "virial_ratio": np.full(101, np.nan),
+        "quadratic_virial_ratio": np.full(101, np.nan),
+    }
+    classification = classify_outcome(result, PTUMParameters())
+    assert classification["regime"] == "insufficient_oscillation_data"
+    assert classification["exact_classical_invariant_control"]
+    assert "exact homogeneous psi=0" in classification["classification_note"]

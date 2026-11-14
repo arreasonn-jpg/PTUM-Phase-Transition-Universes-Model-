@@ -1148,7 +1148,7 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
         # direct measurement of a field-space barrier crossing.
         regime = 'non_quartic'
     
-    return {
+    classification = {
         'regime': regime,
         'quartic_achieved': quartic_achieved,
         'w_final': float(w_final),
@@ -1163,6 +1163,25 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
         'n_oscillations': len(w_avg),
         **_transient_quartic_episode_diagnostic(result),
     }
+    psi_history = np.asarray(result.get('psi', []), dtype=float)
+    psi_dot_history = np.asarray(result.get('psi_dot', []), dtype=float)
+    exact_invariant = (
+        psi_history.ndim == 1
+        and len(psi_history) > 0
+        and psi_dot_history.shape == psi_history.shape
+        and np.all(np.isfinite(psi_history))
+        and np.all(np.isfinite(psi_dot_history))
+        and np.all(psi_history == 0.0)
+        and np.all(psi_dot_history == 0.0)
+    )
+    classification['exact_classical_invariant_control'] = bool(exact_invariant)
+    if exact_invariant:
+        classification['classification_note'] = (
+            'Exact homogeneous psi=0, psi_dot=0 classical invariant branch; '
+            'no oscillation-based regime is defined for this control.'
+        )
+    return classification
+
 
 
 def _json_safe(value):

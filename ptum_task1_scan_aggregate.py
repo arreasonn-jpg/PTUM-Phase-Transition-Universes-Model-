@@ -50,7 +50,17 @@ def main() -> None:
     )
     print(f"Validated trajectories: {len(rows)}/{args.expected}")
     print(f"Scenarios: {dict(scenarios)}")
+    invariant_controls = sum(
+        bool(row.get("classification", {}).get("exact_classical_invariant_control"))
+        or (
+            row.get("max_abs_psi_over_trajectory") == 0.0
+            and row.get("ic_params", {}).get("psi_init") == 0.0
+            and row.get("ic_params", {}).get("psi_dot_init") == 0.0
+        )
+        for row in rows
+    )
     print(f"Late-time regimes: {dict(regimes)}")
+    print(f"Exact classical invariant controls: {invariant_controls}")
     print(f"Combined summary: {args.output}")
 
 
