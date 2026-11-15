@@ -768,27 +768,46 @@ def compute_dense_cycle_diagnostics(
         physical_state(tau)[3] for tau in tau_samples
     ])
     roots = []
-    for index in range(len(tau_samples) - 1):
-        left_value, right_value = sampled_psi_dot[index:index + 2]
-        if not (np.isfinite(left_value) and np.isfinite(right_value)):
+
+    # A turning point requires an isolated zero/sign reversal of psi_dot.
+    # Treating every exact zero sample as a root creates thousands of fake
+    # cycles for the stationary psi=psi_dot=0 solution. Work with consecutive
+    # finite nonzero samples, allowing at most one exact-zero sample between
+    # them. Longer zero plateaus and non-finite gaps are not oscillations.
+    finite_nonzero = np.flatnonzero(
+        np.isfinite(sampled_psi_dot) & (sampled_psi_dot != 0.0)
+    )
+    if (len(finite_nonzero) and finite_nonzero[0] == 1
+            and sampled_psi_dot[0] == 0.0):
+        roots.append(float(tau_samples[0]))
+
+    for left_index, right_index in zip(
+        finite_nonzero[:-1], finite_nonzero[1:]
+    ):
+        if right_index - left_index > 2:
             continue
-        if left_value == 0.0:
-            root = float(tau_samples[index])
-        elif right_value == 0.0:
-            root = float(tau_samples[index + 1])
-        elif np.signbit(left_value) != np.signbit(right_value):
-            root = float(brentq(
-                lambda tau: physical_state(tau)[3],
-                tau_samples[index], tau_samples[index + 1],
-                xtol=4.0 * np.finfo(float).eps,
-                rtol=8.0 * np.finfo(float).eps,
-            ))
-        else:
+        left_value = sampled_psi_dot[left_index]
+        right_value = sampled_psi_dot[right_index]
+        if np.signbit(left_value) == np.signbit(right_value):
             continue
+        root = float(brentq(
+            lambda tau: physical_state(tau)[3],
+            tau_samples[left_index], tau_samples[right_index],
+            xtol=4.0 * np.finfo(float).eps,
+            rtol=8.0 * np.finfo(float).eps,
+        ))
         if not roots or root - roots[-1] > (
             32.0 * np.finfo(float).eps * max(1.0, abs(root))
         ):
             roots.append(root)
+
+    if (len(finite_nonzero) and finite_nonzero[-1] == len(tau_samples) - 2
+            and sampled_psi_dot[-1] == 0.0):
+        endpoint = float(tau_samples[-1])
+        if not roots or endpoint - roots[-1] > (
+            32.0 * np.finfo(float).eps * max(1.0, abs(endpoint))
+        ):
+            roots.append(endpoint)
 
     q_values = np.full(n_output, np.nan, dtype=float)
     virial_values = np.full(n_output, np.nan, dtype=float)
