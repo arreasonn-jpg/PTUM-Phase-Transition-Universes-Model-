@@ -7,6 +7,7 @@ import pytest
 from ptum_task1_simulation import (
     DEFAULT_MAX_RHS_EVALUATIONS,
     RHSWorkBudgetExceeded,
+    RHSIntegrationError,
     PTUMParameters,
     M_PL,
     meff_sq_psi,
@@ -1592,3 +1593,37 @@ def test_manuscript_thermal_condensate_and_table_floats_have_safe_layout():
     assert r"\qquad\times" in source
     assert r"\begin{table}[h]" not in source
     assert r"\begin{table}[htbp]" in source
+
+
+
+def test_nonfinite_background_state_is_annotated_with_rhs_work_and_fields():
+    p = PTUMParameters(V0=1.0e50, m_psi=1.0e5, lambda_psi=0.1)
+    ic = InitialConditions(
+        Phi=0.9 * p.Phi_c,
+        Phi_dot=0.0,
+        psi=1.0e100,
+        psi_dot=0.0,
+    )
+    with pytest.raises(RHSIntegrationError) as error:
+        run_simulation(
+            p, ic, (0.0, 1.0e-9),
+            t_eval=np.linspace(0.0, 1.0e-9, 3),
+            max_rhs_evaluations=100,
+        )
+    assert error.value.rhs_evaluations == 1
+    assert "rho_psi=inf" in str(error.value)
+    assert "psi=1e+100" in str(error.value)
+
+
+def test_simulation_rejects_nonpositive_or_nonfinite_solver_tolerances():
+    p = PTUMParameters()
+    ic = InitialConditions(
+        Phi=0.9 * p.Phi_c,
+        Phi_dot=0.0,
+        psi=0.0,
+        psi_dot=0.0,
+    )
+    with pytest.raises(ValueError, match="rtol"):
+        run_simulation(p, ic, (0.0, 1.0e-9), rtol=0.0)
+    with pytest.raises(ValueError, match="atol"):
+        run_simulation(p, ic, (0.0, 1.0e-9), atol=float("nan"))
