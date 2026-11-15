@@ -11,6 +11,7 @@ from ptum_full_grid_convergence import (
     ATOL as FULL_GRID_ATOL,
     MAX_RHS_EVALUATIONS as FULL_GRID_MAX_RHS,
     json_safe as full_grid_json_safe,
+    compute_dense_cycle_diagnostics,
 )
 from ptum_scan_convergence import (
     CASES as CONVERGENCE_CASES,
@@ -1917,3 +1918,62 @@ def test_full_grid_json_sanitizer_replaces_nonfinite_values_with_null():
         "negative_inf": None,
         "nested": [1.0, None],
     }
+
+
+
+def test_dense_cycle_integrals_are_invariant_to_output_sampling_density():
+    from ptum_task1_simulation import PTUMParameters
+
+    params = PTUMParameters(lambda_psi=0.1)
+    amplitude = 0.2 * params.psi_0
+    phi_value = 0.99 * params.Phi_c
+
+    # Analytic harmonic trajectory used as a continuous dense-output oracle.
+    # The same interpolant is sampled on two very different output grids.
+    def dense_state(tau):
+        return np.asarray([
+            phi_value,
+            0.0,
+            amplitude * np.cos(tau),
+            -amplitude * np.sin(tau),
+        ])
+
+    scales = np.ones(4)
+    coarse_tau = np.linspace(0.0, 4.0 * np.pi, 101)
+    fine_tau = np.linspace(0.0, 4.0 * np.pi, 4001)
+    coarse = compute_dense_cycle_diagnostics(
+        dense_state, coarse_tau, 1.0, scales, params, len(coarse_tau)
+    )
+    fine = compute_dense_cycle_diagnostics(
+        dense_state, fine_tau, 1.0, scales, params, len(fine_tau)
+    )
+
+    expected_q = (
+        3.0 * params.lambda_psi * amplitude**2
+        / (4.0 * abs(meff_sq_psi(phi_value, params)))
+    )
+    expected_virial = 4.0 / (
+        3.0 * params.lambda_psi * amplitude**2
+    )
+    np.testing.assert_allclose(
+        coarse["Q"][np.isfinite(coarse["Q"])],
+        expected_q, rtol=2.0e-8, atol=0.0,
+    )
+    np.testing.assert_allclose(
+        fine["Q"][np.isfinite(fine["Q"])],
+        expected_q, rtol=2.0e-8, atol=0.0,
+    )
+    np.testing.assert_allclose(
+        coarse["virial_ratio"][np.isfinite(coarse["virial_ratio"])],
+        expected_virial, rtol=2.0e-8, atol=0.0,
+    )
+    np.testing.assert_allclose(
+        fine["virial_ratio"][np.isfinite(fine["virial_ratio"])],
+        expected_virial, rtol=2.0e-8, atol=0.0,
+    )
+    assert len(coarse["w_avg"]) == len(fine["w_avg"]) == 4
+    assert coarse["turning_times"] == pytest.approx(
+        fine["turning_times"], abs=2.0e-10
+    )
+    assert coarse["max_relative_quadrature_error"] < 1.0e-8
+    assert fine["max_relative_quadrature_error"] < 1.0e-8
