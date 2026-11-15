@@ -46,6 +46,21 @@ M_PL = 2.435e18  # GeV (reduced Planck mass)
 GEV_TO_S = 6.582e-25  # 1 GeV^-1 = 6.582e-25 s
 
 
+class RHSWorkBudgetExceeded(RuntimeError):
+    """Deterministic guard against pathological adaptive-solver work."""
+
+    def __init__(self, limit: int, evaluations: int):
+        self.limit = int(limit)
+        self.evaluations = int(evaluations)
+        super().__init__(
+            f"RHS evaluation budget exceeded: limit={self.limit}, "
+            f"attempted_evaluations={self.evaluations}"
+        )
+
+
+DEFAULT_MAX_RHS_EVALUATIONS = 100_000
+
+
 @dataclass
 class PTUMParameters:
     """PTUM model parameters for the discharge simulation."""
@@ -316,16 +331,34 @@ def run_simulation(params: PTUMParameters,
                    t_span: Tuple[float, float],
                    t_eval: Optional[np.ndarray] = None,
                    rtol: float = 1e-9,
-                   atol: float = 1e-12) -> Dict:
+                   atol: float = 1e-12,
+                   max_rhs_evaluations: Optional[int] = DEFAULT_MAX_RHS_EVALUATIONS) -> Dict:
     """
-    Run a single background simulation.
-    
-    Returns dictionary with time series and diagnostics.
+    Run a single background simulation with a deterministic RHS-work guard.
+
+    The evaluation budget is an engineering fail-closed limit, not a physical
+    cutoff or a substitute for convergence. A trajectory that exhausts it is
+    reported as failed and must not be classified as a physical regime.
     """
+    if (max_rhs_evaluations is not None
+            and (isinstance(max_rhs_evaluations, bool)
+                 or int(max_rhs_evaluations) != max_rhs_evaluations
+                 or max_rhs_evaluations < 1)):
+        raise ValueError("max_rhs_evaluations must be a positive integer or None")
+
     y0 = np.array([ic.Phi, ic.Phi_dot, ic.psi, ic.psi_dot])
-    
+    rhs_evaluations = 0
+
+    def counted_background_equations(t, y, model_params):
+        nonlocal rhs_evaluations
+        rhs_evaluations += 1
+        if (max_rhs_evaluations is not None
+                and rhs_evaluations > max_rhs_evaluations):
+            raise RHSWorkBudgetExceeded(max_rhs_evaluations, rhs_evaluations)
+        return background_equations(t, y, model_params)
+
     sol = solve_ivp(
-        background_equations,
+        counted_background_equations,
         t_span,
         y0,
         args=(params,),
@@ -455,6 +488,20 @@ def run_simulation(params: PTUMParameters,
     
     return {
         'success': True,
+        'solver_stats': {
+            'method': 'DOP853',
+            'rhs_evaluations': int(rhs_evaluations),
+            'nfev': int(sol.nfev),
+            'njev': int(sol.njev),
+            'nlu': int(sol.nlu),
+            'rtol': float(rtol),
+            'atol': float(atol),
+            'rhs_evaluation_limit': (
+                None if max_rhs_evaluations is None
+                else int(max_rhs_evaluations)
+            ),
+            'budget_exhausted': False,
+        },
         't': t,
         'Phi': Phi,
         'Phi_dot': Phi_dot,
@@ -686,7 +733,8 @@ def run_parameter_scan(params: PTUMParameters,
                        phi_dot_init_by_offset: Optional[Dict[float, float]] = None,
                        progress_interval: int = 0,
                        progress_label: str = "scan",
-                       result_callback: Optional[Callable[[Dict], None]] = None
+                       result_callback: Optional[Callable[[Dict], None]] = None,
+                       max_rhs_evaluations: Optional[int] = DEFAULT_MAX_RHS_EVALUATIONS
                        ) -> List[Dict]:
     """
     Run parameter scan over initial conditions.
@@ -730,8 +778,18 @@ def run_parameter_scan(params: PTUMParameters,
                     Phi_dot_override=phi_dot_override
                 )
                 
+                print(
+                    f"[{progress_label}] starting trajectory "
+                    f"{completed_runs + 1}/{total_runs}: "
+                    f"psi={psi_init}, psi_dot={psi_dot_init}, "
+                    f"phi_offset={phi_offset}",
+                    flush=True,
+                )
                 try:
-                    result = run_simulation(params, ic, t_span, t_eval)
+                    result = run_simulation(
+                        params, ic, t_span, t_eval,
+                        max_rhs_evaluations=max_rhs_evaluations,
+                    )
                     
                     # Classify outcome
                     classification = classify_outcome(result, params)
@@ -756,6 +814,13 @@ def run_parameter_scan(params: PTUMParameters,
                             'phi_offset': phi_offset
                         }
                     }
+                    if isinstance(e, RHSWorkBudgetExceeded):
+                        failed_result['solver_stats'] = {
+                            'method': 'DOP853',
+                            'rhs_evaluations': e.evaluations,
+                            'rhs_evaluation_limit': e.limit,
+                            'budget_exhausted': True,
+                        }
                     results.append(failed_result)
                     if result_callback is not None:
                         result_callback(failed_result)
