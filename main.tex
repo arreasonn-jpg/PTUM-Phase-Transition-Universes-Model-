@@ -860,8 +860,7 @@ unavailable. These rows do not establish a sustained quartic-fluid
 phase. The median finite-difference continuity residual normalized
 by $H\rho$ is about $3.72\times10^{-2}$ at high scale and
 $4.03\times10^{-6}$ at low scale, so output-grid and solver-tolerance
-convergence remain mandatory. A BDF cross-check with unchanged
-tolerances is running on an isolated execution branch. This scan
+convergence remain mandatory. The isolated BDF scan completed 98/100 trajectories, matching Radau's two RHS-budget failures and all 98 successful regime labels. This is cross-solver agreement, not solver-tolerance or output-grid convergence. A current-source DOP853 cross-check is running on isolated execution PR #7. This scan
 remains homogeneous and post-threshold; it is neither a quantum-seeded
 inhomogeneous waterfall nor a relic calculation.
 
@@ -895,7 +894,7 @@ Radau artifact is published as a CI artifact and contains 98
 successful integrations and two explicit RHS-budget failures; it is
 not an all-success scan. None of the 98 successful rows passes the
 joint quartic classifier. The two failed rows remain unclassified,
-and the current BDF cross-check is pending. No conclusion is drawn
+and the current-source DOP853 cross-check is running on isolated execution PR #7. No conclusion is drawn
 for the failed rows or unsampled parameter regions. The scan is a
 homogeneous post-threshold sensitivity study, not a quantum-seeded
 inhomogeneous calculation.
