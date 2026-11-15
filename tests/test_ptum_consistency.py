@@ -1897,7 +1897,7 @@ def test_targeted_convergence_acceptance_limits_are_explicit_and_provisional():
 
 def test_full_grid_convergence_profile_matches_declared_100_row_dop853_grid():
     assert FULL_GRID_EXPECTED_ROWS == 100
-    assert FULL_GRID_N_POINTS == 128001
+    assert FULL_GRID_N_POINTS == 256001
     assert FULL_GRID_RTOL == 1.0e-9
     assert FULL_GRID_ATOL == 1.0e-12
     assert FULL_GRID_MAX_RHS == 1_000_000
