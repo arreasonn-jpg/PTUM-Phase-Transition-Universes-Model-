@@ -425,9 +425,9 @@ Some low-scale large-classical-seed rows have Q up to 11.12, w about
 0.363 and virial ratio about 0.890, but only two late half-cycles occur
 in the final 20 percent; the adiabaticity diagnostic is therefore
 unavailable. This is a transient quartic-like average, not a sustained
-quartic-fluid result. A BDF cross-check at unchanged tolerances is
-running on isolated execution PR #5. A new regression guards these
-claim boundaries; its fresh CI result is pending.
+quartic-fluid result. The isolated BDF cross-check (PR #5) is complete:
+it matches the two Radau budget failures and all 98 successful-row
+regime labels, but does not establish time-grid or tolerance convergence.
 
 The isolated BDF rerun (workflow 43705977596, execution PR #5) also
 completed 98/100 trajectories and failed on the same two RHS-budget
@@ -436,6 +436,14 @@ labels. The maximum relative final-state differences are below
 2.4e-3 (the largest is psi_dot); Q, w and virial classifier metrics
 agree to at least about 4e-5 relative. This supports cross-method
 stability of the 98 successful classifications but does not establish
-time-grid or tolerance convergence. The two failed trajectories remain
-unresolved; a targeted DOP853 probe is the next step. The BDF artifact
-is strict JSON with 100 rows and no non-finite numeric values.
+time-grid or tolerance convergence. The BDF artifact is strict JSON
+with 100 rows and no non-finite numeric values.
+
+The first DOP853 execution PR #6 was based on a stale source commit
+and its full scan failed, so it is not a valid same-source comparison.
+A replacement isolated execution PR #7 was created directly from the
+current PR #2 head. Workflow 43753469944 is running the unchanged
+100-row DOP853 profile at rtol=1e-9, atol=1e-12 and a 1,000,000-RHS
+per-row guard. Its artifact has not yet been inspected. No solver
+agreement, scan completion or physical conclusion is claimed from
+this in-progress run.
