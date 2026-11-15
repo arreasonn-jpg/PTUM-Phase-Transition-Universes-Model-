@@ -1032,7 +1032,9 @@ def save_results(results: List[Dict], filepath: str):
                     class_dict[k] = v
             
             summary.append({
+                'success': True,
                 'classification': class_dict,
+                'solver_stats': _json_safe(r.get('solver_stats', {})),
                 'scan_metadata': _json_safe(r.get('scan_metadata', {})),
                 'ic_params': r['ic_params'],
                 'max_abs_psi_over_trajectory': float(np.max(np.abs(r['psi']))),
@@ -1045,6 +1047,7 @@ def save_results(results: List[Dict], filepath: str):
             summary.append({
                 'success': False,
                 'error': r.get('error', 'Unknown'),
+                'solver_stats': _json_safe(r.get('solver_stats', {})),
                 'scan_metadata': _json_safe(r.get('scan_metadata', {})),
                 'ic_params': r['ic_params']
             })
