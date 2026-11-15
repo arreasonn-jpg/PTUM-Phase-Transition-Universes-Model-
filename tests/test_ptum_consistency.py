@@ -1884,3 +1884,14 @@ def test_targeted_convergence_acceptance_limits_are_explicit_and_provisional():
         "virial_final_absolute_difference": 1.0e-3,
         "finite_difference_continuity_residual_absolute_difference": 1.0e-3,
     }
+
+
+def test_full_reheating_scalar_and_higgs_eom_sources_are_explicit_in_manuscript():
+    from pathlib import Path
+
+    source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
+    assert "eq:psi_full_reheating_eom" in source
+    assert "eq:higgs_full_reheating_eom" in source
+    assert "g_{\\psi H}\\psi H^\\dagger H" in source
+    assert "mathcal O_{\\rm SM}" in source
+    assert "does not imply that the present homogeneous code evolves the Higgs or fermion fields" in source
