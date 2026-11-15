@@ -101,3 +101,44 @@ two-field background and linear modes on prescribed external
 background histories. The proxy-fluid closure remains phenomenological.
 Two regression tests now guard the manuscript's claim boundary; their
 latest CI result is pending.
+
+
+## 2026-11-15 current-source three-solver scan comparison
+
+The full homogeneous post-threshold scan was run with Radau
+(workflow 43703987436), BDF (workflow 43705977596) and DOP853
+(workflow 43753469944). The current-source DOP853 execution branch
+was created from PR #2 source commit
+`bebd0bd1e5f75e31d3d0ba8dfe84a9b53293bea0`. The subsequent PR #2
+changes through the audit update modify manuscript, tests and
+documentation only; the scan and simulation implementation are
+unchanged.
+
+All three artifacts contain the same ordered 100-row initial-condition
+grid. Radau and BDF each complete 98/100 integrations and hit the
+1,000,000-RHS engineering guard on the same two rows. DOP853 completes
+100/100 at the same `rtol=1e-9`, `atol=1e-12`, output grid and
+RHS guard. The two DOP853-only rows are non_quartic, but they have
+no successful Radau/BDF counterpart and therefore lack independent
+cross-method validation.
+
+Across the 98 rows successful under all three methods, all regime
+labels are identical. DOP853/Radau maximum relative differences:
+`final_Phi` 3.1589e-9, `final_Phi_dot` 1.1799e-7,
+`final_psi` 4.7689e-7, `final_psi_dot` 9.1140e-6,
+`final_H` 2.8607e-10, `final_rho_total` 5.7215e-10,
+`w_final` 1.8036e-8, `Q_final` 5.9411e-8, and
+`virial_final` 1.7698e-7. These are pairwise solver differences
+on the common successful subset. They are not a substitute for
+tighter-tolerance runs or output-grid convergence.
+
+DOP853 regime counts are:
+- High-scale threshold-matched: 48 non_quartic, 2
+  insufficient_oscillation_data, zero quartic_achieved.
+- Low-scale underdamped control: 43 non_quartic, 7
+  insufficient_oscillation_data, zero quartic_achieved.
+
+The full scan is now complete under DOP853 for the declared finite
+homogeneous grid. It does not establish an inhomogeneous quantum-
+seeded waterfall, backreaction, rescattering, a microscopic
+proxy-fluid realization, relic abundance, or observational validity.
