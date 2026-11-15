@@ -303,3 +303,33 @@ not yet contain a converged quantum-seeded inhomogeneous waterfall,
 nonlinear backreaction/rescattering, a relic-abundance calculation,
 a microscopic proxy-fluid realization, or an independently rerun
 CLASS/Cobaya pipeline. PTUM is not 10/10.
+
+
+## 2026-11-15 full-scan and current verification boundary
+
+A 100-row artifact from workflow 43701420639 is available, but it is
+not a validated result for the current implementation. The job used
+DOP853 with a 100000-call budget on source af9724092c94d8469fcf23a87f29438b2cf8c58a:
+97/100 rows integrated successfully and three failed. No successful
+row passed the joint quartic classifier. The JSON is strict and
+inspectable, but the source comparison to ca053f58e3713b274e22f0d69bd5ca89863dab26
+shows 21 intervening commits, including changes to the scan and
+simulation modules and workflow. The old classifications are retained
+only as a historical diagnostic and are not evidence for the current
+code.
+
+On the current PR source, workflow 43703509401 passed 98 Python tests,
+all four smoke integrations, and the 42-page LaTeX build. The smoke
+results remain one insufficient_oscillation_data and one non_quartic
+row in each energy-scale scenario. They do not establish a quartic
+proxy-fluid phase. The final LaTeX build has no Overfull hbox or
+float-placement warnings, but Underfull hbox warnings remain.
+
+A new current-source 100-trajectory Radau run is queued as workflow
+43703837000, with rtol=1e-9, atol=1e-12 and a 1000000-RHS per-row
+engineering guard. Until its complete artifact is inspected and all
+integrations pass, no 100-row physical classification is claimed.
+The simulation remains homogeneous and post-threshold; it does not
+include quantum-seeded inhomogeneous modes, nonlinear backreaction,
+rescattering, or a relic abundance. No acceptance gate is promoted
+by the earlier DOP853 artifact or the passing smoke scan.
