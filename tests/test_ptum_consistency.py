@@ -1754,8 +1754,9 @@ def test_mukhanov_sasaki_spectrum_claim_remains_author_reported():
     subsection = source.split(
         r"\subsection{Mukhanov--Sasaki mode-by-mode integration}", 1
     )[1].split(r"\section{Late-time dark sector viability}", 1)[0]
-    assert "AUTHOR-REPORTED" in subsection
-    assert "not independently reproduced" in subsection
-    assert "does not integrate" in subsection
+    normalized = " ".join(subsection.split())
+    assert "AUTHOR-REPORTED" in normalized
+    assert "not independently reproduced" in normalized
+    assert "does not integrate" in normalized
     assert r"\begin{itemize}" not in subsection
     assert "we performed a full mode-by-mode integration" not in subsection
