@@ -1,13 +1,13 @@
 # PTUM full homogeneous scan execution manifest
 
 - Source branch: `ptum/scientific-consistency-fixes-2026-11-13`
-- Source commit before this manifest: `a0cb59a47f1b4c8ad461b4804c19bc164615f9e8`
+- Source commit before this manifest: `a0cb59a47f1b4c8ad461b4804c19bc164615f9e8`; the current Radau rerun includes subsequent solver-method and final-state audit commits.
 - Scan command:
   `python ptum_task1_scan.py --profile full --output task1_parameter_scan_results.json --checkpoint task1_parameter_scan_checkpoint.json --max-rhs-evaluations 1000000 --rtol 1e-9 --atol 1e-12 --solver-method Radau`
 - Scenarios: two energy scales, 50 trajectories each (100 total)
 - Grid per scenario: 5 seed scales x 5 velocity scales x 2 post-threshold offsets
 - Output grid: 4001 samples over 20 mu^-1 per trajectory
-- Integrator: DOP853
+- Integrator: Radau (implicit solver cross-check)
 - Solver tolerances: rtol=1e-9, atol=1e-12
 - Work guard: 1000000 RHS evaluations per trajectory for this diagnostic rerun
 
