@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/ptum/full-scan-')) && format('ptum-full-scan-{0}', github.ref) || format('ptum-scientific-{0}', github.event.pull_request.number || github.ref) }}
-  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/heads/ptum/full-scan-') }}
+  group: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/ptum/full-scan-') || (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[FULL-SCAN]'))) && format('ptum-full-scan-{0}', github.ref) || format('ptum-scientific-{0}', github.event.pull_request.number || github.ref) }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/heads/ptum/full-scan-') && !(github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[FULL-SCAN]')) }}
 
 permissions:
   contents: read
@@ -73,7 +73,7 @@ jobs:
           python ptum_task1_scan.py --profile full
           --output task1_parameter_scan_results.json
           --checkpoint task1_parameter_scan_checkpoint.json
-          --max-rhs-evaluations 100000
+          --max-rhs-evaluations 1000000 --rtol 1e-9 --atol 1e-12
       - name: Upload full and incremental two-field scan summaries
         if: always()
         uses: actions/upload-artifact@v7
