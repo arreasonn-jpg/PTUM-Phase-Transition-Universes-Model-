@@ -136,13 +136,15 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-ci.txt
       - name: Run chunked 100-row DOP853 refined-grid scan
-        run: python ptum_full_grid_convergence.py --output ptum_full_grid_convergence_128001.json
+        run: python ptum_full_grid_convergence.py --output ptum_full_grid_convergence_128001.json --checkpoint ptum_full_grid_convergence_128001_checkpoint.json
       - name: Upload full-grid convergence diagnostics
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: ptum-full-grid-convergence-128001
-          path: ptum_full_grid_convergence_128001.json
+          path: |
+            ptum_full_grid_convergence_128001.json
+            ptum_full_grid_convergence_128001_checkpoint.json
           if-no-files-found: ignore
           retention-days: 30
 
