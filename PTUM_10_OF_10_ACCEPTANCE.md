@@ -639,3 +639,43 @@ The 98-row Radau artifact remains diagnostic rather than accepted
 converged evidence: two rows failed, output-grid/tolerance convergence
 is absent, and the scan is homogeneous and post-threshold. Gates 4
 and 10 remain PARTIAL; Gate 7 remains NOT MET.
+
+### 2026-11-15 BDF versus Radau solver cross-check
+
+The isolated BDF full scan (workflow 43705977596, execution PR #5)
+produced 100 strict-JSON rows with no non-finite numeric values.
+Artifact ZIP SHA-256:
+8ec851ad0e92e554a34014d5f5f7227fc305519052aab60014a40ab3bac851e3.
+Extracted JSON SHA-256:
+7cd7c40081788262d92823846b20ddf4dcf70d30c6c1c97bda011300f6d7bd34.
+
+BDF also completed 98/100 trajectories and exhausted the same
+1,000,000-RHS guard on the exact same two rows as Radau. All 98
+common successful rows have identical regime labels. Relative
+differences between Radau and BDF final values are small:
+max 5.99e-7 in Phi, 1.11e-6 in Phi_dot, 4.66e-5 in psi,
+2.36e-3 in psi_dot, 6.06e-7 in H, 1.21e-6 in total rho,
+and 2.29e-4 in final averaged w. Classification diagnostics agree
+closely: max relative differences are 1.27e-5 in Q, 1.32e-6 in w,
+and 3.98e-5 in the virial ratio. The maximum absolute difference in
+the chain-rule residual diagnostic is 1.15e-10; for the
+finite-difference residual normalized by H rho it is 3.33e-6.
+
+This is cross-method agreement for the 98 successful rows, not a
+solver-tolerance or output-grid convergence proof. Both methods
+fail at the same two trajectories, and the scan remains incomplete.
+The next targeted solver probe is DOP853 on those two rows; do not
+raise the RHS budget without first inspecting solver behavior.
+
+Workflow 43705977596 also passed all 101? At that time it contained
+100 tests, and all 100 passed; the four-row smoke scan and LaTeX
+build succeeded. The current PR #2 source has one additional
+manuscript scan-status regression. Workflow 43706400511 reported
+100 passed and one failed because that new test expected wording
+different from the manuscript's "neither ... nor" construction.
+Commit 8b26dd7b973c5f028dbdf5c1e1197136865ad616 aligns the assertion
+with the actual wording; a fresh 101-test run is pending.
+
+Gates 4 and 10 remain PARTIAL. The two RHS-budget failures, lack of
+time-grid/tolerance convergence and 138 Underfull hbox messages
+remain unresolved. No physical gate is promoted by the BDF agreement.
