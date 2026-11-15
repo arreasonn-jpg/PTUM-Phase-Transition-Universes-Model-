@@ -66,3 +66,53 @@ did not launch the Radau scan. No scan result is inferred from it.
 The next synchronize event is being queued while the marker remains
 present; the title will be restored only after the full-scan job is
 confirmed queued or in progress.
+
+
+## 2026-11-15 current-source DOP853 result (workflow 43753469944)
+
+The stale DOP853 execution branch was superseded by isolated PR #7,
+created from current PR #2 source commit
+`bebd0bd1e5f75e31d3d0ba8dfe84a9b53293bea0`. The workflow ran the
+full profile with DOP853, `rtol=1e-9`, `atol=1e-12`,
+4001 output samples over `20 mu^-1`, and the unchanged
+1,000,000-RHS per-trajectory guard.
+
+The workflow's full-scan job completed 100/100 integrations:
+- High-scale threshold-matched: 50/50 success; 48 non_quartic,
+  two insufficient_oscillation_data.
+- Low-scale underdamped control: 50/50 success; 43 non_quartic,
+  seven insufficient_oscillation_data.
+- No row passed the joint quartic classifier.
+- The two initial-condition rows that exhausted the Radau and BDF
+  budgets completed under DOP853 with 7,718 and 1,334 RHS evaluations.
+  Both DOP853 rows are non_quartic; no successful Radau/BDF values
+  exist for those two rows.
+
+The DOP853 ZIP digest is
+`sha256:3e758909f191c863b358424be0d7d86a253224fe066e3ceaa279368719e39c8b`.
+The extracted strict-JSON result digest is
+`sha256:e848ff87c8fa3741d65f5fd2909d56db4af567a903d4dc05845cb081d175372c`.
+The JSON contains exactly 100 rows and rejects non-standard NaN/Infinity
+constants.
+
+The Radau, BDF and DOP853 artifacts have the same ordered 100-row
+initial-condition grid. All 98 rows successful under all three methods
+have identical regime labels. DOP853 versus Radau maximum relative
+differences on those 98 rows are 3.16e-9 in Phi, 1.18e-7 in Phi_dot,
+4.77e-7 in psi, 9.12e-6 in psi_dot, 2.86e-10 in H, and
+5.72e-10 in total density. Q, averaged w and virial diagnostics
+agree within 5.95e-8, 1.81e-8 and 1.77e-7. These comparisons do
+not include the two DOP853-only rows and do not replace tolerance
+or output-grid convergence.
+
+Workflow 43753469944 also passed all 103 Python tests, the four-row
+two-scale smoke scan and the LaTeX build. The execution-only PR #7
+was closed without merging after artifact inspection. The earlier
+stale DOP853 PR #6 was also closed without merging. No changes were
+made to main.
+
+Interpretation remains limited to this homogeneous post-threshold
+grid. No quartic proxy-fluid realization, coupled threshold crossing,
+quantum-seeded inhomogeneous waterfall, nonlinear backreaction,
+rescattering, relic abundance or observational reproduction is
+established.
