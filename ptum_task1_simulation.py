@@ -764,8 +764,31 @@ def compute_dense_cycle_diagnostics(
     def physical_state(tau):
         return np.asarray(dense_solution(float(tau)), dtype=float) * scales
 
+    # Prefer the adaptive solver's accepted dense-output mesh for root
+    # bracketing. It is independent of the user-selected t_eval/output grid.
+    # Midpoints provide an additional guard against multiple crossings inside
+    # one accepted step. Analytic test callables without an OdeSolution mesh
+    # fall back to tau_samples.
+    solver_mesh = getattr(dense_solution, "ts", None)
+    if solver_mesh is None:
+        bracket_times = tau_samples
+    else:
+        solver_mesh = np.asarray(solver_mesh, dtype=float)
+        if (solver_mesh.ndim != 1 or len(solver_mesh) < 2
+                or not np.all(np.isfinite(solver_mesh))
+                or np.any(np.diff(solver_mesh) <= 0.0)):
+            raise ValueError("dense solver mesh must be finite and increasing")
+        midpoints = 0.5 * (solver_mesh[:-1] + solver_mesh[1:])
+        bracket_times = np.unique(np.concatenate([solver_mesh, midpoints]))
+        bracket_times = bracket_times[
+            (bracket_times >= tau_samples[0])
+            & (bracket_times <= tau_samples[-1])
+        ]
+        if len(bracket_times) < 3:
+            raise ValueError("dense solver mesh does not cover output interval")
+
     sampled_psi_dot = np.asarray([
-        physical_state(tau)[3] for tau in tau_samples
+        physical_state(tau)[3] for tau in bracket_times
     ])
     roots = []
 
@@ -779,7 +802,7 @@ def compute_dense_cycle_diagnostics(
     )
     if (len(finite_nonzero) and finite_nonzero[0] == 1
             and sampled_psi_dot[0] == 0.0):
-        roots.append(float(tau_samples[0]))
+        roots.append(float(bracket_times[0]))
 
     for left_index, right_index in zip(
         finite_nonzero[:-1], finite_nonzero[1:]
@@ -792,7 +815,7 @@ def compute_dense_cycle_diagnostics(
             continue
         root = float(brentq(
             lambda tau: physical_state(tau)[3],
-            tau_samples[left_index], tau_samples[right_index],
+            bracket_times[left_index], bracket_times[right_index],
             xtol=4.0 * np.finfo(float).eps,
             rtol=8.0 * np.finfo(float).eps,
         ))
@@ -801,9 +824,9 @@ def compute_dense_cycle_diagnostics(
         ):
             roots.append(root)
 
-    if (len(finite_nonzero) and finite_nonzero[-1] == len(tau_samples) - 2
+    if (len(finite_nonzero) and finite_nonzero[-1] == len(bracket_times) - 2
             and sampled_psi_dot[-1] == 0.0):
-        endpoint = float(tau_samples[-1])
+        endpoint = float(bracket_times[-1])
         if not roots or endpoint - roots[-1] > (
             32.0 * np.finfo(float).eps * max(1.0, abs(endpoint))
         ):
