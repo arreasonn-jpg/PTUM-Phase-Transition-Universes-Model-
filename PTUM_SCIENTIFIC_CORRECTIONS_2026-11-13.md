@@ -1016,3 +1016,45 @@ numerical outputs are not in the repository. The text now labels the
 200-mode result AUTHOR-REPORTED and states the missing reproducibility
 artifacts. Gate 9 remains NOT MET. No mode-spectrum or observational
 result is promoted by the background-only regression.
+
+## 51. 2026-11-15 current-source Radau scan audit and LaTeX environment repair
+
+The full 100-trajectory Radau run 43703987436 used the current scan
+implementation: comparison from its source f16c89d5a5d8b0506c569cc073688cb435494fad
+to PR head 31b1beefd1babf81e6293210d8ffe3eba83e9a09 shows only
+documentation and main.tex changes, with no changes to the scan
+runner, simulation module or workflow. The artifact contains 100
+strict-JSON rows and no non-finite numeric values. ZIP SHA-256:
+464c73c9907115ce6bc57ec53722fcc4ede4d8f17d0e66db856fcef00f8876a2.
+Extracted JSON SHA-256:
+b348651738c1a5d35d15432ef2f1d8873ddfa9ea827238f84c1772b6ac1593e3.
+
+The high-scale case has 49 successful integrations (47 non_quartic,
+two insufficient_oscillation_data) and one RHS-budget failure. The
+low-scale case has 49 successful integrations (42 non_quartic,
+seven insufficient_oscillation_data) and one RHS-budget failure.
+Both failures occur at psi_init=4.460941604639096e12,
+psi_dot_init=0 and phi_offset=2.4014653823994024e16; each reaches
+1,000,001 Radau RHS calls against the 1,000,000 guard. None of the
+98 successful trajectories passes the joint quartic classifier.
+This finite homogeneous post-threshold scan does not establish the
+proxy-fluid regime and does not exclude other parameter regions.
+
+The median finite-difference residual normalized by H rho is
+3.7233e-2 for the high-scale rows and 4.0332e-6 for the low-scale
+rows; the high-scale maximum chain-rule relative residual is
+1.6846e-10. Output-grid and solver-tolerance convergence are
+therefore still required. No scan convergence or relic-density
+claim is made.
+
+Workflow 43704489063 passed 98 Python tests and the four-row smoke
+scan but its LaTeX build failed with Improper prevdepth at the
+Late-time dark sector section. The cause was an unclosed itemize
+environment with no list items in the Mukhanov-Sasaki subsection.
+Commit c75b972e9ff14d0b576a9436c0486cf8a6112b84 removes the orphaned
+environment and rewrites the subsection so that the 200-mode spectrum
+is consistently described as AUTHOR-REPORTED, not independently
+reproduced. Commit 68d7a53672bd6a076bfbcd7f4e2828d554c05bfe adds
+two regressions: nested LaTeX environment balance and the mode-spectrum
+claim boundary. The source now contains 100 test functions. The
+fresh Python and LaTeX workflow after these commits remains pending.
