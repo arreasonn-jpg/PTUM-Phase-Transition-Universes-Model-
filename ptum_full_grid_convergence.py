@@ -30,6 +30,35 @@ SOLVER_METHOD = "DOP853"
 FINAL_FIELDS = ("Phi", "Phi_dot", "psi", "psi_dot", "H", "rho_total")
 
 
+def json_safe(value: Any) -> Any:
+    """Recursively convert NumPy values and non-finite floats to strict JSON."""
+    if isinstance(value, np.ndarray):
+        return json_safe(value.tolist())
+    if isinstance(value, dict):
+        return {str(key): json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [json_safe(item) for item in value]
+    if isinstance(value, np.bool_):
+        return bool(value)
+    if isinstance(value, np.integer):
+        return int(value)
+    if isinstance(value, np.floating):
+        value = float(value)
+    if isinstance(value, float):
+        return value if math.isfinite(value) else None
+    return value
+
+
+def write_json_atomic(payload: dict[str, Any], path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        json.dumps(json_safe(payload), indent=2, sort_keys=True, allow_nan=False) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(path)
+
+
 def finite_float(value: Any) -> float | None:
     if value is None:
         return None
@@ -112,7 +141,7 @@ def summarize_row(row: dict[str, Any], scenario: str,
     return result
 
 
-def run_refined_grid_scan() -> dict[str, Any]:
+def run_refined_grid_scan(checkpoint_path: Path | None = None) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
     failures: list[dict[str, Any]] = []
     scenario_metadata = []
@@ -184,6 +213,23 @@ def run_refined_grid_scan() -> dict[str, Any]:
                     flush=True,
                 )
                 del batch
+                if checkpoint_path is not None:
+                    checkpoint_payload = {
+                        "schema_version": 1,
+                        "checkpoint_complete": False,
+                        "n_output_points": N_POINTS,
+                        "expected_rows": EXPECTED_ROWS,
+                        "row_count": len(rows),
+                        "unique_row_keys": len({
+                            item["row_key"] for item in rows
+                        }),
+                        "successful_rows": sum(bool(item["success"]) for item in rows),
+                        "failed_rows": len(failures),
+                        "scenario_metadata": scenario_metadata,
+                        "rows": rows,
+                        "failures": failures,
+                    }
+                    write_json_atomic(checkpoint_payload, checkpoint_path)
 
     row_keys = [row["row_key"] for row in rows]
     unique_row_keys = len(set(row_keys))
@@ -222,17 +268,19 @@ def main() -> None:
         default="ptum_full_grid_convergence_128001.json",
         help="Strict-JSON output path",
     )
+    parser.add_argument(
+        "--checkpoint",
+        default="ptum_full_grid_convergence_128001_checkpoint.json",
+        help="Atomically save a strict-JSON checkpoint after each five-row batch",
+    )
     args = parser.parse_args()
 
-    payload = run_refined_grid_scan()
     output = Path(args.output)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    temporary = output.with_suffix(output.suffix + ".tmp")
-    temporary.write_text(
-        json.dumps(payload, indent=2, sort_keys=True, allow_nan=False) + "\n",
-        encoding="utf-8",
-    )
-    temporary.replace(output)
+    checkpoint = Path(args.checkpoint)
+    payload = run_refined_grid_scan(checkpoint_path=checkpoint)
+    payload["checkpoint_complete"] = True
+    write_json_atomic(payload, output)
+    write_json_atomic(payload, checkpoint)
 
     print(
         f"Refined full grid: {payload['successful_rows']}/{payload['row_count']} "
