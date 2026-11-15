@@ -1150,9 +1150,9 @@ the zero-temperature vacuum condensate, a free Dirac species gives
 \begin{aligned}
 \Delta_T\langle\bar f f\rangle
 &=\frac{2N_c m_f T^2}{\pi^2}
-\int_0^\infty dx\,\frac{x^2}{E_f(x)}
-\frac{1}{\exp(E_f(x))+1},\\
-E_f(x)&=\sqrt{x^2+(m_f/T)^2}.
+\int_0^\infty dx\,\frac{x^2}{E_f(x)}\\
+&\qquad\times\frac{1}{e^{E_f(x)}+1},
+\qquad E_f(x)=\sqrt{x^2+(m_f/T)^2}.
 \end{aligned}
 \label{eq:ptum_thermal_fermion_condensate}
 \end{equation}
@@ -4492,7 +4492,7 @@ conversion is \(1\,\mathrm{Mpc}^{-1} \simeq 6.39 \times 10^{-30}\,
 
 \subsection{Unit checks for key equations}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \caption{Unit consistency check for key PTUM equations. All
 equations are dimensionally consistent in natural units.}
 \label{tab:units}
@@ -4540,7 +4540,7 @@ Equation & Quantity & Dimensions \\
 
 \subsection{Symbol dictionary}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \caption{Symbol dictionary for PTUM paper.}
 \label{tab:symbols}
 \centering
