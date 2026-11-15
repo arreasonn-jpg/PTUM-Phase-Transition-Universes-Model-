@@ -1058,3 +1058,17 @@ reproduced. Commit 68d7a53672bd6a076bfbcd7f4e2828d554c05bfe adds
 two regressions: nested LaTeX environment balance and the mode-spectrum
 claim boundary. The source now contains 100 test functions. The
 fresh Python and LaTeX workflow after these commits remains pending.
+
+### Follow-up to correction 51: LaTeX build and regression assertion
+
+Workflow 43705365503 confirms that the orphaned itemize fix produces
+the 42-page manuscript PDF. The final LaTeX pass has no unresolved
+citations/references, no Overfull hbox, no float-placement warning
+and no Improper prevdepth error. There are still 138 Underfull hbox
+messages, so a warning-free typography claim is not made.
+
+The Python job reported 99 passed and one failed out of 100 tests.
+The sole failure was a claim-boundary assertion that did not normalize
+a phrase split by a source newline. Commit
+a5f86d7c8ca746e6948cfa5c391d11a63985ab87 corrects the test to compare
+whitespace-normalized text. The new full CI result remains pending.
