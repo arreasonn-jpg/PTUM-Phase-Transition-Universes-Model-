@@ -1297,6 +1297,9 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
         'cycle_quadrature_relative_error_max': result.get(
             'cycle_quadrature_relative_error_max', float('nan')
         ),
+        'cycle_quadrature_normalized_absolute_error_max': result.get(
+            'cycle_quadrature_normalized_absolute_error_max', float('nan')
+        ),
     }
 
 
