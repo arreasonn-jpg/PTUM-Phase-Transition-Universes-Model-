@@ -1153,3 +1153,48 @@ workflow is in progress; no result or artifact has been accepted.
 No scientific gate is promoted by the 103-test CI run, the four-row
 smoke scan, or the running DOP853 workflow. Gates 4 and 10 remain
 PARTIAL; Gates 5, 6, 7 and 9 remain NOT MET. PTUM is NOT 10/10.
+
+
+## 2026-11-15 current-source DOP853 full-scan audit
+
+Workflow 43753469944 on isolated execution PR #7 completed all jobs:
+Python regression, four-trajectory smoke scan, LaTeX build, and the
+100-trajectory DOP853 scan. The execution branch was created from PR #2
+source commit `bebd0bd1e5f75e31d3d0ba8dfe84a9b53293bea0`; the subsequent
+PR #2 commits changed only documentation, manuscript text and regression
+assertions, not the scan or simulation implementation.
+
+The DOP853 artifact contains exactly 100 strict-JSON rows and no
+non-finite JSON constants. ZIP SHA-256:
+`3e758909f191c863b358424be0d7d86a253224fe066e3ceaa279368719e39c8b`.
+Extracted result JSON SHA-256:
+`e848ff87c8fa3741d65f5fd2909d56db4af567a903d4dc05845cb081d175372c`.
+All 100 integrations succeeded. The high-scale case has 48
+`non_quartic` and two `insufficient_oscillation_data` rows; the
+low-scale case has 43 `non_quartic` and seven
+`insufficient_oscillation_data` rows. No row passes the joint
+quartic classifier.
+
+The two rows that exhausted the 1,000,000-RHS guard under both Radau
+and BDF complete under DOP853 with 7,718 and 1,334 RHS evaluations.
+Both are classified `non_quartic` by DOP853. Radau and BDF therefore
+have 98 successful rows each, while DOP853 completes the full 100-row
+grid. The two DOP853-only rows have no successful implicit-solver
+counterpart and are not independently cross-validated.
+
+The three artifacts use the same 100-row initial-condition grid.
+Across the 98 rows successful under all three methods, all regime
+labels are identical. DOP853 versus Radau maximum relative differences
+are 3.16e-9 in Phi, 1.18e-7 in Phi_dot, 4.77e-7 in psi,
+9.12e-6 in psi_dot, 2.86e-10 in H and 5.72e-10 in total density.
+Maximum relative differences in Q, averaged w and virial diagnostics
+are 5.95e-8, 1.81e-8 and 1.77e-7. These are cross-method differences
+on the common successful subset, not tolerance or output-grid
+convergence. In particular, the two DOP853-only trajectories still
+require a tighter-tolerance self-convergence check.
+
+The result closes the all-100-success execution issue for this
+declared homogeneous post-threshold grid under DOP853. It does not
+establish a quartic-fluid realization, an inhomogeneous waterfall,
+backreaction, relic abundance or observational validity. Gates 4 and
+10 remain PARTIAL; Gates 5, 6, 7 and 9 remain NOT MET.
