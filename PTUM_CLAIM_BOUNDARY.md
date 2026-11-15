@@ -428,3 +428,14 @@ unavailable. This is a transient quartic-like average, not a sustained
 quartic-fluid result. A BDF cross-check at unchanged tolerances is
 running on isolated execution PR #5. A new regression guards these
 claim boundaries; its fresh CI result is pending.
+
+The isolated BDF rerun (workflow 43705977596, execution PR #5) also
+completed 98/100 trajectories and failed on the same two RHS-budget
+rows as Radau. All 98 shared successful rows have identical regime
+labels. The maximum relative final-state differences are below
+2.4e-3 (the largest is psi_dot); Q, w and virial classifier metrics
+agree to at least about 4e-5 relative. This supports cross-method
+stability of the 98 successful classifications but does not establish
+time-grid or tolerance convergence. The two failed trajectories remain
+unresolved; a targeted DOP853 probe is the next step. The BDF artifact
+is strict JSON with 100 rows and no non-finite numeric values.
