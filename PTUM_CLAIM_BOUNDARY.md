@@ -355,3 +355,45 @@ been removed. The mode-spectrum agreement remains AUTHOR-REPORTED
 and is not independently reproduced. This does not change Gate 9:
 the CLASS/Cobaya likelihood pipeline, data and chains remain
 unverified.
+
+## 2026-11-15 Radau scan evidence boundary
+
+The 100-row Radau artifact from workflow 43703987436 is a strict-JSON
+diagnostic for the current scan code (the four commits from its source
+to the current pre-fix PR head changed only acceptance/claim/correction
+documentation and main.tex, not the scan modules or workflow). Its ZIP
+SHA-256 is
+464c73c9907115ce6bc57ec53722fcc4ede4d8f17d0e66db856fcef00f8876a2;
+the extracted JSON SHA-256 is
+b348651738c1a5d35d15432ef2f1d8873ddfa9ea827238f84c1772b6ac1593e3.
+
+The scan completed 98/100 integrations. The high-scale benchmark had
+47 non_quartic, two insufficient_oscillation_data and one RHS-budget
+failure; the low-scale control had 42 non_quartic, seven
+insufficient_oscillation_data and one RHS-budget failure. Both failed
+rows share psi_init=4.460941604639096e12,
+psi_dot_init=0 and phi_offset=2.4014653823994024e16, and each reached
+1,000,001 attempted Radau RHS evaluations against the 1,000,000 guard.
+No successful row passed the joint quartic classifier. This does not
+prove that no quartic regime exists elsewhere; it shows only that the
+declared finite homogeneous post-threshold grid did not establish one.
+
+The high-scale median finite-difference continuity residual normalized
+by H rho is about 3.72e-2, compared with about 4.03e-6 for the
+low-scale control. The high-scale maximum chain-rule relative residual
+is about 1.68e-10. These values require output-grid and solver-tolerance
+convergence before the scan can be described as numerically converged.
+The 100-row run is therefore a diagnostic artifact, not an accepted
+physical result or a relic calculation.
+
+The 200-mode Mukhanov-Sasaki spectrum remains AUTHOR-REPORTED because
+the mode solver and raw spectra are absent. The public inflation
+background module does not integrate those modes. The manuscript now
+states this boundary explicitly.
+
+The latest observed PR workflow 43704489063 passed 98 Python tests
+and the four-row smoke scan but failed the LaTeX build because of an
+unclosed itemize environment in the Mukhanov-Sasaki subsection. The
+source correction and two regression guards are committed; the fresh
+workflow is pending. No new physical acceptance claim follows from
+these software changes.
