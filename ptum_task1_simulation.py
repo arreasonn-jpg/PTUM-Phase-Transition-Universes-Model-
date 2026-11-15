@@ -343,6 +343,64 @@ def background_equations(t: float, y: np.ndarray, params: PTUMParameters) -> np.
     return np.array([Phi_dot, Phi_ddot, psi_dot, psi_ddot])
 
 
+def dimensionless_state_scales(params: PTUMParameters) -> np.ndarray:
+    """Characteristic scales for the state (Phi, Phi_dot, psi, psi_dot).
+
+    The entries have dimensions GeV, GeV^2, GeV, GeV^2 respectively.
+    They use the exact threshold field, the local tachyonic time scale
+    mu defined by PTUMParameters, and the broken-phase amplitude psi_0.
+    """
+    mu = float(params.mu)
+    scales = np.asarray([
+        params.Phi_c,
+        mu * params.Phi_c,
+        params.psi_0,
+        mu * params.psi_0,
+    ], dtype=float)
+    if (scales.shape != (4,) or not np.all(np.isfinite(scales))
+            or np.any(scales <= 0.0) or not np.isfinite(mu) or mu <= 0.0):
+        raise ValueError("dimensionless state scales must be finite and positive")
+    return scales
+
+
+def dimensionless_state_scale_metadata(params: PTUMParameters) -> Dict[str, float]:
+    """JSON-safe record of the physical scales used to nondimensionalize the ODE."""
+    scales = dimensionless_state_scales(params)
+    return {
+        "mu_GeV": float(params.mu),
+        "Phi_GeV": float(scales[0]),
+        "Phi_dot_GeV2": float(scales[1]),
+        "psi_GeV": float(scales[2]),
+        "psi_dot_GeV2": float(scales[3]),
+    }
+
+
+def _dimensionless_rhs_with_scales(
+    tau: float,
+    y_scaled: np.ndarray,
+    params: PTUMParameters,
+    mu: float,
+    scales: np.ndarray,
+) -> np.ndarray:
+    """Transform the physical RHS to tau=mu*t and order-one state variables."""
+    y_physical = np.asarray(y_scaled, dtype=float) * scales
+    rhs_physical = background_equations(float(tau) / mu, y_physical, params)
+    return rhs_physical / (mu * scales)
+
+
+def dimensionless_background_equations(
+    tau: float, y_scaled: np.ndarray, params: PTUMParameters
+) -> np.ndarray:
+    """Dimensionless equivalent of background_equations for regression checks.
+
+    The independent variable is tau=mu*t and the state is
+    (Phi/Phi_c, Phi_dot/(mu*Phi_c), psi/psi_0, psi_dot/(mu*psi_0)).
+    """
+    mu = float(params.mu)
+    scales = dimensionless_state_scales(params)
+    return _dimensionless_rhs_with_scales(tau, y_scaled, params, mu, scales)
+
+
 def run_simulation(params: PTUMParameters, 
                    ic: InitialConditions,
                    t_span: Tuple[float, float],
@@ -370,24 +428,32 @@ def run_simulation(params: PTUMParameters,
     if solver_method not in {"DOP853", "Radau", "BDF", "LSODA"}:
         raise ValueError("solver_method must be one of DOP853, Radau, BDF, LSODA")
 
-    y0 = np.array([ic.Phi, ic.Phi_dot, ic.psi, ic.psi_dot])
+    mu = float(params.mu)
+    state_scales = dimensionless_state_scales(params)
+    state_scale_metadata = dimensionless_state_scale_metadata(params)
+    y0_physical = np.array([ic.Phi, ic.Phi_dot, ic.psi, ic.psi_dot], dtype=float)
+    y0_scaled = y0_physical / state_scales
+    tau_span = (float(t_span[0]) * mu, float(t_span[1]) * mu)
+    tau_eval = None if t_eval is None else np.asarray(t_eval, dtype=float) * mu
     rhs_evaluations = 0
 
-    def counted_background_equations(t, y, model_params):
+    def counted_dimensionless_equations(tau, y_scaled, model_params):
         nonlocal rhs_evaluations
         rhs_evaluations += 1
         if (max_rhs_evaluations is not None
                 and rhs_evaluations > max_rhs_evaluations):
             raise RHSWorkBudgetExceeded(max_rhs_evaluations, rhs_evaluations)
-        return background_equations(t, y, model_params)
+        return _dimensionless_rhs_with_scales(
+            tau, y_scaled, model_params, mu, state_scales
+        )
 
     try:
         sol = solve_ivp(
-            counted_background_equations,
-            t_span,
-            y0,
+            counted_dimensionless_equations,
+            tau_span,
+            y0_scaled,
             args=(params,),
-            t_eval=t_eval,
+            t_eval=tau_eval,
             rtol=rtol,
             atol=atol,
             method=solver_method,
@@ -403,12 +469,15 @@ def run_simulation(params: PTUMParameters,
             f"Integration failed: {sol.message}", rhs_evaluations
         )
     
-    # Extract solution
-    t = sol.t
-    Phi = sol.y[0]
-    Phi_dot = sol.y[1]
-    psi = sol.y[2]
-    psi_dot = sol.y[3]
+    # Return physical fields and physical time after integrating the
+    # dimensionless system. Solver atol is now dimensionless and comparable
+    # across all four state variables.
+    t = sol.t / mu
+    y_physical = sol.y * state_scales[:, np.newaxis]
+    Phi = y_physical[0]
+    Phi_dot = y_physical[1]
+    psi = y_physical[2]
+    psi_dot = y_physical[3]
     
     # Compute diagnostics
     H = np.array([hubble_rate(Phi[i], Phi_dot[i], psi[i], psi_dot[i], params) 
@@ -532,6 +601,9 @@ def run_simulation(params: PTUMParameters,
                 else int(max_rhs_evaluations)
             ),
             'budget_exhausted': False,
+            'time_variable': 'tau=mu*t',
+            'state_variables_dimensionless': True,
+            'state_scales': state_scale_metadata,
         },
         't': t,
         'Phi': Phi,
@@ -858,16 +930,22 @@ def run_parameter_scan(params: PTUMParameters,
                             'rtol': float(rtol),
                             'atol': float(atol),
                             'budget_exhausted': True,
+                            'time_variable': 'tau=mu*t',
+                            'state_variables_dimensionless': True,
+                            'state_scales': dimensionless_state_scale_metadata(params),
                         }
                     elif isinstance(e, RHSIntegrationError):
                         failed_result['solver_stats'] = {
-                            'method': 'DOP853',
+                            'method': solver_method,
                             'rhs_evaluations': e.rhs_evaluations,
                             'rhs_evaluation_limit': max_rhs_evaluations,
                             'rtol': float(rtol),
                             'atol': float(atol),
                             'budget_exhausted': False,
                             'integration_error': True,
+                            'time_variable': 'tau=mu*t',
+                            'state_variables_dimensionless': True,
+                            'state_scales': dimensionless_state_scale_metadata(params),
                         }
                     results.append(failed_result)
                     if result_callback is not None:
