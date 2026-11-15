@@ -654,6 +654,9 @@ def run_simulation(params: PTUMParameters,
         'w_psi_avg_sampled': w_avg_sampled,
         't_avg_sampled': t_avg_sampled,
         'cycle_quadrature_relative_error_max': dense_cycle["max_relative_quadrature_error"],
+        'cycle_quadrature_normalized_absolute_error_max': dense_cycle[
+            "max_normalized_absolute_quadrature_error"
+        ],
         'cycle_turning_times': dense_cycle["turning_times"],
         't_avg': t_avg,
         't_avg_raw': t_avg_raw,
