@@ -1772,4 +1772,4 @@ def test_manuscript_reports_current_radau_scan_failures_and_claim_boundary():
     assert "No successful row passes the joint quartic classifier" in source
     assert "only two late half-cycles occur" in source
     assert "BDF cross-check with unchanged tolerances is running" in source
-    assert "not a quantum-seeded inhomogeneous waterfall" in source
+    assert "neither a quantum-seeded inhomogeneous waterfall" in source
