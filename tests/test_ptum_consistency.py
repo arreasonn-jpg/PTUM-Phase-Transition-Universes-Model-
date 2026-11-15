@@ -51,6 +51,34 @@ def _add_fast_adiabatic_oscillation_history(result, hubble=0.01, t_end=100.0):
     return result
 
 
+def _minimal_successful_scan_row(*, classification=None, scan_metadata=None):
+    """Return a complete two-sample success record for strict-JSON tests."""
+    return {
+        "success": True,
+        "classification": classification or {
+            "regime": "insufficient_oscillation_data",
+            "quartic_achieved": False,
+            "w_final": float("nan"),
+            "Q_final": float("nan"),
+            "virial_final": float("nan"),
+            "n_oscillations": 0,
+        },
+        "ic_params": {"psi_init": 0.0, "psi_dot_init": 0.0, "phi_offset": 0.0},
+        "scan_metadata": scan_metadata or {},
+        "psi": np.array([0.0, 0.0]),
+        "psi_dot": np.array([0.0, 0.0]),
+        "Phi": np.array([1.0, 1.0]),
+        "Phi_dot": np.array([0.0, 0.0]),
+        "H": np.array([1.0, 1.0]),
+        "rho_total": np.array([1.0, 1.0]),
+        "w_psi_exc": np.array([np.nan, np.nan]),
+        "Q": np.array([np.nan, np.nan]),
+        "virial_ratio": np.array([np.nan, np.nan]),
+        "continuity_residual_relative": np.array([0.0, 0.0]),
+        "continuity_residual_finite_difference_background_relative": np.array([0.0, 0.0]),
+    }
+
+
 def test_interaction_energy_is_counted_exactly_once():
     p = PTUMParameters(V0=2.0e50, m_psi=3.0e8, lambda_psi=0.2)
     phi, phi_dot, psi, psi_dot = 1.01 * p.Phi_c, 2.0e7, 4.0e5, 5.0e6
@@ -341,22 +369,9 @@ def test_parameter_scan_calls_result_callback_for_each_completed_trajectory():
 def test_scan_summary_is_strict_json_and_nonfinite_values_become_null(tmp_path):
     from ptum_task1_simulation import save_results
 
-    result = {
-        "success": True,
-        "classification": {
-            "regime": "insufficient_oscillation_data",
-            "quartic_achieved": False,
-            "w_final": float("nan"),
-            "Q_final": float("nan"),
-            "virial_final": float("nan"),
-            "n_oscillations": 0,
-        },
-        "ic_params": {"psi_init": 0.0, "psi_dot_init": 0.0, "phi_offset": 0.0},
-        "scan_metadata": {"scenario": "unit_test", "n_output_points": 101},
-        "psi": np.array([0.0, 0.0]),
-        "Phi": np.array([1.0, 1.0]),
-        "continuity_residual_relative": np.array([0.0, 0.0]),
-    }
+    result = _minimal_successful_scan_row(
+        scan_metadata={"scenario": "unit_test", "n_output_points": 101}
+    )
     output = tmp_path / "scan.json"
     save_results([result], str(output))
     raw = output.read_text(encoding="utf-8")
@@ -377,14 +392,9 @@ def test_scan_summary_is_strict_json_and_nonfinite_values_become_null(tmp_path):
 def test_scan_summary_replaces_checkpoint_atomically(tmp_path):
     from ptum_task1_simulation import save_results
 
-    result = {
-        "success": True,
-        "classification": {"regime": "insufficient_oscillation_data"},
-        "ic_params": {"psi_init": 0.0, "psi_dot_init": 0.0, "phi_offset": 0.0},
-        "psi": np.array([0.0, 0.0]),
-        "Phi": np.array([1.0, 1.0]),
-        "continuity_residual_relative": np.array([0.0, 0.0]),
-    }
+    result = _minimal_successful_scan_row(
+        classification={"regime": "insufficient_oscillation_data"}
+    )
     output = tmp_path / "checkpoint.json"
     save_results([result], str(output))
     assert output.exists()
