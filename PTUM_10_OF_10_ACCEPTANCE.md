@@ -598,3 +598,21 @@ whitespace assertion, not a scientific-code failure. Commit
 a5f86d7c8ca746e6948cfa5c391d11a63985ab87 normalizes whitespace before
 checking the phrase. The 100-test suite after this test-only correction
 is pending fresh CI verification.
+
+### Fresh full verification after the claim-test correction
+
+Workflow 43705535067 on PR head
+49933f4f1593327845944266e3412e67a3b545f3 completed successfully:
+- Python regression suite: 100 passed in 12.81 s.
+- Four-trajectory two-scale smoke scan: 4/4 integrations succeeded.
+  Each scale still contains one insufficient_oscillation_data and one
+  non_quartic row; this is not evidence of a quartic phase.
+- LaTeX: 42-page PDF built and uploaded. Final pass has zero Overfull
+  hbox, zero float-placement warnings, zero Improper prevdepth errors,
+  and zero unresolved citation/reference warnings. There are still
+  138 Underfull hbox messages across the build log.
+
+The new environment-balance and whitespace-normalized claim-boundary
+tests both pass. Gate 10 remains PARTIAL because the full 100-row scan
+has two failed integrations, solver/time-grid convergence is open,
+and Underfull hbox warnings remain. No physical gate is promoted.
