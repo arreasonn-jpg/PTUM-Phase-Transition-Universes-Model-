@@ -677,10 +677,12 @@ The follow-up PR #2 workflow 43706959822 on source head
   it is handled on an isolated execution branch.
 
 The previous 101-test pending note is superseded by this fresh
-successful workflow. The latest successful build has not yet had its
-full LaTeX warning log independently audited; the last detailed
-warning audit found 138 Underfull hbox messages. Gate 10 remains
-PARTIAL, not warning-free.
+successful workflow. Latest-content verification workflow 43754277984 (isolated CI PR #8)
+passed all 103 Python regression tests, the four-trajectory two-scale
+smoke scan, and the LaTeX build. The manuscript PDF is 42 pages.
+The final LaTeX pass has zero unresolved references, zero unresolved
+citations and zero Overfull hbox warnings, but 74 Underfull hbox
+warnings remain. Gate 10 therefore remains PARTIAL, not warning-free.
 
 ### 2026-11-15 current-source DOP853 execution
 
