@@ -1629,3 +1629,52 @@ def test_simulation_rejects_nonpositive_or_nonfinite_solver_tolerances():
         run_simulation(p, ic, (0.0, 1.0e-9), rtol=0.0)
     with pytest.raises(ValueError, match="atol"):
         run_simulation(p, ic, (0.0, 1.0e-9), atol=float("nan"))
+
+
+
+def test_radau_and_dop853_agree_on_a_smooth_evolving_two_field_case():
+    p = PTUMParameters(V0=1.0e50, m_psi=1.0e5, lambda_psi=0.1)
+    ic = InitialConditions(
+        Phi=0.9 * p.Phi_c,
+        Phi_dot=1.0e20,
+        psi=1.0e4,
+        psi_dot=1.0e8,
+    )
+    t = np.linspace(0.0, 1.0e-9, 101)
+    explicit = run_simulation(
+        p, ic, (t[0], t[-1]), t_eval=t,
+        rtol=1.0e-8, atol=1.0e-10,
+        solver_method="DOP853",
+    )
+    implicit = run_simulation(
+        p, ic, (t[0], t[-1]), t_eval=t,
+        rtol=1.0e-8, atol=1.0e-10,
+        solver_method="Radau",
+    )
+    assert explicit["solver_stats"]["method"] == "DOP853"
+    assert implicit["solver_stats"]["method"] == "Radau"
+    scales = {
+        "Phi": M_PL,
+        "Phi_dot": 1.0e20,
+        "psi": 1.0e4,
+        "psi_dot": 1.0e8,
+    }
+    for key, scale in scales.items():
+        relative_max = np.max(
+            np.abs(explicit[key] - implicit[key])
+        ) / scale
+        assert relative_max < 5.0e-6
+
+
+def test_simulation_rejects_unknown_solver_method():
+    p = PTUMParameters()
+    ic = InitialConditions(
+        Phi=0.9 * p.Phi_c,
+        Phi_dot=0.0,
+        psi=0.0,
+        psi_dot=0.0,
+    )
+    with pytest.raises(ValueError, match="solver_method"):
+        run_simulation(
+            p, ic, (0.0, 1.0e-9), solver_method="ExplicitEuler"
+        )
