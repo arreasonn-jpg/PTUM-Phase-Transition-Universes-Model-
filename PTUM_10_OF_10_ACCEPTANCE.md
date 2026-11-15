@@ -517,3 +517,68 @@ Gate 9 remains NOT MET because neither this mode-spectrum result nor
 the CLASS/Cobaya likelihood pipeline has been independently
 reproduced. No observational acceptance is inferred from the
 background-only CI test.
+
+## 2026-11-15 current-source Radau scan audit and LaTeX regression repair
+
+Workflow 43703987436 ran the 100-trajectory profile on source
+f16c89d5a5d8b0506c569cc073688cb435494fad with Radau,
+rtol=1e-9, atol=1e-12, and a 1,000,000-RHS engineering guard.
+Its uploaded artifact ptum-two-field-full-scan has ZIP digest
+sha256:464c73c9907115ce6bc57ec53722fcc4ede4d8f17d0e66db856fcef00f8876a2.
+The extracted results JSON contains exactly 100 rows, parses with
+non-standard JSON constants rejected, and contains no non-finite
+numeric values. The extracted JSON SHA-256 is
+b348651738c1a5d35d15432ef2f1d8873ddfa9ea827238f84c1772b6ac1593e3.
+
+- High-scale threshold-matched case: 49/50 integrations succeeded;
+  47 successful rows were non_quartic, two were
+  insufficient_oscillation_data, and one integration exhausted the
+  RHS budget.
+- Low-scale underdamped control: 49/50 integrations succeeded;
+  42 successful rows were non_quartic, seven were
+  insufficient_oscillation_data, and one integration exhausted the
+  RHS budget.
+- The two failures have the same initial-condition tuple in their
+  respective dimensionful benchmarks:
+  psi_init=4.460941604639096e12,
+  psi_dot_init=0,
+  phi_offset=2.4014653823994024e16.
+  Both reached 1,000,001 attempted Radau RHS evaluations against the
+  1,000,000 limit. They remain failed integrations, not physical
+  classifications.
+- None of the 98 successful rows satisfies the joint quartic
+  classifier. This is a negative result for this finite homogeneous
+  post-threshold grid only; it does not rule out other parameter
+  regions or inhomogeneous dynamics.
+- The median/max finite-difference continuity residual normalized by
+  H rho is 3.7233e-2 / 3.7234e-2 for the high-scale rows and
+  4.0332e-6 / 1.7795e-4 for the low-scale rows. The chain-rule
+  residuals are smaller, but the high-scale maximum reaches
+  1.6846e-10. These discrepancies make output-grid and solver
+  tolerance convergence mandatory; the 4001-point output is not yet
+  accepted as converged.
+- Comparing scan source f16c89... with PR head 31b1be... shows
+  only documentation and main.tex changes; ptum_task1_scan.py,
+  ptum_task1_simulation.py, and the scan workflow are unchanged.
+  The artifact is therefore relevant as a diagnostic of the current
+  scan implementation, but it fails the all-100-integrations-success
+  acceptance requirement.
+
+Workflow 43704489063 on source head 31b1be... passed all 98
+Python regressions and the four-row smoke scan, but the LaTeX job
+failed with Improper prevdepth at the section following the
+Mukhanov-Sasaki subsection. The source contained an orphaned
+begin{itemize} with no item and no matching end{itemize}.
+Commit c75b972e9ff14d0b576a9436c0486cf8a6112b84 removes that
+invalid list, rewrites the subsection so the unavailable 200-mode
+calculation is consistently labelled AUTHOR-REPORTED, and avoids
+presenting it as a reproduced Planck result. Two regression tests
+were then added in commit
+68d7a53672bd6a076bfbcd7f4e2828d554c05bfe: a nested LaTeX-environment
+balance check and a mode-spectrum claim-boundary check. The source
+now contains 100 test functions; these two additions and the LaTeX
+repair are awaiting a fresh workflow run.
+
+Gates 4 and 10 remain PARTIAL. Gates 5, 6, 7 and 9 remain NOT MET.
+No gate is promoted by the 98 successful scan rows, the smoke scan,
+or the Python-only success. PTUM is NOT 10/10.
