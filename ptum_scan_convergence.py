@@ -152,6 +152,15 @@ def _compare_records(reference: dict[str, Any],
                      candidate: dict[str, Any],
                      params: Any,
                      comparison: str) -> dict[str, Any]:
+    if not reference["success"] or not candidate["success"]:
+        return {
+            "comparison": comparison,
+            "comparison_available": False,
+            "reference_success": reference["success"],
+            "candidate_success": candidate["success"],
+            "reference_error": reference.get("error"),
+            "candidate_error": candidate.get("error"),
+        }
     state_scales = {
         "Phi": params.Phi_c,
         "Phi_dot": params.mu * params.Phi_c,
