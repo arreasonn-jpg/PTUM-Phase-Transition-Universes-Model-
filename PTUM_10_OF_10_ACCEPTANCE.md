@@ -667,15 +667,41 @@ fail at the same two trajectories, and the scan remains incomplete.
 The next targeted solver probe is DOP853 on those two rows; do not
 raise the RHS budget without first inspecting solver behavior.
 
-Workflow 43705977596 also passed all 101? At that time it contained
-100 tests, and all 100 passed; the four-row smoke scan and LaTeX
-build succeeded. The current PR #2 source has one additional
-manuscript scan-status regression. Workflow 43706400511 reported
-100 passed and one failed because that new test expected wording
-different from the manuscript's "neither ... nor" construction.
-Commit 8b26dd7b973c5f028dbdf5c1e1197136865ad616 aligns the assertion
-with the actual wording; a fresh 101-test run is pending.
+The follow-up PR #2 workflow 43706959822 on source head
+`bebd0bd1e5f75e31d3d0ba8dfe84a9b53293bea0` completed successfully:
+- The current regression source contains 103 test functions; the
+  Python regression job passed.
+- All four two-scale smoke integrations passed.
+- The LaTeX manuscript build and PDF artifact upload passed.
+- The full 100-trajectory scan was skipped in this regular PR run;
+  it is handled on an isolated execution branch.
 
-Gates 4 and 10 remain PARTIAL. The two RHS-budget failures, lack of
-time-grid/tolerance convergence and 138 Underfull hbox messages
-remain unresolved. No physical gate is promoted by the BDF agreement.
+The previous 101-test pending note is superseded by this fresh
+successful workflow. The latest successful build has not yet had its
+full LaTeX warning log independently audited; the last detailed
+warning audit found 138 Underfull hbox messages. Gate 10 remains
+PARTIAL, not warning-free.
+
+### 2026-11-15 current-source DOP853 execution
+
+The earlier DOP853 execution PR #6 is stale: it was based on
+`4227a3e50e2a0564a44a19dea2338dafa328ca53`, while the current PR #2
+source at the time of the rerun is `bebd0bd1e5f75e31d3d0ba8dfe84a9b53293bea0`.
+Its failed full-scan artifact is retained as historical diagnostic
+material and is not accepted as a same-source comparison.
+
+A new isolated execution branch,
+`ptum/full-scan-2026-11-15-dop853-current`, was created directly
+from the current PR #2 head. Draft execution PR #7 was opened against
+PR #2. Workflow 43753469944 is running the 100-row DOP853 profile
+with unchanged `rtol=1e-9`, `atol=1e-12`, 4001 output samples over
+`20 mu^-1`, and the unchanged 1,000,000-RHS per-trajectory guard.
+Its result and artifact have not yet been inspected. No solver
+comparison or physical conclusion is drawn from a running job.
+
+The Radau/BDF comparison remains 98/100 successful trajectories,
+with the same two budget failures and identical regime labels on the
+98 common successful rows. This is cross-method agreement, not
+time-grid or solver-tolerance convergence. Gates 4 and 10 remain
+PARTIAL; Gates 5, 6, 7 and 9 remain NOT MET. No gate is promoted by
+the 103-test CI run or four-row smoke scan. PTUM is NOT 10/10.
