@@ -443,3 +443,57 @@ are measured. Gate 10 remains **PARTIAL** because Underfull warnings
 remain and the bounded full scan is not yet inspected. Gates 5, 6, 7 and
 9 remain **NOT MET**. No physical acceptance gate is promoted by the
 93-test result or four-row smoke scan. PTUM is **NOT 10/10**.
+
+
+## 2026-11-15 full-scan artifact audit and current-head verification
+
+Workflow 43701420639 produced a complete 100-row JSON artifact on
+source head af9724092c94d8469fcf23a87f29438b2cf8c58a. The job log
+shows that this run actually used DOP853 with a 100000-RHS evaluation
+budget, not the later intended Radau/1000000 profile. The artifact
+digest is sha256:4f98f4320ff5cfccb2917607270a8be86ee20eb9ed21b1e71ec8441660ce5722.
+The file parses as strict JSON and contains 100 rows with no NaN or
+Infinity tokens:
+- High-scale threshold-matched: 49/50 integrations succeeded; 47
+  were classified non_quartic, 2 insufficient_oscillation_data, and
+  1 failed at the RHS budget.
+- Low-scale underdamped control: 48/50 integrations succeeded; 41
+  were classified non_quartic, 7 insufficient_oscillation_data, and
+  2 failed (one RHS budget exhaustion and one non-finite total density).
+- None of the 97 successful rows had quartic_achieved=true.
+
+This artifact is a diagnostic failure record, not an accepted full-scan
+result. Comparing source af972... with the current scan source
+ca053f58e3713b274e22f0d69bd5ca89863dab26 shows 21 intervening commits
+and modifications to ptum_task1_scan.py, ptum_task1_simulation.py,
+the workflow and regression tests. Therefore the 97 successful rows
+must not be reused as validation of the current implementation.
+
+The latest PR-head verification is now:
+- Workflow 43702269416 on the previous head had 96 passed and 2 failed.
+  Both failures came from synthetic successful-scan fixtures that did
+  not contain all fields required by the strict summary schema. The
+  production simulation result schema was not weakened; the fixtures
+  were completed in commit ca053f58e3713b274e22f0d69bd5ca89863dab26.
+- Workflow 43703059616 then passed 98 tests and all four smoke
+  integrations. Its one overflow warning was the deliberate
+  non-finite-state regression path; that warning is now explicitly
+  asserted rather than left unexamined.
+- Workflow 43703509401 on commit b0aa8b32c67a90e0981826ac44c7470c37ff7ce4
+  passed 98 tests with no warnings in the pytest summary, all four
+  smoke integrations, and the 42-page LaTeX build/PDF upload.
+- Each smoke scenario still contains one insufficient_oscillation_data
+  and one non_quartic row. The smoke test does not establish the
+  quartic proxy-fluid regime.
+- The final LaTeX build has zero Overfull hbox and zero float-placement
+  warnings. Underfull hbox warnings remain (213 log messages across
+  repeated latex passes); the final pass has no unresolved references.
+
+A fresh 100-trajectory run is being triggered from the current PR source
+using the workflow's explicit Radau profile, rtol=1e-9, atol=1e-12 and
+a 1000000-RHS per-trajectory engineering budget. Its artifact must be
+inspected independently. Gate 4 remains PARTIAL until time-grid and
+solver-tolerance convergence are measured. Gate 10 remains PARTIAL
+because the manuscript still has Underfull hbox warnings and the
+current full scan is not yet validated. No physical gate is promoted
+by the older DOP853 artifact or the four-row smoke scan.
