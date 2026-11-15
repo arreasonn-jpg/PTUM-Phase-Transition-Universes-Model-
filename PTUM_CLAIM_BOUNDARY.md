@@ -260,3 +260,46 @@ masses, the electroweak crossover, non-equilibrium reheating, and
 the renormalized vacuum condensate. The Wilson matrices, cutoff,
 thermal history and operator renormalization remain unspecified.
 No defect-wall annihilation time or BBN-safe network is claimed.
+
+
+
+## 2026-11-15 verification and bounded-scan update
+
+The latest verified PR workflow at this snapshot is
+`43701174233` on source commit
+`5379ec8a2e85e875c9819121b0409ea454cf99e9`: 93 Python tests passed,
+all four two-scale smoke integrations succeeded, and the 42-page
+manuscript PDF compiled. The smoke rows still classify as one
+`insufficient_oscillation_data` and one `non_quartic` per energy
+scenario; they do not demonstrate a quartic proxy-fluid regime.
+
+The final LaTeX log audit found no Overfull `\\hbox` and no float
+placement warnings after the thermal-condensate integral was split
+across lines and two tables were changed from `[h]` to `[htbp]`.
+Underfull `\\hbox` warnings remain. Initial-pass citation warnings
+are resolved by later `latexmk` passes; no unresolved references
+remain in the final pass.
+
+A prior 100-point run (`43582371029`, old source
+`d4f5f8b37a526c6fba35d19cb9c0396710da2e1a`) was cancelled by a
+hosted-runner shutdown after 20/100 trajectories. The scan artifact
+was not uploaded, so those rows are not a validated result and no
+physical classification is inferred.
+
+The current scan implementation adds a deterministic 100000-RHS-call
+budget per DOP853 trajectory (configurable by CLI/API), records solver
+statistics and budget exhaustion in strict JSON, and fails closed on
+budget exhaustion. This is a resource guard only; it does not alter
+the ODE tolerances or establish convergence. The new 100-trajectory
+run is workflow `43701420639` on source commit
+`af9724092c94d8469fcf23a87f29438b2cf8c58a`; it was in progress
+at this update. Until its complete artifact is inspected, the full
+scan remains unverified.
+
+The safe scientific claim is unchanged: the repository has a
+homogeneous two-field post-threshold solver, linear mode tools on
+prescribed backgrounds, and analytic defect diagnostics. It does
+not yet contain a converged quantum-seeded inhomogeneous waterfall,
+nonlinear backreaction/rescattering, a relic-abundance calculation,
+a microscopic proxy-fluid realization, or an independently rerun
+CLASS/Cobaya pipeline. PTUM is not 10/10.
