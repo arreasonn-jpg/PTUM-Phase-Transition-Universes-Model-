@@ -22,7 +22,7 @@ from ptum_task1_simulation import M_PL, run_parameter_scan
 
 EXPECTED_ROWS = 100
 T_MAX = 20.0
-N_POINTS = 128001
+N_POINTS = 256001
 RTOL = 1.0e-9
 ATOL = 1.0e-12
 MAX_RHS_EVALUATIONS = 1_000_000
@@ -265,12 +265,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--output",
-        default="ptum_full_grid_convergence_128001.json",
+        default="ptum_full_grid_convergence_256001.json",
         help="Strict-JSON output path",
     )
     parser.add_argument(
         "--checkpoint",
-        default="ptum_full_grid_convergence_128001_checkpoint.json",
+        default="ptum_full_grid_convergence_256001_checkpoint.json",
         help="Atomically save a strict-JSON checkpoint after each five-row batch",
     )
     args = parser.parse_args()
