@@ -793,9 +793,31 @@ def compute_dense_cycle_diagnostics(
     t_values = []
     relative_errors = []
 
+    psi_scale = float(params.psi_0)
+    quartic_scale = max(
+        params.lambda_psi * psi_scale**4, np.finfo(float).tiny
+    )
+    quadratic_scale = max(
+        params.m_psi**2 * psi_scale**2, np.finfo(float).tiny
+    )
+    kinetic_scale = max(
+        (mu * psi_scale)**2, np.finfo(float).tiny
+    )
+    energy_scale = max(
+        quartic_scale, quadratic_scale, kinetic_scale,
+        np.finfo(float).tiny,
+    )
+    # Normalize each component before vector quadrature. Without this,
+    # quad_vec's max norm would compare quantities with identical units but
+    # wildly different characteristic magnitudes, masking small components.
+    integral_scales = np.asarray([
+        quartic_scale, quadratic_scale, energy_scale,
+        quartic_scale, energy_scale, energy_scale,
+    ])
+
     def integrand(tau):
-        _, _, psi_value, psi_dot_value = physical_state(tau)
-        phi_value = physical_state(tau)[0]
+        state = physical_state(tau)
+        phi_value, _, psi_value, psi_dot_value = state
         mass_sq = float(meff_sq_psi(phi_value, params))
         excitation_potential = float(
             psi_excitation_potential(phi_value, psi_value, params)
@@ -804,7 +826,7 @@ def compute_dense_cycle_diagnostics(
         kinetic = 0.5 * psi_dot_value**2
         excitation_density = kinetic + excitation_potential
         excitation_pressure = kinetic - excitation_potential
-        return np.asarray([
+        physical_integrand = np.asarray([
             params.lambda_psi * psi_value**4,
             abs(mass_sq) * psi_value**2,
             kinetic,
@@ -812,17 +834,23 @@ def compute_dense_cycle_diagnostics(
             excitation_pressure,
             excitation_density,
         ], dtype=float)
+        return physical_integrand / integral_scales
 
     for start, end in zip(roots[:-1], roots[1:]):
         if end <= start:
             continue
-        integral, error = quad_vec(
+        normalized_integral, error = quad_vec(
             integrand, start, end, epsabs=0.0, epsrel=1.0e-9,
             norm="max", limit=200,
         )
-        integral = np.asarray(integral, dtype=float)
-        scale = np.maximum(np.abs(integral), np.finfo(float).tiny)
-        relative_errors.append(float(error / np.max(scale)))
+        normalized_integral = np.asarray(normalized_integral, dtype=float)
+        integral = normalized_integral * integral_scales
+        relative_errors.append(float(
+            error / max(
+                float(np.max(np.abs(normalized_integral))),
+                np.finfo(float).tiny,
+            )
+        ))
         lo = max(0, int(np.searchsorted(tau_samples, start, side="left")))
         hi = min(n_output, int(np.searchsorted(tau_samples, end, side="right")))
         if integral[1] > 0.0 and np.isfinite(integral[1]):
