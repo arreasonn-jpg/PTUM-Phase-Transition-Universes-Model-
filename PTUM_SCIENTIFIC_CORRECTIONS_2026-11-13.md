@@ -1072,3 +1072,16 @@ The sole failure was a claim-boundary assertion that did not normalize
 a phrase split by a source newline. Commit
 a5f86d7c8ca746e6948cfa5c391d11a63985ab87 corrects the test to compare
 whitespace-normalized text. The new full CI result remains pending.
+
+### Follow-up verification: workflow 43705535067
+
+On PR head 49933f4f1593327845944266e3412e67a3b545f3, all 100 Python
+regression tests passed in 12.81 s, the four-row two-scale smoke scan
+completed 4/4 integrations, and the 42-page manuscript PDF built and
+uploaded. The final LaTeX pass has no unresolved references/citations,
+Overfull hbox, float-placement warning or Improper prevdepth error.
+There are 138 Underfull hbox messages across the build log. The smoke
+classification remains one insufficient_oscillation_data and one
+non_quartic per scale; it does not demonstrate quartic dynamics.
+The full Radau scan remains a separate 98/100 diagnostic with two
+budget-exhausted integrations and no joint-quartic success.
