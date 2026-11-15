@@ -412,6 +412,11 @@ def run_simulation(params: PTUMParameters,
     """
     Run a single background simulation with a deterministic RHS-work guard.
 
+    The integrator evolves tau=mu*t and the order-one state
+    (Phi/Phi_c, Phi_dot/(mu*Phi_c), psi/psi_0, psi_dot/(mu*psi_0)).
+    Thus rtol and atol are dimensionless and apply consistently to all
+    components. Returned fields and time are converted back to physical units.
+
     The evaluation budget is an engineering fail-closed limit, not a physical
     cutoff or a substitute for convergence. A trajectory that exhausts it is
     reported as failed and must not be classified as a physical regime.
