@@ -69,14 +69,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-ci.txt
-      # BDF is an independent stiff-solver cross-check against the
-      # previously archived Radau run; tolerances, grid and RHS guard are unchanged.
+      # DOP853 is an independent explicit high-order cross-check against
+      # the archived Radau and BDF runs; tolerances, grid and RHS guard are unchanged.
       - name: Run complete 100-trajectory high-resolution waterfall scan
         run: >-
           python ptum_task1_scan.py --profile full
           --output task1_parameter_scan_results.json
           --checkpoint task1_parameter_scan_checkpoint.json
-          --max-rhs-evaluations 1000000 --rtol 1e-9 --atol 1e-12 --solver-method BDF
+          --max-rhs-evaluations 1000000 --rtol 1e-9 --atol 1e-12 --solver-method DOP853
       - name: Upload full and incremental two-field scan summaries
         if: always()
         uses: actions/upload-artifact@v7
