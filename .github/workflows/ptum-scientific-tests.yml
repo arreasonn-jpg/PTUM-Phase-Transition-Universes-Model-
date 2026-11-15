@@ -46,7 +46,15 @@ jobs:
           retention-days: 30
 
   full-waterfall-scan:
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-'))
+    # Explicit PR opt-in: temporarily add [FULL-SCAN] to PR #2's title.
+    # The title marker is removed after the run is queued; normal PR updates
+    # therefore do not launch another six-hour scan.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-')) ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.ref == 'ptum/scientific-consistency-fixes-2026-11-13' &&
+       contains(github.event.pull_request.title, '[FULL-SCAN]'))
     runs-on: ubuntu-latest
     timeout-minutes: 360
     steps:
@@ -65,6 +73,7 @@ jobs:
           python ptum_task1_scan.py --profile full
           --output task1_parameter_scan_results.json
           --checkpoint task1_parameter_scan_checkpoint.json
+          --max-rhs-evaluations 100000
       - name: Upload full and incremental two-field scan summaries
         if: always()
         uses: actions/upload-artifact@v7
