@@ -1781,7 +1781,8 @@ def test_manuscript_reports_current_radau_scan_failures_and_claim_boundary():
     assert "two rows exhausted" in source
     assert "No successful row passes the joint quartic classifier" in source
     assert "only two late half-cycles occur" in source
-    assert "BDF cross-check with unchanged tolerances is running" in source
+    assert "isolated BDF scan completed 98/100 trajectories" in source
+    assert "current-source DOP853 cross-check is running on isolated execution PR #7" in source
     assert "neither a quantum-seeded inhomogeneous waterfall" in source
 
 
