@@ -1845,7 +1845,7 @@ def test_targeted_convergence_probe_covers_two_budget_rows_and_two_high_Q_contro
         "high_scale_largest_Q_row",
         "low_scale_largest_Q_row",
     }
-    assert OUTPUT_GRIDS == (4001, 8001, 16001)
+    assert OUTPUT_GRIDS == (4001, 8001, 16001, 32001, 64001)
     assert TOLERANCE_LEVELS == (
         (1.0e-9, 1.0e-12),
         (1.0e-10, 1.0e-13),
