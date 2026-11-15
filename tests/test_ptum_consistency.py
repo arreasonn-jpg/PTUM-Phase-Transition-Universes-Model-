@@ -1582,3 +1582,13 @@ def test_scan_records_budget_exhaustion_and_preserves_it_in_strict_json(tmp_path
     assert payload[0]["success"] is False
     assert payload[0]["solver_stats"]["budget_exhausted"] is True
     assert payload[0]["solver_stats"]["rhs_evaluations"] == 2
+
+
+
+def test_manuscript_thermal_condensate_and_table_floats_have_safe_layout():
+    from pathlib import Path
+
+    source = Path("main.tex").read_text(encoding="utf-8")
+    assert r"\qquad\times" in source
+    assert r"\begin{table}[h]" not in source
+    assert r"\begin{table}[htbp]" in source
