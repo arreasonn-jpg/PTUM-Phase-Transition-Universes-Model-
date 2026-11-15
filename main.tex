@@ -872,10 +872,15 @@ rows reach $Q\simeq11.12$, $w_\psi\simeq0.363$, and a virial ratio near
 $0.890$, but only two late half-cycles occur in the final 20 percent
 of the run; the required late-time adiabatic diagnostic is therefore
 unavailable. These rows do not establish a sustained quartic-fluid
-phase. The median finite-difference continuity residual normalized
-by $H\rho$ is about $3.72\times10^{-2}$ at high scale and
-$4.03\times10^{-6}$ at low scale, so output-grid and solver-tolerance
-convergence remain mandatory. The isolated BDF scan completed 98/100 trajectories, matching Radau's two RHS-budget failures and all 98 successful regime labels. This is cross-solver agreement, not solver-tolerance or output-grid convergence. The current-source DOP853 execution PR \#7 completed the 100-row scan; its strict-JSON artifact and cross-solver comparison are recorded in the reproducibility notes. This scan
+phase. For DOP853, the median finite-difference continuity residual
+normalized by $H\rho$ is about $2.82\times10^{-2}$ at high scale and
+$3.58\times10^{-6}$ at low scale; the corresponding maxima are
+$3.72\times10^{-2}$ and $1.76\times10^{-4}$. The independent
+chain-rule continuity residual maxima are $1.20\times10^{-10}$ and
+$4.92\times10^{-15}$, respectively. These are distinct diagnostics:
+the finite-difference estimator remains sampling-sensitive. A targeted
+128001-to-256001-point study is stable for four selected trajectories,
+but convergence of the full 100-row grid remains mandatory. The isolated BDF scan completed 98/100 trajectories, matching Radau's two RHS-budget failures and all 98 successful regime labels. This is cross-solver agreement, not solver-tolerance or output-grid convergence. The current-source DOP853 execution PR \#7 completed the 100-row scan; its strict-JSON artifact and cross-solver comparison are recorded in the reproducibility notes. This scan
 remains homogeneous and post-threshold; it is neither a quantum-seeded
 inhomogeneous waterfall nor a relic calculation.
 
