@@ -15,6 +15,7 @@ from ptum_task1_simulation import (
     DEFAULT_MAX_RHS_EVALUATIONS,
     M_PL,
     PTUMParameters,
+    dimensionless_state_scale_metadata,
     run_parameter_scan,
     save_results,
 )
@@ -143,6 +144,10 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
             "solver_method": solver_method,
             "solver_rtol": float(rtol),
             "solver_atol": float(atol),
+            "solver_atol_convention": "dimensionless_scaled_state",
+            "solver_time_variable": "tau=mu*t",
+            "solver_state_variables_dimensionless": True,
+            "solver_state_scales": dimensionless_state_scale_metadata(params),
             "max_rhs_evaluations_per_trajectory": max_rhs_evaluations,
             "rhs_budget_is_engineering_fail_closed_guard": True,
         }
@@ -210,7 +215,10 @@ def main() -> None:
         help="Fail a trajectory closed after this many RHS evaluations (default: 100000)",
     )
     parser.add_argument("--rtol", type=float, default=1.0e-9)
-    parser.add_argument("--atol", type=float, default=1.0e-12)
+    parser.add_argument(
+        "--atol", type=float, default=1.0e-12,
+        help="Dimensionless absolute tolerance for the scaled ODE state",
+    )
     parser.add_argument(
         "--solver-method", choices=("DOP853", "Radau", "BDF", "LSODA"),
         default="DOP853",
