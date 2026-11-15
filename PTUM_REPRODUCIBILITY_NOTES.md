@@ -142,3 +142,33 @@ The full scan is now complete under DOP853 for the declared finite
 homogeneous grid. It does not establish an inhomogeneous quantum-
 seeded waterfall, backreaction, rescattering, a microscopic
 proxy-fluid realization, relic abundance, or observational validity.
+
+
+## Targeted DOP853 convergence artifact (workflow 43754922200)
+
+The convergence-only workflow tested four representative trajectories
+with 36 integrations: three tolerance pairs (1e-9/1e-12,
+1e-10/1e-13, 1e-11/1e-14) and seven output grids
+(4,001, 8,001, 16,001, 32,001, 64,001, 128,001, 256,001).
+All 36 integrations succeeded and the script's targeted stability
+flag is true for all four cases.
+
+Across tolerance changes, maximum final-state relative difference
+was 4.75e-7 and maximum relative difference in Q/w/virial diagnostics
+was 3.48e-7. Across 128,001 -> 256,001 output samples, all regime
+labels, quartic flags and late-half-cycle counts were unchanged.
+Maximum absolute differences were 7.57e-4 in Q_final, 2.57e-4 in
+w_final, 2.25e-4 in virial_final and 6.05e-4 in the maximum
+finite-difference continuity diagnostic. The thresholds used are
+provisional and apply only to these four selected trajectories:
+1e-6 final-state relative, 1e-5 classification relative and 1e-3
+absolute for the listed output-grid diagnostics.
+
+Artifact ZIP SHA-256:
+`d4f80abf0e2705d3d019e67855592efaf7242ee96a90f970798119748a6bfe51`.
+Extracted JSON SHA-256:
+`f99e7da8644c399e3bb5ff6d6b08cbffe272ab75c99faad311689fa283a71899`.
+
+This targeted study does not establish convergence of the complete
+100-row scan. It does not simulate an inhomogeneous quantum-seeded
+waterfall or establish a relic abundance.
