@@ -736,7 +736,7 @@ Isolated convergence PR #9 workflow 43754922200 completed:
 - 36/36 DOP853 integrations succeeded across four selected trajectories.
 - Python regression: 107 passed.
 - LaTeX build: successful, 42-page PDF.
-- Final LaTeX pass: 74 Underfull hbox warnings; zero Overfull hboxes,
+- Final LaTeX pass: 73 Underfull hbox warnings; zero Overfull hboxes,
   unresolved references or unresolved citations.
 - Full 100-row scan was skipped in this convergence-only workflow.
 
