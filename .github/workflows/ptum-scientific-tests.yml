@@ -46,9 +46,9 @@ jobs:
           retention-days: 30
 
   full-waterfall-scan:
-    # Explicit PR opt-in: temporarily add [FULL-SCAN] to PR #2's title.
-    # The title marker is removed after the run is queued; normal PR updates
-    # therefore do not launch another six-hour scan.
+    # Full scan runs only by explicit PR #2 title opt-in or on an isolated
+    # ptum/full-scan-* branch PR. The latter keeps long scans out of PR #2's
+    # concurrency group and prevents them from cancelling regular regression CI.
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-')) ||
