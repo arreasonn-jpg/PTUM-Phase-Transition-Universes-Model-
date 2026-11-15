@@ -139,7 +139,7 @@ The targeted convergence artifact ZIP digest is
 the extracted strict-JSON digest is
 `sha256:f99e7da8644c399e3bb5ff6d6b08cbffe272ab75c99faad311689fa283a71899`.
 The workflow passed 107 Python tests and the LaTeX build. Final LaTeX
-pass has 74 Underfull hbox warnings, with no Overfull hboxes or
+pass has 73 Underfull hbox warnings, with no Overfull hboxes or
 unresolved references/citations.
 
 This is not a full 100-row convergence proof. Gate 4 remains PARTIAL.
