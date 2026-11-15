@@ -1206,7 +1206,7 @@ Latest-content CI verification workflow 43754277984 (execution-only
 PR #8) passed all 103 tests and the four-trajectory smoke scan. The
 LaTeX build completed and produced a 42-page PDF. In the final
 LaTeX pass there were zero unresolved references, zero unresolved
-citations and zero Overfull hboxes; 74 Underfull hbox warnings
+citations and zero Overfull hboxes; 73 Underfull hbox warnings
 remain. The build is successful but not warning-free. The CI-only
 PR was closed without merging after verification.
 
