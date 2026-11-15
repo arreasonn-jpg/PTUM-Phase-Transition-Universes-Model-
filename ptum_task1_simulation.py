@@ -362,6 +362,10 @@ def run_simulation(params: PTUMParameters,
                  or int(max_rhs_evaluations) != max_rhs_evaluations
                  or max_rhs_evaluations < 1)):
         raise ValueError("max_rhs_evaluations must be a positive integer or None")
+    if not np.isfinite(rtol) or rtol <= 0.0:
+        raise ValueError("rtol must be finite and positive")
+    if not np.isfinite(atol) or atol <= 0.0:
+        raise ValueError("atol must be finite and positive")
 
     y0 = np.array([ic.Phi, ic.Phi_dot, ic.psi, ic.psi_dot])
     rhs_evaluations = 0
