@@ -903,3 +903,50 @@ The coupling was moved into a display equation in commit
 required to verify that the overfull line is gone. The preceding
 build still had numerous Underfull `\\hbox` and two float-placement
 warnings; no warning-free claim is made.
+
+
+
+## 48. 2026-11-15 deterministic solver-work guard and scan observability
+
+The isolated full-scan workflow `43582371029` on the earlier source
+head `d4f5f8b37a526c6fba35d19cb9c0396710da2e1a` reached 20 of 100
+trajectories and was then terminated by a hosted-runner shutdown
+signal. The full-scan step was cancelled and no JSON artifact was
+uploaded. This is not a numerical result and does not support any
+physical regime claim.
+
+To prevent a single pathological adaptive solve from occupying the
+runner indefinitely, `run_simulation` now counts DOP853 RHS calls and
+raises `RHSWorkBudgetExceeded` after a configurable default of
+100000 evaluations. `run_parameter_scan` catches this as a failed
+trajectory, records the exact attempted count and limit, and continues
+with the remaining initial conditions. Successful rows also preserve
+DOP853 `nfev`, `njev`, `nlu`, `rtol`, and `atol`. Strict-JSON
+summaries now retain the solver statistics for both successful and
+failed rows. Each trajectory's initial conditions are printed before
+integration so a stalled or expensive row can be identified.
+
+This cap is an engineering resource guard, not a physical cutoff,
+solver tolerance, or evidence of convergence. A budget-exhausted
+trajectory remains failed and prevents the full scan from passing.
+The solver tolerances remain `rtol=1e-9` and `atol=1e-12`.
+
+Three regressions cover successful solver-stat reporting, deterministic
+budget exhaustion at an exact evaluation count, and preservation of
+the failed row in strict JSON. The latest completed PR workflow
+`43701174233` on commit
+`5379ec8a2e85e875c9819121b0409ea454cf99e9` passed **93 tests**,
+all four smoke integrations, and the LaTeX build. The smoke scan still
+returns one `insufficient_oscillation_data` and one `non_quartic`
+row per scenario; no quartic regime is established.
+
+The thermal Dirac-condensate integral was split over two aligned rows
+and two tables were changed to flexible `[htbp]` placement. In the
+fresh 42-page build there are no Overfull `\\hbox` or float-placement
+warnings. Underfull `\\hbox` warnings remain; the initial LaTeX
+pass reports citations before subsequent `latexmk` passes resolve
+them, and the final pass has no unresolved-reference warning.
+
+A fresh 100-trajectory run is queued as workflow `43701420639` on
+commit `af9724092c94d8469fcf23a87f29438b2cf8c58a`. It was still
+running at this checkpoint, so no full-scan outcome is claimed.
