@@ -21,7 +21,7 @@ from ptum_task1_scan import build_scan_scenarios
 from ptum_task1_simulation import M_PL, run_parameter_scan
 
 T_MAX = 20.0
-OUTPUT_GRIDS = (4001, 8001, 16001)
+OUTPUT_GRIDS = (4001, 8001, 16001, 32001, 64001)
 TOLERANCE_LEVELS = (
     (1.0e-9, 1.0e-12),
     (1.0e-10, 1.0e-13),
@@ -189,7 +189,11 @@ def _compare_records(reference: dict[str, Any],
         for field in CLASSIFICATION_FIELDS
     }
     return {
+        "case": reference["case"],
         "comparison": comparison,
+        "comparison_available": True,
+        "reference_regime": ref_class.get("regime"),
+        "candidate_regime": cand_class.get("regime"),
         "reference": {
             "rtol": reference["rtol"],
             "atol": reference["atol"],
@@ -207,6 +211,17 @@ def _compare_records(reference: dict[str, Any],
             ref_class.get("n_late_half_cycles") == cand_class.get("n_late_half_cycles"),
         "final_state_relative_differences": state_differences,
         "classification_relative_differences": class_differences,
+        "classification_absolute_differences": {
+            field: (
+                None
+                if _finite_float(ref_class.get(field)) is None
+                or _finite_float(cand_class.get(field)) is None
+                else abs(
+                    float(ref_class[field]) - float(cand_class[field])
+                )
+            )
+            for field in CLASSIFICATION_FIELDS
+        },
         "diagnostic_absolute_differences": {
             key: (
                 None
