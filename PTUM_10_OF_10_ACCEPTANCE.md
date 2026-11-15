@@ -728,3 +728,43 @@ homogeneous and post-threshold, not a coupled quantum-seeded
 inhomogeneous waterfall. Gates 4 and 10 remain PARTIAL; Gates 5, 6,
 7 and 9 remain NOT MET. No physical gate is promoted by a successful
 scan or software CI alone. PTUM is NOT 10/10.
+
+
+### 2026-11-15 targeted tolerance and output-grid convergence
+
+Isolated convergence PR #9 workflow 43754922200 completed:
+- 36/36 DOP853 integrations succeeded across four selected trajectories.
+- Python regression: 107 passed.
+- LaTeX build: successful, 42-page PDF.
+- Final LaTeX pass: 74 Underfull hbox warnings; zero Overfull hboxes,
+  unresolved references or unresolved citations.
+- Full 100-row scan was skipped in this convergence-only workflow.
+
+The four probes were the two rows that exhausted Radau/BDF RHS budgets,
+the high-scale row with the largest high-scale Q diagnostic, and the
+low-scale row with the largest low-scale Q diagnostic. Tolerances were
+`1e-9/1e-12`, `1e-10/1e-13`, and `1e-11/1e-14`; output grids
+were 4,001 through 256,001 points.
+
+Across tolerance changes, the maximum final-state relative difference
+was 4.75e-7 and the maximum relative difference in Q, averaged w and
+virial diagnostics was 3.48e-7. Across the final grid doubling
+(128,001 to 256,001), all four regime labels, quartic flags and
+late-half-cycle counts were unchanged. Maximum absolute changes were
+7.57e-4 in Q_final, 2.57e-4 in w_final, 2.25e-4 in virial_final,
+and 6.05e-4 in the maximum finite-difference continuity diagnostic.
+
+The script now encodes provisional targeted-probe limits:
+- final-state relative difference <= 1e-6;
+- classification-diagnostic relative difference <= 1e-5;
+- Q_final, w_final, virial_final and maximum finite-difference
+  continuity-diagnostic absolute changes <= 1e-3.
+
+All four selected probes pass these limits. The artifact ZIP SHA-256 is
+`d4f80abf0e2705d3d019e67855592efaf7242ee96a90f970798119748a6bfe51`;
+the extracted strict-JSON SHA-256 is
+`f99e7da8644c399e3bb5ff6d6b08cbffe272ab75c99faad311689fa283a71899`.
+
+This is targeted stability evidence for four trajectories only.
+It does not establish convergence of the complete 100-row grid.
+Gate 4 remains PARTIAL, and no additional physical gate is promoted.
