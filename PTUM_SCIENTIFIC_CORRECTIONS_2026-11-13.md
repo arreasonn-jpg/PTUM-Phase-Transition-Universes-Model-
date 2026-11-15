@@ -996,3 +996,23 @@ has no Overfull hbox or float-placement warnings, but 213 Underfull
 hbox messages remain across repeated passes. The final pass has no
 unresolved references. Gates 4 and 10 remain PARTIAL; no physical
 acceptance gate is promoted by these engineering checks.
+
+
+## 50. 2026-11-15 correction of primordial mode-spectrum reproducibility claim
+
+The public ptum_inflation_background.py module does reproduce the
+eight-point scalar-dominated background scan and first-order
+Hubble-flow observables used in the primordial table. The regression
+suite checks the eight-row scan, its 60-e-fold termination and key
+reference values. The table caption now identifies this as a public,
+CI-checked background calculation and explicitly separates it from
+the CLASS/Cobaya likelihood analysis.
+
+The manuscript previously described a separate 200-mode
+Mukhanov-Sasaki calculation as numerically verified with the public
+background script. That was inaccurate: the public script does not
+integrate Mukhanov-Sasaki modes, and the mode solver, raw spectra and
+numerical outputs are not in the repository. The text now labels the
+200-mode result AUTHOR-REPORTED and states the missing reproducibility
+artifacts. Gate 9 remains NOT MET. No mode-spectrum or observational
+result is promoted by the background-only regression.
