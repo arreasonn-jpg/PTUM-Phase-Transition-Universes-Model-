@@ -58,6 +58,16 @@ class RHSWorkBudgetExceeded(RuntimeError):
         )
 
 
+class RHSIntegrationError(RuntimeError):
+    """Numerical RHS failure annotated with the work spent before failure."""
+
+    def __init__(self, message: str, evaluations: int):
+        self.rhs_evaluations = int(evaluations)
+        super().__init__(
+            f"{message} (after {self.rhs_evaluations} RHS evaluations)"
+        )
+
+
 DEFAULT_MAX_RHS_EVALUATIONS = 100_000
 
 
@@ -296,9 +306,16 @@ def w_psi(Phi: float, psi: float, psi_dot: float, params: PTUMParameters) -> flo
 def hubble_rate(Phi: float, Phi_dot: float, psi: float, psi_dot: float, 
                 params: PTUMParameters, rho_other: float = 0.0) -> float:
     """Hubble rate H = sqrt(ρ_total/3M_Pl²)"""
-    rho_tot = rho_total(Phi, Phi_dot, psi, psi_dot, params, rho_other)
+    rho_phi_value = rho_phi(Phi, Phi_dot, psi, params)
+    rho_psi_value = rho_psi(Phi, psi, psi_dot, params)
+    rho_tot = rho_phi_value + rho_psi_value + rho_other
     if not np.isfinite(rho_tot) or rho_tot <= 0.0:
-        raise ValueError(f"Non-positive or non-finite total density: {rho_tot}")
+        raise ValueError(
+            "Non-positive or non-finite total density: "
+            f"rho_total={rho_tot}, rho_phi={rho_phi_value}, "
+            f"rho_psi={rho_psi_value}, Phi={Phi}, Phi_dot={Phi_dot}, "
+            f"psi={psi}, psi_dot={psi_dot}"
+        )
     return np.sqrt(rho_tot / (3 * M_PL**2))
 
 
@@ -357,20 +374,27 @@ def run_simulation(params: PTUMParameters,
             raise RHSWorkBudgetExceeded(max_rhs_evaluations, rhs_evaluations)
         return background_equations(t, y, model_params)
 
-    sol = solve_ivp(
-        counted_background_equations,
-        t_span,
-        y0,
-        args=(params,),
-        t_eval=t_eval,
-        rtol=rtol,
-        atol=atol,
-        method='DOP853',  # High-order Runge-Kutta
-        dense_output=True
-    )
-    
+    try:
+        sol = solve_ivp(
+            counted_background_equations,
+            t_span,
+            y0,
+            args=(params,),
+            t_eval=t_eval,
+            rtol=rtol,
+            atol=atol,
+            method='DOP853',  # High-order Runge-Kutta
+            dense_output=True
+        )
+    except RHSWorkBudgetExceeded:
+        raise
+    except Exception as exc:
+        raise RHSIntegrationError(str(exc), rhs_evaluations) from exc
+
     if not sol.success:
-        raise RuntimeError(f"Integration failed: {sol.message}")
+        raise RHSIntegrationError(
+            f"Integration failed: {sol.message}", rhs_evaluations
+        )
     
     # Extract solution
     t = sol.t
@@ -734,7 +758,9 @@ def run_parameter_scan(params: PTUMParameters,
                        progress_interval: int = 0,
                        progress_label: str = "scan",
                        result_callback: Optional[Callable[[Dict], None]] = None,
-                       max_rhs_evaluations: Optional[int] = DEFAULT_MAX_RHS_EVALUATIONS
+                       max_rhs_evaluations: Optional[int] = DEFAULT_MAX_RHS_EVALUATIONS,
+                       rtol: float = 1e-9,
+                       atol: float = 1e-12
                        ) -> List[Dict]:
     """
     Run parameter scan over initial conditions.
@@ -788,6 +814,7 @@ def run_parameter_scan(params: PTUMParameters,
                 try:
                     result = run_simulation(
                         params, ic, t_span, t_eval,
+                        rtol=rtol, atol=atol,
                         max_rhs_evaluations=max_rhs_evaluations,
                     )
                     
@@ -819,7 +846,19 @@ def run_parameter_scan(params: PTUMParameters,
                             'method': 'DOP853',
                             'rhs_evaluations': e.evaluations,
                             'rhs_evaluation_limit': e.limit,
+                            'rtol': float(rtol),
+                            'atol': float(atol),
                             'budget_exhausted': True,
+                        }
+                    elif isinstance(e, RHSIntegrationError):
+                        failed_result['solver_stats'] = {
+                            'method': 'DOP853',
+                            'rhs_evaluations': e.rhs_evaluations,
+                            'rhs_evaluation_limit': max_rhs_evaluations,
+                            'rtol': float(rtol),
+                            'atol': float(atol),
+                            'budget_exhausted': False,
+                            'integration_error': True,
                         }
                     results.append(failed_result)
                     if result_callback is not None:
