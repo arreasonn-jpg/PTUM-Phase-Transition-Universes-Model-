@@ -11,7 +11,6 @@ from ptum_full_grid_convergence import (
     ATOL as FULL_GRID_ATOL,
     MAX_RHS_EVALUATIONS as FULL_GRID_MAX_RHS,
     json_safe as full_grid_json_safe,
-    compute_dense_cycle_diagnostics,
 )
 from ptum_scan_convergence import (
     CASES as CONVERGENCE_CASES,
@@ -58,6 +57,7 @@ from ptum_task1_simulation import (
     create_initial_conditions,
     run_simulation,
     compute_time_averaged_w,
+    compute_dense_cycle_diagnostics,
     classify_outcome,
     run_parameter_scan,
     save_results,
