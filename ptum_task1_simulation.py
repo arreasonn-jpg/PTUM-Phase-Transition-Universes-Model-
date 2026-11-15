@@ -1258,7 +1258,10 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
         'H_over_omega_values': adiabaticity['H_over_omega_values'],
         'n_late_half_cycles': int(adiabaticity['n_late_half_cycles']),
         'adiabaticity_valid': bool(adiabaticity['adiabaticity_valid']),
-        'n_oscillations': len(w_avg)
+        'n_oscillations': len(w_avg),
+        'cycle_quadrature_relative_error_max': result.get(
+            'cycle_quadrature_relative_error_max', float('nan')
+        ),
     }
 
 
