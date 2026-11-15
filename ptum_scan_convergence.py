@@ -21,7 +21,7 @@ from ptum_task1_scan import build_scan_scenarios
 from ptum_task1_simulation import M_PL, run_parameter_scan
 
 T_MAX = 20.0
-OUTPUT_GRIDS = (4001, 8001, 16001, 32001, 64001)
+OUTPUT_GRIDS = (4001, 8001, 16001, 32001, 64001, 128001, 256001)
 TOLERANCE_LEVELS = (
     (1.0e-9, 1.0e-12),
     (1.0e-10, 1.0e-13),
