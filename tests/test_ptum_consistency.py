@@ -4,6 +4,15 @@ import json
 import numpy as np
 import pytest
 
+from ptum_scan_convergence import (
+    CASES as CONVERGENCE_CASES,
+    OUTPUT_GRIDS,
+    TOLERANCE_LEVELS,
+    _compare_records,
+    _finite_float,
+    relative_difference,
+)
+
 from ptum_task1_simulation import (
     DEFAULT_MAX_RHS_EVALUATIONS,
     RHSWorkBudgetExceeded,
@@ -1825,3 +1834,37 @@ def test_dimensionless_state_scale_metadata_has_correct_component_order():
     assert metadata["Phi_dot_GeV2"] == scales[1]
     assert metadata["psi_GeV"] == scales[2]
     assert metadata["psi_dot_GeV2"] == scales[3]
+
+
+
+def test_targeted_convergence_probe_covers_two_budget_rows_and_two_high_Q_controls():
+    assert len(CONVERGENCE_CASES) == 4
+    assert {case["name"] for case in CONVERGENCE_CASES} == {
+        "high_scale_implicit_budget_row",
+        "low_scale_implicit_budget_row",
+        "high_scale_largest_Q_row",
+        "low_scale_largest_Q_row",
+    }
+    assert OUTPUT_GRIDS == (4001, 8001, 16001)
+    assert TOLERANCE_LEVELS == (
+        (1.0e-9, 1.0e-12),
+        (1.0e-10, 1.0e-13),
+        (1.0e-11, 1.0e-14),
+    )
+
+
+def test_convergence_relative_difference_is_scale_aware_and_handles_missing_values():
+    assert relative_difference(1.0, 1.0 + 1.0e-8, 1.0) == pytest.approx(1.0e-8)
+    assert relative_difference(0.0, 1.0e-16, 1.0) == pytest.approx(1.0e-2)
+    assert relative_difference(None, 1.0, 1.0) is None
+    assert _finite_float(float("nan")) is None
+    assert _finite_float(float("inf")) is None
+
+
+def test_convergence_comparison_fails_closed_when_a_run_is_unsuccessful():
+    failed = {"success": False, "error": "budget exhausted"}
+    successful = {"success": True}
+    comparison = _compare_records(failed, successful, None, "tolerance")
+    assert comparison["comparison_available"] is False
+    assert comparison["reference_success"] is False
+    assert comparison["candidate_success"] is True
