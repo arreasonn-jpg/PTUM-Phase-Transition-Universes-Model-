@@ -56,3 +56,13 @@ synchronize event was queued. The new artifact and job logs must be
 inspected before accepting any result. A complete scan requires all
 100 integrations to succeed; a failed row is not classified as a
 physical regime.
+
+
+The first current-source trigger attempt was workflow 43703837000.
+Its Python regression and smoke jobs passed, but the
+full-waterfall-scan job was skipped. The temporary title marker was
+restored before GitHub evaluated the synchronize event, so this attempt
+did not launch the Radau scan. No scan result is inferred from it.
+The next synchronize event is being queued while the marker remains
+present; the title will be restored only after the full-scan job is
+confirmed queued or in progress.
