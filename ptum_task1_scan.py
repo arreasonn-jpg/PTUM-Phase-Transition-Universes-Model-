@@ -83,7 +83,8 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
                    checkpoint_path: str | None = None,
                    max_rhs_evaluations: int | None = DEFAULT_MAX_RHS_EVALUATIONS,
                    rtol: float = 1.0e-9,
-                   atol: float = 1.0e-12):
+                   atol: float = 1.0e-12,
+                   solver_method: str = "DOP853"):
     """Run the selected scan profile at both high and low energy scales."""
     seed_scales, velocity_scales, phi_offsets = scan_profile_scales(profile)
     all_results = []
@@ -139,7 +140,7 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
             "fuel_velocity_source": "integrated_single_field_FRW_trajectory",
             "quantum_vacuum_seeded": False,
             "zero_seed_rows_are_exact_classical_invariant_controls": True,
-            "solver_method": "DOP853",
+            "solver_method": solver_method,
             "solver_rtol": float(rtol),
             "solver_atol": float(atol),
             "max_rhs_evaluations_per_trajectory": max_rhs_evaluations,
@@ -159,6 +160,7 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
             max_rhs_evaluations=max_rhs_evaluations,
             rtol=rtol,
             atol=atol,
+            solver_method=solver_method,
         )
         print(f"[scan] finished {scenario_name}", flush=True)
         all_results.extend(rows)
@@ -210,6 +212,10 @@ def main() -> None:
     parser.add_argument("--rtol", type=float, default=1.0e-9)
     parser.add_argument("--atol", type=float, default=1.0e-12)
     parser.add_argument(
+        "--solver-method", choices=("DOP853", "Radau", "BDF", "LSODA"),
+        default="DOP853",
+    )
+    parser.add_argument(
         "--profile", choices=("ci", "full"), default="full",
         help="Use four fast CI smoke trajectories or the full 100-trajectory scan",
     )
@@ -221,6 +227,7 @@ def main() -> None:
         max_rhs_evaluations=args.max_rhs_evaluations,
         rtol=args.rtol,
         atol=args.atol,
+        solver_method=args.solver_method,
     )
     # Persist the complete diagnostic summary before enforcing the CI gate,
     # so a failed run still leaves an inspectable artifact.
