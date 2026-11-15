@@ -1782,7 +1782,10 @@ def test_manuscript_reports_current_radau_scan_failures_and_claim_boundary():
     assert "No successful row passes the joint quartic classifier" in source
     assert "only two late half-cycles occur" in source
     assert "isolated BDF scan completed 98/100 trajectories" in source
-    assert "current-source DOP853 cross-check is running on isolated execution PR #7" in source
+    assert "completed all 100/100 trajectories" in source
+    assert "all three solvers give identical regime labels" in source
+    assert "No trajectory passes the joint quartic classifier" in source
+    assert "current-source DOP853 execution PR #7 completed the 100-row scan" in source
     assert "neither a quantum-seeded inhomogeneous waterfall" in source
 
 
