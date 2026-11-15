@@ -950,3 +950,49 @@ them, and the final pass has no unresolved-reference warning.
 A fresh 100-trajectory run is queued as workflow `43701420639` on
 commit `af9724092c94d8469fcf23a87f29438b2cf8c58a`. It was still
 running at this checkpoint, so no full-scan outcome is claimed.
+
+
+## 49. 2026-11-15 full-scan artifact audit and regression-fixture repair
+
+Workflow 43701420639 uploaded a 100-row strict-JSON artifact with
+SHA-256
+4f98f4320ff5cfccb2917607270a8be86ee20eb9ed21b1e71ec8441660ce5722.
+The workflow log confirms that this attempt used DOP853 and a
+100000-RHS budget. It contains 97 successful integrations and three
+failures: two rows exhausted the budget at 100001 attempted calls,
+and one low-scale row developed non-finite total density. Among the
+97 successful rows, the high-scale case has 47 non_quartic and two
+insufficient_oscillation_data classifications; the low-scale case
+has 41 non_quartic and seven insufficient_oscillation_data
+classifications. None has quartic_achieved=true. The JSON contains
+no NaN or Infinity tokens.
+
+This is not an accepted current-source scan. The source comparison
+from af9724092c94d8469fcf23a87f29438b2cf8c58a to
+ca053f58e3713b274e22f0d69bd5ca89863dab26 spans 21 commits and
+modifies both ptum_task1_scan.py and ptum_task1_simulation.py, as
+well as the workflow and tests. The DOP853 artifact is therefore
+kept as a diagnostic record only. A new 100-row run is queued on the
+current PR source using Radau, rtol=1e-9, atol=1e-12 and a
+1000000-RHS per-trajectory engineering guard (workflow 43703837000).
+No current full-scan outcome is claimed until its artifact is
+inspected and every integration succeeds.
+
+The CI failure on head f694c1a0f08e28308f7596fa1b7a41246ff4b7c7
+was traced to two synthetic successful-scan fixtures that omitted
+time-series fields required by save_results. The production schema
+was not relaxed. A complete minimal success-row helper was added in
+commit ca053f58e3713b274e22f0d69bd5ca89863dab26. The deliberate
+overflow warning in the non-finite-state regression was then captured
+explicitly with pytest.warns in commit
+b0aa8b32c67a90e0981826ac44c7470c37ff7ce4.
+
+Workflow 43703509401 on b0aa8b32c67a90e0981826ac44c7470c37ff7ce4
+passed 98 Python tests with no warnings in the pytest summary, all
+four smoke integrations, and the 42-page LaTeX PDF build. The smoke
+rows remain one insufficient_oscillation_data and one non_quartic
+per scenario; they do not establish quartic dynamics. The LaTeX log
+has no Overfull hbox or float-placement warnings, but 213 Underfull
+hbox messages remain across repeated passes. The final pass has no
+unresolved references. Gates 4 and 10 remain PARTIAL; no physical
+acceptance gate is promoted by these engineering checks.
