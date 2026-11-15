@@ -768,3 +768,61 @@ the extracted strict-JSON SHA-256 is
 This is targeted stability evidence for four trajectories only.
 It does not establish convergence of the complete 100-row grid.
 Gate 4 remains PARTIAL, and no additional physical gate is promoted.
+
+
+## 2026-11-15 complete 100-row output-grid comparison
+
+The isolated DOP853 full-grid workflow 43757836487 completed at
+256,001 output points. The artifact was downloaded and inspected, not
+merely inferred from a green CI badge.
+
+- 256,001-point result: 100/100 successful rows, zero failed rows,
+  100 unique row keys, complete checkpoint, DOP853, rtol=1e-9,
+  atol=1e-12, 20 mu^-1 duration and the unchanged 1,000,000 RHS guard.
+- Direct 128,001 -> 256,001 comparison: all six final-state variables
+  (Phi, Phi_dot, psi, psi_dot, H, rho_total) are bitwise-identical in
+  the serialized JSON for all 100 rows. The adaptive solver nfev counts
+  are also identical. All regime labels, quartic flags, oscillation
+  counts, late-half-cycle counts and adiabaticity flags are unchanged.
+- Q_final: 96 finite rows; maximum absolute change 1.1011e-3,
+  median absolute change 9.5536e-7, maximum symmetric relative change
+  1.1297e-4. The maximum occurs in the low-scale control with
+  seed=5, velocity=1, offset=0.01.
+- w_final: 96 finite rows; maximum absolute change 3.4015e-4,
+  median absolute change 1.5264e-4. Its largest relative difference is
+  not a useful convergence measure because at least one value is close
+  to zero and the estimate changes sign.
+- virial_final: 96 finite rows; maximum absolute change 3.4157e-4,
+  median absolute change 2.9904e-7, maximum symmetric relative change
+  3.7693e-4.
+- The median ratio of the finite-difference continuity residual
+  (256,001 / 128,001) is 0.5003, consistent with first-order
+  output-difference refinement; the observed range is 0.4499--1.0294.
+  The sampled maximum chain-rule residual is not monotone: its median
+  ratio is 1.0 and its maximum ratio is 11.88, indicating a newly
+  resolved local maximum rather than uniform reduction.
+- Against the archived 4,001-point baseline, final-state relative
+  differences remain bounded by 8.3194e-8 across the six state
+  variables, and no classification field changes. However, the
+  maximum absolute Q_final, w_final and virial_final changes remain
+  6.5194e-2, 1.9880e-2 and 1.9403e-2, respectively. The original
+  4,001-point output grid therefore undersampled some cycle-averaged
+  diagnostics.
+- The provisional 1e-3 absolute Q grid limit is exceeded slightly
+  (1.1011e-3) in one row. No tolerance has been relaxed. Full diagnostic
+  convergence is still not declared; Q requires a denser or
+  independently integrated cycle-average estimator and a justified
+  error bound. Gate 4 remains PARTIAL.
+
+Artifact SHA-256:
+- 4,001-point baseline ZIP:
+  3e758909f191c863b358424be0d7d86a253224fe066e3ceaa279368719e39c8b
+- 128,001-point ZIP:
+  3e2527d127e2e32fb7ec7305086d95e44eea3bc3daf7aae5cbdf48ea8c169dec
+- 256,001-point ZIP:
+  882e7d72e2ab62432a0d6d9d6898aeb5922029377e2d435a619588d0f792e280
+
+Workflow 43757836487 passed Python regression, the 100-row refined-grid
+scan and LaTeX build. This verifies the scan and build at that head;
+it does not close the physical waterfall, backreaction, relic or
+observational gates.
