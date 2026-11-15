@@ -1085,3 +1085,22 @@ classification remains one insufficient_oscillation_data and one
 non_quartic per scale; it does not demonstrate quartic dynamics.
 The full Radau scan remains a separate 98/100 diagnostic with two
 budget-exhausted integrations and no joint-quartic success.
+
+### Follow-up: current Radau scan interpretation in the manuscript
+
+The critical numerical-status paragraph in main.tex now reports the
+actual 100-row Radau artifact. There are 98 successful integrations
+and two RHS-budget failures. No successful row passes the joint
+quartic classifier. The high-scale maximum Q is about 1.002, below
+the Q>2 energy-dominance boundary. The low-scale control contains
+large-classical-seed rows with Q up to about 11.12, w about 0.363 and
+virial ratio about 0.890, but only two half-cycles occur in the final
+20 percent, leaving the late-time adiabatic diagnostic unavailable.
+This is not a sustained quartic-fluid realization.
+
+The manuscript explicitly distinguishes these transient averages
+from a sustained proxy-fluid phase and states that the scan is
+homogeneous/post-threshold, not quantum-seeded or inhomogeneous.
+A BDF full-scan cross-check with unchanged tolerances and RHS guard
+is running on isolated execution PR #5. One new regression guards
+the manuscript's current scan-status wording; fresh CI is pending.
