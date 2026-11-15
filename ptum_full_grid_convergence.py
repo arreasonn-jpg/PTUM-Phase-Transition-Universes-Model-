@@ -129,6 +129,7 @@ def summarize_row(row: dict[str, Any], scenario: str,
             "n_oscillations",
             "adiabaticity_valid",
             "cycle_quadrature_relative_error_max",
+            "cycle_quadrature_normalized_absolute_error_max",
         )
     }
     result["diagnostics"] = {
