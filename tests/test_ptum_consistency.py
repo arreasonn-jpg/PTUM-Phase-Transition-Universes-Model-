@@ -9,6 +9,10 @@ from ptum_task1_simulation import (
     RHSWorkBudgetExceeded,
     RHSIntegrationError,
     PTUMParameters,
+    background_equations,
+    dimensionless_state_scales,
+    dimensionless_state_scale_metadata,
+    dimensionless_background_equations,
     M_PL,
     meff_sq_psi,
     veff_phi,
@@ -1546,6 +1550,9 @@ def test_simulation_reports_deterministic_solver_work_statistics():
     assert stats["rhs_evaluations"] == stats["nfev"]
     assert 0 < stats["rhs_evaluations"] <= DEFAULT_MAX_RHS_EVALUATIONS
     assert not stats["budget_exhausted"]
+    assert stats["time_variable"] == "tau=mu*t"
+    assert stats["state_variables_dimensionless"] is True
+    assert stats["state_scales"] == dimensionless_state_scale_metadata(p)
 
 
 def test_simulation_rhs_work_budget_raises_with_exact_attempt_count():
@@ -1586,6 +1593,9 @@ def test_scan_records_budget_exhaustion_and_preserves_it_in_strict_json(tmp_path
         "rtol": 1.0e-9,
         "atol": 1.0e-12,
         "budget_exhausted": True,
+        "time_variable": "tau=mu*t",
+        "state_variables_dimensionless": True,
+        "state_scales": dimensionless_state_scale_metadata(p),
     }
 
     output = tmp_path / "partial_scan.json"
@@ -1773,3 +1783,41 @@ def test_manuscript_reports_current_radau_scan_failures_and_claim_boundary():
     assert "only two late half-cycles occur" in source
     assert "BDF cross-check with unchanged tolerances is running" in source
     assert "neither a quantum-seeded inhomogeneous waterfall" in source
+
+
+
+def test_dimensionless_background_rhs_is_equivalent_to_physical_rhs():
+    p = PTUMParameters(V0=1.0e50, m_psi=1.0e5, lambda_psi=0.1)
+    state_physical = np.array([
+        0.9 * p.Phi_c,
+        -1.0e20,
+        0.2 * p.psi_0,
+        0.1 * p.mu * p.psi_0,
+    ])
+    scales = dimensionless_state_scales(p)
+    assert scales.shape == (4,)
+    assert np.all(np.isfinite(scales))
+    assert np.all(scales > 0.0)
+    tau = 0.37
+    rhs_physical = background_equations(tau / p.mu, state_physical, p)
+    rhs_dimensionless = dimensionless_background_equations(
+        tau, state_physical / scales, p
+    )
+    expected = rhs_physical / (p.mu * scales)
+    np.testing.assert_allclose(
+        rhs_dimensionless, expected, rtol=1.0e-13, atol=1.0e-13
+    )
+
+
+def test_dimensionless_state_scale_metadata_has_correct_component_order():
+    p = PTUMParameters(V0=1.0e50, m_psi=1.0e5, lambda_psi=0.1)
+    metadata = dimensionless_state_scale_metadata(p)
+    assert set(metadata) == {
+        "mu_GeV", "Phi_GeV", "Phi_dot_GeV2", "psi_GeV", "psi_dot_GeV2"
+    }
+    scales = dimensionless_state_scales(p)
+    assert metadata["mu_GeV"] == p.mu
+    assert metadata["Phi_GeV"] == scales[0]
+    assert metadata["Phi_dot_GeV2"] == scales[1]
+    assert metadata["psi_GeV"] == scales[2]
+    assert metadata["psi_dot_GeV2"] == scales[3]
