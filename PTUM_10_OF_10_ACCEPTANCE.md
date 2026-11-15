@@ -497,3 +497,23 @@ solver-tolerance convergence are measured. Gate 10 remains PARTIAL
 because the manuscript still has Underfull hbox warnings and the
 current full scan is not yet validated. No physical gate is promoted
 by the older DOP853 artifact or the four-row smoke scan.
+
+
+## 2026-11-15 primordial-background and mode-spectrum claim audit
+
+The public ptum_inflation_background.py module generates the
+eight-point scalar-dominated FRW background and first-order
+Hubble-flow table. The regression suite checks all eight rows,
+the requested 60-e-fold duration, and key reference observables.
+This supports reproducibility of the background scan only.
+
+The separately described 200-mode Mukhanov-Sasaki integration is
+not reproduced by that module. Its mode solver, raw spectra and
+numerical outputs are absent from the repository. The manuscript's
+previous wording that called the mode integration numerically
+verified with the public background script has been corrected:
+the mode-spectrum agreement is now explicitly AUTHOR-REPORTED.
+Gate 9 remains NOT MET because neither this mode-spectrum result nor
+the CLASS/Cobaya likelihood pipeline has been independently
+reproduced. No observational acceptance is inferred from the
+background-only CI test.
