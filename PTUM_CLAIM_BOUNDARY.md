@@ -416,3 +416,15 @@ There are 138 Underfull hbox messages across the build log. The full
 Radau scan remains 98/100 with two budget-exhausted rows and no
 joint-quartic classifications among the 98 successful rows. The passing
 smoke scan and 100-test suite do not change the physical claim boundary.
+
+The manuscript now includes the current Radau scan outcome rather than
+leaving the 100-row scan pending: 98/100 integrations succeeded, two
+failed at the RHS budget, and none of the 98 successful rows passed
+the joint quartic classifier. The high-scale maximum Q is about 1.002.
+Some low-scale large-classical-seed rows have Q up to 11.12, w about
+0.363 and virial ratio about 0.890, but only two late half-cycles occur
+in the final 20 percent; the adiabaticity diagnostic is therefore
+unavailable. This is a transient quartic-like average, not a sustained
+quartic-fluid result. A BDF cross-check at unchanged tolerances is
+running on isolated execution PR #5. A new regression guards these
+claim boundaries; its fresh CI result is pending.
