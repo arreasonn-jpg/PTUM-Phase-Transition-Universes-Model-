@@ -1198,3 +1198,14 @@ declared homogeneous post-threshold grid under DOP853. It does not
 establish a quartic-fluid realization, an inhomogeneous waterfall,
 backreaction, relic abundance or observational validity. Gates 4 and
 10 remain PARTIAL; Gates 5, 6, 7 and 9 remain NOT MET.
+
+
+## 2026-11-15 latest manuscript and regression verification
+
+Latest-content CI verification workflow 43754277984 (execution-only
+PR #8) passed all 103 tests and the four-trajectory smoke scan. The
+LaTeX build completed and produced a 42-page PDF. In the final
+LaTeX pass there were zero unresolved references, zero unresolved
+citations and zero Overfull hboxes; 74 Underfull hbox warnings
+remain. The build is successful but not warning-free. The CI-only
+PR was closed without merging after verification.
