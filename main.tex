@@ -845,7 +845,7 @@ $3H_c/(2\mu)\simeq4.29$ when the kinetic contribution at
 $\epsilon_H=1$ is included (the potential-only estimate is $3.50$),
 so the benchmark is strongly damped. The Radau and BDF full scans each completed 98/100 trajectories;
 the same two rows exhausted the 1,000,000-RHS engineering guard.
-A third DOP853 scan, launched from the PR #2 source commit
+A third DOP853 scan, launched from the PR \#2 source commit
 `bebd0bd1e5f75e31d3d0ba8dfe84a9b53293bea0`, completed all 100/100
 trajectories at unchanged $\mathrm{rtol}=10^{-9}$,
 $\mathrm{atol}=10^{-12}$ and the same RHS guard. The two rows that
@@ -875,7 +875,7 @@ unavailable. These rows do not establish a sustained quartic-fluid
 phase. The median finite-difference continuity residual normalized
 by $H\rho$ is about $3.72\times10^{-2}$ at high scale and
 $4.03\times10^{-6}$ at low scale, so output-grid and solver-tolerance
-convergence remain mandatory. The isolated BDF scan completed 98/100 trajectories, matching Radau's two RHS-budget failures and all 98 successful regime labels. This is cross-solver agreement, not solver-tolerance or output-grid convergence. The current-source DOP853 execution PR #7 completed the 100-row scan; its strict-JSON artifact and cross-solver comparison are recorded in the reproducibility notes. This scan
+convergence remain mandatory. The isolated BDF scan completed 98/100 trajectories, matching Radau's two RHS-budget failures and all 98 successful regime labels. This is cross-solver agreement, not solver-tolerance or output-grid convergence. The current-source DOP853 execution PR \#7 completed the 100-row scan; its strict-JSON artifact and cross-solver comparison are recorded in the reproducibility notes. This scan
 remains homogeneous and post-threshold; it is neither a quantum-seeded
 inhomogeneous waterfall nor a relic calculation.
 
@@ -909,7 +909,7 @@ Radau artifact is published as a CI artifact and contains 98
 successful integrations and two explicit RHS-budget failures; it is
 not an all-success scan. None of the 98 successful rows passes the
 joint quartic classifier. The two failed rows remain unclassified,
-and the current-source DOP853 cross-check is running on isolated execution PR #7. No conclusion is drawn
+and the current-source DOP853 cross-check is running on isolated execution PR \#7. No conclusion is drawn
 for the failed rows or unsampled parameter regions. The scan is a
 homogeneous post-threshold sensitivity study, not a quantum-seeded
 inhomogeneous calculation.
