@@ -453,3 +453,25 @@ are identical and DOP853/Radau final-state and classifier diagnostics
 agree closely. This is cross-method agreement, not tolerance or
 output-grid convergence. The scan remains homogeneous and
 post-threshold, not an inhomogeneous waterfall or relic calculation.
+
+
+## Targeted numerical convergence boundary (2026-11-15)
+
+A 36-run DOP853 convergence workflow tested four selected trajectories:
+the two rows that exhausted Radau/BDF RHS budgets and two high-Q
+controls. All runs succeeded. Across tolerance changes, maximum
+final-state relative difference was 4.75e-7 and maximum relative
+difference in Q/w/virial diagnostics was 3.48e-7. Across 128,001 ->
+256,001 output samples, all four regime labels, quartic flags and
+late-half-cycle counts were unchanged. Maximum absolute diagnostic
+changes were 7.57e-4 (Q_final), 2.57e-4 (w_final), 2.25e-4
+(virial_final) and 6.05e-4 (finite-difference continuity diagnostic).
+All four probes pass the explicitly encoded targeted limits.
+
+This does not establish convergence of all 100 scan trajectories.
+The two DOP853-only rows still lack successful Radau/BDF counterparts,
+although their DOP853 self-convergence is included in the targeted
+study. The high-scale finite-difference continuity diagnostic remains
+at percent-level magnitude; the small chain-rule continuity residual
+is a separate diagnostic and must not be conflated with it. No claim
+of a fully converged full-grid numerical study is made.
