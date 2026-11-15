@@ -1760,3 +1760,16 @@ def test_mukhanov_sasaki_spectrum_claim_remains_author_reported():
     assert "does not integrate" in normalized
     assert r"\begin{itemize}" not in subsection
     assert "we performed a full mode-by-mode integration" not in subsection
+
+
+
+def test_manuscript_reports_current_radau_scan_failures_and_claim_boundary():
+    from pathlib import Path
+
+    source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
+    assert "98 integrations succeeded" in source
+    assert "two rows exhausted" in source
+    assert "No successful row passes the joint quartic classifier" in source
+    assert "only two late half-cycles occur" in source
+    assert "BDF cross-check with unchanged tolerances is running" in source
+    assert "not a quantum-seeded inhomogeneous waterfall" in source
