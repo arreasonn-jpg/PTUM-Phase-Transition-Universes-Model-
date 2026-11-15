@@ -385,3 +385,61 @@ display equation in commit `d9455781f0a643f6c1b2badc199bf2fb6fedcab7`.
 The fresh LaTeX build on that latest source is pending; Gate 10 stays
 PARTIAL until the new log is checked. The previous build also retained
 numerous Underfull `\\hbox` warnings and two float-placement warnings.
+
+
+
+## 2026-11-15 bounded scan execution and fresh CI checkpoint
+
+The previous isolated full-scan attempt, workflow `43582371029` on
+source head `d4f5f8b37a526c6fba35d19cb9c0396710da2e1a`, completed only
+20 of 100 trajectories before the hosted runner received a shutdown
+signal. The full-scan step was cancelled and no scan JSON/checkpoint
+artifact was uploaded. This is an execution failure, not a physical
+result; no regime conclusion is drawn from those 20 rows. The old
+attempt predates the deterministic solver-work guard below.
+
+The homogeneous integrator and scan runner now:
+- count RHS evaluations for every DOP853 trajectory;
+- stop a trajectory after a configurable default budget of 100000 RHS
+  evaluations, recording the exact attempted count and limit;
+- classify a budget-exhausted trajectory as failed, never as a physical
+  regime;
+- preserve solver method, tolerances, evaluation count and budget status
+  in the strict-JSON checkpoint and final summary; and
+- print the initial conditions before each trajectory so a stalled row
+  is identifiable from the workflow log.
+
+The 100000-call limit is an engineering fail-closed guard, not a physical
+cutoff and not a relaxation of `rtol=1e-9` or `atol=1e-12`. Any row
+that reaches it remains a failed integration and prevents a passing full
+scan. This change is intended to turn an indefinitely long adaptive solve
+into an inspectable failure while allowing the remaining grid points to
+be attempted.
+
+Workflow `43701174233` completed on PR source head
+`5379ec8a2e85e875c9819121b0409ea454cf99e9`:
+- **93 Python regression tests passed**;
+- all four two-scale smoke integrations succeeded;
+- each scenario still returned one `insufficient_oscillation_data`
+  and one `non_quartic` result, so the smoke scan does not establish
+  quartic proxy-fluid behavior;
+- the 42-page manuscript PDF compiled and uploaded;
+- the final log audit found no Overfull `\\hbox` warnings and no
+  float-placement warnings after splitting the thermal-condensate
+  equation and changing two table placements to `[htbp]`;
+- Underfull `\\hbox` warnings remain and require a typography review.
+  Citation warnings occur during the initial LaTeX pass and are resolved
+  by subsequent `latexmk` passes; no unresolved-reference warning is
+  present in the final pass.
+
+The fresh full scan has been explicitly armed on PR #2 by a temporary
+title marker and is running as workflow `43701420639` on source head
+`af9724092c94d8469fcf23a87f29438b2cf8c58a`. The title marker has been
+removed after the workflow was queued. At this checkpoint the full-scan
+job is in progress; no 100-row artifact or result is yet accepted.
+
+Gate 4 remains **PARTIAL** until timestep and solver-tolerance convergence
+are measured. Gate 10 remains **PARTIAL** because Underfull warnings
+remain and the bounded full scan is not yet inspected. Gates 5, 6, 7 and
+9 remain **NOT MET**. No physical acceptance gate is promoted by the
+93-test result or four-row smoke scan. PTUM is **NOT 10/10**.
