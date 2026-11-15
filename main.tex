@@ -1909,6 +1909,40 @@ active, these operators must be included in the $\psi$, Higgs and
 fermion field equations, with their energy transfer evolved
 explicitly.
 
+The corresponding covariant field equations follow by varying the
+same full action. With
+\(U_{\rm tot,Y}=U_{{\rm SM},Y}+U_Y\), the \(\psi\) equation is
+\begin{equation}
+\Box\psi
+-m_\psi^2\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right)\psi
+-\lambda_\psi\psi^3
+-g_{\psi H}\psi H^\dagger H
+-\frac{\mathcal O_{\rm SM}}{\Lambda}=0.
+\label{eq:psi_full_reheating_eom}
+\end{equation}
+The Higgs equation, treating \(H\) and \(H^\dagger\) as independent
+variables, is
+\begin{equation}
+D_\mu D^\mu H
+-\frac{\partial}{\partial H^\dagger}
+\left(V_H+U_{{\rm SM},Y}+U_Y+U_{\psi H}\right)=0,
+\label{eq:higgs_full_reheating_eom}
+\end{equation}
+or, for the displayed Higgs potential,
+\begin{equation}
+D_\mu D^\mu H+\mu_H^2H
+-2\lambda_H(H^\dagger H)H
+-\frac{g_{\psi H}}{2}\psi^2H
+-\frac{\partial(U_{{\rm SM},Y}+U_Y)}{\partial H^\dagger}=0.
+\end{equation}
+The fermion equations are obtained by varying
+\(U_{\rm tot,Y}\), as written below. These equations make explicit
+which sources enter once the reheating operators are active; they do
+not imply that the present homogeneous code evolves the Higgs or
+fermion fields. Gauge-field equations likewise follow from variation
+of the gauge fields in the same action and include the corresponding
+Higgs and fermion currents.
+
 The following lines identify the interaction terms already included in the scalar-sector Lagrangians and the additional reheating interactions; they are not to be added a second time to \(\mathcal{L}_{\rm full}\):
 \begin{align}
 \mathcal{L}_{\rm int}^{\psi\Phi} &= -\frac{1}{2}\alpha m_\psi^2 \frac{\Phi^2}{E_{\rm th}^2} \psi^2, \\
