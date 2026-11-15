@@ -1547,63 +1547,58 @@ GUT-adjacent regime. The EFT hierarchy is satisfied throughout the benchmark reg
 \subsection{Mukhanov--Sasaki mode-by-mode integration}
 \label{sec:mukhanov_sasaki}
 
-To go beyond the slow-roll and exact-background approximations, we
-performed a full mode-by-mode integration of the Mukhanov--Sasaki
-equation for the PTUM creation sector. The Mukhanov--Sasaki variable
-\(v_k = z \mathcal{R}_k\) with \(z = a \dot\Phi / H\) satisfies
+The exact homogeneous background and its Hubble-flow parameters do not
+by themselves determine the primordial scalar spectrum. A separate
+integration of the Mukhanov--Sasaki mode equation is required. The
+equations below specify that calculation; the 200-mode numerical result
+described afterwards is author-reported and is not independently
+reproduced by the code in this repository.
+
+The Mukhanov--Sasaki variable
+\(v_k=z\mathcal{R}_k\), with \(z=a\dot\Phi/H\), obeys
 \begin{equation}
-v_k'' + \left(k^2 - \frac{z''}{z}\right) v_k = 0,
+v_k''+\left(k^2-\frac{z''}{z}\right)v_k=0,
 \end{equation}
-where primes denote derivatives with respect to conformal time
-\(\eta\). The effective mass term is
+where primes denote conformal-time derivatives. In terms of the
+Hubble-flow hierarchy
+\(\epsilon_1=-\dot H/H^2\) and
+\(\epsilon_{n+1}=d\ln|\epsilon_n|/dN\), the effective mass is
 \begin{equation}
-\frac{z''}{z} = a^2 H^2 \left(2 - \epsilon_1 + \tfrac{3}{2}\epsilon_2
-- \tfrac{1}{2}\epsilon_1\epsilon_2 + \tfrac{1}{4}\epsilon_2^2
-+ \tfrac{1}{2}\epsilon_2\epsilon_3\right),
+\frac{z''}{z}=a^2H^2\left(
+2-\epsilon_1+\frac32\epsilon_2
+-\frac12\epsilon_1\epsilon_2
++\frac14\epsilon_2^2+\frac12\epsilon_2\epsilon_3
+\right).
 \end{equation}
-with the Hubble-flow parameters \(\epsilon_1 = -\dot H/H^2\),
-\(\epsilon_{n+1} = d\ln|\epsilon_n|/dN\). For the PTUM fuel potential
-\(V(\Phi) = V_0(1 - e^{-\lambda_\Phi\Phi^2/M_{\rm Pl}^2})\), these parameters are
-computed exactly along the background trajectory.
+For the PTUM plateau potential
+\(V(\Phi)=V_0(1-e^{-\lambda_\Phi\Phi^2/M_{\rm Pl}^2})\),
+the background quantities entering this expression can be obtained
+from the homogeneous trajectory.
 
-The authors report integrating the mode equation from deep inside the
-horizon (\(k \gg aH\)) with Bunch-Davies initial conditions
-\emph{(author-reported; the mode-integration code is not public)}
-\(v_k \to e^{-ik\eta}/\sqrt{2k}\) through horizon crossing to
-super-horizon scales (\(k \ll aH\)), where the curvature
-perturbation \(\mathcal{R}_k = v_k/z\) freezes to a constant. The
-power spectrum is then
+The authors report imposing Bunch--Davies initial conditions deep
+inside the horizon, \(k\gg aH\), with
+\(v_k\to e^{-ik\eta}/\sqrt{2k}\), and following the modes through
+horizon crossing to \(k\ll aH\), where
+\(\mathcal{R}_k=v_k/z\) approaches a constant. The dimensionless
+curvature spectrum is
 \begin{equation}
-\mathcal{P}_{\mathcal{R}}(k) = \frac{k^3}{2\pi^2} |\mathcal{R}_k|^2.
+\mathcal{P}_{\mathcal{R}}(k)
+=\frac{k^3}{2\pi^2}|\mathcal{R}_k|^2.
 \end{equation}
 
-A separate Mukhanov--Sasaki integration is reported to have been
-performed for 200 logarithmically spaced $k$-modes spanning
-$10^{-4} \le k \le 1\ \mathrm{Mpc}^{-1}$ for each $\lambda$ in
-the benchmark range. The reported results are consistent with the
-slow-roll and exact-background predictions to high precision
-\emph{(AUTHOR-REPORTED; the mode-integration code, raw spectra and
-numerical outputs are not included in this repository. The public
-\texttt{ptum\_inflation\_background.py} script computes background
-Hubble-flow quantities, not Mukhanov--Sasaki mode functions.)}:
-\begin{itemize}
+The authors further report a calculation with 200 logarithmically
+spaced modes over \(10^{-4}\leq k\leq1\ {\rm Mpc}^{-1}\) for each
+benchmark value of \(\lambda_\Phi\). They describe a nearly
+scale-invariant spectrum with a slight red tilt and no reported
+features above \(10^{-4}\). These numerical statements remain
+\emph{AUTHOR-REPORTED}: the mode solver, raw spectra, initial-condition
+files and numerical outputs are not included here. They therefore do
+not constitute an independently reproduced primordial-spectrum
+calculation or a CLASS/Cobaya likelihood comparison. The public
+\texttt{ptum\_inflation\_background.py} module computes homogeneous
+background and Hubble-flow quantities; it does not integrate
+Mukhanov--Sasaki mode functions.
 
-
-The authors report that the mode-by-mode integration also allows
-verifying the scale-dependence of the power spectrum directly
-\emph{(author-reported; the Mukhanov--Sasaki code is not public)}.
-For the PTUM plateau potential, the spectrum is reported to be nearly
-scale-invariant with a slight red tilt, and no features or
-oscillations are present at the level of numerical precision
-(\(<10^{-4}\)). This is reported to confirm that the PTUM creation
-sector produces a featureless, nearly scale-invariant primordial
-spectrum consistent with Planck observations.
-
-The Mukhanov--Sasaki integration code and the resulting power
-spectra for all benchmark \(\lambda\) values will be included in the
-reproducibility release (Section~\ref{app:code-availability}).
-
-%============================================================
 \section{Late-time dark sector viability}
 \label{sec:late}
 %============================================================
