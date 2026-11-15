@@ -85,8 +85,14 @@ jobs:
 
   diagnose-single-trajectory:
     if: github.event_name == 'push' && contains(github.event.head_commit.message, '[diagnose-trajectory]')
+    name: diagnose-index-${{ matrix.scan_index }}-${{ matrix.solver }}
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        scan_index: [19, 69]
+        solver: [DOP853, Radau, BDF]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -98,8 +104,8 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-ci.txt
-      - name: Compare DOP853, Radau and BDF on trajectory 73
-        run: python ptum_diagnose_trajectory.py --index 72 --methods DOP853 Radau BDF
+      - name: Compare solvers on the exact full-scan initial conditions
+        run: python ptum_diagnose_trajectory.py --index ${{ matrix.scan_index }} --methods ${{ matrix.solver }}
 
   merge-full-scan:
     if: always() && needs.full-waterfall-scan.result != 'skipped'
