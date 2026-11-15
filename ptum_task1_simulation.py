@@ -1087,6 +1087,14 @@ def save_results(results: List[Dict], filepath: str):
                 'ic_params': r['ic_params'],
                 'max_abs_psi_over_trajectory': float(np.max(np.abs(r['psi']))),
                 'final_Phi': float(r['Phi'][-1]),
+                'final_Phi_dot': float(r['Phi_dot'][-1]),
+                'final_psi': float(r['psi'][-1]),
+                'final_psi_dot': float(r['psi_dot'][-1]),
+                'final_H': float(r['H'][-1]),
+                'final_rho_total': float(r['rho_total'][-1]),
+                'final_w_psi_exc': _json_safe(r['w_psi_exc'][-1]),
+                'final_Q': _json_safe(r['Q'][-1]),
+                'final_virial_ratio': _json_safe(r['virial_ratio'][-1]),
                 'max_abs_relative_frw_continuity_residual': float(np.nanmax(
                     np.abs(r['continuity_residual_relative'])
                 ))
