@@ -34,7 +34,8 @@ Diagnostics:
 """
 
 import numpy as np
-from scipy.integrate import solve_ivp
+from scipy.integrate import solve_ivp, quad_vec
+from scipy.optimize import brentq
 from dataclasses import dataclass
 from typing import Optional, Tuple, List, Dict, Callable
 import json
@@ -573,20 +574,27 @@ def run_simulation(params: PTUMParameters,
     )
     w_psi_arr = np.array([w_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
     
-    # Quartic diagnostics are evaluated over complete half-cycles.
-    # NaN denotes that no valid oscillation interval was available.
+    # Retain the sampled estimators as independent diagnostics, but use
+    # adaptive quadrature on the solver's dense interpolant for the reported
+    # complete-cycle averages. This removes output-grid endpoint bias.
     U_psi = 0.25 * params.lambda_psi * psi**4
-    virial_ratio = compute_quartic_virial_ratio(t, psi, psi_dot, params)
+    virial_ratio_sampled = compute_quartic_virial_ratio(
+        t, psi, psi_dot, params
+    )
+    Q_sampled = compute_quartic_dominance(t, psi, psi_dot, params, Phi)
+    w_avg_sampled, t_avg_sampled = compute_time_averaged_w(
+        t, p_psi_exc_arr, rho_psi_exc_arr, psi_dot
+    )
     quadratic_virial_ratio = compute_quadratic_virial_ratio(
         t, psi, psi_dot, Phi, params
     )
-    Q_arr = compute_quartic_dominance(t, psi, psi_dot, params, Phi)
-    
-    # Average the excitation-sector equation of state, not the raw
-    # potential density whose moving minimum can be negative.
-    w_avg, t_avg = compute_time_averaged_w(
-        t, p_psi_exc_arr, rho_psi_exc_arr, psi_dot
+    dense_cycle = compute_dense_cycle_diagnostics(
+        sol.sol, t * mu, mu, state_scales, params, len(t)
     )
+    Q_arr = dense_cycle["Q"]
+    virial_ratio = dense_cycle["virial_ratio"]
+    w_avg = dense_cycle["w_avg"]
+    t_avg = dense_cycle["t_avg"]
     w_avg_raw, t_avg_raw = compute_time_averaged_w(
         t, p_psi_arr, rho_psi_arr, psi_dot
     )
@@ -641,6 +649,12 @@ def run_simulation(params: PTUMParameters,
         'w_psi_exc': w_psi_exc_arr,
         'w_psi_avg': w_avg,
         'w_psi_avg_raw': w_avg_raw,
+        'Q_sampled': Q_sampled,
+        'virial_ratio_sampled': virial_ratio_sampled,
+        'w_psi_avg_sampled': w_avg_sampled,
+        't_avg_sampled': t_avg_sampled,
+        'cycle_quadrature_relative_error_max': dense_cycle["max_relative_quadrature_error"],
+        'cycle_turning_times': dense_cycle["turning_times"],
         't_avg': t_avg,
         't_avg_raw': t_avg_raw,
         'U_psi': U_psi,
@@ -717,6 +731,120 @@ def compute_quadratic_virial_ratio(t: np.ndarray, psi: np.ndarray,
         if quadratic_potential_avg > 0.0:
             ratio[start:end] = kinetic_avg / quadratic_potential_avg
     return ratio
+
+
+def compute_dense_cycle_diagnostics(
+    dense_solution: Callable[[float], np.ndarray],
+    tau_samples: np.ndarray,
+    mu: float,
+    state_scales: np.ndarray,
+    params: PTUMParameters,
+    n_output: int,
+) -> Dict[str, np.ndarray | float | list]:
+    """Compute half-cycle ratios by adaptive quadrature of the ODE dense output.
+
+    Turning points are roots of psi_dot in the continuous DOP853 interpolant.
+    The six integrated quantities are lambda*psi^4, |m_eff^2|*psi^2,
+    kinetic energy, 2*V4, excitation pressure and excitation density.
+    The returned ratios therefore do not depend on rectangular sample means.
+    The output-grid samples are used only to bracket roots and map each
+    cycle diagnostic back onto the legacy time-series representation.
+    """
+    tau_samples = np.asarray(tau_samples, dtype=float)
+    scales = np.asarray(state_scales, dtype=float)
+    if (tau_samples.ndim != 1 or len(tau_samples) < 3
+            or np.any(np.diff(tau_samples) <= 0.0)
+            or scales.shape != (4,) or not np.all(np.isfinite(scales))
+            or mu <= 0.0 or n_output != len(tau_samples)):
+        raise ValueError("invalid dense-cycle diagnostic inputs")
+
+    def physical_state(tau):
+        return np.asarray(dense_solution(float(tau)), dtype=float) * scales
+
+    sampled_psi_dot = np.asarray([
+        physical_state(tau)[3] for tau in tau_samples
+    ])
+    roots = []
+    for index in range(len(tau_samples) - 1):
+        left_value, right_value = sampled_psi_dot[index:index + 2]
+        if not (np.isfinite(left_value) and np.isfinite(right_value)):
+            continue
+        if left_value == 0.0:
+            root = float(tau_samples[index])
+        elif right_value == 0.0:
+            root = float(tau_samples[index + 1])
+        elif np.signbit(left_value) != np.signbit(right_value):
+            root = float(brentq(
+                lambda tau: physical_state(tau)[3],
+                tau_samples[index], tau_samples[index + 1],
+                xtol=4.0 * np.finfo(float).eps,
+                rtol=8.0 * np.finfo(float).eps,
+            ))
+        else:
+            continue
+        if not roots or root - roots[-1] > (
+            32.0 * np.finfo(float).eps * max(1.0, abs(root))
+        ):
+            roots.append(root)
+
+    q_values = np.full(n_output, np.nan, dtype=float)
+    virial_values = np.full(n_output, np.nan, dtype=float)
+    w_values = []
+    t_values = []
+    relative_errors = []
+
+    def integrand(tau):
+        _, _, psi_value, psi_dot_value = physical_state(tau)
+        phi_value = physical_state(tau)[0]
+        mass_sq = float(meff_sq_psi(phi_value, params))
+        excitation_potential = float(
+            psi_excitation_potential(phi_value, psi_value, params)
+        )
+        quartic_potential = 0.25 * params.lambda_psi * psi_value**4
+        kinetic = 0.5 * psi_dot_value**2
+        excitation_density = kinetic + excitation_potential
+        excitation_pressure = kinetic - excitation_potential
+        return np.asarray([
+            params.lambda_psi * psi_value**4,
+            abs(mass_sq) * psi_value**2,
+            kinetic,
+            2.0 * quartic_potential,
+            excitation_pressure,
+            excitation_density,
+        ], dtype=float)
+
+    for start, end in zip(roots[:-1], roots[1:]):
+        if end <= start:
+            continue
+        integral, error = quad_vec(
+            integrand, start, end, epsabs=0.0, epsrel=1.0e-9,
+            norm="max", limit=200,
+        )
+        integral = np.asarray(integral, dtype=float)
+        scale = np.maximum(np.abs(integral), np.finfo(float).tiny)
+        relative_errors.append(float(error / np.max(scale)))
+        lo = max(0, int(np.searchsorted(tau_samples, start, side="left")))
+        hi = min(n_output, int(np.searchsorted(tau_samples, end, side="right")))
+        if integral[1] > 0.0 and np.isfinite(integral[1]):
+            q_values[lo:hi] = integral[0] / integral[1]
+        if integral[3] > 0.0 and np.isfinite(integral[3]):
+            virial_values[lo:hi] = integral[2] / integral[3]
+        if integral[5] > np.finfo(float).tiny and np.all(np.isfinite(integral[4:6])):
+            w_values.append(float(integral[4] / integral[5]))
+        else:
+            w_values.append(float("nan"))
+        t_values.append(float(0.5 * (start + end) / mu))
+
+    return {
+        "Q": q_values,
+        "virial_ratio": virial_values,
+        "w_avg": np.asarray(w_values, dtype=float),
+        "t_avg": np.asarray(t_values, dtype=float),
+        "turning_times": [float(value / mu) for value in roots],
+        "max_relative_quadrature_error": (
+            max(relative_errors) if relative_errors else float("nan")
+        ),
+    }
 
 
 def compute_time_averaged_w(t: np.ndarray, pressure: np.ndarray,
