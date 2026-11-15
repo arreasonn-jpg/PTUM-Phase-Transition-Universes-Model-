@@ -1118,3 +1118,38 @@ virial classifier diagnostics are 1.27e-5, 1.32e-6 and 3.98e-5.
 This is strong cross-method agreement for the successful subset,
 not time-grid or tolerance convergence. The two failures remain
 unclassified; DOP853 is the next targeted probe.
+
+
+## 2026-11-15 current-head CI and DOP853 execution isolation
+
+PR #2 workflow 43706959822 completed successfully on source head
+`bebd0bd1e5f75e31d3d0ba8dfe84a9b53293bea0`. The current test file
+contains 103 test functions; the Python regression job passed, all
+four two-scale smoke integrations passed, and the LaTeX build/PDF
+upload passed. The full 100-row scan was skipped in the ordinary PR
+workflow. A successful software workflow does not promote the physical
+acceptance gates.
+
+The BDF execution PR #5 is closed without merging. Its archived
+workflow 43705977596 produced 100 strict-JSON rows: 98 successful
+integrations and the same two RHS-budget failures as Radau. All 98
+common successful rows have identical regime labels. This supports
+cross-solver agreement on the successful subset, but does not establish
+solver-tolerance or output-grid convergence.
+
+The earlier DOP853 execution PR #6 is based on the older commit
+`4227a3e50e2a0564a44a19dea2338dafa328ca53`, not the current PR #2
+head, and its full-scan job failed. Its artifact is retained only as
+historical diagnostic evidence.
+
+To make a valid same-source comparison, isolated execution PR #7 was
+created directly from current PR #2 head
+`bebd0bd1e5f75e31d3d0ba8dfe84a9b53293bea0`. Workflow 43753469944
+runs DOP853 on the full 100-row grid with unchanged
+`rtol=1e-9`, `atol=1e-12`, 4001 samples over `20 mu^-1`, and
+the 1,000,000-RHS per-trajectory guard. At this checkpoint the
+workflow is in progress; no result or artifact has been accepted.
+
+No scientific gate is promoted by the 103-test CI run, the four-row
+smoke scan, or the running DOP853 workflow. Gates 4 and 10 remain
+PARTIAL; Gates 5, 6, 7 and 9 remain NOT MET. PTUM is NOT 10/10.
