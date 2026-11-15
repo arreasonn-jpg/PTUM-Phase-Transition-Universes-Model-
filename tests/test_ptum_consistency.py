@@ -8,6 +8,8 @@ from ptum_scan_convergence import (
     CASES as CONVERGENCE_CASES,
     OUTPUT_GRIDS,
     TOLERANCE_LEVELS,
+    TARGETED_GRID_LIMITS,
+    TARGETED_TOLERANCE_LIMITS,
     _compare_records,
     _finite_float,
     relative_difference,
@@ -1868,3 +1870,17 @@ def test_convergence_comparison_fails_closed_when_a_run_is_unsuccessful():
     assert comparison["comparison_available"] is False
     assert comparison["reference_success"] is False
     assert comparison["candidate_success"] is True
+
+
+
+def test_targeted_convergence_acceptance_limits_are_explicit_and_provisional():
+    assert TARGETED_TOLERANCE_LIMITS == {
+        "max_final_state_relative_difference": 1.0e-6,
+        "max_classification_relative_difference": 1.0e-5,
+    }
+    assert TARGETED_GRID_LIMITS == {
+        "Q_final_absolute_difference": 1.0e-3,
+        "w_final_absolute_difference": 1.0e-3,
+        "virial_final_absolute_difference": 1.0e-3,
+        "finite_difference_continuity_residual_absolute_difference": 1.0e-3,
+    }
