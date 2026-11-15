@@ -1209,3 +1209,36 @@ LaTeX pass there were zero unresolved references, zero unresolved
 citations and zero Overfull hboxes; 74 Underfull hbox warnings
 remain. The build is successful but not warning-free. The CI-only
 PR was closed without merging after verification.
+
+
+## 2026-11-15 targeted DOP853 convergence audit
+
+The isolated convergence workflow 43754922200 completed 36/36
+integrations for four representative trajectories. The probe includes
+the two DOP853-only rows that previously exhausted the Radau/BDF RHS
+guard and two high-Q controls. It evaluates three tolerance pairs
+(1e-9/1e-12, 1e-10/1e-13, 1e-11/1e-14) and seven output grids from
+4,001 through 256,001 points.
+
+All four cases passed the explicitly encoded *targeted* numerical
+stability limits: final-state relative differences <=1e-6,
+classification-diagnostic relative differences <=1e-5, and absolute
+changes <=1e-3 for Q_final, w_final, virial_final and the maximum
+finite-difference continuity diagnostic across the final grid
+doubling 128,001 -> 256,001. All four regime labels, quartic flags
+and late-half-cycle counts remained unchanged. The largest observed
+final-state relative difference was 4.75e-7; the largest
+classification-diagnostic relative difference was 3.48e-7.
+Maximum absolute changes across the final grid doubling were
+7.57e-4 (Q_final), 2.57e-4 (w_final), 2.25e-4 (virial_final) and
+6.05e-4 (finite-difference continuity diagnostic).
+
+Artifact ZIP SHA-256:
+`d4f80abf0e2705d3d019e67855592efaf7242ee96a90f970798119748a6bfe51`.
+Extracted strict-JSON SHA-256:
+`f99e7da8644c399e3bb5ff6d6b08cbffe272ab75c99faad311689fa283a71899`.
+
+This result applies only to four selected trajectories and does not
+establish convergence of the full 100-row scan. Gate 4 remains PARTIAL.
+The workflow also passed 107 regression tests and the LaTeX build;
+74 Underfull hbox warnings remain in the final LaTeX pass.
