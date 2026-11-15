@@ -407,3 +407,12 @@ whitespace-sensitive assertion spanning a LaTeX source line break.
 Commit a5f86d7c8ca746e6948cfa5c391d11a63985ab87 normalizes whitespace
 before checking the author-reported claim. A fresh full test run is
 pending; no passing status is inferred from the test-only correction.
+
+Fresh workflow 43705535067 on PR head 49933f4f1593327845944266e3412e67a3b545f3
+passes all 100 Python tests and all four smoke integrations. The 42-page
+LaTeX PDF builds; the final pass has no unresolved citations/references,
+Overfull hbox, float-placement warning or Improper prevdepth error.
+There are 138 Underfull hbox messages across the build log. The full
+Radau scan remains 98/100 with two budget-exhausted rows and no
+joint-quartic classifications among the 98 successful rows. The passing
+smoke scan and 100-test suite do not change the physical claim boundary.
