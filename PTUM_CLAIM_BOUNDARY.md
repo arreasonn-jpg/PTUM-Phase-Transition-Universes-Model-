@@ -397,3 +397,13 @@ unclosed itemize environment in the Mukhanov-Sasaki subsection. The
 source correction and two regression guards are committed; the fresh
 workflow is pending. No new physical acceptance claim follows from
 these software changes.
+
+The follow-up workflow 43705365503 verifies the corrected manuscript
+build: 42-page PDF, zero Overfull hbox warnings, zero float-placement
+warnings and no unresolved citations/references on the final LaTeX pass.
+It still reports 138 Underfull hbox messages. The Python job reported
+99 passed and one failed among 100 tests; the sole failure was a
+whitespace-sensitive assertion spanning a LaTeX source line break.
+Commit a5f86d7c8ca746e6948cfa5c391d11a63985ab87 normalizes whitespace
+before checking the author-reported claim. A fresh full test run is
+pending; no passing status is inferred from the test-only correction.
