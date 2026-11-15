@@ -441,9 +441,15 @@ with 100 rows and no non-finite numeric values.
 
 The first DOP853 execution PR #6 was based on a stale source commit
 and its full scan failed, so it is not a valid same-source comparison.
-A replacement isolated execution PR #7 was created directly from the
-current PR #2 head. Workflow 43753469944 is running the unchanged
-100-row DOP853 profile at rtol=1e-9, atol=1e-12 and a 1,000,000-RHS
-per-row guard. Its artifact has not yet been inspected. No solver
-agreement, scan completion or physical conclusion is claimed from
-this in-progress run.
+A replacement isolated execution PR #7 was created directly from PR #2
+source commit bebd0bd1e5f75e31d3d0ba8dfe84a9b53293bea0. Workflow
+43753469944 completed the 100-row DOP853 profile at rtol=1e-9,
+atol=1e-12 and a 1,000,000-RHS per-row guard. All 100 integrations
+succeeded and no row passed the joint quartic classifier. The two
+rows that exhausted the same RHS guard under Radau and BDF completed
+under DOP853, but have no successful implicit-solver counterpart.
+On the 98 rows common to all three successful sets, all regime labels
+are identical and DOP853/Radau final-state and classifier diagnostics
+agree closely. This is cross-method agreement, not tolerance or
+output-grid convergence. The scan remains homogeneous and
+post-threshold, not an inhomogeneous waterfall or relic calculation.
