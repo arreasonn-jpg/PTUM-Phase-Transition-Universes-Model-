@@ -843,15 +843,30 @@ are historical and are not treated as results for the revised
 waterfall model. The exact endpoint now gives
 $3H_c/(2\mu)\simeq4.29$ when the kinetic contribution at
 $\epsilon_H=1$ is included (the potential-only estimate is $3.50$),
-so the benchmark is strongly damped. The revised
-100-initial-condition Radau scan has now produced a strict-JSON artifact
-with 100 rows, but only 98 integrations succeeded; two rows exhausted
-the 1,000,000-RHS engineering guard at the same seed/offset grid point.
-Among the successful rows, the high-scale threshold-matched case has
-47 non-quartic and two insufficient-oscillation classifications, while
-the low-scale control has 42 non-quartic and seven
-insufficient-oscillation classifications. No successful row passes
-the joint quartic classifier. The largest high-scale quartic indicator
+so the benchmark is strongly damped. The Radau and BDF full scans each completed 98/100 trajectories;
+the same two rows exhausted the 1,000,000-RHS engineering guard.
+A third DOP853 scan, launched from the PR #2 source commit
+`bebd0bd1e5f75e31d3d0ba8dfe84a9b53293bea0`, completed all 100/100
+trajectories at unchanged $\mathrm{rtol}=10^{-9}$,
+$\mathrm{atol}=10^{-12}$ and the same RHS guard. The two rows that
+exhausted the implicit-solver budgets completed under DOP853 and were
+classified non-quartic; they have no successful Radau/BDF counterpart.
+Among the 98 common successful rows, all three solvers give identical
+regime labels. DOP853 and Radau final-state relative differences are
+at most $3.16\times10^{-9}$ in $\Phi$,
+$1.18\times10^{-7}$ in $\dot\Phi$,
+$4.77\times10^{-7}$ in $\psi$,
+$9.12\times10^{-6}$ in $\dot\psi$,
+$2.86\times10^{-10}$ in $H$, and
+$5.72\times10^{-10}$ in total density. Their $Q$, averaged $w$ and
+virial diagnostics agree within $5.95\times10^{-8}$,
+$1.81\times10^{-8}$ and $1.77\times10^{-7}$, respectively.
+This is strong cross-method agreement on the 98 common rows, not a
+solver-tolerance or output-grid convergence proof.
+The DOP853 scan has 48 non-quartic and two insufficient-oscillation
+classifications at high scale, and 43 non-quartic and seven
+insufficient-oscillation classifications at low scale. No trajectory
+passes the joint quartic classifier. The largest high-scale quartic indicator
 is $Q\simeq1.002<2$. In the low-scale control, some large classical-seed
 rows reach $Q\simeq11.12$, $w_\psi\simeq0.363$, and a virial ratio near
 $0.890$, but only two late half-cycles occur in the final 20 percent
@@ -860,7 +875,7 @@ unavailable. These rows do not establish a sustained quartic-fluid
 phase. The median finite-difference continuity residual normalized
 by $H\rho$ is about $3.72\times10^{-2}$ at high scale and
 $4.03\times10^{-6}$ at low scale, so output-grid and solver-tolerance
-convergence remain mandatory. The isolated BDF scan completed 98/100 trajectories, matching Radau's two RHS-budget failures and all 98 successful regime labels. This is cross-solver agreement, not solver-tolerance or output-grid convergence. A current-source DOP853 cross-check is running on isolated execution PR #7. This scan
+convergence remain mandatory. The isolated BDF scan completed 98/100 trajectories, matching Radau's two RHS-budget failures and all 98 successful regime labels. This is cross-solver agreement, not solver-tolerance or output-grid convergence. The current-source DOP853 execution PR #7 completed the 100-row scan; its strict-JSON artifact and cross-solver comparison are recorded in the reproducibility notes. This scan
 remains homogeneous and post-threshold; it is neither a quantum-seeded
 inhomogeneous waterfall nor a relic calculation.
 
