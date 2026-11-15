@@ -692,16 +692,37 @@ material and is not accepted as a same-source comparison.
 
 A new isolated execution branch,
 `ptum/full-scan-2026-11-15-dop853-current`, was created directly
-from the current PR #2 head. Draft execution PR #7 was opened against
-PR #2. Workflow 43753469944 is running the 100-row DOP853 profile
-with unchanged `rtol=1e-9`, `atol=1e-12`, 4001 output samples over
-`20 mu^-1`, and the unchanged 1,000,000-RHS per-trajectory guard.
-Its result and artifact have not yet been inspected. No solver
-comparison or physical conclusion is drawn from a running job.
+from PR #2 source commit
+`bebd0bd1e5f75e31d3d0ba8dfe84a9b53293bea0`. Draft execution PR #7
+was opened against PR #2. Workflow 43753469944 completed successfully:
+the Python regression, four-row smoke scan, LaTeX build, and full
+100-trajectory DOP853 job all passed. The full-scan artifact has ZIP
+SHA-256
+`3e758909f191c863b358424be0d7d86a253224fe066e3ceaa279368719e39c8b`;
+the extracted strict-JSON result has SHA-256
+`e848ff87c8fa3741d65f5fd2909d56db4af567a903d4dc05845cb081d175372c`.
+It contains exactly 100 rows, all 100 integrations successful, with
+no NaN/Infinity tokens. The high-scale scenario has 48 non-quartic
+and two insufficient-oscillation rows; the low-scale scenario has
+43 non-quartic and seven insufficient-oscillation rows. No row
+passes the joint quartic classifier.
 
-The Radau/BDF comparison remains 98/100 successful trajectories,
-with the same two budget failures and identical regime labels on the
-98 common successful rows. This is cross-method agreement, not
-time-grid or solver-tolerance convergence. Gates 4 and 10 remain
-PARTIAL; Gates 5, 6, 7 and 9 remain NOT MET. No gate is promoted by
-the 103-test CI run or four-row smoke scan. PTUM is NOT 10/10.
+The two trajectories that exhausted the 1,000,000-RHS guard under
+both Radau and BDF complete under DOP853, with 7,718 and 1,334 RHS
+evaluations, respectively. Both are classified non-quartic by DOP853.
+On the 98 rows successfully integrated by all three solvers, all
+regime labels are identical. DOP853 versus Radau maximum relative
+differences are 3.16e-9 in Phi, 1.18e-7 in Phi_dot, 4.77e-7 in psi,
+9.12e-6 in psi_dot, 2.86e-10 in H, and 5.72e-10 in total density.
+The maximum relative differences in Q, averaged w and virial
+diagnostics are 5.95e-8, 1.81e-8 and 1.77e-7, respectively.
+
+This resolves the all-100-integrations-success requirement for the
+declared homogeneous grid using DOP853 and gives strong cross-method
+agreement on the 98 common successful rows. It does not independently
+validate the two DOP853-only rows against Radau/BDF, and it is not a
+solver-tolerance or output-grid convergence proof. The scan remains
+homogeneous and post-threshold, not a coupled quantum-seeded
+inhomogeneous waterfall. Gates 4 and 10 remain PARTIAL; Gates 5, 6,
+7 and 9 remain NOT MET. No physical gate is promoted by a successful
+scan or software CI alone. PTUM is NOT 10/10.
