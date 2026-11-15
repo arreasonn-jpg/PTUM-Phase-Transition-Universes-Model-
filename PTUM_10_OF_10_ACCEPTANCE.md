@@ -582,3 +582,19 @@ repair are awaiting a fresh workflow run.
 Gates 4 and 10 remain PARTIAL. Gates 5, 6, 7 and 9 remain NOT MET.
 No gate is promoted by the 98 successful scan rows, the smoke scan,
 or the Python-only success. PTUM is NOT 10/10.
+
+### Follow-up CI result for the LaTeX repair
+
+Workflow 43705365503 confirms that the orphaned-list correction compiles:
+the 42-page PDF was produced, with zero Overfull hbox warnings, zero
+float-placement warnings, zero Improper prevdepth errors, and no
+unresolved citations or references on the final LaTeX pass. The log
+still contains 138 Underfull hbox messages, so Gate 10 is not warning-free.
+
+The same workflow ran 100 Python tests: 99 passed and one newly added
+claim-boundary test failed because the phrase "not independently
+reproduced" was split across a source newline. This was a brittle
+whitespace assertion, not a scientific-code failure. Commit
+a5f86d7c8ca746e6948cfa5c391d11a63985ab87 normalizes whitespace before
+checking the phrase. The 100-test suite after this test-only correction
+is pending fresh CI verification.
