@@ -1938,6 +1938,9 @@ def test_dense_cycle_integrals_are_invariant_to_output_sampling_density():
             -amplitude * np.sin(tau),
         ])
 
+    # Mimic OdeSolution.ts: the adaptive solver mesh is held fixed while
+    # t_eval/output sampling changes by a factor of forty.
+    dense_state.ts = np.linspace(0.0, 4.0 * np.pi, 4001)
     scales = np.ones(4)
     coarse_tau = np.linspace(0.0, 4.0 * np.pi, 101)
     fine_tau = np.linspace(0.0, 4.0 * np.pi, 4001)
