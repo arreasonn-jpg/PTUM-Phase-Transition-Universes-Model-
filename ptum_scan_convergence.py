@@ -72,6 +72,19 @@ FINAL_FIELDS = (
 )
 CLASSIFICATION_FIELDS = ("Q_final", "w_final", "virial_final")
 
+# Provisional numerical stability criteria for these four targeted probes only.
+# They do not promote the full 100-row scan or any physical acceptance gate.
+TARGETED_TOLERANCE_LIMITS = {
+    "max_final_state_relative_difference": 1.0e-6,
+    "max_classification_relative_difference": 1.0e-5,
+}
+TARGETED_GRID_LIMITS = {
+    "Q_final_absolute_difference": 1.0e-3,
+    "w_final_absolute_difference": 1.0e-3,
+    "virial_final_absolute_difference": 1.0e-3,
+    "finite_difference_continuity_residual_absolute_difference": 1.0e-3,
+}
+
 
 def _finite_float(value: Any) -> float | None:
     if value is None:
@@ -324,6 +337,104 @@ def run_convergence_probe() -> dict[str, Any]:
                 grid_reference, candidate, params, "output_grid"
             ))
 
+    case_summaries = []
+    for case in CASES:
+        case_comparisons = [
+            item for item in comparisons if item.get("case") == case["name"]
+        ]
+        tolerance_items = [
+            item for item in case_comparisons
+            if item["comparison"] == "tolerance"
+        ]
+        finest_grid_items = [
+            item for item in case_comparisons
+            if item["comparison"] == "output_grid"
+            and item["candidate"]["n_output_points"] == OUTPUT_GRIDS[-2]
+        ]
+
+        tolerance_state_max = max(
+            (
+                value
+                for item in tolerance_items
+                for value in item["final_state_relative_differences"].values()
+                if value is not None
+            ),
+            default=None,
+        )
+        tolerance_classification_max = max(
+            (
+                value
+                for item in tolerance_items
+                for value in item["classification_relative_differences"].values()
+                if value is not None
+            ),
+            default=None,
+        )
+        tolerance_pass = (
+            len(tolerance_items) == len(TOLERANCE_LEVELS) - 1
+            and all(
+                item.get("comparison_available", False)
+                and item["regime_match"]
+                and item["quartic_flag_match"]
+                and item["late_half_cycle_count_match"]
+                for item in tolerance_items
+            )
+            and tolerance_state_max is not None
+            and tolerance_state_max <= TARGETED_TOLERANCE_LIMITS[
+                "max_final_state_relative_difference"
+            ]
+            and tolerance_classification_max is not None
+            and tolerance_classification_max <= TARGETED_TOLERANCE_LIMITS[
+                "max_classification_relative_difference"
+            ]
+        )
+
+        grid_item = finest_grid_items[0] if len(finest_grid_items) == 1 else None
+        grid_pass = False
+        grid_absolute_differences = None
+        if grid_item is not None and grid_item.get("comparison_available", False):
+            grid_absolute_differences = {
+                "Q_final": grid_item["classification_absolute_differences"]["Q_final"],
+                "w_final": grid_item["classification_absolute_differences"]["w_final"],
+                "virial_final": grid_item["classification_absolute_differences"]["virial_final"],
+                "finite_difference_continuity_residual": grid_item[
+                    "diagnostic_absolute_differences"
+                ]["max_abs_finite_difference_frw_residual_over_Hrho"],
+            }
+            grid_pass = (
+                grid_item["regime_match"]
+                and grid_item["quartic_flag_match"]
+                and grid_item["late_half_cycle_count_match"]
+                and all(
+                    value is not None
+                    and value <= TARGETED_GRID_LIMITS[key]
+                    for key, value in (
+                        ("Q_final_absolute_difference", grid_absolute_differences["Q_final"]),
+                        ("w_final_absolute_difference", grid_absolute_differences["w_final"]),
+                        ("virial_final_absolute_difference", grid_absolute_differences["virial_final"]),
+                        (
+                            "finite_difference_continuity_residual_absolute_difference",
+                            grid_absolute_differences["finite_difference_continuity_residual"],
+                        ),
+                    )
+                )
+            )
+        case_summaries.append({
+            "case": case["name"],
+            "tolerance_stability_pass": bool(tolerance_pass),
+            "grid_stability_pass": bool(grid_pass),
+            "targeted_stability_pass": bool(tolerance_pass and grid_pass),
+            "max_tolerance_final_state_relative_difference": tolerance_state_max,
+            "max_tolerance_classification_relative_difference": tolerance_classification_max,
+            "last_grid_absolute_differences": grid_absolute_differences,
+        })
+
+    targeted_stability_pass = (
+        not failures
+        and len(case_summaries) == len(CASES)
+        and all(item["targeted_stability_pass"] for item in case_summaries)
+    )
+
     return {
         "schema_version": 1,
         "purpose": "targeted homogeneous DOP853 tolerance and output-grid convergence diagnostic",
@@ -335,7 +446,11 @@ def run_convergence_probe() -> dict[str, Any]:
             for rtol, atol in TOLERANCE_LEVELS
         ],
         "output_grids": list(OUTPUT_GRIDS),
+        "targeted_tolerance_limits": TARGETED_TOLERANCE_LIMITS,
+        "targeted_grid_limits": TARGETED_GRID_LIMITS,
         "cases": list(CASES),
+        "case_summaries": case_summaries,
+        "targeted_stability_pass": bool(targeted_stability_pass),
         "run_count": len(records),
         "successful_runs": sum(bool(row["success"]) for row in records),
         "failed_runs": len(failures),
