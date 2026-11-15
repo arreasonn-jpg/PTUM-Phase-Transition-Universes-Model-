@@ -1104,3 +1104,17 @@ homogeneous/post-threshold, not quantum-seeded or inhomogeneous.
 A BDF full-scan cross-check with unchanged tolerances and RHS guard
 is running on isolated execution PR #5. One new regression guards
 the manuscript's current scan-status wording; fresh CI is pending.
+
+### Follow-up: BDF/Radau cross-solver comparison
+
+The isolated BDF full scan (workflow 43705977596) produced 100 strict-JSON
+rows, with 98 successful integrations and the same two RHS-budget
+failures as the Radau run. All 98 common successful rows have identical
+regime labels. Maximum relative differences in final values are
+5.99e-7 for Phi, 1.11e-6 for Phi_dot, 4.66e-5 for psi,
+2.36e-3 for psi_dot, 6.06e-7 for H, 1.21e-6 for total rho and
+2.29e-4 for averaged w. Maximum relative differences in Q, w and
+virial classifier diagnostics are 1.27e-5, 1.32e-6 and 3.98e-5.
+This is strong cross-method agreement for the successful subset,
+not time-grid or tolerance convergence. The two failures remain
+unclassified; DOP853 is the next targeted probe.
