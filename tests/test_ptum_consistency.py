@@ -1720,3 +1720,42 @@ def test_successful_scan_json_preserves_final_state_for_solver_comparison(tmp_pa
     ):
         assert key in row
     assert row["solver_stats"]["method"] == "Radau"
+
+
+
+def test_main_tex_environments_are_balanced_and_nested():
+    import re
+    from pathlib import Path
+
+    source = Path("main.tex").read_text(encoding="utf-8")
+    stack = []
+    errors = []
+    for line_number, line in enumerate(source.splitlines(), start=1):
+        # Ignore unescaped comments so commented-out environments do not count.
+        line = re.sub(r"(?<!\\)%.*$", "", line)
+        for match in re.finditer(r"\\(begin|end)\{([^}]+)\}", line):
+            action, environment = match.groups()
+            if action == "begin":
+                stack.append((environment, line_number))
+                continue
+            if not stack or stack[-1][0] != environment:
+                errors.append((line_number, environment, stack[-1] if stack else None))
+            else:
+                stack.pop()
+
+    assert not errors, f"Mismatched LaTeX environments: {errors}"
+    assert not stack, f"Unclosed LaTeX environments: {stack}"
+
+
+def test_mukhanov_sasaki_spectrum_claim_remains_author_reported():
+    from pathlib import Path
+
+    source = Path("main.tex").read_text(encoding="utf-8")
+    subsection = source.split(
+        r"\subsection{Mukhanov--Sasaki mode-by-mode integration}", 1
+    )[1].split(r"\section{Late-time dark sector viability}", 1)[0]
+    assert "AUTHOR-REPORTED" in subsection
+    assert "not independently reproduced" in subsection
+    assert "does not integrate" in subsection
+    assert r"\begin{itemize}" not in subsection
+    assert "we performed a full mode-by-mode integration" not in subsection
