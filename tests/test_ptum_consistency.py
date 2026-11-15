@@ -1678,3 +1678,29 @@ def test_simulation_rejects_unknown_solver_method():
         run_simulation(
             p, ic, (0.0, 1.0e-9), solver_method="ExplicitEuler"
         )
+
+
+
+def test_successful_scan_json_preserves_final_state_for_solver_comparison(tmp_path):
+    p = PTUMParameters(V0=1.0e50, m_psi=1.0e5, lambda_psi=0.1)
+    rows = run_parameter_scan(
+        p,
+        psi_init_range=[0.0],
+        psi_dot_init_range=[0.0],
+        phi_offset_range=[0.01 * p.Phi_c],
+        t_max=0.01,
+        n_points=11,
+        max_rhs_evaluations=DEFAULT_MAX_RHS_EVALUATIONS,
+        solver_method="Radau",
+    )
+    assert rows[0]["success"]
+    output = tmp_path / "successful_scan.json"
+    save_results(rows, str(output))
+    row = json.loads(output.read_text(encoding="utf-8"))[0]
+    for key in (
+        "final_Phi", "final_Phi_dot", "final_psi", "final_psi_dot",
+        "final_H", "final_rho_total", "final_w_psi_exc", "final_Q",
+        "final_virial_ratio",
+    ):
+        assert key in row
+    assert row["solver_stats"]["method"] == "Radau"
