@@ -349,7 +349,8 @@ def run_simulation(params: PTUMParameters,
                    t_eval: Optional[np.ndarray] = None,
                    rtol: float = 1e-9,
                    atol: float = 1e-12,
-                   max_rhs_evaluations: Optional[int] = DEFAULT_MAX_RHS_EVALUATIONS) -> Dict:
+                   max_rhs_evaluations: Optional[int] = DEFAULT_MAX_RHS_EVALUATIONS,
+                   solver_method: str = "DOP853") -> Dict:
     """
     Run a single background simulation with a deterministic RHS-work guard.
 
@@ -366,6 +367,8 @@ def run_simulation(params: PTUMParameters,
         raise ValueError("rtol must be finite and positive")
     if not np.isfinite(atol) or atol <= 0.0:
         raise ValueError("atol must be finite and positive")
+    if solver_method not in {"DOP853", "Radau", "BDF", "LSODA"}:
+        raise ValueError("solver_method must be one of DOP853, Radau, BDF, LSODA")
 
     y0 = np.array([ic.Phi, ic.Phi_dot, ic.psi, ic.psi_dot])
     rhs_evaluations = 0
@@ -387,7 +390,7 @@ def run_simulation(params: PTUMParameters,
             t_eval=t_eval,
             rtol=rtol,
             atol=atol,
-            method='DOP853',  # High-order Runge-Kutta
+            method=solver_method,
             dense_output=True
         )
     except RHSWorkBudgetExceeded:
@@ -517,7 +520,7 @@ def run_simulation(params: PTUMParameters,
     return {
         'success': True,
         'solver_stats': {
-            'method': 'DOP853',
+            'method': solver_method,
             'rhs_evaluations': int(rhs_evaluations),
             'nfev': int(sol.nfev),
             'njev': int(sol.njev),
@@ -764,7 +767,8 @@ def run_parameter_scan(params: PTUMParameters,
                        result_callback: Optional[Callable[[Dict], None]] = None,
                        max_rhs_evaluations: Optional[int] = DEFAULT_MAX_RHS_EVALUATIONS,
                        rtol: float = 1e-9,
-                       atol: float = 1e-12
+                       atol: float = 1e-12,
+                       solver_method: str = "DOP853"
                        ) -> List[Dict]:
     """
     Run parameter scan over initial conditions.
@@ -820,6 +824,7 @@ def run_parameter_scan(params: PTUMParameters,
                         params, ic, t_span, t_eval,
                         rtol=rtol, atol=atol,
                         max_rhs_evaluations=max_rhs_evaluations,
+                        solver_method=solver_method,
                     )
                     
                     # Classify outcome
@@ -847,7 +852,7 @@ def run_parameter_scan(params: PTUMParameters,
                     }
                     if isinstance(e, RHSWorkBudgetExceeded):
                         failed_result['solver_stats'] = {
-                            'method': 'DOP853',
+                            'method': solver_method,
                             'rhs_evaluations': e.evaluations,
                             'rhs_evaluation_limit': e.limit,
                             'rtol': float(rtol),
