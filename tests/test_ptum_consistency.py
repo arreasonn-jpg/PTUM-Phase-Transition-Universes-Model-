@@ -1977,3 +1977,37 @@ def test_dense_cycle_integrals_are_invariant_to_output_sampling_density():
     )
     assert coarse["max_relative_quadrature_error"] < 1.0e-8
     assert fine["max_relative_quadrature_error"] < 1.0e-8
+
+
+def test_dense_cycle_diagnostics_reject_stationary_zero_solution():
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 20.0, 1001)
+    scales = np.ones(4)
+
+    def stationary_state(_tau):
+        return np.zeros(4, dtype=float)
+
+    result = compute_dense_cycle_diagnostics(
+        stationary_state, tau, 1.0, scales, params, len(tau)
+    )
+    assert result["turning_times"] == []
+    assert len(result["w_avg"]) == 0
+    assert len(result["t_avg"]) == 0
+    assert not np.any(np.isfinite(result["Q"]))
+    assert not np.any(np.isfinite(result["virial_ratio"]))
+
+
+def test_dense_cycle_diagnostics_do_not_count_monotonic_motion_as_cycles():
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 20.0, 1001)
+    scales = np.ones(4)
+
+    def monotonic_state(time):
+        return np.asarray([0.99 * params.Phi_c, 0.0, time, 1.0])
+
+    result = compute_dense_cycle_diagnostics(
+        monotonic_state, tau, 1.0, scales, params, len(tau)
+    )
+    assert result["turning_times"] == []
+    assert len(result["w_avg"]) == 0
+    assert len(result["t_avg"]) == 0
