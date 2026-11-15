@@ -12,6 +12,7 @@ from collections import Counter
 
 from ptum_inflation_background import compute_observables, state_at_field_value
 from ptum_task1_simulation import (
+    DEFAULT_MAX_RHS_EVALUATIONS,
     M_PL,
     PTUMParameters,
     run_parameter_scan,
@@ -79,7 +80,8 @@ def build_initial_condition_grid(params: PTUMParameters, profile: str = "full"):
 def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
                    n_points: int = DEFAULT_N_POINTS,
                    profile: str = "full",
-                   checkpoint_path: str | None = None):
+                   checkpoint_path: str | None = None,
+                   max_rhs_evaluations: int | None = DEFAULT_MAX_RHS_EVALUATIONS):
     """Run the selected scan profile at both high and low energy scales."""
     seed_scales, velocity_scales, phi_offsets = scan_profile_scales(profile)
     all_results = []
@@ -135,6 +137,11 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
             "fuel_velocity_source": "integrated_single_field_FRW_trajectory",
             "quantum_vacuum_seeded": False,
             "zero_seed_rows_are_exact_classical_invariant_controls": True,
+            "solver_method": "DOP853",
+            "solver_rtol": 1.0e-9,
+            "solver_atol": 1.0e-12,
+            "max_rhs_evaluations_per_trajectory": max_rhs_evaluations,
+            "rhs_budget_is_engineering_fail_closed_guard": True,
         }
         rows = run_parameter_scan(
             params,
@@ -147,6 +154,7 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
             progress_interval=10,
             progress_label=scenario_name,
             result_callback=lambda row, meta=metadata: record_checkpoint(row, meta),
+            max_rhs_evaluations=max_rhs_evaluations,
         )
         print(f"[scan] finished {scenario_name}", flush=True)
         all_results.extend(rows)
@@ -164,7 +172,8 @@ def validate_scan_results(results, expected_count: int | None = None):
         )
     failures = [
         (row.get("scan_metadata", {}).get("scenario", "unknown"),
-         row.get("ic_params", {}), row.get("error", "unspecified failure"))
+         row.get("ic_params", {}), row.get("error", "unspecified failure"),
+         row.get("solver_stats"))
         for row in results if not row.get("success", False)
     ]
     if failures:
@@ -190,6 +199,11 @@ def main() -> None:
     parser.add_argument("--t-max", type=float, default=DEFAULT_T_MAX)
     parser.add_argument("--n-points", type=int, default=DEFAULT_N_POINTS)
     parser.add_argument(
+        "--max-rhs-evaluations", type=int,
+        default=DEFAULT_MAX_RHS_EVALUATIONS,
+        help="Fail a trajectory closed after this many RHS evaluations (default: 100000)",
+    )
+    parser.add_argument(
         "--profile", choices=("ci", "full"), default="full",
         help="Use four fast CI smoke trajectories or the full 100-trajectory scan",
     )
@@ -198,6 +212,7 @@ def main() -> None:
     results = run_scan_suite(
         t_max=args.t_max, n_points=args.n_points, profile=args.profile,
         checkpoint_path=args.checkpoint,
+        max_rhs_evaluations=args.max_rhs_evaluations,
     )
     # Persist the complete diagnostic summary before enforcing the CI gate,
     # so a failed run still leaves an inspectable artifact.
