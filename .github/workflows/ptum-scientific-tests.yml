@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/ptum/full-scan-') || (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[FULL-SCAN]'))) && format('ptum-full-scan-{0}', github.ref) || format('ptum-scientific-{0}', github.event.pull_request.number || github.ref) }}
-  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/heads/ptum/full-scan-') && !(github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[FULL-SCAN]')) }}
+  group: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/ptum/full-scan-') || (github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[FULL-SCAN]') || startsWith(github.event.pull_request.head.ref, 'ptum/full-scan-')))) && format('ptum-full-scan-{0}', github.event.pull_request.number || github.ref) || format('ptum-scientific-{0}', github.event.pull_request.number || github.ref) }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/heads/ptum/full-scan-') && !(github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[FULL-SCAN]') || startsWith(github.event.pull_request.head.ref, 'ptum/full-scan-'))) }}
 
 permissions:
   contents: read
@@ -53,8 +53,9 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-')) ||
       (github.event_name == 'pull_request' &&
-       github.event.pull_request.head.ref == 'ptum/scientific-consistency-fixes-2026-11-13' &&
-       contains(github.event.pull_request.title, '[FULL-SCAN]'))
+       ((github.event.pull_request.head.ref == 'ptum/scientific-consistency-fixes-2026-11-13' &&
+         contains(github.event.pull_request.title, '[FULL-SCAN]')) ||
+        startsWith(github.event.pull_request.head.ref, 'ptum/full-scan-')))
     runs-on: ubuntu-latest
     timeout-minutes: 360
     steps:
