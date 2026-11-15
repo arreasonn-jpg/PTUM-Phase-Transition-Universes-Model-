@@ -792,6 +792,7 @@ def compute_dense_cycle_diagnostics(
     w_values = []
     t_values = []
     relative_errors = []
+    normalized_absolute_errors = []
 
     psi_scale = float(params.psi_0)
     quartic_scale = max(
@@ -845,12 +846,14 @@ def compute_dense_cycle_diagnostics(
         )
         normalized_integral = np.asarray(normalized_integral, dtype=float)
         integral = normalized_integral * integral_scales
+        # The first four normalized integrals are strictly non-negative
+        # cycle moments. Bound each relative error separately rather than
+        # dividing by the largest component (which could hide a weak moment).
+        positive_moments = np.abs(normalized_integral[:4])
         relative_errors.append(float(
-            error / max(
-                float(np.max(np.abs(normalized_integral))),
-                np.finfo(float).tiny,
-            )
+            error / max(float(np.min(positive_moments)), np.finfo(float).tiny)
         ))
+        normalized_absolute_errors.append(float(error))
         lo = max(0, int(np.searchsorted(tau_samples, start, side="left")))
         hi = min(n_output, int(np.searchsorted(tau_samples, end, side="right")))
         if integral[1] > 0.0 and np.isfinite(integral[1]):
@@ -871,6 +874,10 @@ def compute_dense_cycle_diagnostics(
         "turning_times": [float(value / mu) for value in roots],
         "max_relative_quadrature_error": (
             max(relative_errors) if relative_errors else float("nan")
+        ),
+        "max_normalized_absolute_quadrature_error": (
+            max(normalized_absolute_errors)
+            if normalized_absolute_errors else float("nan")
         ),
     }
 
