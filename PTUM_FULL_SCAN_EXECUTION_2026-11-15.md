@@ -116,3 +116,30 @@ grid. No quartic proxy-fluid realization, coupled threshold crossing,
 quantum-seeded inhomogeneous waterfall, nonlinear backreaction,
 rescattering, relic abundance or observational reproduction is
 established.
+
+
+## Targeted DOP853 convergence follow-up (workflow 43754922200)
+
+A separate convergence-only workflow ran 36/36 integrations over four
+representative trajectories: both DOP853-only rows and two high-Q
+controls. The tolerance ladder was 1e-9/1e-12, 1e-10/1e-13 and
+1e-11/1e-14. Output grids ranged from 4,001 to 256,001 points.
+
+All four cases passed the script's provisional targeted stability
+limits. Across tolerances, the maximum final-state relative difference
+was 4.75e-7 and the maximum classification-diagnostic relative
+difference was 3.48e-7. Across the final output-grid doubling
+128,001 -> 256,001, all four regime labels, quartic flags and
+late-half-cycle counts were unchanged. Maximum absolute changes were
+7.57e-4 in Q_final, 2.57e-4 in w_final, 2.25e-4 in virial_final,
+and 6.05e-4 in the maximum finite-difference continuity diagnostic.
+
+The targeted convergence artifact ZIP digest is
+`sha256:d4f80abf0e2705d3d019e67855592efaf7242ee96a90f970798119748a6bfe51`;
+the extracted strict-JSON digest is
+`sha256:f99e7da8644c399e3bb5ff6d6b08cbffe272ab75c99faad311689fa283a71899`.
+The workflow passed 107 Python tests and the LaTeX build. Final LaTeX
+pass has 74 Underfull hbox warnings, with no Overfull hboxes or
+unresolved references/citations.
+
+This is not a full 100-row convergence proof. Gate 4 remains PARTIAL.
