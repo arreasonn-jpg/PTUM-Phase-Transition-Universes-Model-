@@ -5,6 +5,8 @@ import numpy as np
 import pytest
 
 from ptum_task1_simulation import (
+    DEFAULT_MAX_RHS_EVALUATIONS,
+    RHSWorkBudgetExceeded,
     PTUMParameters,
     M_PL,
     meff_sq_psi,
@@ -32,6 +34,8 @@ from ptum_task1_simulation import (
     run_simulation,
     compute_time_averaged_w,
     classify_outcome,
+    run_parameter_scan,
+    save_results,
 )
 
 
@@ -1510,3 +1514,71 @@ def test_manuscript_thermal_domain_wall_bias_keeps_ideal_gas_scope_explicit():
     assert "ideal-gas contribution only" in manuscript
     assert "electroweak crossover" in manuscript
     assert "not a prediction of the PTUM bias or" in manuscript
+
+
+
+def test_simulation_reports_deterministic_solver_work_statistics():
+    p = PTUMParameters(V0=1.0e50, m_psi=1.0e5, lambda_psi=0.1)
+    ic = InitialConditions(
+        Phi=0.9 * p.Phi_c,
+        Phi_dot=1.0e20,
+        psi=1.0e4,
+        psi_dot=1.0e8,
+    )
+    t = np.linspace(0.0, 1.0e-9, 51)
+    result = run_simulation(
+        p, ic, (t[0], t[-1]), t_eval=t,
+        max_rhs_evaluations=DEFAULT_MAX_RHS_EVALUATIONS,
+    )
+    stats = result["solver_stats"]
+    assert stats["method"] == "DOP853"
+    assert stats["rhs_evaluations"] == stats["nfev"]
+    assert 0 < stats["rhs_evaluations"] <= DEFAULT_MAX_RHS_EVALUATIONS
+    assert not stats["budget_exhausted"]
+
+
+def test_simulation_rhs_work_budget_raises_with_exact_attempt_count():
+    p = PTUMParameters(V0=1.0e50, m_psi=1.0e5, lambda_psi=0.1)
+    ic = InitialConditions(
+        Phi=0.9 * p.Phi_c,
+        Phi_dot=1.0e20,
+        psi=1.0e4,
+        psi_dot=1.0e8,
+    )
+    t = np.linspace(0.0, 1.0e-9, 11)
+    with pytest.raises(RHSWorkBudgetExceeded) as error:
+        run_simulation(
+            p, ic, (t[0], t[-1]), t_eval=t,
+            max_rhs_evaluations=1,
+        )
+    assert error.value.limit == 1
+    assert error.value.evaluations == 2
+
+
+def test_scan_records_budget_exhaustion_and_preserves_it_in_strict_json(tmp_path):
+    p = PTUMParameters(V0=1.0e50, m_psi=1.0e5, lambda_psi=0.1)
+    rows = run_parameter_scan(
+        p,
+        psi_init_range=[0.0],
+        psi_dot_init_range=[0.0],
+        phi_offset_range=[0.01 * p.Phi_c],
+        t_max=0.01,
+        n_points=5,
+        max_rhs_evaluations=1,
+    )
+    assert len(rows) == 1
+    assert not rows[0]["success"]
+    assert rows[0]["solver_stats"] == {
+        "method": "DOP853",
+        "rhs_evaluations": 2,
+        "rhs_evaluation_limit": 1,
+        "budget_exhausted": True,
+    }
+
+    output = tmp_path / "partial_scan.json"
+    save_results(rows, str(output))
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert len(payload) == 1
+    assert payload[0]["success"] is False
+    assert payload[0]["solver_stats"]["budget_exhausted"] is True
+    assert payload[0]["solver_stats"]["rhs_evaluations"] == 2
