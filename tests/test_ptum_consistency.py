@@ -1573,6 +1573,8 @@ def test_scan_records_budget_exhaustion_and_preserves_it_in_strict_json(tmp_path
         "method": "DOP853",
         "rhs_evaluations": 2,
         "rhs_evaluation_limit": 1,
+        "rtol": 1.0e-9,
+        "atol": 1.0e-12,
         "budget_exhausted": True,
     }
 
