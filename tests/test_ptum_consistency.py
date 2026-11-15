@@ -1701,6 +1701,7 @@ def test_successful_scan_json_preserves_final_state_for_solver_comparison(tmp_pa
         "final_Phi", "final_Phi_dot", "final_psi", "final_psi_dot",
         "final_H", "final_rho_total", "final_w_psi_exc", "final_Q",
         "final_virial_ratio",
+        "max_abs_finite_difference_frw_residual_over_Hrho",
     ):
         assert key in row
     assert row["solver_stats"]["method"] == "Radau"
