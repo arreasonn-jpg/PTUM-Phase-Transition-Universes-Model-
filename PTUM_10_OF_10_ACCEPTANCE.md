@@ -616,3 +616,26 @@ The new environment-balance and whitespace-normalized claim-boundary
 tests both pass. Gate 10 remains PARTIAL because the full 100-row scan
 has two failed integrations, solver/time-grid convergence is open,
 and Underfull hbox warnings remain. No physical gate is promoted.
+
+### 2026-11-15 manuscript update from the Radau artifact
+
+The critical numerical-status paragraph in main.tex now reports the
+current 100-row Radau artifact rather than saying the revised scan is
+still uninspected. It records 98 successful integrations and two
+RHS-budget failures; no successful row passes the joint quartic
+classifier. The high-scale maximum Q is about 1.002, below the Q>2
+energy-dominance boundary. The low-scale control has transient
+large-seed rows with Q up to about 11.12, w about 0.363 and virial
+ratio about 0.890, but only two half-cycles in the final 20 percent,
+so the late-time adiabatic diagnostic is unavailable. These are not
+a sustained quartic-fluid realization.
+
+The manuscript now states that the BDF cross-check at unchanged
+rtol=1e-9, atol=1e-12 and the same RHS guard is running on isolated
+execution PR #5. A regression test guards the updated scan-status
+claim. The new 101-test source suite is awaiting fresh PR CI.
+
+The 98-row Radau artifact remains diagnostic rather than accepted
+converged evidence: two rows failed, output-grid/tolerance convergence
+is absent, and the scan is homogeneous and post-threshold. Gates 4
+and 10 remain PARTIAL; Gate 7 remains NOT MET.
