@@ -4,6 +4,13 @@ import json
 import numpy as np
 import pytest
 
+from ptum_full_grid_convergence import (
+    EXPECTED_ROWS as FULL_GRID_EXPECTED_ROWS,
+    N_POINTS as FULL_GRID_N_POINTS,
+    RTOL as FULL_GRID_RTOL,
+    ATOL as FULL_GRID_ATOL,
+    MAX_RHS_EVALUATIONS as FULL_GRID_MAX_RHS,
+)
 from ptum_scan_convergence import (
     CASES as CONVERGENCE_CASES,
     OUTPUT_GRIDS,
@@ -1884,3 +1891,12 @@ def test_targeted_convergence_acceptance_limits_are_explicit_and_provisional():
         "virial_final_absolute_difference": 1.0e-3,
         "finite_difference_continuity_residual_absolute_difference": 1.0e-3,
     }
+
+
+
+def test_full_grid_convergence_profile_matches_declared_100_row_dop853_grid():
+    assert FULL_GRID_EXPECTED_ROWS == 100
+    assert FULL_GRID_N_POINTS == 128001
+    assert FULL_GRID_RTOL == 1.0e-9
+    assert FULL_GRID_ATOL == 1.0e-12
+    assert FULL_GRID_MAX_RHS == 1_000_000
