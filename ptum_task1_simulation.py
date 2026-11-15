@@ -1097,6 +1097,9 @@ def save_results(results: List[Dict], filepath: str):
                 'final_virial_ratio': _json_safe(r['virial_ratio'][-1]),
                 'max_abs_relative_frw_continuity_residual': float(np.nanmax(
                     np.abs(r['continuity_residual_relative'])
+                )),
+                'max_abs_finite_difference_frw_residual_over_Hrho': float(np.nanmax(
+                    np.abs(r['continuity_residual_finite_difference_background_relative'])
                 ))
             })
         else:
