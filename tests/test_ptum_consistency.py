@@ -1616,12 +1616,17 @@ def test_nonfinite_background_state_is_annotated_with_rhs_work_and_fields():
         psi=1.0e100,
         psi_dot=0.0,
     )
-    with pytest.raises(RHSIntegrationError) as error:
-        run_simulation(
-            p, ic, (0.0, 1.0e-9),
-            t_eval=np.linspace(0.0, 1.0e-9, 3),
-            max_rhs_evaluations=100,
-        )
+    # The deliberately extreme field value overflows the quartic energy
+    # term before the solver rejects the non-finite Friedmann source. Treat
+    # that warning as part of the tested failure path, not as an unexamined
+    # warning in the suite summary.
+    with pytest.warns(RuntimeWarning, match="overflow encountered in scalar power"):
+        with pytest.raises(RHSIntegrationError) as error:
+            run_simulation(
+                p, ic, (0.0, 1.0e-9),
+                t_eval=np.linspace(0.0, 1.0e-9, 3),
+                max_rhs_evaluations=100,
+            )
     assert error.value.rhs_evaluations == 1
     assert "rho_psi=inf" in str(error.value)
     assert "psi=1e+100" in str(error.value)
