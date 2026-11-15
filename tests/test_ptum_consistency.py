@@ -10,6 +10,7 @@ from ptum_full_grid_convergence import (
     RTOL as FULL_GRID_RTOL,
     ATOL as FULL_GRID_ATOL,
     MAX_RHS_EVALUATIONS as FULL_GRID_MAX_RHS,
+    json_safe as full_grid_json_safe,
 )
 from ptum_scan_convergence import (
     CASES as CONVERGENCE_CASES,
@@ -1900,3 +1901,19 @@ def test_full_grid_convergence_profile_matches_declared_100_row_dop853_grid():
     assert FULL_GRID_RTOL == 1.0e-9
     assert FULL_GRID_ATOL == 1.0e-12
     assert FULL_GRID_MAX_RHS == 1_000_000
+
+
+
+def test_full_grid_json_sanitizer_replaces_nonfinite_values_with_null():
+    sanitized = full_grid_json_safe({
+        "nan": float("nan"),
+        "positive_inf": float("inf"),
+        "negative_inf": float("-inf"),
+        "nested": [1.0, float("nan")],
+    })
+    assert sanitized == {
+        "nan": None,
+        "positive_inf": None,
+        "negative_inf": None,
+        "nested": [1.0, None],
+    }
