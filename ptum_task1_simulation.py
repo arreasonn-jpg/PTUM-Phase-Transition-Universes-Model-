@@ -750,11 +750,12 @@ def compute_dense_cycle_diagnostics(
     """Compute half-cycle ratios by adaptive quadrature of the ODE dense output.
 
     Turning points are roots of psi_dot in the continuous DOP853 interpolant.
-    The six integrated quantities are lambda*psi^4, |m_eff^2|*psi^2,
-    kinetic energy, 2*V4, excitation pressure and excitation density.
-    The returned ratios therefore do not depend on rectangular sample means.
-    The output-grid samples are used only to bracket roots and map each
-    cycle diagnostic back onto the legacy time-series representation.
+    The integrated quantities are lambda*psi^4, |m_eff^2|*psi^2,
+    kinetic energy, 2*V4, excitation pressure, excitation density, and H.
+    The returned ratios and cycle-mean H therefore do not depend on
+    rectangular output-grid means. The accepted solver mesh brackets roots;
+    tau_samples only clips the requested interval and maps diagnostics onto
+    the legacy time-series representation.
     """
     tau_samples = np.asarray(tau_samples, dtype=float)
     scales = np.asarray(state_scales, dtype=float)
@@ -925,8 +926,9 @@ def compute_dense_cycle_diagnostics(
             and np.all(np.isfinite(integral[4:6]))
             else float("nan")
         )
-        duration = (end - start) / mu
-        h_cycle = float(integral[6] / duration)
+        # The quadrature variable is tau=mu*t, so divide the H integral
+        # by the tau interval to obtain the physical-time mean of H.
+        h_cycle = float(integral[6] / (end - start))
         if np.isfinite(q_cycle):
             q_values[lo:hi] = q_cycle
         if np.isfinite(virial_cycle):
