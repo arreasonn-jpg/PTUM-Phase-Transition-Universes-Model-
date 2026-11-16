@@ -2025,13 +2025,14 @@ def test_late_time_adiabaticity_uses_dense_cycle_boundaries_and_hubble_means():
     from ptum_task1_simulation import _late_time_adiabaticity_diagnostic
 
     # Deliberately nonuniform output times: the final 20% in physical
-    # elapsed time starts at t=8, while the 80%-by-index point is much earlier.
+    # elapsed time starts at t=8. The first late cycle straddles t=8 but
+    # has its midpoint at t=8, matching the classifier's midpoint rule.
     # Dense-cycle diagnostics must not depend on sampled H or psi_dot arrays.
     result = {
         "t": np.asarray([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 9.0, 9.5, 10.0]),
         "H": np.asarray([0.5]),
         "psi_dot": np.asarray([0.0]),
-        "cycle_turning_times": [1.0, 2.0, 3.0, 4.0, 8.0, 8.5, 9.0, 9.5, 10.0],
+        "cycle_turning_times": [1.0, 2.0, 3.0, 4.0, 7.5, 8.5, 9.0, 9.5, 10.0],
         "H_avg_cycle": [0.5, 0.5, 0.5, 0.5, 0.01, 0.01, 0.01, 0.01],
     }
     diagnostic = _late_time_adiabaticity_diagnostic(result)
