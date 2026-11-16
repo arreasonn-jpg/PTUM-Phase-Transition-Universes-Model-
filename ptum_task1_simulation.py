@@ -864,7 +864,6 @@ def compute_dense_cycle_diagnostics(
     # Increase the bracketing density until two successive refinements agree
     # in both root count and root locations. This is a numerical stability
     # check, not a proof that an arbitrary interpolant has no unresolved roots.
-    roots_previous = locate_turning_points(8)
     roots = locate_turning_points(16)
     root_refinement_converged = False
     root_bracketing_subdivisions = 16
@@ -881,7 +880,7 @@ def compute_dense_cycle_diagnostics(
             roots = roots_refined
             root_bracketing_subdivisions = subdivisions
             break
-        roots_previous, roots = roots, roots_refined
+        roots = roots_refined
         root_bracketing_subdivisions = subdivisions
     if not root_refinement_converged:
         raise ValueError(
