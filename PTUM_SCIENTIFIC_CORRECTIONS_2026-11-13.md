@@ -1242,3 +1242,22 @@ This result applies only to four selected trajectories and does not
 establish convergence of the full 100-row scan. Gate 4 remains PARTIAL.
 The workflow also passed 107 regression tests and the LaTeX build;
 74 Underfull hbox warnings remain in the final LaTeX pass.
+
+
+## 2026-11-16 current verification boundary
+
+Workflow `43759304001` completed on pre-opt-in head
+`bc1f6dafb689be427631ae3baa79692b9fde1694`: 108 Python tests passed,
+the two-scale smoke scan completed 4/4 trajectories with zero failed
+integrations, and the manuscript built to a 42-page PDF. The final
+LaTeX pass still reports 73 Underfull hbox warnings and one Overfull
+hbox at source line 1937. The build succeeded, but is not warning-free.
+
+The full 100-row scan and targeted convergence jobs were skipped in
+that run. PR #2 now carries the explicit `[FULL-SCAN]` opt-in. Commit
+`37b48c41b8342597e910f03e7717c70463fba93b` enables the existing
+four-case convergence job for that PR opt-in; commit
+`c5b3c95e065999dc719b1052db66e3c9855d2d82` adds a regression guard.
+Fresh CI on the new head is pending. No full-scan, full-grid
+convergence, inhomogeneous waterfall, relic, or observational claim
+is inferred from the preceding smoke run.
