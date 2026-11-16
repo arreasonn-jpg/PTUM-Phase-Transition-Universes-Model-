@@ -1987,6 +1987,53 @@ def test_dense_cycle_integrals_are_invariant_to_output_sampling_density():
     assert fine["max_relative_quadrature_error"] < 1.0e-8
 
 
+
+def test_dense_cycle_integrals_preserve_physical_units_when_mu_is_not_one():
+    from ptum_task1_simulation import PTUMParameters
+
+    params = PTUMParameters(lambda_psi=0.1)
+    amplitude = 0.2 * params.psi_0
+    phi_value = 0.99 * params.Phi_c
+    mu = 2.5
+
+    # The dense ODE solution is parameterized by tau=mu*t, while psi_dot
+    # remains a physical-time derivative. This catches accidental mixing
+    # of tau derivatives with physical velocities in cycle energies.
+    def dense_state(tau):
+        return np.asarray([
+            phi_value,
+            0.0,
+            amplitude * np.cos(tau),
+            -mu * amplitude * np.sin(tau),
+        ])
+
+    dense_state.ts = np.linspace(0.0, 4.0 * np.pi, 4001)
+    tau = np.linspace(0.0, 4.0 * np.pi, 101)
+    result = compute_dense_cycle_diagnostics(
+        dense_state, tau, mu, np.ones(4), params, len(tau)
+    )
+
+    expected_q = (
+        3.0 * params.lambda_psi * amplitude**2
+        / (4.0 * abs(meff_sq_psi(phi_value, params)))
+    )
+    expected_virial = (
+        4.0 * mu**2 / (3.0 * params.lambda_psi * amplitude**2)
+    )
+    np.testing.assert_allclose(
+        result["Q_cycle"], expected_q, rtol=2.0e-8, atol=0.0
+    )
+    np.testing.assert_allclose(
+        result["virial_ratio_cycle"], expected_virial,
+        rtol=2.0e-8, atol=0.0,
+    )
+    np.testing.assert_allclose(
+        result["turning_times"],
+        np.arange(5, dtype=float) * np.pi / mu,
+        rtol=0.0, atol=2.0e-10,
+    )
+    assert result["root_refinement_converged"]
+
 def test_dense_cycle_root_bracketing_resolves_multiple_turns_per_solver_step():
     params = PTUMParameters()
     tau = np.linspace(0.0, 1.0, 101)
