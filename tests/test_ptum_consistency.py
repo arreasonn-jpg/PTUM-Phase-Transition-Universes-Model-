@@ -1975,6 +1975,10 @@ def test_dense_cycle_integrals_are_invariant_to_output_sampling_density():
         expected_virial, rtol=2.0e-8, atol=0.0,
     )
     assert len(coarse["w_avg"]) == len(fine["w_avg"]) == 4
+    assert len(coarse["Q_cycle"]) == len(coarse["virial_ratio_cycle"]) == 4
+    assert len(coarse["H_avg_cycle"]) == 4
+    assert np.all(np.isfinite(coarse["H_avg_cycle"]))
+    assert np.all(coarse["H_avg_cycle"] > 0.0)
     assert coarse["turning_times"] == pytest.approx(
         fine["turning_times"], abs=2.0e-10
     )
@@ -2014,3 +2018,21 @@ def test_dense_cycle_diagnostics_do_not_count_monotonic_motion_as_cycles():
     assert result["turning_times"] == []
     assert len(result["w_avg"]) == 0
     assert len(result["t_avg"]) == 0
+
+
+
+def test_late_time_adiabaticity_uses_dense_cycle_boundaries_and_hubble_means():
+    from ptum_task1_simulation import _late_time_adiabaticity_diagnostic
+
+    result = {
+        "t": np.linspace(0.0, 10.0, 101),
+        "H": np.full(101, 0.5),
+        "psi_dot": np.zeros(101),
+        "cycle_turning_times": [8.0, 8.5, 9.0, 9.5, 10.0],
+        "H_avg_cycle": [0.01, 0.01, 0.01, 0.01],
+    }
+    diagnostic = _late_time_adiabaticity_diagnostic(result)
+    expected = 0.01 / (np.pi / 0.5)
+    assert diagnostic["n_late_half_cycles"] == 4
+    assert diagnostic["H_over_omega_max"] == pytest.approx(expected)
+    assert diagnostic["adiabaticity_valid"]
