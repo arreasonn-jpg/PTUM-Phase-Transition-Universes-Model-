@@ -9,13 +9,13 @@ This file defines the evidence required before PTUM can be called scientifically
 | 1. Complete action and conventions | One explicit covariant action; fixed metric/sign conventions; all fields, dimensions, gauge representations, potentials, couplings, real/complex field choices and symmetry-breaking structure specified | **MET (classical tree-level EFT)**. The minimally coupled Einstein + PTUM + chiral-SM action, field representations, canonical dimensions, Higgs and Yukawa potentials, dimension-five PTUM operators, and the explicit \(\psi\)/\(\Phi_{\rm res}\) symmetry scope are now specified. Quantum/UV completion remains outside this gate and open separately |
 | 2. Inflation-to-waterfall connection | Exact inflation endpoint; threshold crossing in the same coupled background; stability of all modes before crossing; quantum seed prescription | **PARTIAL**. Exact epsilon_H endpoint is computed; post-threshold scan velocities are now taken from the integrated single-field FRW trajectory at each offset, but the coupled crossing and quantum seeds are not evolved |
 | 3. Hilbert tensors and conservation | Every sector tensor derived from the same action; all Q_i^nu derived; sum of currents cancels; numerical conservation converges independently with solver tolerance and timestep | **PARTIAL**. The classical tree-level gauge, Higgs, chiral-fermion and PTUM Hilbert tensors and all interaction currents are now written from one action; the current solver does not evolve SM fields, and full-sector numerical conservation/timestep-tolerance convergence is not yet demonstrated |
-| 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **PARTIAL**. Dense-output cycle quadrature is implemented; a four-case probe passed 36/36 runs across seven output grids and three tolerances, but the 100-row 256,001-point rerun and corrected-head full-scan rerun remain pending. The pre-fix 100-row baseline passed 100/100 but its workflow had seven regression failures |
+| 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **PARTIAL**. The 100-row 256,001-point dense scan completed 100/100; against 4,001 points, all final states, Q, w, virial and classifications were unchanged, and the maximum finite-difference continuity residual fell to 6.05e-4. Four-case tolerance convergence passed 36/36, but full 100-row solver-tolerance convergence and coupled inhomogeneous dynamics remain open |
 | 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and a defect-topology analysis (including the Z2 domain-wall risk of a real waterfall scalar) | **NOT MET**. Current scan is homogeneous and post-threshold |
 | 6. Resonance and relic abundance | Expanding-background mode equations; converged monodromy/Floquet growth; momentum integration; backreaction; thermalization and entropy dilution; independently reproduced relic abundance | **NOT MET**. A linear mode integrator now evolves supplied expanding-FRW histories with an adiabatic-vacuum check and Wronskian monitor, and a finite-band trapezoidal momentum integral is implemented. The background is not generated self-consistently, the momentum tails and grid are not converged, and no backreaction or entropy dilution is available |
 | 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The closure remains phenomenological; no microscopic realization is established |
 | 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. Conditional potential-dominated T_rh estimate only; branching and thermalization are not computed |
 | 9. Observational reproducibility | Public exact CLASS patch; pinned version/commit; complete configs, likelihoods, data, chains and commands; independent rerun reproduces posteriors and model comparison | **NOT MET**. Reported numbers are author-reported; patch availability and chains remain unverified |
-| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Latest completed full-scan workflow had 122 tests pass and 7 fail; the 100-row baseline and four-case convergence jobs passed, while the 256,001-point job remained in progress. The 42-page PDF builds but retains 73 Underfull and one Overfull warning. Two regression defects are fixed; corrected-head CI is pending |
+| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Latest completed workflow had 130 tests pass and 1 fail due to a dimensionally inconsistent synthetic test fixture; the fixture is corrected in the current head and CI is pending. The 100-row baseline, 100-row 256,001-point scan and four-case convergence all passed. The 42-page PDF builds but retains 73 Underfull and one Overfull warning |
 
 ## Current implementation evidence
 
@@ -985,3 +985,53 @@ The output-grid oracle now uses (mu=mathrm{params.mu}), and the
 non-unit-(mu) oracle chooses (m_psi) so the model's (mu) is
 exactly 2.5 in the test's units. Both retain strict (10^{-8})
 quadrature-error assertions. Fresh CI is pending.
+
+
+## 2026-11-16 100-row dense output-grid comparison
+
+Workflow `43842597075` on simulation-code head
+`10cba1b7419d231811c7e3117449c4caa092831a` completed the baseline,
+targeted-convergence and refined-grid jobs successfully. The Python job
+had 130 passes and one failure in a synthetic test fixture; the
+simulation implementation itself was unchanged by the subsequent
+fixture-only correction.
+
+The 256,001-point artifact
+`ptum-full-grid-convergence-256001` (artifact ID `14213598714`,
+SHA-256
+`5408e45ce71558474f21d16ffae92024264108cacac3d415d142240d0b915890`)
+records 100/100 successful integrations, 100 unique row keys, zero
+failed rows and a complete checkpoint. It uses DOP853 with
+(rtol=10^{-9}), (atol=10^{-12}), and 256,001 output points per
+trajectory.
+
+A strict row-key join to the 4,001-point baseline matched all 100 rows:
+
+- All six final state variables ((Phi,dotPhi,psi,dotpsi,H,ho))
+  were identical at the reported JSON precision.
+- (Q), (w), quartic virial ratio, regime labels and quartic flags
+  were identical across the two output grids.
+- The maximum difference in the analytic FRW continuity residual was
+  (2.98\times10^{-10}).
+- The maximum finite-difference continuity residual fell from
+  (3.7234\times10^{-2}) at 4,001 points to
+  (6.0499\times10^{-4}) at 256,001 points, a factor of 61.5
+  reduction. The median fell from (9.7020\times10^{-3}) to
+  (1.6127\times10^{-4}).
+- Across the 96 rows with cycle data, the maximum relative quadrature
+  error estimate was (5.97\times10^{-6}), and the maximum normalized
+  absolute estimate was (4.19\times10^{-8}).
+
+The four-case targeted convergence artifact also passed 36/36 runs
+across seven output grids and three solver tolerances. Its maximum
+continuity-residual grid change was (6.043\times10^{-4}), maximum
+classification tolerance difference (9.38\times10^{-7}), and maximum
+final-state relative difference (4.75\times10^{-7}).
+
+The baseline classifier still found only five quartic rows, all at the
+largest classical seed (5\psi_0) in the low-scale control and smallest
+offset (0.01\Phi_c). They had only four or five late half-cycles.
+This is not evidence for quantum vacuum seeding or a broad attractor.
+The 100-row tolerance campaign is still incomplete, and the corrected
+test fixture in commit `7af32e39757f4b4c8cd78f2bda0b1eed9d83d345`
+awaits fresh CI. Gate 4 and Gate 10 remain PARTIAL.

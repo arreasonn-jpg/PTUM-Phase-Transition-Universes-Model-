@@ -569,3 +569,29 @@ was correctly reported by the implementation. The tests now use a
 dimensionally consistent (mu=mathrm{params.mu}), and set (m_psi)
 so the non-unit-(mu) fixture has (mu=2.5). The strict (10^{-8})
 error assertion is retained; no numerical tolerance was weakened.
+
+
+## 2026-11-16 full 100-row dense output-grid result
+
+The 100-row 256,001-point DOP853 scan completed with 100/100 successful
+rows, 100 unique keys and a complete checkpoint. Joined against the
+4,001-point baseline, all final-state variables, Q, w, quartic virial
+ratios, regime labels and quartic flags were identical at reported
+precision. The analytic continuity-residual difference was at most
+(2.98	imes10^{-10}). The maximum finite-difference continuity
+residual fell from (3.7234	imes10^{-2}) to (6.0499	imes10^{-4}),
+a factor of 61.5. The maximum dense quadrature relative-error estimate
+was (5.97	imes10^{-6}).
+
+The four-case tolerance/output-grid probe passed 36/36 runs. These
+results strongly support output-grid stability for the 100 homogeneous
+post-threshold rows, but they do not establish full 100-row
+solver-tolerance convergence or any inhomogeneous waterfall,
+backreaction, rescattering, relic or observational result.
+
+The only remaining Python failure in the workflow was a synthetic
+harmonic test fixture with a time scale inconsistent with the model's
+mass parameter. It was corrected in commit
+`7af32e39757f4b4c8cd78f2bda0b1eed9d83d345`; fresh CI is pending.
+The five quartic classifications occur only at the largest classical
+seed and must not be described as quantum-vacuum-seeded evidence.

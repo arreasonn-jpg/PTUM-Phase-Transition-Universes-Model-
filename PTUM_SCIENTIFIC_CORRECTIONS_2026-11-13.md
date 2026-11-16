@@ -1342,3 +1342,34 @@ relative quadrature error large. The error estimator was not relaxed.
 The output-grid oracle now uses (mu=mathrm{params.mu}); the
 non-unit-(mu) oracle selects (m_psi) to make (mu=2.5). Strict
 quadrature assertions remain in place. Fresh CI is required.
+
+
+## 2026-11-16 full 100-row dense output-grid result
+
+The corrected simulation implementation completed a 100-row,
+256,001-point DOP853 scan with 100/100 successful rows, 100 unique keys
+and a complete checkpoint. The artifact SHA-256 is
+`5408e45ce71558474f21d16ffae92024264108cacac3d415d142240d0b915890`.
+
+All 100 rows matched the 4,001-point baseline. Final states
+((Phi,dotPhi,psi,dotpsi,H,ho)), Q, w, quartic virial ratios,
+regime labels and quartic flags were identical at reported precision.
+The analytic continuity-residual maximum differed by at most
+(2.98	imes10^{-10}). The finite-difference continuity residual
+maximum decreased from (3.7234	imes10^{-2}) to
+(6.0499	imes10^{-4}), a 61.5-fold reduction. The maximum dense
+quadrature relative-error estimate was (5.97	imes10^{-6}).
+
+The four-case tolerance/output-grid probe also passed 36/36 runs, with
+maximum classification tolerance difference (9.38	imes10^{-7}) and
+maximum final-state relative difference (4.75	imes10^{-7}). This is
+not full 100-row solver-tolerance convergence.
+
+The only remaining Python failure in workflow `43842597075` was a
+dimensionally inconsistent synthetic harmonic fixture. It used a time
+scale unrelated to the parameter-derived (mu), making its kinetic
+moment negligible relative to the potential scale. The fixture was
+corrected in `7af32e39757f4b4c8cd78f2bda0b1eed9d83d345`; fresh CI is
+required. The five quartic classifications remain concentrated at
+the largest classical seed and do not establish quantum-seeded
+waterfall dynamics or a robust attractor.
