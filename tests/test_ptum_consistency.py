@@ -2044,6 +2044,8 @@ def test_dense_cycle_root_bracketing_refines_until_root_count_stabilizes():
     assert result["turning_times"] == pytest.approx(
         expected_roots, abs=2.0e-10
     )
+    assert result["root_refinement_converged"] is True
+    assert result["root_bracketing_subdivisions"] in (32, 64, 128)
 
 def test_dense_cycle_diagnostics_reject_stationary_zero_solution():
     params = PTUMParameters()
