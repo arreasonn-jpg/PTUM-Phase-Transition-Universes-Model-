@@ -814,6 +814,22 @@ def compute_dense_cycle_diagnostics(
         sampled_psi_dot = np.asarray([
             physical_state(tau)[3] for tau in sample_times
         ])
+        # Trigonometric endpoints such as sin(4*pi) are not represented as
+        # exact zero in floating point. Snap only endpoint values within a
+        # scale-relative roundoff bound; this preserves genuine endpoint
+        # turning points without turning a finite monotonic slope into a root.
+        finite_values = sampled_psi_dot[np.isfinite(sampled_psi_dot)]
+        if finite_values.size:
+            endpoint_zero_tolerance = (
+                64.0 * np.finfo(float).eps
+                * max(float(np.max(np.abs(finite_values))), np.finfo(float).tiny)
+            )
+            if (np.isfinite(sampled_psi_dot[0])
+                    and abs(sampled_psi_dot[0]) <= endpoint_zero_tolerance):
+                sampled_psi_dot[0] = 0.0
+            if (np.isfinite(sampled_psi_dot[-1])
+                    and abs(sampled_psi_dot[-1]) <= endpoint_zero_tolerance):
+                sampled_psi_dot[-1] = 0.0
         roots = []
 
         # A turning point requires an isolated zero/sign reversal of psi_dot.
@@ -1401,7 +1417,8 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
         if len(time) >= 2 and np.all(np.isfinite(time))
         and np.all(np.diff(time) > 0.0) else float('inf')
     )
-    if (cycle_times.ndim == 1 and q_cycles.shape == cycle_times.shape
+    if (cycle_times.ndim == 1 and len(cycle_times) > 0
+            and q_cycles.shape == cycle_times.shape
             and virial_cycles.shape == cycle_times.shape):
         tail_mask = cycle_times >= tail_start
         q_valid = q_cycles[tail_mask & np.isfinite(q_cycles)]

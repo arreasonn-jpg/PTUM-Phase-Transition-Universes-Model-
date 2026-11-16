@@ -2433,3 +2433,46 @@ def test_pr2_full_scan_opt_in_runs_full_grid_convergence_job():
     assert "contains(github.event.pull_request.title, '[FULL-SCAN]')" in normalized
     assert "python ptum_full_grid_convergence.py" in normalized
     assert "256001" in normalized
+
+
+def test_classifier_falls_back_to_sampled_diagnostics_when_dense_cycle_arrays_are_empty():
+    result = {
+        "success": True,
+        "w_psi_avg": np.array([0.0, 0.1, 0.2, 1.0 / 3.0, 1.0 / 3.0]),
+        "Q": np.concatenate([np.zeros(80), np.full(20, 10.0)]),
+        "virial_ratio": np.concatenate([np.full(80, 0.2), np.ones(20)]),
+        "t_avg": np.array([]),
+        "Q_cycle": np.array([]),
+        "virial_ratio_cycle": np.array([]),
+    }
+    _add_fast_adiabatic_oscillation_history(result)
+    classification = classify_outcome(result, PTUMParameters())
+    assert classification["regime"] == "quartic"
+    assert classification["quartic_achieved"]
+    assert classification["Q_final"] == pytest.approx(10.0)
+
+
+def test_dense_cycle_root_detector_keeps_roundoff_zero_final_endpoint():
+    params = PTUMParameters()
+    amplitude = 0.2 * params.psi_0
+
+    def dense_state(tau):
+        return np.asarray([
+            0.99 * params.Phi_c,
+            0.0,
+            amplitude * np.cos(tau),
+            -amplitude * np.sin(tau),
+        ])
+
+    dense_state.ts = np.linspace(0.0, 4.0 * np.pi, 401)
+    tau = np.linspace(0.0, 4.0 * np.pi, 31)
+    result = compute_dense_cycle_diagnostics(
+        dense_state, tau, 1.0, np.ones(4), params, len(tau)
+    )
+    np.testing.assert_allclose(
+        result["turning_times"],
+        np.arange(5, dtype=float) * np.pi,
+        rtol=0.0,
+        atol=2.0e-10,
+    )
+    assert len(result["Q_cycle"]) == 4

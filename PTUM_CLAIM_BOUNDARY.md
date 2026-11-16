@@ -516,3 +516,20 @@ the new-head CI passes and the artifact is inspected, these are
 implementation claims only. The old PR #11 high-resolution artifact
 used sampled cycle diagnostics and is not evidence for the dense
 estimator. Gate 4 remains PARTIAL.
+
+
+## 2026-11-16 dense-cycle regression failure and correction
+
+The first CI run after the dense-output port reported 122 passed and
+seven failed. Five failures were caused by empty dense-cycle arrays
+incorrectly bypassing the legacy sampled-diagnostic fallback. Two
+harmonic-oracle failures came from floating-point roundoff at the final
+(4pi) endpoint, which hid a genuine turning point.
+
+The classifier now requires a nonempty dense-cycle record before
+selecting the dense path. Endpoint values are treated as zero only when
+they lie within a scale-relative machine-roundoff tolerance. Two
+regressions guard these cases. The correction does not relax physical
+thresholds or root-refinement criteria. Until fresh CI passes, the
+dense-estimator implementation remains unverified and Gate 4 remains
+PARTIAL.

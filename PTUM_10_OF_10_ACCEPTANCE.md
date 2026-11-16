@@ -896,3 +896,26 @@ historical for the new dense implementation. Gate 4 remains PARTIAL.
 The 100-row comparison will be inspected only after the new artifacts
 complete; four selected tolerance probes are not full-grid tolerance
 convergence.
+
+
+## 2026-11-16 CI-discovered dense-cycle regressions and correction
+
+The first PR #2 workflow after the dense-estimator port,
+`43841837289`, reported **122 passed and 7 failed**. The failures
+identified two implementation defects rather than scientific
+disagreements:
+
+1. Five legacy classifier regressions supplied empty dense-cycle arrays.
+   Because empty arrays have matching shapes, the classifier selected
+   the dense branch instead of the sampled compatibility fallback and
+   returned `insufficient_oscillation_data`.
+2. Two analytic dense-cycle tests ended at (4\pi). Floating-point
+   (sin(4\pi)) was a tiny nonzero value with the same sign as the
+   preceding sample, so the final endpoint turning point was omitted.
+
+The correction requires at least one dense cycle before selecting the
+dense classifier branch and snaps only start/end derivative values
+within a scale-relative floating-point roundoff bound to zero. It does
+not loosen the root-refinement criteria or any physical classification
+threshold. Two direct regressions were added. Fresh CI is required;
+the failed run is not treated as a pass.

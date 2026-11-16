@@ -1285,3 +1285,20 @@ targeted convergence probe. All new dense-estimator regressions and
 the high-resolution scan remain unverified until the current-head CI
 and artifacts complete. No convergence tolerance has been relaxed and
 no physical acceptance gate is promoted by implementation alone.
+
+
+## 2026-11-16 dense-cycle CI failure and numerical correction
+
+Workflow `43841837289` exposed seven failures after the dense-output
+port: five compatibility tests showed that empty dense-cycle arrays
+were incorrectly accepted as a valid dense branch, and two harmonic
+oracles showed that roundoff in the final (sin(4pi)) endpoint could
+drop the last turning point.
+
+The classifier now requires a nonempty dense-cycle record before using
+that branch. Root detection snaps only endpoint (dotpsi) values
+within a scale-relative machine-roundoff bound to zero. This restores
+the sampled compatibility fallback and preserves analytic endpoint
+turning points without weakening the root-refinement or physical
+classification thresholds. Two focused regressions were added. The
+corrected head remains unverified until fresh CI completes.
