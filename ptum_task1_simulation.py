@@ -1245,7 +1245,8 @@ def _late_time_adiabaticity_diagnostic(result: Dict,
         for index, (start, end) in enumerate(zip(
             dense_turning[:-1], dense_turning[1:]
         )):
-            if start < tail_start or end > t[-1] or end <= start:
+            midpoint = 0.5 * (start + end)
+            if midpoint < tail_start or end > t[-1] or end <= start:
                 continue
             omega_half = np.pi / (end - start)
             ratio = float(dense_hubble[index]) / omega_half
