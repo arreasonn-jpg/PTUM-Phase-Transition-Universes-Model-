@@ -2019,6 +2019,32 @@ def test_dense_cycle_root_bracketing_resolves_multiple_turns_per_solver_step():
     )
 
 
+
+def test_dense_cycle_root_bracketing_refines_until_root_count_stabilizes():
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 1.0, 101)
+    scales = np.ones(4)
+    frequency = 40.0 * np.pi
+
+    def high_frequency_state(time):
+        return np.asarray([
+            0.99 * params.Phi_c,
+            0.0,
+            np.sin(frequency * time) / frequency,
+            np.cos(frequency * time),
+        ])
+
+    # One coarse accepted interval hides many roots at low subdivision
+    # counts. The diagnostic must refine until root count and locations agree.
+    high_frequency_state.ts = np.asarray([0.0, 1.0])
+    result = compute_dense_cycle_diagnostics(
+        high_frequency_state, tau, 1.0, scales, params, len(tau)
+    )
+    expected_roots = (np.arange(40, dtype=float) + 0.5) / 40.0
+    assert result["turning_times"] == pytest.approx(
+        expected_roots, abs=2.0e-10
+    )
+
 def test_dense_cycle_diagnostics_reject_stationary_zero_solution():
     params = PTUMParameters()
     tau = np.linspace(0.0, 20.0, 1001)
