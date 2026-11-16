@@ -1895,3 +1895,22 @@ def test_full_reheating_scalar_and_higgs_eom_sources_are_explicit_in_manuscript(
     assert "g_{\\psi H}\\psi H^\\dagger H" in source
     assert "mathcal O_{\\rm SM}" in source
     assert "do not imply that the present homogeneous code evolves the Higgs or fermion fields" in source
+
+
+
+def test_pr2_full_scan_opt_in_runs_targeted_convergence_job():
+    from pathlib import Path
+
+    workflow = Path(".github/workflows/ptum-scientific-tests.yml").read_text(
+        encoding="utf-8"
+    )
+    convergence_job = workflow.split("  scan-convergence:", 1)[1].split(
+        "  latex-build:", 1
+    )[0]
+    normalized = " ".join(convergence_job.split())
+    assert (
+        "github.event.pull_request.head.ref == "
+        "'ptum/scientific-consistency-fixes-2026-11-13'"
+    ) in normalized
+    assert "contains(github.event.pull_request.title, '[FULL-SCAN]')" in normalized
+    assert "ptum/convergence-" in normalized
