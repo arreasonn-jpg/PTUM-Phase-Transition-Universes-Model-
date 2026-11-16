@@ -799,50 +799,95 @@ def compute_dense_cycle_diagnostics(
         if len(bracket_times) < 3:
             raise ValueError("dense solver mesh does not cover output interval")
 
-    sampled_psi_dot = np.asarray([
-        physical_state(tau)[3] for tau in bracket_times
-    ])
-    roots = []
+    def locate_turning_points(subdivisions):
+        if solver_mesh is None:
+            base_mesh = tau_samples
+        else:
+            base_mesh = solver_mesh[
+                (solver_mesh >= tau_samples[0])
+                & (solver_mesh <= tau_samples[-1])
+            ]
+            # Include requested interval endpoints when the solver mesh
+            # extends beyond the diagnostic window.
+            base_mesh = np.unique(np.concatenate((
+                [tau_samples[0]], base_mesh, [tau_samples[-1]]
+            )))
+        fractions = np.linspace(0.0, 1.0, subdivisions + 1)
+        sample_times = np.unique(np.concatenate([
+            start + fractions * (end - start)
+            for start, end in zip(base_mesh[:-1], base_mesh[1:])
+        ]))
+        sampled_psi_dot = np.asarray([
+            physical_state(tau)[3] for tau in sample_times
+        ])
+        roots = []
 
-    # A turning point requires an isolated zero/sign reversal of psi_dot.
-    # Treating every exact zero sample as a root creates thousands of fake
-    # cycles for the stationary psi=psi_dot=0 solution. Work with consecutive
-    # finite nonzero samples, allowing at most one exact-zero sample between
-    # them. Longer zero plateaus and non-finite gaps are not oscillations.
-    finite_nonzero = np.flatnonzero(
-        np.isfinite(sampled_psi_dot) & (sampled_psi_dot != 0.0)
-    )
-    if (len(finite_nonzero) and finite_nonzero[0] == 1
-            and sampled_psi_dot[0] == 0.0):
-        roots.append(float(bracket_times[0]))
+        # A turning point requires an isolated zero/sign reversal of psi_dot.
+        # Ignore zero plateaus and non-finite gaps rather than invent cycles.
+        finite_nonzero = np.flatnonzero(
+            np.isfinite(sampled_psi_dot) & (sampled_psi_dot != 0.0)
+        )
+        if (len(finite_nonzero) and finite_nonzero[0] == 1
+                and sampled_psi_dot[0] == 0.0):
+            roots.append(float(sample_times[0]))
 
-    for left_index, right_index in zip(
-        finite_nonzero[:-1], finite_nonzero[1:]
-    ):
-        if right_index - left_index > 2:
-            continue
-        left_value = sampled_psi_dot[left_index]
-        right_value = sampled_psi_dot[right_index]
-        if np.signbit(left_value) == np.signbit(right_value):
-            continue
-        root = float(brentq(
-            lambda tau: physical_state(tau)[3],
-            bracket_times[left_index], bracket_times[right_index],
-            xtol=4.0 * np.finfo(float).eps,
-            rtol=8.0 * np.finfo(float).eps,
-        ))
-        if not roots or root - roots[-1] > (
-            32.0 * np.finfo(float).eps * max(1.0, abs(root))
+        for left_index, right_index in zip(
+            finite_nonzero[:-1], finite_nonzero[1:]
         ):
-            roots.append(root)
+            if right_index - left_index > 2:
+                continue
+            left_value = sampled_psi_dot[left_index]
+            right_value = sampled_psi_dot[right_index]
+            if np.signbit(left_value) == np.signbit(right_value):
+                continue
+            root = float(brentq(
+                lambda tau: physical_state(tau)[3],
+                sample_times[left_index], sample_times[right_index],
+                xtol=4.0 * np.finfo(float).eps,
+                rtol=8.0 * np.finfo(float).eps,
+            ))
+            if not roots or root - roots[-1] > (
+                32.0 * np.finfo(float).eps * max(1.0, abs(root))
+            ):
+                roots.append(root)
 
-    if (len(finite_nonzero) and finite_nonzero[-1] == len(bracket_times) - 2
-            and sampled_psi_dot[-1] == 0.0):
-        endpoint = float(bracket_times[-1])
-        if not roots or endpoint - roots[-1] > (
-            32.0 * np.finfo(float).eps * max(1.0, abs(endpoint))
-        ):
-            roots.append(endpoint)
+        if (len(finite_nonzero)
+                and finite_nonzero[-1] == len(sample_times) - 2
+                and sampled_psi_dot[-1] == 0.0):
+            endpoint = float(sample_times[-1])
+            if not roots or endpoint - roots[-1] > (
+                32.0 * np.finfo(float).eps * max(1.0, abs(endpoint))
+            ):
+                roots.append(endpoint)
+        return np.asarray(roots, dtype=float)
+
+    # Increase the bracketing density until two successive refinements agree
+    # in both root count and root locations. This is a numerical stability
+    # check, not a proof that an arbitrary interpolant has no unresolved roots.
+    roots_previous = locate_turning_points(8)
+    roots = locate_turning_points(16)
+    root_refinement_converged = False
+    root_bracketing_subdivisions = 16
+    for subdivisions in (32, 64, 128):
+        roots_refined = locate_turning_points(subdivisions)
+        same_count = len(roots_refined) == len(roots)
+        same_locations = (
+            same_count and np.allclose(
+                roots_refined, roots, rtol=1.0e-10, atol=1.0e-12
+            )
+        )
+        if same_locations:
+            root_refinement_converged = True
+            roots = roots_refined
+            root_bracketing_subdivisions = subdivisions
+            break
+        roots_previous, roots = roots, roots_refined
+        root_bracketing_subdivisions = subdivisions
+    if not root_refinement_converged:
+        raise ValueError(
+            "dense turning-point roots did not converge under "
+            "bracketing refinement through 128 subdivisions"
+        )
 
     q_values = np.full(n_output, np.nan, dtype=float)
     virial_values = np.full(n_output, np.nan, dtype=float)
