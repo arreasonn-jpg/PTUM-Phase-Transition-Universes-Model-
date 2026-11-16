@@ -1000,6 +1000,8 @@ def compute_dense_cycle_diagnostics(
         "virial_ratio_cycle": np.asarray(virial_cycle_values, dtype=float),
         "H_avg_cycle": np.asarray(h_cycle_values, dtype=float),
         "turning_times": [float(value / mu) for value in roots],
+        "root_refinement_converged": bool(root_refinement_converged),
+        "root_bracketing_subdivisions": int(root_bracketing_subdivisions),
         "max_relative_quadrature_error": (
             max(relative_errors) if relative_errors else float("nan")
         ),
