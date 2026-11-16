@@ -776,9 +776,7 @@ def compute_dense_cycle_diagnostics(
     # one accepted step. Analytic test callables without an OdeSolution mesh
     # fall back to tau_samples.
     solver_mesh = getattr(dense_solution, "ts", None)
-    if solver_mesh is None:
-        bracket_times = tau_samples
-    else:
+    if solver_mesh is not None:
         solver_mesh = np.asarray(solver_mesh, dtype=float)
         if (solver_mesh.ndim != 1 or len(solver_mesh) < 2
                 or not np.all(np.isfinite(solver_mesh))
