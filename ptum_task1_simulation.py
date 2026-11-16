@@ -658,6 +658,8 @@ def run_simulation(params: PTUMParameters,
             "max_normalized_absolute_quadrature_error"
         ],
         'cycle_turning_times': dense_cycle["turning_times"],
+        'cycle_root_refinement_converged': dense_cycle["root_refinement_converged"],
+        'cycle_root_bracketing_subdivisions': dense_cycle["root_bracketing_subdivisions"],
         'Q_cycle': dense_cycle["Q_cycle"],
         'virial_ratio_cycle': dense_cycle["virial_ratio_cycle"],
         'H_avg_cycle': dense_cycle["H_avg_cycle"],
