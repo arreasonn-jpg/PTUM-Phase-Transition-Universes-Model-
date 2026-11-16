@@ -2047,6 +2047,61 @@ def test_dense_cycle_root_bracketing_refines_until_root_count_stabilizes():
     assert result["root_refinement_converged"] is True
     assert result["root_bracketing_subdivisions"] in (32, 64, 128)
 
+
+def test_dense_cycle_integrals_are_invariant_to_adaptive_solver_mesh_partition():
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 1.0, 101)
+    scales = np.ones(4)
+    frequency = 10.0 * np.pi
+    phi_value = 0.99 * params.Phi_c
+    amplitude = 0.2 * params.psi_0
+
+    def make_dense_state(mesh):
+        def dense_state(time):
+            return np.asarray([
+                phi_value,
+                0.0,
+                amplitude * np.sin(frequency * time),
+                amplitude * frequency * np.cos(frequency * time),
+            ])
+        dense_state.ts = np.asarray(mesh, dtype=float)
+        return dense_state
+
+    coarse_mesh_state = make_dense_state([0.0, 1.0])
+    irregular_mesh_state = make_dense_state(
+        [0.0, 0.07, 0.19, 0.31, 0.58, 0.73, 0.91, 1.0]
+    )
+    coarse = compute_dense_cycle_diagnostics(
+        coarse_mesh_state, tau, 1.0, scales, params, len(tau)
+    )
+    irregular = compute_dense_cycle_diagnostics(
+        irregular_mesh_state, tau, 1.0, scales, params, len(tau)
+    )
+
+    assert coarse["root_refinement_converged"]
+    assert irregular["root_refinement_converged"]
+    np.testing.assert_allclose(
+        coarse["turning_times"], irregular["turning_times"],
+        rtol=0.0, atol=2.0e-10,
+    )
+    np.testing.assert_allclose(
+        coarse["Q_cycle"], irregular["Q_cycle"],
+        rtol=2.0e-9, atol=0.0,
+    )
+    np.testing.assert_allclose(
+        coarse["virial_ratio_cycle"], irregular["virial_ratio_cycle"],
+        rtol=2.0e-9, atol=0.0,
+    )
+    np.testing.assert_allclose(
+        coarse["w_avg"], irregular["w_avg"],
+        rtol=2.0e-9, atol=2.0e-12,
+    )
+    np.testing.assert_allclose(
+        coarse["H_avg_cycle"], irregular["H_avg_cycle"],
+        rtol=2.0e-9, atol=0.0,
+    )
+
+
 def test_dense_cycle_diagnostics_reject_stationary_zero_solution():
     params = PTUMParameters()
     tau = np.linspace(0.0, 20.0, 1001)
