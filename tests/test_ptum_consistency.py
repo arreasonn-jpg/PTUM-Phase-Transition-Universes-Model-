@@ -1986,6 +1986,39 @@ def test_dense_cycle_integrals_are_invariant_to_output_sampling_density():
     assert fine["max_relative_quadrature_error"] < 1.0e-8
 
 
+def test_dense_cycle_root_bracketing_resolves_multiple_turns_per_solver_step():
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 1.0, 101)
+    scales = np.ones(4)
+
+    # Ten simple roots of psi_dot lie inside one deliberately coarse
+    # accepted-step interval. Endpoint and midpoint-only bracketing misses
+    # most of them, while dense interval subdivision resolves each root.
+    frequency = 10.0 * np.pi
+
+    def rapidly_oscillating_state(time):
+        return np.asarray([
+            0.99 * params.Phi_c,
+            0.0,
+            np.sin(frequency * time) / frequency,
+            np.cos(frequency * time),
+        ])
+
+    rapidly_oscillating_state.ts = np.asarray([0.0, 1.0])
+    result = compute_dense_cycle_diagnostics(
+        rapidly_oscillating_state,
+        tau,
+        1.0,
+        scales,
+        params,
+        len(tau),
+    )
+    expected_roots = (np.arange(10, dtype=float) + 0.5) / 10.0
+    assert result["turning_times"] == pytest.approx(
+        expected_roots, abs=2.0e-10
+    )
+
+
 def test_dense_cycle_diagnostics_reject_stationary_zero_solution():
     params = PTUMParameters()
     tau = np.linspace(0.0, 20.0, 1001)
