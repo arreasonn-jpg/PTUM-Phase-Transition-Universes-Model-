@@ -3,6 +3,7 @@ import json
 
 import numpy as np
 import pytest
+from scipy.integrate import solve_ivp
 
 from ptum_full_grid_convergence import (
     EXPECTED_ROWS as FULL_GRID_EXPECTED_ROWS,
@@ -2099,6 +2100,72 @@ def test_dense_cycle_integrals_are_invariant_to_adaptive_solver_mesh_partition()
     np.testing.assert_allclose(
         coarse["H_avg_cycle"], irregular["H_avg_cycle"],
         rtol=2.0e-9, atol=0.0,
+    )
+
+
+
+def test_dense_cycle_diagnostics_are_stable_across_real_dop853_step_sizes():
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 1.0, 501)
+    scales = np.ones(4)
+    omega = 10.0 * np.pi
+    initial = np.asarray([
+        0.99 * params.Phi_c,
+        0.0,
+        0.2 * params.psi_0,
+        0.0,
+    ])
+
+    def rhs(_time, state):
+        return np.asarray([
+            state[1],
+            0.0,
+            state[3],
+            -(omega**2) * state[2],
+        ])
+
+    solutions = [
+        solve_ivp(
+            rhs, (0.0, 1.0), initial, method="DOP853",
+            rtol=rtol, atol=atol, max_step=max_step,
+            dense_output=True,
+        )
+        for rtol, atol, max_step in (
+            (1.0e-8, 1.0e-11, 0.08),
+            (1.0e-11, 1.0e-14, 0.025),
+        )
+    ]
+    assert all(solution.success for solution in solutions)
+    assert all(solution.sol is not None for solution in solutions)
+
+    diagnostics = [
+        compute_dense_cycle_diagnostics(
+            solution.sol, tau, 1.0, scales, params, len(tau)
+        )
+        for solution in solutions
+    ]
+    coarse, fine = diagnostics
+    assert coarse["root_refinement_converged"]
+    assert fine["root_refinement_converged"]
+    np.testing.assert_allclose(
+        coarse["turning_times"], fine["turning_times"],
+        rtol=0.0, atol=2.0e-6,
+    )
+    np.testing.assert_allclose(
+        coarse["Q_cycle"], fine["Q_cycle"],
+        rtol=2.0e-5, atol=2.0e-10,
+    )
+    np.testing.assert_allclose(
+        coarse["virial_ratio_cycle"], fine["virial_ratio_cycle"],
+        rtol=2.0e-5, atol=2.0e-10,
+    )
+    np.testing.assert_allclose(
+        coarse["w_avg"], fine["w_avg"],
+        rtol=2.0e-5, atol=2.0e-10,
+    )
+    np.testing.assert_allclose(
+        coarse["H_avg_cycle"], fine["H_avg_cycle"],
+        rtol=2.0e-5, atol=2.0e-10,
     )
 
 
