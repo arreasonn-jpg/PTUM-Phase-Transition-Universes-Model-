@@ -782,8 +782,16 @@ def compute_dense_cycle_diagnostics(
                 or not np.all(np.isfinite(solver_mesh))
                 or np.any(np.diff(solver_mesh) <= 0.0)):
             raise ValueError("dense solver mesh must be finite and increasing")
-        midpoints = 0.5 * (solver_mesh[:-1] + solver_mesh[1:])
-        bracket_times = np.unique(np.concatenate([solver_mesh, midpoints]))
+        # A single midpoint can miss an even number of turning points
+        # inside one accepted step. Subdivide each dense-output interval so
+        # root bracketing samples the interpolant at a bounded spacing.
+        # This is a detection safeguard, not a formal root-count proof.
+        subdivisions = 16
+        fractions = np.linspace(0.0, 1.0, subdivisions + 1)
+        bracket_times = np.unique(np.concatenate([
+            start + fractions * (end - start)
+            for start, end in zip(solver_mesh[:-1], solver_mesh[1:])
+        ]))
         bracket_times = bracket_times[
             (bracket_times >= tau_samples[0])
             & (bracket_times <= tau_samples[-1])
