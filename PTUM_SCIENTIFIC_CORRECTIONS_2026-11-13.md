@@ -1329,3 +1329,16 @@ regressions. The endpoint-root and empty-cycle fallback fixes are in
 targeted probe on the corrected head are required. The 100-row
 256,001-point dense-estimator job from the pre-fix run was still
 running at the time of this record.
+
+
+## 2026-11-16 analytic quadrature oracle made dimensionally consistent
+
+The latest corrected-head CI had 130 passes and one failure. The
+remaining synthetic harmonic test mixed a time scale (mu=1) or 2.5
+with a PTUM parameter set whose actual tachyonic scale was about
+(1.41	imes10^{12}) GeV. The kinetic moment was consequently
+(O(10^{-28})) of the potential scale, making the worst-component
+relative quadrature error large. The error estimator was not relaxed.
+The output-grid oracle now uses (mu=mathrm{params.mu}); the
+non-unit-(mu) oracle selects (m_psi) to make (mu=2.5). Strict
+quadrature assertions remain in place. Fresh CI is required.

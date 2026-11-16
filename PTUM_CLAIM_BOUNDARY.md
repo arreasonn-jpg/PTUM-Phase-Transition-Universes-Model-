@@ -557,3 +557,15 @@ Two implementation fixes were committed in
 `a172c6a72121d63ba8391af9d35ba8d225e39403`; all scan results from the
 pre-fix head are provisional until rerun on the corrected head. The
 100-row 256,001-point job was still running at the time of this record.
+
+
+## 2026-11-16 analytic quadrature test fixture corrected
+
+The latest CI run reported 130 passed and one failed test. The remaining
+failure came from a synthetic oscillator whose time scale did not match
+the PTUM mass parameter, leaving its kinetic moment about (10^{-28})
+of the potential scale. The resulting large relative quadrature error
+was correctly reported by the implementation. The tests now use a
+dimensionally consistent (mu=mathrm{params.mu}), and set (m_psi)
+so the non-unit-(mu) fixture has (mu=2.5). The strict (10^{-8})
+error assertion is retained; no numerical tolerance was weakened.

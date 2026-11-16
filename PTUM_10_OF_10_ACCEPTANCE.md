@@ -966,3 +966,22 @@ in commit `a172c6a72121d63ba8391af9d35ba8d225e39403`.
 The manuscript built successfully to 42 pages, but the final LaTeX
 pass retained 73 Underfull hbox warnings and one Overfull hbox at line
 1937. Gate 4 remains PARTIAL; Gate 10 remains PARTIAL.
+
+
+## 2026-11-16 second CI pass: analytic fixture dimensional mismatch
+
+The corrected-head workflow `43842597075` reached 130 passed and one
+failed test. The remaining failure was isolated to the synthetic
+harmonic quadrature oracle: it passed (mu=1) (and the separate unit
+test used (mu=2.5)) while leaving (m_psi) at (10^{13},mathrm{GeV}),
+so the model's actual (mu=sqrt{|m_{m eff}^2|}) was about
+(1.41\times10^{12},mathrm{GeV}). The synthetic trajectory's kinetic
+moment was therefore (O(10^{-28})) of the potential scale, and the
+reported worst-component relative quadrature error correctly became
+large. This was an inconsistent test fixture, not a reason to weaken
+the error estimate.
+
+The output-grid oracle now uses (mu=mathrm{params.mu}), and the
+non-unit-(mu) oracle chooses (m_psi) so the model's (mu) is
+exactly 2.5 in the test's units. Both retain strict (10^{-8})
+quadrature-error assertions. Fresh CI is pending.

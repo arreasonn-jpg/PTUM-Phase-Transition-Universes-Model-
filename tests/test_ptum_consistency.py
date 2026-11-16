@@ -1926,17 +1926,19 @@ def test_dense_cycle_integrals_are_invariant_to_output_sampling_density():
     from ptum_task1_simulation import PTUMParameters
 
     params = PTUMParameters(lambda_psi=0.1)
+    mu = params.mu
     amplitude = 0.2 * params.psi_0
     phi_value = 0.99 * params.Phi_c
 
     # Analytic harmonic trajectory used as a continuous dense-output oracle.
-    # The same interpolant is sampled on two very different output grids.
+    # Keep tau=mu*t and the physical-time derivative dimensionally consistent
+    # with the model mass scale, then vary only the requested output grid.
     def dense_state(tau):
         return np.asarray([
             phi_value,
             0.0,
             amplitude * np.cos(tau),
-            -amplitude * np.sin(tau),
+            -mu * amplitude * np.sin(tau),
         ])
 
     # Mimic OdeSolution.ts: the adaptive solver mesh is held fixed while
@@ -1946,18 +1948,18 @@ def test_dense_cycle_integrals_are_invariant_to_output_sampling_density():
     coarse_tau = np.linspace(0.0, 4.0 * np.pi, 101)
     fine_tau = np.linspace(0.0, 4.0 * np.pi, 4001)
     coarse = compute_dense_cycle_diagnostics(
-        dense_state, coarse_tau, 1.0, scales, params, len(coarse_tau)
+        dense_state, coarse_tau, mu, scales, params, len(coarse_tau)
     )
     fine = compute_dense_cycle_diagnostics(
-        dense_state, fine_tau, 1.0, scales, params, len(fine_tau)
+        dense_state, fine_tau, mu, scales, params, len(fine_tau)
     )
 
     expected_q = (
         3.0 * params.lambda_psi * amplitude**2
         / (4.0 * abs(meff_sq_psi(phi_value, params)))
     )
-    expected_virial = 4.0 / (
-        3.0 * params.lambda_psi * amplitude**2
+    expected_virial = (
+        4.0 * mu**2 / (3.0 * params.lambda_psi * amplitude**2)
     )
     np.testing.assert_allclose(
         coarse["Q"][np.isfinite(coarse["Q"])],
@@ -1980,6 +1982,11 @@ def test_dense_cycle_integrals_are_invariant_to_output_sampling_density():
     assert len(coarse["H_avg_cycle"]) == 4
     assert np.all(np.isfinite(coarse["H_avg_cycle"]))
     assert np.all(coarse["H_avg_cycle"] > 0.0)
+    np.testing.assert_allclose(
+        coarse["turning_times"],
+        np.arange(5, dtype=float) * np.pi / mu,
+        rtol=0.0, atol=2.0e-10,
+    )
     assert coarse["turning_times"] == pytest.approx(
         fine["turning_times"], abs=2.0e-10
     )
@@ -1991,10 +1998,16 @@ def test_dense_cycle_integrals_are_invariant_to_output_sampling_density():
 def test_dense_cycle_integrals_preserve_physical_units_when_mu_is_not_one():
     from ptum_task1_simulation import PTUMParameters
 
-    params = PTUMParameters(lambda_psi=0.1)
+    mu = 2.5
+    # Choose m_psi so the model's tachyonic scale is exactly the non-unit
+    # frequency used by the synthetic dense solution.
+    params = PTUMParameters(
+        lambda_psi=0.1,
+        m_psi=mu / np.sqrt(1.0 - 0.99**2),
+    )
+    assert params.mu == pytest.approx(mu, rel=1.0e-12)
     amplitude = 0.2 * params.psi_0
     phi_value = 0.99 * params.Phi_c
-    mu = 2.5
 
     # The dense ODE solution is parameterized by tau=mu*t, while psi_dot
     # remains a physical-time derivative. This catches accidental mixing
@@ -2033,6 +2046,7 @@ def test_dense_cycle_integrals_preserve_physical_units_when_mu_is_not_one():
         rtol=0.0, atol=2.0e-10,
     )
     assert result["root_refinement_converged"]
+    assert result["max_relative_quadrature_error"] < 1.0e-8
 
 def test_dense_cycle_root_bracketing_resolves_multiple_turns_per_solver_step():
     params = PTUMParameters()
