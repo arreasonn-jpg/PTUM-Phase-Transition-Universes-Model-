@@ -15,7 +15,7 @@ This file defines the evidence required before PTUM can be called scientifically
 | 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The closure remains phenomenological; no microscopic realization is established |
 | 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. Conditional potential-dominated T_rh estimate only; branching and thermalization are not computed |
 | 9. Observational reproducibility | Public exact CLASS patch; pinned version/commit; complete configs, likelihoods, data, chains and commands; independent rerun reproduces posteriors and model comparison | **NOT MET**. Reported numbers are author-reported; patch availability and chains remain unverified |
-| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Regression suite, pinned CI and strict JSON exist; scan now fails closed on missing/failed trajectories and preserves failure artifacts, but the latest tests, 100-point scan and LaTeX build remain pending |
+| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. At the last completed pre-opt-in head, 108 regression tests and the four-row smoke scan passed and a 42-page PDF built; the 100-row scan and targeted convergence were skipped. The final LaTeX pass still has 73 Underfull and one Overfull warning. Fresh full-scan CI is pending on the updated branch |
 
 ## Current implementation evidence
 
@@ -826,3 +826,33 @@ Workflow 43757836487 passed Python regression, the 100-row refined-grid
 scan and LaTeX build. This verifies the scan and build at that head;
 it does not close the physical waterfall, backreaction, relic or
 observational gates.
+
+
+## 2026-11-16 latest CI and full-scan opt-in
+
+The last completed workflow on the pre-opt-in commit
+`bc1f6dafb689be427631ae3baa79692b9fde1694` was
+`43759304001`:
+
+- Python regression: **108 passed** in 20.24 s.
+- The two-scale smoke scan completed **4/4** trajectories with zero
+  failed integrations.
+- The LaTeX job produced a 42-page PDF. Its final pass retained
+  73 Underfull hbox warnings and one Overfull hbox at source line 1937.
+  The earlier-pass undefined-reference messages disappeared by the
+  final pass; the build is successful, but not warning-free.
+- The full 100-row scan and targeted convergence jobs were skipped
+  because the PR had not yet opted into the long verification path.
+
+To prevent that gap recurring, PR #2 was marked `[FULL-SCAN]`.
+The workflow now also runs the existing four-case tolerance/output-grid
+probe for that explicit PR #2 opt-in, and a regression test guards this
+condition. Workflow commit:
+`37b48c41b8342597e910f03e7717c70463fba93b`; test commit:
+`c5b3c95e065999dc719b1052db66e3c9855d2d82`.
+
+The new head has not yet completed CI. The next synchronize-triggered
+workflow is expected to run the 100-row DOP853 scan and the targeted
+four-case convergence probe. The latter is still not a 100-row
+tolerance/output-grid convergence study. Gate 4 remains PARTIAL, and
+no physical gate is promoted by the successful smoke scan.
