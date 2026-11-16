@@ -1261,3 +1261,27 @@ four-case convergence job for that PR opt-in; commit
 Fresh CI on the new head is pending. No full-scan, full-grid
 convergence, inhomogeneous waterfall, relic, or observational claim
 is inferred from the preceding smoke run.
+
+
+## 2026-11-16 dense-cycle estimator integrated into the canonical branch
+
+The dense-output half-cycle estimator previously isolated on PR #11 has
+been ported into PR #2. The pre-change PR #2 simulation source matched
+the estimator's base blob exactly, so this port does not discard any
+intervening PR #2 simulation edits.
+
+The reported cycle diagnostics now come from adaptive quadrature over
+the ODE dense interpolant, with turning-point brackets seeded from the
+accepted solver mesh and refined until successive root sets agree.
+The integrated moments are used for Q, quartic virial, excitation-sector
+w and physical mean H. The previous sampled Q/virial/w arrays remain
+available as independent numerical cross-checks. The late-time
+classifier and H/omega diagnostic share physical-time cycle windows.
+
+The port also adds the chunked strict-JSON 100-row 256,001-point
+refined-grid driver. The PR #2 full-scan workflow now schedules this
+driver alongside the 4,001-point baseline and the existing four-case
+targeted convergence probe. All new dense-estimator regressions and
+the high-resolution scan remain unverified until the current-head CI
+and artifacts complete. No convergence tolerance has been relaxed and
+no physical acceptance gate is promoted by implementation alone.

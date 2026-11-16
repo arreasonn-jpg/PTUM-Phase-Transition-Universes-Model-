@@ -9,7 +9,7 @@ This file defines the evidence required before PTUM can be called scientifically
 | 1. Complete action and conventions | One explicit covariant action; fixed metric/sign conventions; all fields, dimensions, gauge representations, potentials, couplings, real/complex field choices and symmetry-breaking structure specified | **MET (classical tree-level EFT)**. The minimally coupled Einstein + PTUM + chiral-SM action, field representations, canonical dimensions, Higgs and Yukawa potentials, dimension-five PTUM operators, and the explicit \(\psi\)/\(\Phi_{\rm res}\) symmetry scope are now specified. Quantum/UV completion remains outside this gate and open separately |
 | 2. Inflation-to-waterfall connection | Exact inflation endpoint; threshold crossing in the same coupled background; stability of all modes before crossing; quantum seed prescription | **PARTIAL**. Exact epsilon_H endpoint is computed; post-threshold scan velocities are now taken from the integrated single-field FRW trajectory at each offset, but the coupled crossing and quantum seeds are not evolved |
 | 3. Hilbert tensors and conservation | Every sector tensor derived from the same action; all Q_i^nu derived; sum of currents cancels; numerical conservation converges independently with solver tolerance and timestep | **PARTIAL**. The classical tree-level gauge, Higgs, chiral-fermion and PTUM Hilbert tensors and all interaction currents are now written from one action; the current solver does not evolve SM fields, and full-sector numerical conservation/timestep-tolerance convergence is not yet demonstrated |
-| 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **PARTIAL**. Chain-rule and finite-difference diagnostics exist; convergence campaign remains open |
+| 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **PARTIAL**. A dense-output cycle estimator now computes Q, quartic virial, excitation-sector w and mean H from root-refined solver-mesh half-cycles and adaptive quadrature; analytic and solver-mesh regressions are present, but fresh CI and the 100-row 256,001-point rerun are pending |
 | 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and a defect-topology analysis (including the Z2 domain-wall risk of a real waterfall scalar) | **NOT MET**. Current scan is homogeneous and post-threshold |
 | 6. Resonance and relic abundance | Expanding-background mode equations; converged monodromy/Floquet growth; momentum integration; backreaction; thermalization and entropy dilution; independently reproduced relic abundance | **NOT MET**. A linear mode integrator now evolves supplied expanding-FRW histories with an adiabatic-vacuum check and Wronskian monitor, and a finite-band trapezoidal momentum integral is implemented. The background is not generated self-consistently, the momentum tails and grid are not converged, and no backreaction or entropy dilution is available |
 | 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The closure remains phenomenological; no microscopic realization is established |
@@ -856,3 +856,43 @@ workflow is expected to run the 100-row DOP853 scan and the targeted
 four-case convergence probe. The latter is still not a 100-row
 tolerance/output-grid convergence study. Gate 4 remains PARTIAL, and
 no physical gate is promoted by the successful smoke scan.
+
+
+## 2026-11-16 dense-output cycle estimator ported to PR #2
+
+The dense-output cycle estimator developed on the isolated PR #11 branch
+has now been ported to the canonical PR #2 branch. The PR #2
+`ptum_task1_simulation.py` was byte-identical to the estimator's
+pre-change base, so the source port did not overwrite later simulation
+logic. The implementation:
+
+- locates `psi_dot=0` turning points from the adaptive ODE solver mesh,
+  refines root bracketing, and rejects stationary zero plateaus and
+  monotonic non-oscillatory histories;
+- integrates the cycle moments for Q, quartic virial, excitation
+  pressure/density and mean H with adaptive vector quadrature;
+- retains the former sampled estimators separately as cross-checks;
+- uses one physical-time late-tail definition for the classifier and
+  dense-cycle adiabaticity test.
+
+The port includes regressions for the harmonic analytic oracle, non-unit
+mu, multiple roots per accepted solver step, root-refinement stability,
+adaptive-mesh invariance, real DOP853 step-size stability, malformed
+inputs, stationary/monotonic histories and nonuniform physical-time
+classification.
+
+A chunked strict-JSON 100-row, 256,001-output-point rerun has also been
+added. PR #2's `[FULL-SCAN]` workflow opt-in now schedules three
+distinct numerical checks: the 100-row 4,001-point baseline, the
+existing four-trajectory tolerance/output-grid probe, and the new
+100-row 256,001-point dense-estimator run. The high-resolution job
+writes incremental checkpoints and fails closed on missing, duplicate
+or unsuccessful rows.
+
+**Validation status:** implementation and tests are committed, but no
+CI result or 100-row dense-estimator artifact is claimed yet. The older
+PR #11 256,001-point artifact used the sampled estimator and is
+historical for the new dense implementation. Gate 4 remains PARTIAL.
+The 100-row comparison will be inspected only after the new artifacts
+complete; four selected tolerance probes are not full-grid tolerance
+convergence.

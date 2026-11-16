@@ -496,3 +496,23 @@ quantum-seeded inhomogeneous waterfall, nonlinear backreaction,
 rescattering, defect-network evolution, relic abundance, microscopic
 proxy-fluid realization, or independent CLASS/Cobaya reproduction
 is established.
+
+
+## 2026-11-16 dense-output diagnostics: implementation, not yet evidence
+
+PR #2 now contains the dense-output cycle estimator previously developed
+on PR #11. It uses the accepted adaptive ODE mesh for turning-point
+bracketing, root-refinement checks and adaptive quadrature for Q, virial,
+excitation-sector w and mean H. Sampled estimators are retained as
+cross-checks. Regression tests cover analytic and numerical oracles,
+non-unit time scaling, solver-mesh variation, root-detection edge cases
+and physical-time tail classification.
+
+The 100-row 256,001-point strict-JSON driver and a dedicated PR #2
+workflow job have also been added. The next full-scan workflow is
+expected to run the 4,001-point baseline, the targeted four-case
+tolerance/output-grid probe and the refined 256,001-point scan. Until
+the new-head CI passes and the artifact is inspected, these are
+implementation claims only. The old PR #11 high-resolution artifact
+used sampled cycle diagnostics and is not evidence for the dense
+estimator. Gate 4 remains PARTIAL.

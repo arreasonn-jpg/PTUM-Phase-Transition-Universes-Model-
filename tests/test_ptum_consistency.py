@@ -3,7 +3,16 @@ import json
 
 import numpy as np
 import pytest
+from scipy.integrate import solve_ivp
 
+from ptum_full_grid_convergence import (
+    EXPECTED_ROWS as FULL_GRID_EXPECTED_ROWS,
+    N_POINTS as FULL_GRID_N_POINTS,
+    RTOL as FULL_GRID_RTOL,
+    ATOL as FULL_GRID_ATOL,
+    MAX_RHS_EVALUATIONS as FULL_GRID_MAX_RHS,
+    json_safe as full_grid_json_safe,
+)
 from ptum_scan_convergence import (
     CASES as CONVERGENCE_CASES,
     OUTPUT_GRIDS,
@@ -49,6 +58,7 @@ from ptum_task1_simulation import (
     create_initial_conditions,
     run_simulation,
     compute_time_averaged_w,
+    compute_dense_cycle_diagnostics,
     classify_outcome,
     run_parameter_scan,
     save_results,
@@ -1886,6 +1896,496 @@ def test_targeted_convergence_acceptance_limits_are_explicit_and_provisional():
     }
 
 
+
+def test_full_grid_convergence_profile_matches_declared_100_row_dop853_grid():
+    assert FULL_GRID_EXPECTED_ROWS == 100
+    assert FULL_GRID_N_POINTS == 256001
+    assert FULL_GRID_RTOL == 1.0e-9
+    assert FULL_GRID_ATOL == 1.0e-12
+    assert FULL_GRID_MAX_RHS == 1_000_000
+
+
+
+def test_full_grid_json_sanitizer_replaces_nonfinite_values_with_null():
+    sanitized = full_grid_json_safe({
+        "nan": float("nan"),
+        "positive_inf": float("inf"),
+        "negative_inf": float("-inf"),
+        "nested": [1.0, float("nan")],
+    })
+    assert sanitized == {
+        "nan": None,
+        "positive_inf": None,
+        "negative_inf": None,
+        "nested": [1.0, None],
+    }
+
+
+
+def test_dense_cycle_integrals_are_invariant_to_output_sampling_density():
+    from ptum_task1_simulation import PTUMParameters
+
+    params = PTUMParameters(lambda_psi=0.1)
+    amplitude = 0.2 * params.psi_0
+    phi_value = 0.99 * params.Phi_c
+
+    # Analytic harmonic trajectory used as a continuous dense-output oracle.
+    # The same interpolant is sampled on two very different output grids.
+    def dense_state(tau):
+        return np.asarray([
+            phi_value,
+            0.0,
+            amplitude * np.cos(tau),
+            -amplitude * np.sin(tau),
+        ])
+
+    # Mimic OdeSolution.ts: the adaptive solver mesh is held fixed while
+    # t_eval/output sampling changes by a factor of forty.
+    dense_state.ts = np.linspace(0.0, 4.0 * np.pi, 4001)
+    scales = np.ones(4)
+    coarse_tau = np.linspace(0.0, 4.0 * np.pi, 101)
+    fine_tau = np.linspace(0.0, 4.0 * np.pi, 4001)
+    coarse = compute_dense_cycle_diagnostics(
+        dense_state, coarse_tau, 1.0, scales, params, len(coarse_tau)
+    )
+    fine = compute_dense_cycle_diagnostics(
+        dense_state, fine_tau, 1.0, scales, params, len(fine_tau)
+    )
+
+    expected_q = (
+        3.0 * params.lambda_psi * amplitude**2
+        / (4.0 * abs(meff_sq_psi(phi_value, params)))
+    )
+    expected_virial = 4.0 / (
+        3.0 * params.lambda_psi * amplitude**2
+    )
+    np.testing.assert_allclose(
+        coarse["Q"][np.isfinite(coarse["Q"])],
+        expected_q, rtol=2.0e-8, atol=0.0,
+    )
+    np.testing.assert_allclose(
+        fine["Q"][np.isfinite(fine["Q"])],
+        expected_q, rtol=2.0e-8, atol=0.0,
+    )
+    np.testing.assert_allclose(
+        coarse["virial_ratio"][np.isfinite(coarse["virial_ratio"])],
+        expected_virial, rtol=2.0e-8, atol=0.0,
+    )
+    np.testing.assert_allclose(
+        fine["virial_ratio"][np.isfinite(fine["virial_ratio"])],
+        expected_virial, rtol=2.0e-8, atol=0.0,
+    )
+    assert len(coarse["w_avg"]) == len(fine["w_avg"]) == 4
+    assert len(coarse["Q_cycle"]) == len(coarse["virial_ratio_cycle"]) == 4
+    assert len(coarse["H_avg_cycle"]) == 4
+    assert np.all(np.isfinite(coarse["H_avg_cycle"]))
+    assert np.all(coarse["H_avg_cycle"] > 0.0)
+    assert coarse["turning_times"] == pytest.approx(
+        fine["turning_times"], abs=2.0e-10
+    )
+    assert coarse["max_relative_quadrature_error"] < 1.0e-8
+    assert fine["max_relative_quadrature_error"] < 1.0e-8
+
+
+
+def test_dense_cycle_integrals_preserve_physical_units_when_mu_is_not_one():
+    from ptum_task1_simulation import PTUMParameters
+
+    params = PTUMParameters(lambda_psi=0.1)
+    amplitude = 0.2 * params.psi_0
+    phi_value = 0.99 * params.Phi_c
+    mu = 2.5
+
+    # The dense ODE solution is parameterized by tau=mu*t, while psi_dot
+    # remains a physical-time derivative. This catches accidental mixing
+    # of tau derivatives with physical velocities in cycle energies.
+    def dense_state(tau):
+        return np.asarray([
+            phi_value,
+            0.0,
+            amplitude * np.cos(tau),
+            -mu * amplitude * np.sin(tau),
+        ])
+
+    dense_state.ts = np.linspace(0.0, 4.0 * np.pi, 4001)
+    tau = np.linspace(0.0, 4.0 * np.pi, 101)
+    result = compute_dense_cycle_diagnostics(
+        dense_state, tau, mu, np.ones(4), params, len(tau)
+    )
+
+    expected_q = (
+        3.0 * params.lambda_psi * amplitude**2
+        / (4.0 * abs(meff_sq_psi(phi_value, params)))
+    )
+    expected_virial = (
+        4.0 * mu**2 / (3.0 * params.lambda_psi * amplitude**2)
+    )
+    np.testing.assert_allclose(
+        result["Q_cycle"], expected_q, rtol=2.0e-8, atol=0.0
+    )
+    np.testing.assert_allclose(
+        result["virial_ratio_cycle"], expected_virial,
+        rtol=2.0e-8, atol=0.0,
+    )
+    np.testing.assert_allclose(
+        result["turning_times"],
+        np.arange(5, dtype=float) * np.pi / mu,
+        rtol=0.0, atol=2.0e-10,
+    )
+    assert result["root_refinement_converged"]
+
+def test_dense_cycle_root_bracketing_resolves_multiple_turns_per_solver_step():
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 1.0, 101)
+    scales = np.ones(4)
+
+    # Ten simple roots of psi_dot lie inside one deliberately coarse
+    # accepted-step interval. Endpoint and midpoint-only bracketing misses
+    # most of them, while dense interval subdivision resolves each root.
+    frequency = 10.0 * np.pi
+
+    def rapidly_oscillating_state(time):
+        return np.asarray([
+            0.99 * params.Phi_c,
+            0.0,
+            np.sin(frequency * time) / frequency,
+            np.cos(frequency * time),
+        ])
+
+    rapidly_oscillating_state.ts = np.asarray([0.0, 1.0])
+    result = compute_dense_cycle_diagnostics(
+        rapidly_oscillating_state,
+        tau,
+        1.0,
+        scales,
+        params,
+        len(tau),
+    )
+    expected_roots = (np.arange(10, dtype=float) + 0.5) / 10.0
+    assert result["turning_times"] == pytest.approx(
+        expected_roots, abs=2.0e-10
+    )
+
+
+
+def test_dense_cycle_root_bracketing_refines_until_root_count_stabilizes():
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 1.0, 101)
+    scales = np.ones(4)
+    frequency = 40.0 * np.pi
+
+    def high_frequency_state(time):
+        return np.asarray([
+            0.99 * params.Phi_c,
+            0.0,
+            np.sin(frequency * time) / frequency,
+            np.cos(frequency * time),
+        ])
+
+    # One coarse accepted interval hides many roots at low subdivision
+    # counts. The diagnostic must refine until root count and locations agree.
+    high_frequency_state.ts = np.asarray([0.0, 1.0])
+    result = compute_dense_cycle_diagnostics(
+        high_frequency_state, tau, 1.0, scales, params, len(tau)
+    )
+    expected_roots = (np.arange(40, dtype=float) + 0.5) / 40.0
+    assert result["turning_times"] == pytest.approx(
+        expected_roots, abs=2.0e-10
+    )
+    assert result["root_refinement_converged"] is True
+    assert result["root_bracketing_subdivisions"] in (32, 64, 128)
+
+
+def test_dense_cycle_integrals_are_invariant_to_adaptive_solver_mesh_partition():
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 1.0, 101)
+    scales = np.ones(4)
+    frequency = 10.0 * np.pi
+    phi_value = 0.99 * params.Phi_c
+    amplitude = 0.2 * params.psi_0
+
+    def make_dense_state(mesh):
+        def dense_state(time):
+            return np.asarray([
+                phi_value,
+                0.0,
+                amplitude * np.sin(frequency * time),
+                amplitude * frequency * np.cos(frequency * time),
+            ])
+        dense_state.ts = np.asarray(mesh, dtype=float)
+        return dense_state
+
+    coarse_mesh_state = make_dense_state([0.0, 1.0])
+    irregular_mesh_state = make_dense_state(
+        [0.0, 0.07, 0.19, 0.31, 0.58, 0.73, 0.91, 1.0]
+    )
+    coarse = compute_dense_cycle_diagnostics(
+        coarse_mesh_state, tau, 1.0, scales, params, len(tau)
+    )
+    irregular = compute_dense_cycle_diagnostics(
+        irregular_mesh_state, tau, 1.0, scales, params, len(tau)
+    )
+
+    assert coarse["root_refinement_converged"]
+    assert irregular["root_refinement_converged"]
+    np.testing.assert_allclose(
+        coarse["turning_times"], irregular["turning_times"],
+        rtol=0.0, atol=2.0e-10,
+    )
+    np.testing.assert_allclose(
+        coarse["Q_cycle"], irregular["Q_cycle"],
+        rtol=2.0e-9, atol=0.0,
+    )
+    np.testing.assert_allclose(
+        coarse["virial_ratio_cycle"], irregular["virial_ratio_cycle"],
+        rtol=2.0e-9, atol=0.0,
+    )
+    np.testing.assert_allclose(
+        coarse["w_avg"], irregular["w_avg"],
+        rtol=2.0e-9, atol=2.0e-12,
+    )
+    np.testing.assert_allclose(
+        coarse["H_avg_cycle"], irregular["H_avg_cycle"],
+        rtol=2.0e-9, atol=0.0,
+    )
+
+
+
+def test_dense_cycle_diagnostics_are_stable_across_real_dop853_step_sizes():
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 1.0, 501)
+    scales = np.ones(4)
+    omega = 10.0 * np.pi
+    initial = np.asarray([
+        0.99 * params.Phi_c,
+        0.0,
+        0.2 * params.psi_0,
+        0.0,
+    ])
+
+    def rhs(_time, state):
+        return np.asarray([
+            state[1],
+            0.0,
+            state[3],
+            -(omega**2) * state[2],
+        ])
+
+    solutions = [
+        solve_ivp(
+            rhs, (0.0, 1.0), initial, method="DOP853",
+            rtol=rtol, atol=atol, max_step=max_step,
+            dense_output=True,
+        )
+        for rtol, atol, max_step in (
+            (1.0e-8, 1.0e-11, 0.08),
+            (1.0e-11, 1.0e-14, 0.025),
+        )
+    ]
+    assert all(solution.success for solution in solutions)
+    assert all(solution.sol is not None for solution in solutions)
+
+    diagnostics = [
+        compute_dense_cycle_diagnostics(
+            solution.sol, tau, 1.0, scales, params, len(tau)
+        )
+        for solution in solutions
+    ]
+    coarse, fine = diagnostics
+    assert coarse["root_refinement_converged"]
+    assert fine["root_refinement_converged"]
+    np.testing.assert_allclose(
+        coarse["turning_times"], fine["turning_times"],
+        rtol=0.0, atol=2.0e-6,
+    )
+    np.testing.assert_allclose(
+        coarse["Q_cycle"], fine["Q_cycle"],
+        rtol=2.0e-5, atol=2.0e-10,
+    )
+    np.testing.assert_allclose(
+        coarse["virial_ratio_cycle"], fine["virial_ratio_cycle"],
+        rtol=2.0e-5, atol=2.0e-10,
+    )
+    np.testing.assert_allclose(
+        coarse["w_avg"], fine["w_avg"],
+        rtol=2.0e-5, atol=2.0e-10,
+    )
+    np.testing.assert_allclose(
+        coarse["H_avg_cycle"], fine["H_avg_cycle"],
+        rtol=2.0e-5, atol=2.0e-10,
+    )
+
+
+
+@pytest.mark.parametrize("bad_time", [np.nan, np.inf, -np.inf])
+def test_dense_cycle_diagnostics_reject_nonfinite_output_times(bad_time):
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 1.0, 11)
+    tau[5] = bad_time
+    with pytest.raises(ValueError, match="invalid dense-cycle diagnostic inputs"):
+        compute_dense_cycle_diagnostics(
+            lambda _time: np.zeros(4), tau, 1.0, np.ones(4), params, len(tau)
+        )
+
+
+@pytest.mark.parametrize(
+    "bad_state",
+    [
+        np.zeros(3),
+        np.asarray([0.0, 0.0, 0.0, np.nan]),
+        np.asarray([0.0, 0.0, 0.0, np.inf]),
+    ],
+)
+def test_dense_cycle_diagnostics_reject_malformed_or_nonfinite_dense_states(
+    bad_state,
+):
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 1.0, 11)
+    with pytest.raises(
+        ValueError, match="dense solution must return four finite state components"
+    ):
+        compute_dense_cycle_diagnostics(
+            lambda _time: bad_state, tau, 1.0, np.ones(4), params, len(tau)
+        )
+
+
+
+def test_dense_cycle_diagnostics_are_independent_of_output_sampling_density():
+    params = PTUMParameters()
+    scales = np.ones(4)
+    omega = 10.0 * np.pi
+    initial = np.asarray([
+        0.99 * params.Phi_c,
+        0.0,
+        0.2 * params.psi_0,
+        0.0,
+    ])
+
+    def rhs(_time, state):
+        return np.asarray([
+            state[1],
+            0.0,
+            state[3],
+            -(omega**2) * state[2],
+        ])
+
+    solution = solve_ivp(
+        rhs, (0.0, 1.0), initial, method="DOP853",
+        rtol=1.0e-11, atol=1.0e-14, max_step=0.025,
+        dense_output=True,
+    )
+    assert solution.success
+    assert solution.sol is not None
+
+    outputs = [
+        np.linspace(0.0, 1.0, count)
+        for count in (31, 501, 4001)
+    ]
+    diagnostics = [
+        compute_dense_cycle_diagnostics(
+            solution.sol, output_times, 1.0, scales, params, len(output_times)
+        )
+        for output_times in outputs
+    ]
+    reference = diagnostics[0]
+    for result in diagnostics[1:]:
+        np.testing.assert_array_equal(
+            result["turning_times"], reference["turning_times"]
+        )
+        np.testing.assert_array_equal(result["Q_cycle"], reference["Q_cycle"])
+        np.testing.assert_array_equal(
+            result["virial_ratio_cycle"], reference["virial_ratio_cycle"]
+        )
+        np.testing.assert_array_equal(result["w_avg"], reference["w_avg"])
+        np.testing.assert_array_equal(
+            result["H_avg_cycle"], reference["H_avg_cycle"]
+        )
+
+
+def test_dense_cycle_diagnostics_reject_stationary_zero_solution():
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 20.0, 1001)
+    scales = np.ones(4)
+
+    def stationary_state(_tau):
+        return np.zeros(4, dtype=float)
+
+    result = compute_dense_cycle_diagnostics(
+        stationary_state, tau, 1.0, scales, params, len(tau)
+    )
+    assert result["turning_times"] == []
+    assert len(result["w_avg"]) == 0
+    assert len(result["t_avg"]) == 0
+    assert not np.any(np.isfinite(result["Q"]))
+    assert not np.any(np.isfinite(result["virial_ratio"]))
+
+
+def test_dense_cycle_diagnostics_do_not_count_monotonic_motion_as_cycles():
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 20.0, 1001)
+    scales = np.ones(4)
+
+    def monotonic_state(time):
+        return np.asarray([0.99 * params.Phi_c, 0.0, time, 1.0])
+
+    result = compute_dense_cycle_diagnostics(
+        monotonic_state, tau, 1.0, scales, params, len(tau)
+    )
+    assert result["turning_times"] == []
+    assert len(result["w_avg"]) == 0
+    assert len(result["t_avg"]) == 0
+
+
+
+def test_late_time_adiabaticity_uses_dense_cycle_boundaries_and_hubble_means():
+    from ptum_task1_simulation import _late_time_adiabaticity_diagnostic
+
+    # Deliberately nonuniform output times: the final 20% in physical
+    # elapsed time starts at t=8. The first late cycle straddles t=8 but
+    # has its midpoint at t=8, matching the classifier's midpoint rule.
+    # Dense-cycle diagnostics must not depend on sampled H or psi_dot arrays.
+    result = {
+        "t": np.asarray([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 9.0, 9.5, 10.0]),
+        "H": np.asarray([0.5]),
+        "psi_dot": np.asarray([0.0]),
+        "cycle_turning_times": [1.0, 2.0, 3.0, 4.0, 7.5, 8.5, 9.0, 9.5, 10.0],
+        "H_avg_cycle": [0.5, 0.5, 0.5, 0.5, 0.01, 0.01, 0.01, 0.01],
+    }
+    diagnostic = _late_time_adiabaticity_diagnostic(result)
+    expected = 0.01 / (np.pi / 0.5)
+    assert diagnostic["n_late_half_cycles"] == 4
+    assert diagnostic["H_over_omega_max"] == pytest.approx(expected)
+    assert diagnostic["adiabaticity_valid"]
+
+
+
+def test_classifier_uses_elapsed_physical_time_for_dense_cycle_tail():
+    from ptum_task1_simulation import classify_outcome
+
+    times = np.asarray([
+        0.0, 0.1, 0.2, 0.3, 0.4, 0.5,
+        0.6, 0.7, 0.8, 9.0, 9.5, 10.0,
+    ])
+    cycle_midpoints = np.asarray([1.5, 2.5, 3.5, 6.0, 8.25, 8.75, 9.25, 9.75])
+    result = {
+        "success": True,
+        "t": times,
+        "w_psi_avg": np.full(8, 1.0 / 3.0),
+        "t_avg": cycle_midpoints,
+        # The early-time cycles look quartic, but the final 20% in elapsed
+        # physical time is deliberately non-quartic.
+        "Q_cycle": np.asarray([4.0, 4.0, 4.0, 4.0, 0.2, 0.2, 0.2, 0.2]),
+        "virial_ratio_cycle": np.ones(8),
+        "quadratic_virial_ratio": np.ones(len(times)),
+        "cycle_turning_times": [1.0, 2.0, 3.0, 4.0, 8.0, 8.5, 9.0, 9.5, 10.0],
+        "H_avg_cycle": np.full(8, 0.01),
+    }
+    classification = classify_outcome(result, PTUMParameters())
+    assert classification["Q_final"] == pytest.approx(0.2)
+    assert classification["regime"] == "non_quartic"
+    assert not classification["quartic_achieved"]
+
+
 def test_full_reheating_scalar_and_higgs_eom_sources_are_explicit_in_manuscript():
     from pathlib import Path
 
@@ -1895,7 +2395,6 @@ def test_full_reheating_scalar_and_higgs_eom_sources_are_explicit_in_manuscript(
     assert "g_{\\psi H}\\psi H^\\dagger H" in source
     assert "mathcal O_{\\rm SM}" in source
     assert "do not imply that the present homogeneous code evolves the Higgs or fermion fields" in source
-
 
 
 def test_pr2_full_scan_opt_in_runs_targeted_convergence_job():
@@ -1914,3 +2413,23 @@ def test_pr2_full_scan_opt_in_runs_targeted_convergence_job():
     ) in normalized
     assert "contains(github.event.pull_request.title, '[FULL-SCAN]')" in normalized
     assert "ptum/convergence-" in normalized
+
+
+
+def test_pr2_full_scan_opt_in_runs_full_grid_convergence_job():
+    from pathlib import Path
+
+    workflow = Path(".github/workflows/ptum-scientific-tests.yml").read_text(
+        encoding="utf-8"
+    )
+    full_grid_job = workflow.split(
+        "  scan-full-grid-convergence:", 1
+    )[1].split("  latex-build:", 1)[0]
+    normalized = " ".join(full_grid_job.split())
+    assert (
+        "github.event.pull_request.head.ref == "
+        "'ptum/scientific-consistency-fixes-2026-11-13'"
+    ) in normalized
+    assert "contains(github.event.pull_request.title, '[FULL-SCAN]')" in normalized
+    assert "python ptum_full_grid_convergence.py" in normalized
+    assert "256001" in normalized

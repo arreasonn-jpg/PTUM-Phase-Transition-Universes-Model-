@@ -34,7 +34,8 @@ Diagnostics:
 """
 
 import numpy as np
-from scipy.integrate import solve_ivp
+from scipy.integrate import solve_ivp, quad_vec
+from scipy.optimize import brentq
 from dataclasses import dataclass
 from typing import Optional, Tuple, List, Dict, Callable
 import json
@@ -573,20 +574,27 @@ def run_simulation(params: PTUMParameters,
     )
     w_psi_arr = np.array([w_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
     
-    # Quartic diagnostics are evaluated over complete half-cycles.
-    # NaN denotes that no valid oscillation interval was available.
+    # Retain the sampled estimators as independent diagnostics, but use
+    # adaptive quadrature on the solver's dense interpolant for the reported
+    # complete-cycle averages. This removes output-grid endpoint bias.
     U_psi = 0.25 * params.lambda_psi * psi**4
-    virial_ratio = compute_quartic_virial_ratio(t, psi, psi_dot, params)
+    virial_ratio_sampled = compute_quartic_virial_ratio(
+        t, psi, psi_dot, params
+    )
+    Q_sampled = compute_quartic_dominance(t, psi, psi_dot, params, Phi)
+    w_avg_sampled, t_avg_sampled = compute_time_averaged_w(
+        t, p_psi_exc_arr, rho_psi_exc_arr, psi_dot
+    )
     quadratic_virial_ratio = compute_quadratic_virial_ratio(
         t, psi, psi_dot, Phi, params
     )
-    Q_arr = compute_quartic_dominance(t, psi, psi_dot, params, Phi)
-    
-    # Average the excitation-sector equation of state, not the raw
-    # potential density whose moving minimum can be negative.
-    w_avg, t_avg = compute_time_averaged_w(
-        t, p_psi_exc_arr, rho_psi_exc_arr, psi_dot
+    dense_cycle = compute_dense_cycle_diagnostics(
+        sol.sol, t * mu, mu, state_scales, params, len(t)
     )
+    Q_arr = dense_cycle["Q"]
+    virial_ratio = dense_cycle["virial_ratio"]
+    w_avg = dense_cycle["w_avg"]
+    t_avg = dense_cycle["t_avg"]
     w_avg_raw, t_avg_raw = compute_time_averaged_w(
         t, p_psi_arr, rho_psi_arr, psi_dot
     )
@@ -641,6 +649,20 @@ def run_simulation(params: PTUMParameters,
         'w_psi_exc': w_psi_exc_arr,
         'w_psi_avg': w_avg,
         'w_psi_avg_raw': w_avg_raw,
+        'Q_sampled': Q_sampled,
+        'virial_ratio_sampled': virial_ratio_sampled,
+        'w_psi_avg_sampled': w_avg_sampled,
+        't_avg_sampled': t_avg_sampled,
+        'cycle_quadrature_relative_error_max': dense_cycle["max_relative_quadrature_error"],
+        'cycle_quadrature_normalized_absolute_error_max': dense_cycle[
+            "max_normalized_absolute_quadrature_error"
+        ],
+        'cycle_turning_times': dense_cycle["turning_times"],
+        'cycle_root_refinement_converged': dense_cycle["root_refinement_converged"],
+        'cycle_root_bracketing_subdivisions': dense_cycle["root_bracketing_subdivisions"],
+        'Q_cycle': dense_cycle["Q_cycle"],
+        'virial_ratio_cycle': dense_cycle["virial_ratio_cycle"],
+        'H_avg_cycle': dense_cycle["H_avg_cycle"],
         't_avg': t_avg,
         't_avg_raw': t_avg_raw,
         'U_psi': U_psi,
@@ -717,6 +739,271 @@ def compute_quadratic_virial_ratio(t: np.ndarray, psi: np.ndarray,
         if quadratic_potential_avg > 0.0:
             ratio[start:end] = kinetic_avg / quadratic_potential_avg
     return ratio
+
+
+def compute_dense_cycle_diagnostics(
+    dense_solution: Callable[[float], np.ndarray],
+    tau_samples: np.ndarray,
+    mu: float,
+    state_scales: np.ndarray,
+    params: PTUMParameters,
+    n_output: int,
+) -> Dict[str, np.ndarray | float | list]:
+    """Compute half-cycle ratios by adaptive quadrature of the ODE dense output.
+
+    Turning points are roots of psi_dot in the continuous DOP853 interpolant.
+    The integrated quantities are lambda*psi^4, |m_eff^2|*psi^2,
+    kinetic energy, 2*V4, excitation pressure, excitation density, and H.
+    The returned ratios and cycle-mean H therefore do not depend on
+    rectangular output-grid means. The accepted solver mesh brackets roots;
+    tau_samples only clips the requested interval and maps diagnostics onto
+    the legacy time-series representation.
+    """
+    tau_samples = np.asarray(tau_samples, dtype=float)
+    scales = np.asarray(state_scales, dtype=float)
+    if (tau_samples.ndim != 1 or len(tau_samples) < 3
+            or not np.all(np.isfinite(tau_samples))
+            or np.any(np.diff(tau_samples) <= 0.0)
+            or scales.shape != (4,) or not np.all(np.isfinite(scales))
+            or not np.isfinite(mu) or mu <= 0.0
+            or n_output != len(tau_samples)):
+        raise ValueError("invalid dense-cycle diagnostic inputs")
+
+    def physical_state(tau):
+        state = np.asarray(dense_solution(float(tau)), dtype=float)
+        if state.shape != (4,) or not np.all(np.isfinite(state)):
+            raise ValueError(
+                "dense solution must return four finite state components"
+            )
+        return state * scales
+
+    # Prefer the adaptive solver's accepted dense-output mesh for root
+    # bracketing. It is independent of the user-selected t_eval/output grid.
+    # Midpoints provide an additional guard against multiple crossings inside
+    # one accepted step. Analytic test callables without an OdeSolution mesh
+    # fall back to tau_samples.
+    solver_mesh = getattr(dense_solution, "ts", None)
+    if solver_mesh is not None:
+        solver_mesh = np.asarray(solver_mesh, dtype=float)
+        if (solver_mesh.ndim != 1 or len(solver_mesh) < 2
+                or not np.all(np.isfinite(solver_mesh))
+                or np.any(np.diff(solver_mesh) <= 0.0)):
+            raise ValueError("dense solver mesh must be finite and increasing")
+        if (solver_mesh[0] > tau_samples[0]
+                or solver_mesh[-1] < tau_samples[-1]):
+            raise ValueError("dense solver mesh does not cover output interval")
+
+    def locate_turning_points(subdivisions):
+        if solver_mesh is None:
+            base_mesh = tau_samples
+        else:
+            base_mesh = solver_mesh[
+                (solver_mesh >= tau_samples[0])
+                & (solver_mesh <= tau_samples[-1])
+            ]
+            # Include requested interval endpoints when the solver mesh
+            # extends beyond the diagnostic window.
+            base_mesh = np.unique(np.concatenate((
+                [tau_samples[0]], base_mesh, [tau_samples[-1]]
+            )))
+        fractions = np.linspace(0.0, 1.0, subdivisions + 1)
+        sample_times = np.unique(np.concatenate([
+            start + fractions * (end - start)
+            for start, end in zip(base_mesh[:-1], base_mesh[1:])
+        ]))
+        sampled_psi_dot = np.asarray([
+            physical_state(tau)[3] for tau in sample_times
+        ])
+        roots = []
+
+        # A turning point requires an isolated zero/sign reversal of psi_dot.
+        # Ignore zero plateaus and non-finite gaps rather than invent cycles.
+        finite_nonzero = np.flatnonzero(
+            np.isfinite(sampled_psi_dot) & (sampled_psi_dot != 0.0)
+        )
+        if (len(finite_nonzero) and finite_nonzero[0] == 1
+                and sampled_psi_dot[0] == 0.0):
+            roots.append(float(sample_times[0]))
+
+        for left_index, right_index in zip(
+            finite_nonzero[:-1], finite_nonzero[1:]
+        ):
+            if right_index - left_index > 2:
+                continue
+            left_value = sampled_psi_dot[left_index]
+            right_value = sampled_psi_dot[right_index]
+            if np.signbit(left_value) == np.signbit(right_value):
+                continue
+            root = float(brentq(
+                lambda tau: physical_state(tau)[3],
+                sample_times[left_index], sample_times[right_index],
+                xtol=4.0 * np.finfo(float).eps,
+                rtol=8.0 * np.finfo(float).eps,
+            ))
+            if not roots or root - roots[-1] > (
+                32.0 * np.finfo(float).eps * max(1.0, abs(root))
+            ):
+                roots.append(root)
+
+        if (len(finite_nonzero)
+                and finite_nonzero[-1] == len(sample_times) - 2
+                and sampled_psi_dot[-1] == 0.0):
+            endpoint = float(sample_times[-1])
+            if not roots or endpoint - roots[-1] > (
+                32.0 * np.finfo(float).eps * max(1.0, abs(endpoint))
+            ):
+                roots.append(endpoint)
+        return np.asarray(roots, dtype=float)
+
+    # Increase the bracketing density until two successive refinements agree
+    # in both root count and root locations. This is a numerical stability
+    # check, not a proof that an arbitrary interpolant has no unresolved roots.
+    roots = locate_turning_points(16)
+    root_refinement_converged = False
+    root_bracketing_subdivisions = 16
+    for subdivisions in (32, 64, 128):
+        roots_refined = locate_turning_points(subdivisions)
+        same_count = len(roots_refined) == len(roots)
+        same_locations = (
+            same_count and np.allclose(
+                roots_refined, roots, rtol=1.0e-10, atol=1.0e-12
+            )
+        )
+        if same_locations:
+            root_refinement_converged = True
+            roots = roots_refined
+            root_bracketing_subdivisions = subdivisions
+            break
+        roots = roots_refined
+        root_bracketing_subdivisions = subdivisions
+    if not root_refinement_converged:
+        raise ValueError(
+            "dense turning-point roots did not converge under "
+            "bracketing refinement through 128 subdivisions"
+        )
+
+    q_values = np.full(n_output, np.nan, dtype=float)
+    virial_values = np.full(n_output, np.nan, dtype=float)
+    w_values = []
+    t_values = []
+    q_cycle_values = []
+    virial_cycle_values = []
+    h_cycle_values = []
+    relative_errors = []
+    normalized_absolute_errors = []
+
+    psi_scale = float(params.psi_0)
+    quartic_scale = max(
+        params.lambda_psi * psi_scale**4, np.finfo(float).tiny
+    )
+    quadratic_scale = max(
+        params.m_psi**2 * psi_scale**2, np.finfo(float).tiny
+    )
+    kinetic_scale = max(
+        (mu * psi_scale)**2, np.finfo(float).tiny
+    )
+    energy_scale = max(
+        quartic_scale, quadratic_scale, kinetic_scale,
+        np.finfo(float).tiny,
+    )
+    # Normalize each component before vector quadrature. Without this,
+    # quad_vec's max norm would compare quantities with identical units but
+    # wildly different characteristic magnitudes, masking small components.
+    hubble_scale = max(float(params.H_star), np.finfo(float).tiny)
+    integral_scales = np.asarray([
+        quartic_scale, quadratic_scale, energy_scale,
+        quartic_scale, energy_scale, energy_scale, hubble_scale,
+    ])
+
+    def integrand(tau):
+        state = physical_state(tau)
+        phi_value, _, psi_value, psi_dot_value = state
+        mass_sq = float(meff_sq_psi(phi_value, params))
+        excitation_potential = float(
+            psi_excitation_potential(phi_value, psi_value, params)
+        )
+        quartic_potential = 0.25 * params.lambda_psi * psi_value**4
+        kinetic = 0.5 * psi_dot_value**2
+        excitation_density = kinetic + excitation_potential
+        excitation_pressure = kinetic - excitation_potential
+        physical_integrand = np.asarray([
+            params.lambda_psi * psi_value**4,
+            abs(mass_sq) * psi_value**2,
+            kinetic,
+            2.0 * quartic_potential,
+            excitation_pressure,
+            excitation_density,
+            hubble_rate(phi_value, state[1], psi_value, psi_dot_value, params),
+        ], dtype=float)
+        return physical_integrand / integral_scales
+
+    for start, end in zip(roots[:-1], roots[1:]):
+        if end <= start:
+            continue
+        normalized_integral, error = quad_vec(
+            integrand, start, end, epsabs=0.0, epsrel=1.0e-9,
+            norm="max", limit=200,
+        )
+        normalized_integral = np.asarray(normalized_integral, dtype=float)
+        integral = normalized_integral * integral_scales
+        # The first four normalized integrals are strictly non-negative
+        # cycle moments. Bound each relative error separately rather than
+        # dividing by the largest component (which could hide a weak moment).
+        positive_moments = np.abs(normalized_integral[:4])
+        relative_errors.append(float(
+            error / max(float(np.min(positive_moments)), np.finfo(float).tiny)
+        ))
+        normalized_absolute_errors.append(float(error))
+        lo = max(0, int(np.searchsorted(tau_samples, start, side="left")))
+        hi = min(n_output, int(np.searchsorted(tau_samples, end, side="right")))
+        q_cycle = (
+            float(integral[0] / integral[1])
+            if integral[1] > 0.0 and np.isfinite(integral[1])
+            else float("nan")
+        )
+        virial_cycle = (
+            float(integral[2] / integral[3])
+            if integral[3] > 0.0 and np.isfinite(integral[3])
+            else float("nan")
+        )
+        w_cycle = (
+            float(integral[4] / integral[5])
+            if integral[5] > np.finfo(float).tiny
+            and np.all(np.isfinite(integral[4:6]))
+            else float("nan")
+        )
+        # The quadrature variable is tau=mu*t, so divide the H integral
+        # by the tau interval to obtain the physical-time mean of H.
+        h_cycle = float(integral[6] / (end - start))
+        if np.isfinite(q_cycle):
+            q_values[lo:hi] = q_cycle
+        if np.isfinite(virial_cycle):
+            virial_values[lo:hi] = virial_cycle
+        q_cycle_values.append(q_cycle)
+        virial_cycle_values.append(virial_cycle)
+        w_values.append(w_cycle)
+        h_cycle_values.append(h_cycle)
+        t_values.append(float(0.5 * (start + end) / mu))
+
+    return {
+        "Q": q_values,
+        "virial_ratio": virial_values,
+        "w_avg": np.asarray(w_values, dtype=float),
+        "t_avg": np.asarray(t_values, dtype=float),
+        "Q_cycle": np.asarray(q_cycle_values, dtype=float),
+        "virial_ratio_cycle": np.asarray(virial_cycle_values, dtype=float),
+        "H_avg_cycle": np.asarray(h_cycle_values, dtype=float),
+        "turning_times": [float(value / mu) for value in roots],
+        "root_refinement_converged": bool(root_refinement_converged),
+        "root_bracketing_subdivisions": int(root_bracketing_subdivisions),
+        "max_relative_quadrature_error": (
+            max(relative_errors) if relative_errors else float("nan")
+        ),
+        "max_normalized_absolute_quadrature_error": (
+            max(normalized_absolute_errors)
+            if normalized_absolute_errors else float("nan")
+        ),
+    }
 
 
 def compute_time_averaged_w(t: np.ndarray, pressure: np.ndarray,
@@ -980,14 +1267,58 @@ def _late_time_adiabaticity_diagnostic(result: Dict,
         'n_late_half_cycles': 0,
         'adiabaticity_valid': False,
     }
-    if (t.ndim != 1 or H.shape != t.shape or psi_dot.shape != t.shape
-            or len(t) < 8 or not np.all(np.isfinite(t))
+    if (t.ndim != 1 or len(t) < 2 or not np.all(np.isfinite(t))
             or np.any(np.diff(t) <= 0.0)):
         return unavailable
     if not (0.0 < tail_fraction < 1.0) or min_half_cycles < 1:
         raise ValueError("tail_fraction must be in (0, 1) and min_half_cycles >= 1")
 
-    tail_start = t[int(np.floor((1.0 - tail_fraction) * (len(t) - 1)))]
+    # Define the tail by elapsed physical time, not by an index fraction.
+    # This remains invariant when callers choose a nonuniform t_eval grid.
+    tail_start = float(t[0] + (1.0 - tail_fraction) * (t[-1] - t[0]))
+
+    # Prefer the same dense-output half-cycle records used by the Q, virial,
+    # and w estimators. H was integrated over each interval, so H/omega is
+    # evaluated on identical physical cycle boundaries without re-detecting
+    # extrema on the user-selected output grid.
+    dense_turning = np.asarray(result.get('cycle_turning_times', []), dtype=float)
+    dense_hubble = np.asarray(result.get('H_avg_cycle', []), dtype=float)
+    if (dense_turning.ndim == 1 and dense_hubble.ndim == 1
+            and len(dense_turning) == len(dense_hubble) + 1
+            and len(dense_hubble) > 0
+            and np.all(np.isfinite(dense_turning))
+            and np.all(np.diff(dense_turning) > 0.0)
+            and np.all(np.isfinite(dense_hubble))):
+        dense_ratios = []
+        for index, (start, end) in enumerate(zip(
+            dense_turning[:-1], dense_turning[1:]
+        )):
+            midpoint = 0.5 * (start + end)
+            if midpoint < tail_start or end > t[-1] or end <= start:
+                continue
+            omega_half = np.pi / (end - start)
+            ratio = float(dense_hubble[index]) / omega_half
+            if np.isfinite(ratio):
+                dense_ratios.append(ratio)
+        if len(dense_ratios) < min_half_cycles:
+            return {
+                'H_over_omega_max': float('nan'),
+                'H_over_omega_values': dense_ratios,
+                'n_late_half_cycles': len(dense_ratios),
+                'adiabaticity_valid': False,
+            }
+        last_ratios = dense_ratios[-min_half_cycles:]
+        maximum = float(max(last_ratios))
+        return {
+            'H_over_omega_max': maximum,
+            'H_over_omega_values': last_ratios,
+            'n_late_half_cycles': len(dense_ratios),
+            'adiabaticity_valid': maximum < 0.1,
+        }
+
+    if (H.shape != t.shape or psi_dot.shape != t.shape or len(t) < 8):
+        return unavailable
+
     turning_times = []
     # A zero is a turning point only when the derivative changes sign
     # across it. This excludes tangential touches and unbracketed endpoints.
@@ -1055,24 +1386,47 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     if not result['success']:
         return {'regime': 'failed', 'quartic_achieved': False}
     
-    w_avg = result['w_psi_avg']
-    Q = result['Q']
-    virial = result['virial_ratio']
-    quadratic_virial = result.get('quadratic_virial_ratio', np.array([]))
+    w_avg = np.asarray(result['w_psi_avg'], dtype=float)
+    cycle_times = np.asarray(result.get('t_avg', []), dtype=float)
+    q_cycles = np.asarray(result.get('Q_cycle', []), dtype=float)
+    virial_cycles = np.asarray(result.get('virial_ratio_cycle', []), dtype=float)
+    quadratic_virial = np.asarray(result.get('quadratic_virial_ratio', []), dtype=float)
     adiabaticity = _late_time_adiabaticity_diagnostic(result)
 
-    # Classify the late-time regime, not the whole trajectory.
-    # Q and virial are sampled diagnostics; use the final 20% of the run.
-    tail_start_q = int(0.8 * len(Q))
-    tail_start_v = int(0.8 * len(virial))
-    q_tail = Q[tail_start_q:] if len(Q) else np.array([])
-    v_tail = virial[tail_start_v:] if len(virial) else np.array([])
-    qv_tail = quadratic_virial[tail_start_v:] if len(quadratic_virial) else np.array([])
-    q_valid = q_tail[np.isfinite(q_tail)]
-    v_valid = v_tail[np.isfinite(v_tail)]
+    # Apply one physical late-time window to all dense half-cycle estimators.
+    # A cycle belongs to the tail only if its midpoint lies in the final 20%.
+    time = np.asarray(result.get('t', []), dtype=float)
+    tail_start = (
+        float(time[0] + 0.8 * (time[-1] - time[0]))
+        if len(time) >= 2 and np.all(np.isfinite(time))
+        and np.all(np.diff(time) > 0.0) else float('inf')
+    )
+    if (cycle_times.ndim == 1 and q_cycles.shape == cycle_times.shape
+            and virial_cycles.shape == cycle_times.shape):
+        tail_mask = cycle_times >= tail_start
+        q_valid = q_cycles[tail_mask & np.isfinite(q_cycles)]
+        v_valid = virial_cycles[tail_mask & np.isfinite(virial_cycles)]
+        w_tail = w_avg[tail_mask & np.isfinite(w_avg)] if w_avg.shape == cycle_times.shape else np.array([])
+    else:
+        # Compatibility path for older serialized results lacking cycle arrays.
+        q_values = np.asarray(result.get('Q', []), dtype=float)
+        v_values = np.asarray(result.get('virial_ratio', []), dtype=float)
+        if time.ndim == 1 and len(time) == len(q_values) == len(v_values):
+            sample_tail = time >= tail_start
+            q_valid = q_values[sample_tail & np.isfinite(q_values)]
+            v_valid = v_values[sample_tail & np.isfinite(v_values)]
+        else:
+            q_valid = q_values[int(0.8 * len(q_values)):]
+            v_valid = v_values[int(0.8 * len(v_values)):]
+            q_valid = q_valid[np.isfinite(q_valid)]
+            v_valid = v_valid[np.isfinite(v_valid)]
+        w_tail = w_avg[-3:][np.isfinite(w_avg[-3:])]
+    if time.ndim == 1 and len(time) == len(quadratic_virial):
+        qv_tail = quadratic_virial[(time >= tail_start)]
+    else:
+        qv_tail = quadratic_virial[int(0.8 * len(quadratic_virial)):]
     qv_valid = qv_tail[np.isfinite(qv_tail)]
-    w_final = float(np.mean(w_avg[-3:])) if len(w_avg) >= 3 else (
-        float(w_avg[-1]) if len(w_avg) else float("nan"))
+    w_final = float(np.mean(w_tail)) if len(w_tail) else float("nan")
     Q_final = float(np.mean(q_valid)) if len(q_valid) else float("nan")
     virial_final = float(np.mean(v_valid)) if len(v_valid) else float("nan")
     quadratic_virial_final = float(np.mean(qv_valid)) if len(qv_valid) else float("nan")
@@ -1130,7 +1484,13 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
         'H_over_omega_values': adiabaticity['H_over_omega_values'],
         'n_late_half_cycles': int(adiabaticity['n_late_half_cycles']),
         'adiabaticity_valid': bool(adiabaticity['adiabaticity_valid']),
-        'n_oscillations': len(w_avg)
+        'n_oscillations': len(w_avg),
+        'cycle_quadrature_relative_error_max': result.get(
+            'cycle_quadrature_relative_error_max', float('nan')
+        ),
+        'cycle_quadrature_normalized_absolute_error_max': result.get(
+            'cycle_quadrature_normalized_absolute_error_max', float('nan')
+        ),
     }
 
 
