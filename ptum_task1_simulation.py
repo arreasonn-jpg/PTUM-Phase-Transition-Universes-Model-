@@ -762,13 +762,20 @@ def compute_dense_cycle_diagnostics(
     tau_samples = np.asarray(tau_samples, dtype=float)
     scales = np.asarray(state_scales, dtype=float)
     if (tau_samples.ndim != 1 or len(tau_samples) < 3
+            or not np.all(np.isfinite(tau_samples))
             or np.any(np.diff(tau_samples) <= 0.0)
             or scales.shape != (4,) or not np.all(np.isfinite(scales))
-            or mu <= 0.0 or n_output != len(tau_samples)):
+            or not np.isfinite(mu) or mu <= 0.0
+            or n_output != len(tau_samples)):
         raise ValueError("invalid dense-cycle diagnostic inputs")
 
     def physical_state(tau):
-        return np.asarray(dense_solution(float(tau)), dtype=float) * scales
+        state = np.asarray(dense_solution(float(tau)), dtype=float)
+        if state.shape != (4,) or not np.all(np.isfinite(state)):
+            raise ValueError(
+                "dense solution must return four finite state components"
+            )
+        return state * scales
 
     # Prefer the adaptive solver's accepted dense-output mesh for root
     # bracketing. It is independent of the user-selected t_eval/output grid.
