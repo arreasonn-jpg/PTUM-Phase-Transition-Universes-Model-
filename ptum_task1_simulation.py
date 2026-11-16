@@ -1219,14 +1219,15 @@ def _late_time_adiabaticity_diagnostic(result: Dict,
         'n_late_half_cycles': 0,
         'adiabaticity_valid': False,
     }
-    if (t.ndim != 1 or H.shape != t.shape or psi_dot.shape != t.shape
-            or len(t) < 8 or not np.all(np.isfinite(t))
+    if (t.ndim != 1 or len(t) < 2 or not np.all(np.isfinite(t))
             or np.any(np.diff(t) <= 0.0)):
         return unavailable
     if not (0.0 < tail_fraction < 1.0) or min_half_cycles < 1:
         raise ValueError("tail_fraction must be in (0, 1) and min_half_cycles >= 1")
 
-    tail_start = t[int(np.floor((1.0 - tail_fraction) * (len(t) - 1)))]
+    # Define the tail by elapsed physical time, not by an index fraction.
+    # This remains invariant when callers choose a nonuniform t_eval grid.
+    tail_start = float(t[0] + (1.0 - tail_fraction) * (t[-1] - t[0]))
 
     # Prefer the same dense-output half-cycle records used by the Q, virial,
     # and w estimators. H was integrated over each interval, so H/omega is
@@ -1265,6 +1266,9 @@ def _late_time_adiabaticity_diagnostic(result: Dict,
             'n_late_half_cycles': len(dense_ratios),
             'adiabaticity_valid': maximum < 0.1,
         }
+
+    if (H.shape != t.shape or psi_dot.shape != t.shape or len(t) < 8):
+        return unavailable
 
     turning_times = []
     # A zero is a turning point only when the derivative changes sign
@@ -1344,8 +1348,9 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     # A cycle belongs to the tail only if its midpoint lies in the final 20%.
     time = np.asarray(result.get('t', []), dtype=float)
     tail_start = (
-        float(time[int(0.8 * (len(time) - 1))])
-        if len(time) >= 2 else float('inf')
+        float(time[0] + 0.2 * (time[-1] - time[0]))
+        if len(time) >= 2 and np.all(np.isfinite(time))
+        and np.all(np.diff(time) > 0.0) else float('inf')
     )
     if (cycle_times.ndim == 1 and q_cycles.shape == cycle_times.shape
             and virial_cycles.shape == cycle_times.shape):
@@ -1357,12 +1362,20 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
         # Compatibility path for older serialized results lacking cycle arrays.
         q_values = np.asarray(result.get('Q', []), dtype=float)
         v_values = np.asarray(result.get('virial_ratio', []), dtype=float)
-        q_valid = q_values[int(0.8 * len(q_values)):]
-        v_valid = v_values[int(0.8 * len(v_values)):]
-        q_valid = q_valid[np.isfinite(q_valid)]
-        v_valid = v_valid[np.isfinite(v_valid)]
+        if time.ndim == 1 and len(time) == len(q_values) == len(v_values):
+            sample_tail = time >= tail_start
+            q_valid = q_values[sample_tail & np.isfinite(q_values)]
+            v_valid = v_values[sample_tail & np.isfinite(v_values)]
+        else:
+            q_valid = q_values[int(0.8 * len(q_values)):]
+            v_valid = v_values[int(0.8 * len(v_values)):]
+            q_valid = q_valid[np.isfinite(q_valid)]
+            v_valid = v_valid[np.isfinite(v_valid)]
         w_tail = w_avg[-3:][np.isfinite(w_avg[-3:])]
-    qv_tail = quadratic_virial[int(0.8 * len(quadratic_virial)):]
+    if time.ndim == 1 and len(time) == len(quadratic_virial):
+        qv_tail = quadratic_virial[(time >= tail_start)]
+    else:
+        qv_tail = quadratic_virial[int(0.8 * len(quadratic_virial)):]
     qv_valid = qv_tail[np.isfinite(qv_tail)]
     w_final = float(np.mean(w_tail)) if len(w_tail) else float("nan")
     Q_final = float(np.mean(q_valid)) if len(q_valid) else float("nan")
