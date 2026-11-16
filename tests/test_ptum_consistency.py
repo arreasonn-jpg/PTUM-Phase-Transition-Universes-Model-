@@ -2039,3 +2039,31 @@ def test_late_time_adiabaticity_uses_dense_cycle_boundaries_and_hubble_means():
     assert diagnostic["n_late_half_cycles"] == 4
     assert diagnostic["H_over_omega_max"] == pytest.approx(expected)
     assert diagnostic["adiabaticity_valid"]
+
+
+
+def test_classifier_uses_elapsed_physical_time_for_dense_cycle_tail():
+    from ptum_task1_simulation import classify_outcome
+
+    times = np.asarray([
+        0.0, 0.1, 0.2, 0.3, 0.4, 0.5,
+        0.6, 0.7, 0.8, 9.0, 9.5, 10.0,
+    ])
+    cycle_midpoints = np.asarray([1.5, 2.5, 3.5, 6.0, 8.25, 8.75, 9.25, 9.75])
+    result = {
+        "success": True,
+        "t": times,
+        "w_psi_avg": np.full(8, 1.0 / 3.0),
+        "t_avg": cycle_midpoints,
+        # The early-time cycles look quartic, but the final 20% in elapsed
+        # physical time is deliberately non-quartic.
+        "Q_cycle": np.asarray([4.0, 4.0, 4.0, 4.0, 0.2, 0.2, 0.2, 0.2]),
+        "virial_ratio_cycle": np.ones(8),
+        "quadratic_virial_ratio": np.ones(len(times)),
+        "cycle_turning_times": [1.0, 2.0, 3.0, 4.0, 8.0, 8.5, 9.0, 9.5, 10.0],
+        "H_avg_cycle": np.full(8, 0.01),
+    }
+    classification = classify_outcome(result, PTUMParameters())
+    assert classification["Q_final"] == pytest.approx(0.2)
+    assert classification["regime"] == "non_quartic"
+    assert not classification["quartic_achieved"]
