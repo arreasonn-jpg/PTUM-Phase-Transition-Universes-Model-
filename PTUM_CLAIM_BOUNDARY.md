@@ -533,3 +533,27 @@ regressions guard these cases. The correction does not relax physical
 thresholds or root-refinement criteria. Until fresh CI passes, the
 dense-estimator implementation remains unverified and Gate 4 remains
 PARTIAL.
+
+
+## 2026-11-16 provisional numerical results from the pre-fix head
+
+The pre-fix dense-estimator head completed a 100-row 4,001-point scan
+with 100/100 successful integrations. It classified 5 rows quartic,
+89 non-quartic and 6 insufficient. All five quartic rows required the
+largest classical seed (5psi_0) in the low-scale underdamped control
+and the smallest threshold offset; each had only four or five late
+half-cycles. This is not evidence for quantum vacuum seeding, a broad
+attractor basin, or defect-free evolution.
+
+The four-case targeted convergence probe passed 36/36 runs. Its maximum
+grid change in the finite-difference continuity residual was
+(6.043	imes10^{-4}), maximum tolerance-induced classification
+difference (9.38	imes10^{-7}), and maximum final-state relative
+difference (4.75	imes10^{-7}). These pass the targeted thresholds
+for those four cases only. They do not replace 100-row convergence.
+
+The workflow also reported seven Python regression failures (122 passed).
+Two implementation fixes were committed in
+`a172c6a72121d63ba8391af9d35ba8d225e39403`; all scan results from the
+pre-fix head are provisional until rerun on the corrected head. The
+100-row 256,001-point job was still running at the time of this record.

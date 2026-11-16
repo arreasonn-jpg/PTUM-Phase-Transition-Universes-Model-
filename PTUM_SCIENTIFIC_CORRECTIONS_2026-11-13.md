@@ -1302,3 +1302,30 @@ the sampled compatibility fallback and preserves analytic endpoint
 turning points without weakening the root-refinement or physical
 classification thresholds. Two focused regressions were added. The
 corrected head remains unverified until fresh CI completes.
+
+
+## 2026-11-16 pre-fix scan evidence and interpretation
+
+The pre-fix dense-estimator workflow `43841837289` completed the
+100-row 4,001-point DOP853 scan with 100/100 successful integrations
+and zero failures. Its provisional classifier returned 5 quartic,
+89 non-quartic and 6 insufficient rows. All five quartic rows were
+clustered at the largest classical seed, (5psi_0), in the
+low-scale underdamped control with the smallest threshold offset.
+They had only four or five late half-cycles, so they do not establish
+a robust attractor or a quantum-vacuum-seeded regime.
+
+The four-case targeted convergence probe completed 36/36 integrations.
+Across the tested output grids and three solver tolerances, all four
+cases met the declared targeted limits: the maximum finite-difference
+continuity-residual grid change was (6.043	imes10^{-4}), maximum
+classification tolerance difference (9.38	imes10^{-7}), and maximum
+final-state relative difference (4.75	imes10^{-7}). This evidence
+covers four selected cases only, not all 100 initial conditions.
+
+These numerical jobs ran before the Python suite exposed seven
+regressions. The endpoint-root and empty-cycle fallback fixes are in
+`a172c6a72121d63ba8391af9d35ba8d225e39403`; a fresh full scan and
+targeted probe on the corrected head are required. The 100-row
+256,001-point dense-estimator job from the pre-fix run was still
+running at the time of this record.

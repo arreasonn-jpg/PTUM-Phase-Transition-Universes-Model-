@@ -919,3 +919,50 @@ within a scale-relative floating-point roundoff bound to zero. It does
 not loosen the root-refinement criteria or any physical classification
 threshold. Two direct regressions were added. Fresh CI is required;
 the failed run is not treated as a pass.
+
+
+## 2026-11-16 pre-fix full-scan and targeted-convergence evidence
+
+Workflow `43841837289` ran on dense-estimator head
+`f4b62bd13e80466789c40ba272bcd8ad5b0471b8`. The numerical scan jobs
+completed, although the workflow as a whole did not pass because the
+Python regression job found seven defects later corrected in
+`a172c6a72121d63ba8391af9d35ba8d225e39403`.
+
+**100-row 4,001-point baseline job:** 100/100 integrations succeeded,
+50 in each scenario, with zero failed trajectories. The provisional
+classification count was 5 quartic, 89 non-quartic and 6 insufficient.
+All five quartic classifications were in the low-scale underdamped
+control at the largest classical seed, (psi_{m init}=5psi_0), and
+the smallest threshold offset, (0.01Phi_c). Their (Q) values were
+10.65--11.07, (w) 0.372--0.374, quartic virial 0.906--0.910 and
+(H/omega) about (6.9	imes10^{-5}), but they contained only four
+or five late half-cycles. These are large classical-seed results, not
+quantum-vacuum-seeded evidence or proof of a robust attractor. The
+six insufficient rows include exact zero-seed controls; this is
+consistent with the classical invariant (psi=0) subspace.
+
+**Targeted tolerance/output-grid probe:** 36/36 integrations succeeded
+for four selected cases. It tested output grids 4,001 through 256,001
+points and tolerances ((10^{-9},10^{-12})),
+((10^{-10},10^{-13})), and ((10^{-11},10^{-14})). All four cases
+passed the targeted grid and tolerance limits. The largest adjacent
+grid change in the finite-difference continuity residual was
+(6.043\times10^{-4}), below the declared (10^{-3}) limit; Q,
+virial and w changes were zero at the reported precision. The largest
+tolerance-induced classification relative difference was
+(9.38\times10^{-7}), below (10^{-5}), and the largest final-state
+relative difference was (4.75\times10^{-7}), below (10^{-6}).
+This is a four-case probe, not a full 100-row convergence campaign.
+
+The 100-row 256,001-point dense-estimator job was still running when
+these results were recorded. The 4,001-point scan and targeted probe
+are pre-fix evidence; the endpoint-root correction changes the source
+and therefore requires a fresh rerun before they can support final
+acceptance. The Python job had 122 passed and 7 failed; no test failure
+was hidden or waived. The correction and two focused regressions are
+in commit `a172c6a72121d63ba8391af9d35ba8d225e39403`.
+
+The manuscript built successfully to 42 pages, but the final LaTeX
+pass retained 73 Underfull hbox warnings and one Overfull hbox at line
+1937. Gate 4 remains PARTIAL; Gate 10 remains PARTIAL.
