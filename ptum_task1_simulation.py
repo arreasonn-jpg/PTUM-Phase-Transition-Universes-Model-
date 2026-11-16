@@ -1348,7 +1348,7 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     # A cycle belongs to the tail only if its midpoint lies in the final 20%.
     time = np.asarray(result.get('t', []), dtype=float)
     tail_start = (
-        float(time[0] + 0.2 * (time[-1] - time[0]))
+        float(time[0] + 0.8 * (time[-1] - time[0]))
         if len(time) >= 2 and np.all(np.isfinite(time))
         and np.all(np.diff(time) > 0.0) else float('inf')
     )
