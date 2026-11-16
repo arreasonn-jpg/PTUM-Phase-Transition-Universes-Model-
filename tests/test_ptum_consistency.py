@@ -2169,6 +2169,39 @@ def test_dense_cycle_diagnostics_are_stable_across_real_dop853_step_sizes():
     )
 
 
+
+@pytest.mark.parametrize("bad_time", [np.nan, np.inf, -np.inf])
+def test_dense_cycle_diagnostics_reject_nonfinite_output_times(bad_time):
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 1.0, 11)
+    tau[5] = bad_time
+    with pytest.raises(ValueError, match="invalid dense-cycle diagnostic inputs"):
+        compute_dense_cycle_diagnostics(
+            lambda _time: np.zeros(4), tau, 1.0, np.ones(4), params, len(tau)
+        )
+
+
+@pytest.mark.parametrize(
+    "bad_state",
+    [
+        np.zeros(3),
+        np.asarray([0.0, 0.0, 0.0, np.nan]),
+        np.asarray([0.0, 0.0, 0.0, np.inf]),
+    ],
+)
+def test_dense_cycle_diagnostics_reject_malformed_or_nonfinite_dense_states(
+    bad_state,
+):
+    params = PTUMParameters()
+    tau = np.linspace(0.0, 1.0, 11)
+    with pytest.raises(
+        ValueError, match="dense solution must return four finite state components"
+    ):
+        compute_dense_cycle_diagnostics(
+            lambda _time: bad_state, tau, 1.0, np.ones(4), params, len(tau)
+        )
+
+
 def test_dense_cycle_diagnostics_reject_stationary_zero_solution():
     params = PTUMParameters()
     tau = np.linspace(0.0, 20.0, 1001)
