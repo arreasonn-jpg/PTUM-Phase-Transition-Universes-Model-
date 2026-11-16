@@ -2202,6 +2202,59 @@ def test_dense_cycle_diagnostics_reject_malformed_or_nonfinite_dense_states(
         )
 
 
+
+def test_dense_cycle_diagnostics_are_independent_of_output_sampling_density():
+    params = PTUMParameters()
+    scales = np.ones(4)
+    omega = 10.0 * np.pi
+    initial = np.asarray([
+        0.99 * params.Phi_c,
+        0.0,
+        0.2 * params.psi_0,
+        0.0,
+    ])
+
+    def rhs(_time, state):
+        return np.asarray([
+            state[1],
+            0.0,
+            state[3],
+            -(omega**2) * state[2],
+        ])
+
+    solution = solve_ivp(
+        rhs, (0.0, 1.0), initial, method="DOP853",
+        rtol=1.0e-11, atol=1.0e-14, max_step=0.025,
+        dense_output=True,
+    )
+    assert solution.success
+    assert solution.sol is not None
+
+    outputs = [
+        np.linspace(0.0, 1.0, count)
+        for count in (31, 501, 4001)
+    ]
+    diagnostics = [
+        compute_dense_cycle_diagnostics(
+            solution.sol, output_times, 1.0, scales, params, len(output_times)
+        )
+        for output_times in outputs
+    ]
+    reference = diagnostics[0]
+    for result in diagnostics[1:]:
+        np.testing.assert_array_equal(
+            result["turning_times"], reference["turning_times"]
+        )
+        np.testing.assert_array_equal(result["Q_cycle"], reference["Q_cycle"])
+        np.testing.assert_array_equal(
+            result["virial_ratio_cycle"], reference["virial_ratio_cycle"]
+        )
+        np.testing.assert_array_equal(result["w_avg"], reference["w_avg"])
+        np.testing.assert_array_equal(
+            result["H_avg_cycle"], reference["H_avg_cycle"]
+        )
+
+
 def test_dense_cycle_diagnostics_reject_stationary_zero_solution():
     params = PTUMParameters()
     tau = np.linspace(0.0, 20.0, 1001)
