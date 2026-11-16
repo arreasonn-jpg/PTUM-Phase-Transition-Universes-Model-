@@ -658,6 +658,9 @@ def run_simulation(params: PTUMParameters,
             "max_normalized_absolute_quadrature_error"
         ],
         'cycle_turning_times': dense_cycle["turning_times"],
+        'Q_cycle': dense_cycle["Q_cycle"],
+        'virial_ratio_cycle': dense_cycle["virial_ratio_cycle"],
+        'H_avg_cycle': dense_cycle["H_avg_cycle"],
         't_avg': t_avg,
         't_avg_raw': t_avg_raw,
         'U_psi': U_psi,
@@ -836,6 +839,9 @@ def compute_dense_cycle_diagnostics(
     virial_values = np.full(n_output, np.nan, dtype=float)
     w_values = []
     t_values = []
+    q_cycle_values = []
+    virial_cycle_values = []
+    h_cycle_values = []
     relative_errors = []
     normalized_absolute_errors = []
 
@@ -856,9 +862,10 @@ def compute_dense_cycle_diagnostics(
     # Normalize each component before vector quadrature. Without this,
     # quad_vec's max norm would compare quantities with identical units but
     # wildly different characteristic magnitudes, masking small components.
+    hubble_scale = max(float(params.H_star), np.finfo(float).tiny)
     integral_scales = np.asarray([
         quartic_scale, quadratic_scale, energy_scale,
-        quartic_scale, energy_scale, energy_scale,
+        quartic_scale, energy_scale, energy_scale, hubble_scale,
     ])
 
     def integrand(tau):
@@ -879,6 +886,7 @@ def compute_dense_cycle_diagnostics(
             2.0 * quartic_potential,
             excitation_pressure,
             excitation_density,
+            hubble_rate(phi_value, state[1], psi_value, psi_dot_value, params),
         ], dtype=float)
         return physical_integrand / integral_scales
 
@@ -901,14 +909,32 @@ def compute_dense_cycle_diagnostics(
         normalized_absolute_errors.append(float(error))
         lo = max(0, int(np.searchsorted(tau_samples, start, side="left")))
         hi = min(n_output, int(np.searchsorted(tau_samples, end, side="right")))
-        if integral[1] > 0.0 and np.isfinite(integral[1]):
-            q_values[lo:hi] = integral[0] / integral[1]
-        if integral[3] > 0.0 and np.isfinite(integral[3]):
-            virial_values[lo:hi] = integral[2] / integral[3]
-        if integral[5] > np.finfo(float).tiny and np.all(np.isfinite(integral[4:6])):
-            w_values.append(float(integral[4] / integral[5]))
-        else:
-            w_values.append(float("nan"))
+        q_cycle = (
+            float(integral[0] / integral[1])
+            if integral[1] > 0.0 and np.isfinite(integral[1])
+            else float("nan")
+        )
+        virial_cycle = (
+            float(integral[2] / integral[3])
+            if integral[3] > 0.0 and np.isfinite(integral[3])
+            else float("nan")
+        )
+        w_cycle = (
+            float(integral[4] / integral[5])
+            if integral[5] > np.finfo(float).tiny
+            and np.all(np.isfinite(integral[4:6]))
+            else float("nan")
+        )
+        duration = (end - start) / mu
+        h_cycle = float(integral[6] / duration)
+        if np.isfinite(q_cycle):
+            q_values[lo:hi] = q_cycle
+        if np.isfinite(virial_cycle):
+            virial_values[lo:hi] = virial_cycle
+        q_cycle_values.append(q_cycle)
+        virial_cycle_values.append(virial_cycle)
+        w_values.append(w_cycle)
+        h_cycle_values.append(h_cycle)
         t_values.append(float(0.5 * (start + end) / mu))
 
     return {
@@ -916,6 +942,9 @@ def compute_dense_cycle_diagnostics(
         "virial_ratio": virial_values,
         "w_avg": np.asarray(w_values, dtype=float),
         "t_avg": np.asarray(t_values, dtype=float),
+        "Q_cycle": np.asarray(q_cycle_values, dtype=float),
+        "virial_ratio_cycle": np.asarray(virial_cycle_values, dtype=float),
+        "H_avg_cycle": np.asarray(h_cycle_values, dtype=float),
         "turning_times": [float(value / mu) for value in roots],
         "max_relative_quadrature_error": (
             max(relative_errors) if relative_errors else float("nan")
@@ -1196,6 +1225,45 @@ def _late_time_adiabaticity_diagnostic(result: Dict,
         raise ValueError("tail_fraction must be in (0, 1) and min_half_cycles >= 1")
 
     tail_start = t[int(np.floor((1.0 - tail_fraction) * (len(t) - 1)))]
+
+    # Prefer the same dense-output half-cycle records used by the Q, virial,
+    # and w estimators. H was integrated over each interval, so H/omega is
+    # evaluated on identical physical cycle boundaries without re-detecting
+    # extrema on the user-selected output grid.
+    dense_turning = np.asarray(result.get('cycle_turning_times', []), dtype=float)
+    dense_hubble = np.asarray(result.get('H_avg_cycle', []), dtype=float)
+    if (dense_turning.ndim == 1 and dense_hubble.ndim == 1
+            and len(dense_turning) == len(dense_hubble) + 1
+            and len(dense_hubble) > 0
+            and np.all(np.isfinite(dense_turning))
+            and np.all(np.diff(dense_turning) > 0.0)
+            and np.all(np.isfinite(dense_hubble))):
+        dense_ratios = []
+        for index, (start, end) in enumerate(zip(
+            dense_turning[:-1], dense_turning[1:]
+        )):
+            if start < tail_start or end > t[-1] or end <= start:
+                continue
+            omega_half = np.pi / (end - start)
+            ratio = float(dense_hubble[index]) / omega_half
+            if np.isfinite(ratio):
+                dense_ratios.append(ratio)
+        if len(dense_ratios) < min_half_cycles:
+            return {
+                'H_over_omega_max': float('nan'),
+                'H_over_omega_values': dense_ratios,
+                'n_late_half_cycles': len(dense_ratios),
+                'adiabaticity_valid': False,
+            }
+        last_ratios = dense_ratios[-min_half_cycles:]
+        maximum = float(max(last_ratios))
+        return {
+            'H_over_omega_max': maximum,
+            'H_over_omega_values': last_ratios,
+            'n_late_half_cycles': len(dense_ratios),
+            'adiabaticity_valid': maximum < 0.1,
+        }
+
     turning_times = []
     # A zero is a turning point only when the derivative changes sign
     # across it. This excludes tangential touches and unbracketed endpoints.
@@ -1263,24 +1331,37 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     if not result['success']:
         return {'regime': 'failed', 'quartic_achieved': False}
     
-    w_avg = result['w_psi_avg']
-    Q = result['Q']
-    virial = result['virial_ratio']
-    quadratic_virial = result.get('quadratic_virial_ratio', np.array([]))
+    w_avg = np.asarray(result['w_psi_avg'], dtype=float)
+    cycle_times = np.asarray(result.get('t_avg', []), dtype=float)
+    q_cycles = np.asarray(result.get('Q_cycle', []), dtype=float)
+    virial_cycles = np.asarray(result.get('virial_ratio_cycle', []), dtype=float)
+    quadratic_virial = np.asarray(result.get('quadratic_virial_ratio', []), dtype=float)
     adiabaticity = _late_time_adiabaticity_diagnostic(result)
 
-    # Classify the late-time regime, not the whole trajectory.
-    # Q and virial are sampled diagnostics; use the final 20% of the run.
-    tail_start_q = int(0.8 * len(Q))
-    tail_start_v = int(0.8 * len(virial))
-    q_tail = Q[tail_start_q:] if len(Q) else np.array([])
-    v_tail = virial[tail_start_v:] if len(virial) else np.array([])
-    qv_tail = quadratic_virial[tail_start_v:] if len(quadratic_virial) else np.array([])
-    q_valid = q_tail[np.isfinite(q_tail)]
-    v_valid = v_tail[np.isfinite(v_tail)]
-    qv_valid = qv_tail[np.isfinite(qv_tail)]
-    w_final = float(np.mean(w_avg[-3:])) if len(w_avg) >= 3 else (
-        float(w_avg[-1]) if len(w_avg) else float("nan"))
+    # Apply one physical late-time window to all dense half-cycle estimators.
+    # A cycle belongs to the tail only if its midpoint lies in the final 20%.
+    time = np.asarray(result.get('t', []), dtype=float)
+    tail_start = (
+        float(time[int(0.8 * (len(time) - 1))])
+        if len(time) >= 2 else float('inf')
+    )
+    if (cycle_times.ndim == 1 and q_cycles.shape == cycle_times.shape
+            and virial_cycles.shape == cycle_times.shape):
+        tail_mask = cycle_times >= tail_start
+        q_valid = q_cycles[tail_mask & np.isfinite(q_cycles)]
+        v_valid = virial_cycles[tail_mask & np.isfinite(virial_cycles)]
+        w_tail = w_avg[tail_mask & np.isfinite(w_avg)] if w_avg.shape == cycle_times.shape else np.array([])
+    else:
+        # Compatibility path for older serialized results lacking cycle arrays.
+        q_values = np.asarray(result.get('Q', []), dtype=float)
+        v_values = np.asarray(result.get('virial_ratio', []), dtype=float)
+        q_valid = q_values[int(0.8 * len(q_values)):]
+        v_valid = v_values[int(0.8 * len(v_values)):]
+        q_valid = q_valid[np.isfinite(q_valid)]
+        v_valid = v_valid[np.isfinite(v_valid)]
+        w_tail = w_avg[-3:][np.isfinite(w_avg[-3:])]
+    qv_valid = quadratic_virial[np.isfinite(quadratic_virial)]
+    w_final = float(np.mean(w_tail)) if len(w_tail) else float("nan")
     Q_final = float(np.mean(q_valid)) if len(q_valid) else float("nan")
     virial_final = float(np.mean(v_valid)) if len(v_valid) else float("nan")
     quadratic_virial_final = float(np.mean(qv_valid)) if len(qv_valid) else float("nan")
