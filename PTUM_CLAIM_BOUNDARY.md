@@ -475,3 +475,24 @@ study. The high-scale finite-difference continuity diagnostic remains
 at percent-level magnitude; the small chain-rule continuity residual
 is a separate diagnostic and must not be conflated with it. No claim
 of a fully converged full-grid numerical study is made.
+
+
+## 2026-11-16 verification update
+
+The completed workflow `43759304001` on head
+`bc1f6dafb689be427631ae3baa79692b9fde1694` reports 108 passing
+Python regression tests and a successful 4/4 two-scale smoke scan.
+The 42-page LaTeX PDF builds, but the final pass retains 73 Underfull
+hbox warnings and one Overfull hbox at line 1937. This is not a
+warning-free manuscript build.
+
+The full 100-row scan and targeted convergence were skipped in that
+workflow. PR #2 now opts into both the full 100-row scan and the
+existing targeted four-case convergence probe on the next synchronize
+event. The targeted probe is not full-grid convergence. Until fresh
+artifacts are inspected, the 100-row result and any new convergence
+claim remain pending. The physical boundary is unchanged: no
+quantum-seeded inhomogeneous waterfall, nonlinear backreaction,
+rescattering, defect-network evolution, relic abundance, microscopic
+proxy-fluid realization, or independent CLASS/Cobaya reproduction
+is established.
