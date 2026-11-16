@@ -1360,7 +1360,8 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
         q_valid = q_valid[np.isfinite(q_valid)]
         v_valid = v_valid[np.isfinite(v_valid)]
         w_tail = w_avg[-3:][np.isfinite(w_avg[-3:])]
-    qv_valid = quadratic_virial[np.isfinite(quadratic_virial)]
+    qv_tail = quadratic_virial[int(0.8 * len(quadratic_virial)):]
+    qv_valid = qv_tail[np.isfinite(qv_tail)]
     w_final = float(np.mean(w_tail)) if len(w_tail) else float("nan")
     Q_final = float(np.mean(q_valid)) if len(q_valid) else float("nan")
     virial_final = float(np.mean(v_valid)) if len(v_valid) else float("nan")
