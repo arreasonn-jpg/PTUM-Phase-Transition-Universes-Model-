@@ -1,6 +1,8 @@
 import pytest
 
-from ptum_task1_scan import expected_scan_count, expected_shard_count, shard_indices
+from ptum_task1_scan import (
+    expected_scan_count, expected_shard_count, shard_indices, run_scan_suite,
+)
 
 
 def test_full_scan_shards_are_disjoint_and_cover_all_trajectories():
@@ -160,3 +162,27 @@ def test_zero_velocity_full_scan_rows_are_solver_stable_with_scaled_atol(index):
             assert relative_max_difference < 5.0e-5, (
                 index, method, key, relative_max_difference
             )
+
+
+def test_scan_metadata_records_solver_and_dimensionless_tolerances():
+    import numpy as np
+    from ptum_task1_simulation import DEFAULT_RTOL, DEFAULT_DIMENSIONLESS_ATOL
+
+    rows = run_scan_suite(
+        t_max=0.2,
+        n_points=21,
+        profile="ci",
+        shard_index=0,
+        shard_count=4,
+    )
+    assert len(rows) == 1
+    row = rows[0]
+    metadata = row["scan_metadata"]
+
+    assert row["success"] is True
+    assert metadata["solver_method"] == "Radau"
+    assert metadata["rtol"] == DEFAULT_RTOL
+    assert metadata["dimensionless_atol"] == DEFAULT_DIMENSIONLESS_ATOL
+    assert len(metadata["atol_state_vector"]) == 4
+    assert np.all(np.isfinite(metadata["atol_state_vector"]))
+    assert np.all(np.asarray(metadata["atol_state_vector"]) > 0.0)
