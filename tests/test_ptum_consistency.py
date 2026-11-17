@@ -2451,7 +2451,7 @@ def test_pr2_full_scan_opt_in_runs_full_grid_convergence_job():
     ) in normalized
     assert "contains(github.event.pull_request.title, '[FULL-SCAN]')" in normalized
     assert "python ptum_full_grid_convergence_study.py" in normalized
-    assert "256001" in normalized
+    assert "256,001" in normalized
     assert "--output ptum_full_grid_convergence_study.json" in normalized
     assert "--checkpoint ptum_full_grid_convergence_study_checkpoint.json" in normalized
 

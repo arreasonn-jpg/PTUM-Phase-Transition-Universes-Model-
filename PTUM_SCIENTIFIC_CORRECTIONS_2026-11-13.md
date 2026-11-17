@@ -1504,3 +1504,27 @@ existing 1e-6 final-state and 1e-5 classification limits are unchanged.
 The additional profile tests whether the 12 discrepancies decrease
 under a further solver refinement or approach a phase/roundoff floor.
 The new profile is pending fresh CI; no outcome is claimed.
+
+
+## 2026-11-17 Higgs-source layout verified; workflow guard correction
+
+Workflow 44059480978 built the revised 43-page manuscript successfully.
+Its compile output contains no Overfull hbox warning, confirming that
+the separately defined J_H source removed the previous 40.16039 pt
+overflow. Underfull hbox warnings remain (73 in the final compile pass),
+so Gate 10 is still PARTIAL and the manuscript is not warning-free.
+
+The same workflow completed the 100-row baseline and the targeted
+36-run convergence probe. Its Python regression job reported 136 passed
+and one failed assertion: the workflow test expected the ungrouped
+string 256001, while the actual workflow comment spells the grid as
+256,001. This is a stale text guard, not a numerical or physics failure.
+The assertion is corrected to match the checked-in workflow wording.
+
+The paired four-profile 400-run job was still running on that head.
+Separately, commit 17b6446c1ad2164f68a40b2ff851c834869a7b17 added a
+fifth 1e-12/1e-15 tolerance profile after the first complete paired
+study found 12/200 tolerance comparisons outside the unchanged limits.
+That 500-run study is pending on the next exact-head workflow. The
+sector-current algebra audit is also included on the current branch;
+it does not promote Gate 3.
