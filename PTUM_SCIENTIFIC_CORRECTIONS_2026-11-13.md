@@ -1416,3 +1416,33 @@ full derivative operator. The previous CI had one Overfull hbox at
 source line 1937; a fresh LaTeX build is required to verify that this
 specific warning is removed. Underfull hbox warnings have not yet been
 resolved.
+
+
+## 2026-11-17 CI audit: paired study and Higgs-source display
+
+The first paired-study workflow, 44056098156, completed its 100-row
+4,001-point baseline (100/100 integrations, zero failures) and its
+targeted four-case convergence probe (36/36, pass). The baseline
+classifications were 89 non-quartic, five quartic and six
+insufficient-oscillation-data. All five quartic cases were confined to
+the low-scale control at the largest classical seed and smallest
+threshold offset, with only four or five late half-cycles. They do not
+establish a quantum-seeded attractor.
+
+The paired 400-integration identical-input study was still running
+when this record was written; its outcome is deliberately not inferred.
+The Python job had 134 passes and two stale source-guard failures. One
+guard used doubled literal backslashes after the Higgs equation was
+reflowed; the other expected the old convergence-driver filename.
+Those assertions were corrected, and a construction-level regression
+now checks 100 unique row keys, shared parameter-object identity, the
+4,001/256,001 grids and all three tolerance levels.
+
+The same workflow built the 42-page PDF, but the final compile log
+still contained one 40.16039 pt Overfull hbox at source line 1939 and
+73 Underfull hbox warnings. The prior source reflow did not resolve
+the overfull warning. The displayed Higgs equation is now written as
+...=J_H, with the two derivative contributions defining J_H
+on a separate aligned display. This preserves the variational equation
+and signs while reducing the equation width. The next CI LaTeX log
+must verify the result; no warning-free build is claimed.

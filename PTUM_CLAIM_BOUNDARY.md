@@ -632,3 +632,31 @@ regression now checks the display structure and derivative source.
 This is a source-level correction only; the final LaTeX log must still
 be inspected before claiming the Overfull hbox warning is resolved.
 The 73 Underfull hbox warnings remain outstanding.
+
+
+## 2026-11-17 CI audit and Higgs-source display correction
+
+The current 100-row homogeneous baseline artifact from workflow
+44056098156 contains 100 successful integrations and no failed rows.
+Its classifications are 89 non-quartic, five quartic and six
+insufficient-oscillation-data. The five quartic cases occur only for
+the largest classical seed in the low-scale control at the smallest
+threshold offset, with four or five late half-cycles. They are not
+quantum-vacuum-seeded or evidence of a broad attractor.
+
+The four-case targeted convergence artifact passed 36/36 runs. The
+separate paired 400-run same-input study had not finished at this audit,
+so no full-grid solver-tolerance result is claimed. The Python job
+reported 134 passed and two stale test-assertion failures; both were
+corrected, and a new regression checks the shared 100-row input grid
+and all four convergence profiles.
+
+The 42-page manuscript build succeeded, but the final compile output
+still reported one 40.16039 pt Overfull hbox at line 1939 and 73
+Underfull hbox warnings. A separate J_H source definition now splits
+the long Higgs-equation derivative into two aligned terms. This is
+only a presentation-preserving algebraic rewrite; the next build must
+confirm whether it removes the overfull warning. Gates 4 and 10 remain
+PARTIAL. The homogeneous scan does not establish inhomogeneous
+waterfall dynamics, defect evolution, backreaction, relic abundance
+or a microscopic proxy-fluid realization.

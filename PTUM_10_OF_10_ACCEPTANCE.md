@@ -1112,3 +1112,43 @@ reported Overfull hbox at source line 1937 in the source layout; the
 next LaTeX build must confirm whether the warning is gone. The 73
 Underfull hbox warnings remain unresolved. Gate 10 stays PARTIAL until
 a fresh final-pass log is inspected.
+
+
+## 2026-11-17 paired-study first CI audit and manuscript source correction
+
+Workflow 44056098156 ran on pre-regression-fix head
+bf91301c788f7b318f6306ca0a1373c745695d58.
+
+- The homogeneous 100-row, 4,001-point DOP853 baseline completed
+  100/100 integrations with zero failed rows. Its strict-JSON output
+  contains 89 non-quartic, five quartic and six insufficient-oscillation
+  classifications.
+- All five quartic labels are restricted to the low-scale control,
+  psi_init=5 psi_0, threshold offset 0.01 Phi_c, with four or five
+  late half-cycles. They are large classical-seed results, not
+  quantum-vacuum-seeded evidence or a robust attractor.
+- The four-case targeted tolerance/output-grid probe completed 36/36
+  integrations and reported targeted_stability_pass=true.
+- The paired 400-run, identical-input study was still running at the
+  time of this audit. No paired-study result is claimed.
+- Python regression reported 134 passed and two failed. Both failures
+  were stale source guards: the Higgs-equation assertion retained
+  doubled literal backslashes after the source reflow, and the workflow
+  assertion still expected the former ptum_full_grid_convergence.py
+  filename. The guards were corrected in
+  fbc30429e18aab5395dd21b8f71a9f9e04cbc705, and a test was added for
+  the 100 unique shared input rows and all four paired profiles.
+- The 42-page LaTeX build succeeded, but inspection of the final compile
+  output disproved the earlier assumption that the equation reflow had
+  removed the overfull box: one Overfull hbox of 40.16039 pt remains
+  at source line 1939, alongside 73 Underfull hbox warnings in the
+  final pass.
+
+The displayed Higgs equation has now been shortened by defining the
+fermion/Higgs source J_H separately and splitting its two derivative
+contributions across an aligned display. This is an algebraic
+re-expression of the same variational equation, not a change to the
+action or its signs. The regression now guards both derivative terms.
+A fresh LaTeX build must verify whether the overfull box is removed.
+The Underfull warnings remain unresolved. Gates 4 and 10 remain
+PARTIAL; no physical gate is promoted by this CI audit.
