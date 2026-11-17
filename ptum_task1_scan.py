@@ -13,7 +13,10 @@ from collections import Counter
 from ptum_inflation_background import compute_observables, state_at_field_value
 from ptum_task1_simulation import (
     M_PL,
+    DEFAULT_RTOL,
+    DEFAULT_DIMENSIONLESS_ATOL,
     PTUMParameters,
+    default_state_atol,
     run_parameter_scan,
     save_results,
 )
@@ -154,6 +157,10 @@ def run_scan_suite(*, t_max: float = DEFAULT_T_MAX,
             "t_max_over_mu_inverse": t_max,
             "n_output_points": n_points,
             "scan_profile": profile,
+            "solver_method": solver_method,
+            "rtol": DEFAULT_RTOL,
+            "dimensionless_atol": DEFAULT_DIMENSIONLESS_ATOL,
+            "atol_state_vector": default_state_atol(params).tolist(),
             "psi_seed_scales": list(seed_scales),
             "psi_velocity_scales": list(velocity_scales),
             "phi_offset_scales": list(phi_offsets),
