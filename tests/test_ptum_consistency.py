@@ -1427,7 +1427,10 @@ def test_tilted_quartic_bias_matches_stationary_potential_at_moderate_bias():
 
 
 def test_signed_domain_wall_bias_swaps_true_and_false_vacua():
-    from ptum_defects import domain_wall_bias_diagnostics
+    from ptum_defects import (
+        domain_wall_bias_diagnostics,
+        thermal_fermion_bias,
+    )
 
     mu = 1.0e4
     lam = 0.1
@@ -1458,6 +1461,16 @@ def test_signed_domain_wall_bias_swaps_true_and_false_vacua():
     assert negative["epsilon_bias"] == pytest.approx(-epsilon)
     assert negative["epsilon_bias_magnitude"] == pytest.approx(epsilon)
     assert negative["bias_favors_positive_psi"] is False
+
+    thermal = thermal_fermion_bias([(0.5, 0.2, 1)], temperature=1.0)
+    thermal_result = domain_wall_bias_diagnostics(
+        mu, lam, thermal["epsilon_bias"],
+        hubble_bbn=1.0e-20,
+        reduced_planck_mass=2.435e18,
+    )
+    assert thermal["epsilon_bias"] < 0.0
+    assert thermal_result["true_minimum"] < 0.0
+    assert thermal_result["vacuum_bias"] > 0.0
 
 
 def test_domain_wall_bias_spinodal_removes_false_vacuum():

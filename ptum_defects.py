@@ -251,6 +251,11 @@ def domain_wall_bias_diagnostics(
     uses rho_wall ~= A*sigma*H and hence H_dom ~= A*sigma/(3 M_Pl^2).
     Both cosmological estimates are order-of-magnitude network criteria,
     not a substitute for a defect-network simulation.
+
+    epsilon_bias is signed in V_bias=-epsilon_bias*psi. Its sign selects
+    the true-vacuum side; the returned vacuum_bias and annihilation criteria
+    depend on its magnitude. A signed result from thermal_fermion_bias can
+    therefore be passed directly.
     """
     mu_eff = _validate_positive("mu_eff", mu_eff)
     lambda_psi = _validate_positive("lambda_psi", lambda_psi)
