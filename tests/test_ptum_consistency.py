@@ -2406,8 +2406,8 @@ def test_full_reheating_scalar_and_higgs_eom_sources_are_explicit_in_manuscript(
     source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
     assert "eq:psi_full_reheating_eom" in source
     assert "eq:higgs_full_reheating_eom" in source
-    assert r"\\begin{aligned} D_\\mu D^\\mu H" in source
-    assert r"\\frac{\\partial(U_{{\\rm SM},Y}+U_Y)}{\\partial H^\\dagger}" in source
+    assert r"\begin{aligned} D_\mu D^\mu H" in source
+    assert r"\frac{\partial(U_{{\rm SM},Y}+U_Y)}{\partial H^\dagger}" in source
     assert "g_{\\psi H}\\psi H^\\dagger H" in source
     assert "mathcal O_{\\rm SM}" in source
     assert "do not imply that the present homogeneous code evolves the Higgs or fermion fields" in source
@@ -2447,8 +2447,42 @@ def test_pr2_full_scan_opt_in_runs_full_grid_convergence_job():
         "'ptum/scientific-consistency-fixes-2026-11-13'"
     ) in normalized
     assert "contains(github.event.pull_request.title, '[FULL-SCAN]')" in normalized
-    assert "python ptum_full_grid_convergence.py" in normalized
+    assert "python ptum_full_grid_convergence_study.py" in normalized
     assert "256001" in normalized
+    assert "--output ptum_full_grid_convergence_study.json" in normalized
+    assert "--checkpoint ptum_full_grid_convergence_study_checkpoint.json" in normalized
+
+
+def test_paired_convergence_profiles_reuse_one_complete_initial_condition_grid():
+    from ptum_full_grid_convergence_study import (
+        EXPECTED_ROWS,
+        OUTPUT_GRID_REFERENCE,
+        OUTPUT_GRID_REFINED,
+        STUDY_SPECS,
+        TOLERANCE_LEVELS,
+        _build_cases,
+    )
+
+    cases, scenario_params = _build_cases()
+    assert len(cases) == EXPECTED_ROWS == 100
+    assert len({case["row_key"] for case in cases}) == EXPECTED_ROWS
+    assert len(scenario_params) == 2
+    assert all(
+        case["params"] is scenario_params[case["scenario"]]
+        for case in cases
+    )
+    assert [spec["n_output_points"] for spec in STUDY_SPECS] == [
+        OUTPUT_GRID_REFERENCE,
+        OUTPUT_GRID_REFINED,
+        OUTPUT_GRID_REFINED,
+        OUTPUT_GRID_REFINED,
+    ]
+    assert [(spec["rtol"], spec["atol"]) for spec in STUDY_SPECS] == [
+        TOLERANCE_LEVELS[0],
+        TOLERANCE_LEVELS[0],
+        TOLERANCE_LEVELS[1],
+        TOLERANCE_LEVELS[2],
+    ]
 
 
 def test_classifier_falls_back_to_sampled_diagnostics_when_dense_cycle_arrays_are_empty():
