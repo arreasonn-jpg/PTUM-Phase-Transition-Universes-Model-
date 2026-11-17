@@ -10,7 +10,10 @@ import warnings
 import numpy as np
 from scipy.integrate import solve_ivp
 from ptum_inflation_background import state_at_field_value
-from ptum_task1_simulation import M_PL, background_equations, rho_phi, rho_psi, rho_total
+from ptum_task1_simulation import (
+    M_PL, DEFAULT_RTOL, DEFAULT_DIMENSIONLESS_ATOL, default_state_atol,
+    background_equations, rho_phi, rho_psi, rho_total,
+)
 from ptum_task1_scan import build_scan_scenarios, SEED_SCALES, VELOCITY_SCALES, PHI_OFFSETS, DEFAULT_T_MAX, DEFAULT_N_POINTS
 
 
@@ -61,13 +64,17 @@ def run(method, spec, tmax, npoints):
             })
             raise
 
+    state_atol = default_state_atol(p)
     with warnings.catch_warnings(record=True) as captured:
         warnings.simplefilter("always", RuntimeWarning)
         try:
             sol = solve_ivp(rhs, span, y0, args=(p,), t_eval=evaluation,
-                            method=method, rtol=1e-9, atol=1e-12)
+                            method=method, rtol=DEFAULT_RTOL, atol=state_atol)
             report = {
                 "success": bool(sol.success), "message": str(sol.message),
+                "rtol": DEFAULT_RTOL,
+                "dimensionless_atol": DEFAULT_DIMENSIONLESS_ATOL,
+                "atol_state_vector": state_atol.tolist(),
                 "nfev": int(sol.nfev), "njev": int(getattr(sol, "njev", 0) or 0),
                 "nlu": int(getattr(sol, "nlu", 0) or 0),
                 "accepted_samples": int(len(sol.t)),
@@ -101,7 +108,9 @@ def main():
         "psi_init": psi, "psi_dot_init": psi_dot, "phi_offset": offset,
         "Phi_dot_init": phi_dot, "initial_energy": energy(y0, p),
         "t_max_over_mu_inverse": args.t_max, "n_points": args.n_points,
-        "rtol": 1e-9, "atol": 1e-12,
+        "rtol": DEFAULT_RTOL,
+        "dimensionless_atol": DEFAULT_DIMENSIONLESS_ATOL,
+        "atol_state_vector": default_state_atol(p).tolist(),
     }, flush=True)
     reports = {}
     for method in args.methods:
