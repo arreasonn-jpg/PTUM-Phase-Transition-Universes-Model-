@@ -48,6 +48,7 @@ jobs:
 
   full-waterfall-scan:
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && contains(github.event.head_commit.message, '[run-full-scan]'))
+    needs: [python-regression, latex-build]
     runs-on: ubuntu-latest
     timeout-minutes: 360
     strategy:
@@ -87,7 +88,7 @@ jobs:
     if: github.event_name == 'push' && contains(github.event.head_commit.message, '[diagnose-trajectory]')
     name: diagnose-index-${{ matrix.scan_index }}-${{ matrix.solver }}
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
