@@ -1100,3 +1100,15 @@ The LaTeX build remains successful but not warning-free: the final log
 contains 73 Underfull hbox warnings and one Overfull hbox warning at
 source line 1937. Gate 10 remains PARTIAL. Gate 4 remains PARTIAL pending
 the paired study and coupled inhomogeneous dynamics.
+
+
+## 2026-11-17 manuscript overfull-line correction (verification pending)
+
+The long complex-Higgs reheating equation was split across an aligned
+display, moving the interaction derivative to the right-hand side without
+changing the equation or its sign. The source regression now checks the
+aligned form and the derivative term. This addresses the previously
+reported Overfull hbox at source line 1937 in the source layout; the
+next LaTeX build must confirm whether the warning is gone. The 73
+Underfull hbox warnings remain unresolved. Gate 10 stays PARTIAL until
+a fresh final-pass log is inspected.

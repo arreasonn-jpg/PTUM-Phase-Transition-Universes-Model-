@@ -1404,3 +1404,15 @@ parameters and initial conditions once, then reuses those exact objects
 for 4,001 and 256,001 output points and for the three solver tolerance
 levels. It records strict-JSON checkpoints and compares all 100 rows.
 This paired study awaits fresh CI. No Gate 4 promotion is made yet.
+
+
+## 2026-11-17 manuscript equation line-wrap correction
+
+The complex-Higgs reheating equation was reformatted into an aligned
+two-line display. The derivative source was moved algebraically to the
+right-hand side; the field equation and its interaction signs are
+unchanged. A regression assertion guards the aligned display and the
+full derivative operator. The previous CI had one Overfull hbox at
+source line 1937; a fresh LaTeX build is required to verify that this
+specific warning is removed. Underfull hbox warnings have not yet been
+resolved.

@@ -622,3 +622,13 @@ classifications are confined to large classical seeds in the low-scale
 control and are not a microscopic proxy-fluid result. The 42-page
 manuscript compiles but still reports 73 Underfull and one Overfull
 hbox warning.
+
+
+## 2026-11-17 manuscript warning follow-up
+
+The long complex-Higgs reheating equation has been split across an
+aligned display without changing its algebraic content. The source
+regression now checks the display structure and derivative source.
+This is a source-level correction only; the final LaTeX log must still
+be inspected before claiming the Overfull hbox warning is resolved.
+The 73 Underfull hbox warnings remain outstanding.

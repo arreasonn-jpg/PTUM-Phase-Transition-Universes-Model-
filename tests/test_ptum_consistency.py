@@ -2406,6 +2406,8 @@ def test_full_reheating_scalar_and_higgs_eom_sources_are_explicit_in_manuscript(
     source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
     assert "eq:psi_full_reheating_eom" in source
     assert "eq:higgs_full_reheating_eom" in source
+    assert r"\\begin{aligned} D_\\mu D^\\mu H" in source
+    assert r"\\frac{\\partial(U_{{\\rm SM},Y}+U_Y)}{\\partial H^\\dagger}" in source
     assert "g_{\\psi H}\\psi H^\\dagger H" in source
     assert "mathcal O_{\\rm SM}" in source
     assert "do not imply that the present homogeneous code evolves the Higgs or fermion fields" in source
