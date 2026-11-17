@@ -660,3 +660,30 @@ confirm whether it removes the overfull warning. Gates 4 and 10 remain
 PARTIAL. The homogeneous scan does not establish inhomogeneous
 waterfall dynamics, defect evolution, backreaction, relic abundance
 or a microscopic proxy-fluid realization.
+
+
+## 2026-11-17 action-derived sector-current audit
+
+A small independent algebraic audit module, ptum_sector_currents.py,
+now evaluates the transfer four-vectors from the interaction assignments
+in the full action. It covers the Phi-psi portal, the psi-Higgs portal,
+the dimension-five psi O_SM/Lambda operator, and the chi-Phi_res portal.
+The Higgs contribution is expressed through the gauge-invariant
+nabla^nu(H^dagger H) contraction, so it includes the real-component
+identity corresponding to H^dagger D^nu H+(D^nu H)^dagger H.
+
+The derivation assigns each interaction potential to the sector stated
+in main.tex. The non-owner sector receives the field-gradient derivative
+of that interaction; the owner receives the negative sum. The module
+therefore returns Q_Phi, Q_psi, Q_SM, Q_DM and Q_DE with their total
+summing to zero algebraically. All gradients are contravariant; with
+(-+++), grad^0=-dot(field). Regression tests compare the portal
+derivatives against independent central finite differences, check
+pairwise/current-total cancellation, and cross-check the homogeneous
+Q_psi^0 sign against the existing two-field solver.
+
+This is an algebraic current audit, not a numerical Hilbert-tensor
+divergence calculation and not a full SM/Higgs/fermion evolution.
+Gate 3 remains PARTIAL; no conservation gate is promoted until the
+full sector fields are dynamically evolved and independent variational
+and numerical convergence checks are complete.

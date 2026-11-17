@@ -2660,3 +2660,158 @@ def test_pr2_full_scan_opt_in_runs_paired_full_grid_convergence_job():
     assert "contains(github.event.pull_request.title, '[FULL-SCAN]')" in job
     assert "ptum_full_grid_convergence_study.py" in job
     assert "ptum-full-grid-convergence-study" in job
+
+
+def test_action_derived_sector_currents_match_variations_and_cancel():
+    from ptum_sector_currents import action_derived_sector_currents
+
+    Phi, psi = 0.73, -0.41
+    chi, Phi_res = 0.62, -0.88
+    alpha, m_psi, E_th = 1.3, 2.2, 4.7
+    g_psiH, g_DM, Lambda, O_SM = 0.37, 0.21, 3.4, -0.29
+    grad_phi = np.array([0.2, -0.1, 0.07, 0.3])
+    grad_psi = np.array([-0.11, 0.09, 0.04, -0.2])
+    grad_phi_res = np.array([0.08, 0.12, -0.17, 0.03])
+    higgs_real = np.array([0.4, -0.2, 0.6, 0.3])
+    higgs_covariant_grad = np.array(
+        [
+            [0.03, -0.02, 0.04, 0.01],
+            [0.05, 0.01, -0.03, 0.02],
+            [-0.04, 0.06, 0.02, -0.01],
+            [0.02, -0.03, 0.05, 0.07],
+        ]
+    )
+    grad_higgs_norm = np.sum(
+        higgs_real[:, None] * higgs_covariant_grad, axis=0
+    )
+
+    currents = action_derived_sector_currents(
+        Phi=Phi,
+        psi=psi,
+        grad_Phi=grad_phi,
+        grad_psi=grad_psi,
+        grad_HdaggerH=grad_higgs_norm,
+        chi=chi,
+        Phi_res=Phi_res,
+        grad_Phi_res=grad_phi_res,
+        O_SM=O_SM,
+        alpha=alpha,
+        m_psi=m_psi,
+        E_th=E_th,
+        g_psiH=g_psiH,
+        g_DM=g_DM,
+        Lambda=Lambda,
+    )
+
+    eps = 1.0e-6
+    coeff = alpha * m_psi**2 / E_th**2
+    U_phi_psi = lambda value: 0.5 * coeff * value**2 * psi**2
+    dU_dPhi_fd = (
+        U_phi_psi(Phi + eps) - U_phi_psi(Phi - eps)
+    ) / (2.0 * eps)
+    np.testing.assert_allclose(
+        currents["Phi"], dU_dPhi_fd * grad_phi, rtol=2.0e-9, atol=1.0e-13
+    )
+
+    def U_psi_H(h):
+        return 0.5 * g_psiH * psi**2 * (0.5 * np.dot(h, h))
+
+    q_higgs_fd = np.empty(4)
+    for nu in range(4):
+        plus = higgs_real + eps * higgs_covariant_grad[:, nu]
+        minus = higgs_real - eps * higgs_covariant_grad[:, nu]
+        q_higgs_fd[nu] = (U_psi_H(plus) - U_psi_H(minus)) / (2.0 * eps)
+    q_yukawa = (O_SM / Lambda) * grad_psi
+    np.testing.assert_allclose(
+        currents["SM"] + q_yukawa,
+        q_higgs_fd,
+        rtol=2.0e-9,
+        atol=1.0e-13,
+    )
+
+    U_chi_res = lambda value: g_DM * chi**2 * value**2
+    dU_dPhi_res_fd = (
+        U_chi_res(Phi_res + eps) - U_chi_res(Phi_res - eps)
+    ) / (2.0 * eps)
+    np.testing.assert_allclose(
+        currents["DE"],
+        dU_dPhi_res_fd * grad_phi_res,
+        rtol=2.0e-9,
+        atol=1.0e-13,
+    )
+
+    q_phi = dU_dPhi_fd * grad_phi
+    q_higgs = q_higgs_fd
+    q_yukawa_fd = (O_SM / Lambda) * grad_psi
+    np.testing.assert_allclose(
+        currents["psi"],
+        -q_phi - q_higgs + q_yukawa_fd,
+        rtol=2.0e-9,
+        atol=1.0e-13,
+    )
+    np.testing.assert_allclose(
+        sum(currents.values()),
+        np.zeros(4),
+        rtol=0.0,
+        atol=2.0e-15,
+    )
+
+
+def test_action_derived_homogeneous_current_matches_minus_plus_metric_sign():
+    from ptum_sector_currents import action_derived_sector_currents
+
+    params = PTUMParameters()
+    Phi = 0.9 * params.Phi_c
+    psi = 0.2 * params.psi_0
+    Phi_dot = -1.0e20
+    currents = action_derived_sector_currents(
+        Phi=Phi,
+        psi=psi,
+        grad_Phi=np.array([-Phi_dot, 0.0, 0.0, 0.0]),
+        grad_psi=np.zeros(4),
+        grad_HdaggerH=np.zeros(4),
+        chi=0.0,
+        Phi_res=0.0,
+        grad_Phi_res=np.zeros(4),
+        O_SM=0.0,
+        alpha=params.alpha,
+        m_psi=params.m_psi,
+        E_th=params.E_th,
+        g_psiH=0.0,
+        g_DM=0.0,
+        Lambda=1.0,
+    )
+    q_psi_code, _ = waterfall_transfer_rate(
+        Phi=Phi, psi=psi, Phi_dot=Phi_dot, params=params
+    )
+    assert currents["psi"][0] == pytest.approx(q_psi_code, rel=2.0e-15)
+    assert currents["psi"][0] < 0.0
+    np.testing.assert_allclose(
+        sum(currents.values()), np.zeros(4), rtol=0.0, atol=0.0
+    )
+
+
+def test_action_derived_sector_currents_reject_malformed_gradients_and_scales():
+    from ptum_sector_currents import action_derived_sector_currents
+
+    arguments = dict(
+        Phi=1.0,
+        psi=0.2,
+        grad_Phi=np.zeros(4),
+        grad_psi=np.zeros(4),
+        grad_HdaggerH=np.zeros(4),
+        chi=0.3,
+        Phi_res=0.4,
+        grad_Phi_res=np.zeros(4),
+        O_SM=0.1,
+        alpha=1.0,
+        m_psi=2.0,
+        E_th=3.0,
+        g_psiH=0.1,
+        g_DM=0.2,
+        Lambda=4.0,
+    )
+    with pytest.raises(ValueError, match="contravariant four-vector"):
+        action_derived_sector_currents(**{**arguments, "grad_Phi": np.zeros(3)})
+    with pytest.raises(ValueError, match="strictly positive"):
+        action_derived_sector_currents(**{**arguments, "Lambda": 0.0})
