@@ -1252,3 +1252,24 @@ minima must exchange signs, while the positive vacuum-energy splitting,
 wall-annihilation estimate and spinodal ratio remain invariant. This
 does not predict the Wilson coefficients, renormalized SM condensate,
 wall network or its cosmological evolution. Gate 5 remains NOT MET.
+
+
+## 2026-11-17 chiral-SM versus toy-coupling claim-boundary correction
+
+A stale paragraph in the reheating-current discussion described the
+explicit chiral Standard Model action and its Hilbert tensor as still
+missing, even though both are defined earlier in the manuscript. The
+paragraph is corrected: \(\bar f f\) is now explicitly a generic
+vector-like Dirac toy coupling, while the PTUM chiral-SM interaction
+remains the gauge-invariant dimension-five operator
+\(\psi\mathcal O_{\rm SM}/\Lambda\). The separate real-scalar portal
+example is also labelled as a toy model and no longer uses a symbol
+that could be mistaken for the Standard Model Higgs field.
+
+This is a claim-boundary and manuscript-consistency correction, not
+new physical evidence. Gate 1 remains MET only for the specified
+classical tree-level EFT. Gate 3 remains PARTIAL: no full SM/Higgs/
+fermion evolution or independent full-sector numerical conservation
+convergence has been demonstrated. No other acceptance gate is
+promoted by this correction. A fresh regression and LaTeX build are
+required before the correction is considered verified.

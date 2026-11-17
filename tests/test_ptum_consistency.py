@@ -2865,3 +2865,21 @@ def test_action_derived_sector_currents_reject_malformed_gradients_and_scales():
         action_derived_sector_currents(**{**arguments, "grad_Phi": np.zeros(3)})
     with pytest.raises(ValueError, match="strictly positive"):
         action_derived_sector_currents(**{**arguments, "Lambda": 0.0})
+
+
+def test_dirac_and_real_scalar_reheating_examples_are_explicitly_toy_models():
+    from pathlib import Path
+
+    source = Path("main.tex").read_text(encoding="utf-8")
+    normalized = " ".join(source.split())
+    assert r"\mathcal{L}_{Y}^{\rm toy}=-y_\psi\psi\bar f f" in normalized
+    assert "generic vector-like Dirac toy" in normalized
+    assert "not the gauge-invariant electroweak operator" in normalized
+    assert r"\psi\mathcal O_{\rm SM}/\Lambda" in normalized
+    assert r"\bar Q_L C_d H d_R" in normalized
+    assert r"\bar Q_L C_u\widetilde H u_R" in normalized
+    assert r"\bar L_L C_e H e_R" in normalized
+    assert r"U_{\rm toy}=\tfrac12g_{\rm toy}\psi^2\varphi_{\rm toy}^2" in normalized
+    assert "not identified with the Standard Model Higgs doublet" in normalized
+    assert r"\eqref{eq:sm_hilbert_tensor}" in normalized
+    assert "do not replace the still-missing explicit SM action" not in normalized

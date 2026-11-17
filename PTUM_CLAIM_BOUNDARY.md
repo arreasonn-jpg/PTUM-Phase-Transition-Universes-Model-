@@ -760,3 +760,20 @@ minima must exchange signs, while the positive vacuum-energy splitting,
 wall-annihilation estimate and spinodal ratio remain invariant. This
 does not predict the Wilson coefficients, renormalized SM condensate,
 wall network or its cosmological evolution. Gate 5 remains NOT MET.
+
+
+## 2026-11-17 toy-coupling scope
+
+Do not interpret the generic \(\psi\bar f f\) Dirac bilinear as the
+chiral Standard Model reheating operator. It is retained only as a
+vector-like toy example. The PTUM chiral-SM coupling is the
+gauge-invariant dimension-five operator
+\(\psi\mathcal O_{\rm SM}/\Lambda\) built from \(Q_L,u_R,d_R,L_L,e_R\)
+and the Higgs doublet. Likewise, the real-scalar portal example is a
+toy model and is not the Higgs-doublet portal.
+
+The manuscript now states this distinction and no longer claims that
+the explicit chiral-SM action or its Hilbert tensor is missing. This
+is a consistency correction only: it does not promote Gate 3, which
+still requires dynamical SM/Higgs/fermion evolution and independent
+numerical conservation convergence.
