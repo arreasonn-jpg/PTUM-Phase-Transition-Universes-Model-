@@ -270,9 +270,11 @@ def compare_records(reference: dict[str, Any], candidate: dict[str, Any],
     )
     classification_pass = (
         class_availability_match
-        and max_classification is not None
-        and max_classification
-        <= LIMITS["max_classification_relative_difference"]
+        and (
+            max_classification is None
+            or max_classification
+            <= LIMITS["max_classification_relative_difference"]
+        )
     )
     flags_pass = all(flag_matches.values())
     chain_rule_pass = (
@@ -300,6 +302,9 @@ def compare_records(reference: dict[str, Any], candidate: dict[str, Any],
         "diagnostic_absolute_differences": diagnostic_differences,
         "max_final_state_relative_difference": max_state,
         "max_classification_relative_difference": max_classification,
+        "classification_metrics_compared": sum(
+            value is not None for value in class_differences.values()
+        ),
         "max_chain_rule_residual_absolute_difference": chain_difference,
         "max_finite_difference_residual_absolute_difference":
             finite_difference_residual_difference,

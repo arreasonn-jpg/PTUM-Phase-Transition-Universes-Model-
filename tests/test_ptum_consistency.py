@@ -2607,3 +2607,17 @@ def test_paired_full_grid_comparator_rejects_state_or_regime_instability():
     assert not compare_records(
         reference, unstable_regime, params, "solver_tolerance"
     )["comparison_pass"]
+
+
+def test_pr2_full_scan_opt_in_runs_paired_full_grid_convergence_job():
+    from pathlib import Path
+
+    workflow = Path(".github/workflows/ptum-scientific-tests.yml").read_text(
+        encoding="utf-8"
+    )
+    job = workflow.split("  scan-full-grid-convergence:", 1)[1].split(
+        "  latex-build:", 1
+    )[0]
+    assert "contains(github.event.pull_request.title, '[FULL-SCAN]')" in job
+    assert "ptum_full_grid_convergence_study.py" in job
+    assert "ptum-full-grid-convergence-study" in job
