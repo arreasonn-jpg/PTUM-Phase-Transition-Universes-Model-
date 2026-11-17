@@ -254,7 +254,10 @@ def domain_wall_bias_diagnostics(
     """
     mu_eff = _validate_positive("mu_eff", mu_eff)
     lambda_psi = _validate_positive("lambda_psi", lambda_psi)
-    epsilon_bias = _validate_nonnegative("epsilon_bias", epsilon_bias)
+    epsilon_bias = float(epsilon_bias)
+    if not np.isfinite(epsilon_bias):
+        raise ValueError("epsilon_bias must be finite")
+    epsilon_bias_magnitude = abs(epsilon_bias)
     hubble_bbn = _validate_positive("hubble_bbn", hubble_bbn)
     reduced_planck_mass = _validate_positive(
         "reduced_planck_mass", reduced_planck_mass
@@ -269,14 +272,19 @@ def domain_wall_bias_diagnostics(
 
     v = domain_wall_vev(mu_eff, lambda_psi)
     sigma = domain_wall_tension(mu_eff, lambda_psi)
-    tilted = _tilted_minima(mu_eff, lambda_psi, epsilon_bias)
+    tilted = _tilted_minima(mu_eff, lambda_psi, epsilon_bias_magnitude)
+    true_minimum = tilted["true_minimum"]
+    false_minimum = tilted["false_minimum"]
+    if epsilon_bias < 0.0 and true_minimum is not None:
+        true_minimum = -true_minimum
+        false_minimum = -false_minimum
     h_dom = network_area_factor * sigma / (3.0 * reduced_planck_mass**2)
     required_delta_v = sigma * max(hubble_bbn, h_dom)
     required_epsilon_linear = required_delta_v / (2.0 * v)
     epsilon_critical = float(tilted["epsilon_critical"])
     small_bias_valid = (
         bool(tilted["metastable_vacuum_exists"])
-        and epsilon_bias <= small_bias_fraction * epsilon_critical
+        and epsilon_bias_magnitude <= small_bias_fraction * epsilon_critical
     )
 
     if small_bias_valid:
@@ -295,6 +303,10 @@ def domain_wall_bias_diagnostics(
         "wall_core_length": np.sqrt(2.0) / mu_eff,
         "wall_tension": sigma,
         "epsilon_bias": epsilon_bias,
+        "epsilon_bias_magnitude": epsilon_bias_magnitude,
+        "bias_favors_positive_psi": (
+            True if epsilon_bias > 0.0 else False if epsilon_bias < 0.0 else None
+        ),
         "epsilon_critical": epsilon_critical,
         "bias_ratio_to_spinodal": float(tilted["bias_ratio_to_spinodal"]),
         "metastable_vacuum_exists": bool(tilted["metastable_vacuum_exists"]),
@@ -302,12 +314,12 @@ def domain_wall_bias_diagnostics(
         # They are dimensionful field values; both are None beyond the
         # spinodal where the metastable minimum no longer exists.
         "true_minimum": (
-            None if tilted["true_minimum"] is None
-            else float(tilted["true_minimum"])
+            None if true_minimum is None
+            else float(true_minimum)
         ),
         "false_minimum": (
-            None if tilted["false_minimum"] is None
-            else float(tilted["false_minimum"])
+            None if false_minimum is None
+            else float(false_minimum)
         ),
         "vacuum_bias": delta_v,
         "small_bias_tension_approx_valid": small_bias_valid,

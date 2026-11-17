@@ -1426,6 +1426,40 @@ def test_tilted_quartic_bias_matches_stationary_potential_at_moderate_bias():
     assert result["false_minimum"] < 0.0
 
 
+def test_signed_domain_wall_bias_swaps_true_and_false_vacua():
+    from ptum_defects import domain_wall_bias_diagnostics
+
+    mu = 1.0e4
+    lam = 0.1
+    epsilon_critical = 2.0 * mu**3 / (3.0 * np.sqrt(3.0 * lam))
+    epsilon = 0.2 * epsilon_critical
+    kwargs = dict(
+        mu_eff=mu,
+        lambda_psi=lam,
+        hubble_bbn=1.0e-20,
+        reduced_planck_mass=2.435e18,
+    )
+    positive = domain_wall_bias_diagnostics(epsilon_bias=epsilon, **kwargs)
+    negative = domain_wall_bias_diagnostics(epsilon_bias=-epsilon, **kwargs)
+
+    assert positive["true_minimum"] > 0.0
+    assert positive["false_minimum"] < 0.0
+    assert negative["true_minimum"] < 0.0
+    assert negative["false_minimum"] > 0.0
+    assert negative["true_minimum"] == pytest.approx(
+        -positive["true_minimum"], rel=2.0e-14
+    )
+    assert negative["false_minimum"] == pytest.approx(
+        -positive["false_minimum"], rel=2.0e-14
+    )
+    assert negative["vacuum_bias"] == pytest.approx(
+        positive["vacuum_bias"], rel=2.0e-14
+    )
+    assert negative["epsilon_bias"] == pytest.approx(-epsilon)
+    assert negative["epsilon_bias_magnitude"] == pytest.approx(epsilon)
+    assert negative["bias_favors_positive_psi"] is False
+
+
 def test_domain_wall_bias_spinodal_removes_false_vacuum():
     from ptum_defects import domain_wall_bias_diagnostics
 

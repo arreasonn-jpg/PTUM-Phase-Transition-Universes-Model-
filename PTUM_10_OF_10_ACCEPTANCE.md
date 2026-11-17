@@ -1234,3 +1234,21 @@ study found 12/200 tolerance comparisons outside the unchanged limits.
 That 500-run study is pending on the next exact-head workflow. The
 sector-current algebra audit is also included on the current branch;
 it does not promote Gate 3.
+
+
+## 2026-11-17 signed Z2-bias interface
+
+The thermal Dirac estimate returns a signed source for
+V_bias=-epsilon_bias*psi. The wall-network diagnostic previously
+accepted only a non-negative magnitude, so a negative thermal source
+could not be passed directly and the preferred vacuum sign was lost.
+The diagnostic now accepts either sign, uses the magnitude for the
+spinodal and annihilation criteria, and flips the reported true/false
+minima when epsilon_bias is negative. It also returns the magnitude
+and the preferred-sign flag explicitly.
+
+A regression compares positive and negative tilts: the two stationary
+minima must exchange signs, while the positive vacuum-energy splitting,
+wall-annihilation estimate and spinodal ratio remain invariant. This
+does not predict the Wilson coefficients, renormalized SM condensate,
+wall network or its cosmological evolution. Gate 5 remains NOT MET.
