@@ -45,6 +45,9 @@ import math
 M_PL = 2.435e18  # GeV (reduced Planck mass)
 GEV_TO_S = 6.582e-25  # 1 GeV^-1 = 6.582e-25 s
 
+DEFAULT_RTOL = 1.0e-9
+DEFAULT_DIMENSIONLESS_ATOL = 1.0e-12
+
 
 @dataclass
 class PTUMParameters:
@@ -311,12 +314,35 @@ def background_equations(t: float, y: np.ndarray, params: PTUMParameters) -> np.
     return np.array([Phi_dot, Phi_ddot, psi_dot, psi_ddot])
 
 
-def run_simulation(params: PTUMParameters, 
+def default_state_atol(params: PTUMParameters) -> np.ndarray:
+    """Return a dimensionally consistent absolute-tolerance vector.
+
+    The state is (Phi [GeV], Phi_dot [GeV^2], psi [GeV], psi_dot [GeV^2]).
+    A single scalar atol therefore mixes four different units and can force
+    near-zero velocity components to an unphysical absolute error floor.
+    The default 1e-12 is instead applied to the dimensionless state defined by
+    (Phi/Phi_c, Phi_dot/(mu Phi_c), psi/psi_0, psi_dot/(mu psi_0)).
+    The relative tolerance is unchanged; callers may still pass an explicit
+    scalar or vector atol to retain full control of solve_ivp error settings.
+    """
+    mu = float(params.mu)
+    phi_scale = abs(float(params.Phi_c))
+    psi_scale = abs(float(params.psi_0))
+    scales = np.asarray(
+        [phi_scale, mu * phi_scale, psi_scale, mu * psi_scale],
+        dtype=float,
+    )
+    if not np.all(np.isfinite(scales)) or np.any(scales <= 0.0):
+        raise ValueError("PTUM characteristic state scales must be finite and positive")
+    return DEFAULT_DIMENSIONLESS_ATOL * scales
+
+
+def run_simulation(params: PTUMParameters,
                    ic: InitialConditions,
                    t_span: Tuple[float, float],
                    t_eval: Optional[np.ndarray] = None,
-                   rtol: float = 1e-9,
-                   atol: float = 1e-12,
+                   rtol: float = DEFAULT_RTOL,
+                   atol: Optional[float | np.ndarray] = None,
                    solver_method: str = "DOP853") -> Dict:
     """
     Run a single background simulation.
@@ -325,6 +351,9 @@ def run_simulation(params: PTUMParameters,
     """
     y0 = np.array([ic.Phi, ic.Phi_dot, ic.psi, ic.psi_dot])
     
+    # Use the same dimensionless absolute-error floor for every state
+    # component. This avoids mixing GeV and GeV^2 in one scalar atol.
+    state_atol = default_state_atol(params) if atol is None else atol
     sol = solve_ivp(
         background_equations,
         t_span,
@@ -332,7 +361,7 @@ def run_simulation(params: PTUMParameters,
         args=(params,),
         t_eval=t_eval,
         rtol=rtol,
-        atol=atol,
+        atol=state_atol,
         method=solver_method,
         dense_output=True
     )
@@ -454,8 +483,22 @@ def run_simulation(params: PTUMParameters,
         t, p_psi_arr, rho_psi_arr, psi_dot
     )
     
+    atol_record = (
+        np.asarray(state_atol, dtype=float).tolist()
+        if np.ndim(state_atol) > 0
+        else float(state_atol)
+    )
     return {
         'success': True,
+        'solver_stats': {
+            'method': solver_method,
+            'rtol': float(rtol),
+            'atol': atol_record,
+            'nfev': int(sol.nfev),
+            'njev': int(getattr(sol, "njev", 0) or 0),
+            'nlu': int(getattr(sol, "nlu", 0) or 0),
+            'n_output_samples': int(len(t)),
+        },
         't': t,
         'Phi': Phi,
         'Phi_dot': Phi_dot,
