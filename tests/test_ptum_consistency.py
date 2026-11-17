@@ -2581,7 +2581,7 @@ def test_dense_cycle_root_detector_keeps_roundoff_zero_final_endpoint():
     assert len(result["Q_cycle"]) == 4
 
 
-def test_paired_full_grid_study_uses_four_complete_profiles():
+def test_paired_full_grid_study_uses_five_complete_profiles():
     from ptum_full_grid_convergence_study import STUDY_SPECS
 
     assert [item["name"] for item in STUDY_SPECS] == [
@@ -2589,9 +2589,22 @@ def test_paired_full_grid_study_uses_four_complete_profiles():
         "grid_256001",
         "tolerance_1e-10_1e-13",
         "tolerance_1e-11_1e-14",
+        "tolerance_1e-12_1e-15",
     ]
-    assert STUDY_SPECS[0]["rtol"] == STUDY_SPECS[1]["rtol"] == pytest.approx(1.0e-9)
-    assert STUDY_SPECS[0]["atol"] == STUDY_SPECS[1]["atol"] == pytest.approx(1.0e-12)
+    assert [item["comparison_role"] for item in STUDY_SPECS] == [
+        "reference",
+        "output_grid",
+        "solver_tolerance",
+        "solver_tolerance",
+        "solver_tolerance",
+    ]
+    assert [(item["rtol"], item["atol"]) for item in STUDY_SPECS] == [
+        (1.0e-9, 1.0e-12),
+        (1.0e-9, 1.0e-12),
+        (1.0e-10, 1.0e-13),
+        (1.0e-11, 1.0e-14),
+        (1.0e-12, 1.0e-15),
+    ]
     assert STUDY_SPECS[0]["n_output_points"] == 4001
     assert all(item["n_output_points"] == 256001 for item in STUDY_SPECS[1:])
 

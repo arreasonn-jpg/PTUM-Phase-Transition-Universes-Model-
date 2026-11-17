@@ -1273,3 +1273,19 @@ fermion evolution or independent full-sector numerical conservation
 convergence has been demonstrated. No other acceptance gate is
 promoted by this correction. A fresh regression and LaTeX build are
 required before the correction is considered verified.
+
+
+## 2026-11-17 paired-study profile regression alignment
+
+The paired convergence driver contains five execution profiles: one
+4,001-point reference, one 256,001-point profile at the reference
+tolerance, and three stricter 256,001-point solver-tolerance profiles
+(\(10^{-10}/10^{-13}\), \(10^{-11}/10^{-14}\), and
+\(10^{-12}/10^{-15}\)). A stale regression still expected only four
+profiles after the fifth tolerance level was introduced. The regression
+now checks all five profile names, roles, grids and exact tolerances;
+the workflow comment now correctly says four distinct tolerance levels.
+
+This corrects a test/workflow mismatch only. The five-profile, 500-run
+paired study has not yet completed on the current head, and no tolerance
+convergence claim is made. Gate 4 remains PARTIAL.

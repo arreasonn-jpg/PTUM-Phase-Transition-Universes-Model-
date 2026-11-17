@@ -123,7 +123,7 @@ jobs:
           retention-days: 30
 
   scan-full-grid-convergence:
-    # Paired 4,001/256,001 output-grid and three-tolerance study on the same
+    # Paired 4,001/256,001 output-grid and four-tolerance study on the same
     # 100 initial conditions; this remains homogeneous post-threshold physics.
     if: >-
       github.event_name == 'pull_request' &&
