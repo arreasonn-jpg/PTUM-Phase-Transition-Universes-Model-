@@ -1,3 +1,5 @@
+import pytest
+
 from ptum_task1_scan import expected_scan_count, expected_shard_count, shard_indices
 
 
@@ -97,3 +99,64 @@ def test_stiff_scan_trajectory_73_is_solver_stable():
         scale = max(float(np.max(np.abs(left))), float(np.max(np.abs(right))), 1.0)
         relative_max_difference = float(np.max(np.abs(left - right)) / scale)
         assert relative_max_difference < 5.0e-5, (key, relative_max_difference)
+
+
+@pytest.mark.parametrize("index", [20, 70])
+def test_zero_velocity_full_scan_rows_are_solver_stable_with_scaled_atol(index):
+    import numpy as np
+    from ptum_diagnose_trajectory import get_spec
+    from ptum_task1_simulation import (
+        DEFAULT_RTOL,
+        DEFAULT_DIMENSIONLESS_ATOL,
+        create_initial_conditions,
+        default_state_atol,
+        run_simulation,
+    )
+
+    scenario, params, psi_init, psi_dot_init, phi_offset, phi_dot = get_spec(index)
+    assert psi_dot_init == 0.0
+    initial = create_initial_conditions(
+        params, psi_init, psi_dot_init, phi_offset,
+        Phi_dot_override=phi_dot,
+    )
+    mu = np.sqrt(abs(params.mu_sq))
+    t_span = (0.0, 20.0 / mu)
+    t_eval = np.linspace(*t_span, 4001)
+    expected_atol = default_state_atol(params)
+
+    results = {
+        method: run_simulation(
+            params, initial, t_span, t_eval,
+            solver_method=method,
+        )
+        for method in ("DOP853", "Radau", "BDF")
+    }
+
+    for method, result in results.items():
+        assert result["success"] is True
+        assert result["solver_stats"]["method"] == method
+        assert result["solver_stats"]["rtol"] == DEFAULT_RTOL
+        assert result["solver_stats"]["n_output_samples"] == 4001
+        assert result["solver_stats"]["nfev"] < 200_000
+        assert np.allclose(result["solver_stats"]["atol"], expected_atol)
+        assert DEFAULT_DIMENSIONLESS_ATOL == pytest.approx(1.0e-12)
+        assert np.all(np.isfinite(result["rho_total"]))
+        assert np.all(result["rho_total"] > 0.0)
+        assert np.all(np.isfinite(result["continuity_residual_relative"]))
+        assert np.max(np.abs(result["continuity_residual_relative"])) < 1.0e-10
+
+    reference = results["DOP853"]
+    for method in ("Radau", "BDF"):
+        candidate = results[method]
+        for key in ("Phi", "Phi_dot", "psi", "psi_dot", "rho_total"):
+            left = np.asarray(reference[key], dtype=float)
+            right = np.asarray(candidate[key], dtype=float)
+            scale = max(
+                float(np.max(np.abs(left))),
+                float(np.max(np.abs(right))),
+                1.0,
+            )
+            relative_max_difference = float(np.max(np.abs(left - right)) / scale)
+            assert relative_max_difference < 5.0e-5, (
+                index, method, key, relative_max_difference
+            )
