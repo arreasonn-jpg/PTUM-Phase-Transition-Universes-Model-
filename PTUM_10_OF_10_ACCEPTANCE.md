@@ -9,13 +9,13 @@ This file defines the evidence required before PTUM can be called scientifically
 | 1. Complete action and conventions | One explicit covariant action; fixed metric/sign conventions; all fields, dimensions, gauge representations, potentials, couplings, real/complex field choices and symmetry-breaking structure specified | **MET (classical tree-level EFT)**. The minimally coupled Einstein + PTUM + chiral-SM action, field representations, canonical dimensions, Higgs and Yukawa potentials, dimension-five PTUM operators, and the explicit \(\psi\)/\(\Phi_{\rm res}\) symmetry scope are now specified. Quantum/UV completion remains outside this gate and open separately |
 | 2. Inflation-to-waterfall connection | Exact inflation endpoint; threshold crossing in the same coupled background; stability of all modes before crossing; quantum seed prescription | **PARTIAL**. Exact epsilon_H endpoint is computed; post-threshold scan velocities are now taken from the integrated single-field FRW trajectory at each offset, but the coupled crossing and quantum seeds are not evolved |
 | 3. Hilbert tensors and conservation | Every sector tensor derived from the same action; all Q_i^nu derived; sum of currents cancels; numerical conservation converges independently with solver tolerance and timestep | **PARTIAL**. The classical tree-level gauge, Higgs, chiral-fermion and PTUM Hilbert tensors and all interaction currents are now written from one action; the current solver does not evolve SM fields, and full-sector numerical conservation/timestep-tolerance convergence is not yet demonstrated |
-| 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **PARTIAL**. The 100-row 256,001-point dense scan completed 100/100; against 4,001 points, all final states, Q, w, virial and classifications were unchanged, and the maximum finite-difference continuity residual fell to 6.05e-4. Four-case tolerance convergence passed 36/36, but full 100-row solver-tolerance convergence and coupled inhomogeneous dynamics remain open |
+| 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **PARTIAL**. The separate 100-row 4,001- and 256,001-point scans and the 36/36 four-case tolerance probe completed. The separate jobs recomputed the exact endpoint independently, producing a tiny relative difference in Phi_c (2.3e-15); their normalized row join is therefore not a strictly identical-input grid test. A paired 400-run study now reuses identical parameters and initial conditions across both grids and three tolerances; coupled inhomogeneous dynamics remain open |
 | 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and a defect-topology analysis (including the Z2 domain-wall risk of a real waterfall scalar) | **NOT MET**. Current scan is homogeneous and post-threshold |
 | 6. Resonance and relic abundance | Expanding-background mode equations; converged monodromy/Floquet growth; momentum integration; backreaction; thermalization and entropy dilution; independently reproduced relic abundance | **NOT MET**. A linear mode integrator now evolves supplied expanding-FRW histories with an adiabatic-vacuum check and Wronskian monitor, and a finite-band trapezoidal momentum integral is implemented. The background is not generated self-consistently, the momentum tails and grid are not converged, and no backreaction or entropy dilution is available |
 | 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The closure remains phenomenological; no microscopic realization is established |
 | 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. Conditional potential-dominated T_rh estimate only; branching and thermalization are not computed |
 | 9. Observational reproducibility | Public exact CLASS patch; pinned version/commit; complete configs, likelihoods, data, chains and commands; independent rerun reproduces posteriors and model comparison | **NOT MET**. Reported numbers are author-reported; patch availability and chains remain unverified |
-| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Latest completed workflow had 130 tests pass and 1 fail due to a dimensionally inconsistent synthetic test fixture; the fixture is corrected in the current head and CI is pending. The 100-row baseline, 100-row 256,001-point scan and four-case convergence all passed. The 42-page PDF builds but retains 73 Underfull and one Overfull warning |
+| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Workflow 43843783240 on head 32f33013 reported 131 Python tests passed, the 4/4 smoke scan, both 100-row scans and the 36/36 targeted convergence probe passed, and the 42-page PDF built. The final LaTeX log still reports 73 Underfull and one Overfull hbox warning. A paired full-grid convergence job has been added and awaits fresh CI |
 
 ## Current implementation evidence
 
@@ -1035,3 +1035,68 @@ This is not evidence for quantum vacuum seeding or a broad attractor.
 The 100-row tolerance campaign is still incomplete, and the corrected
 test fixture in commit `7af32e39757f4b4c8cd78f2bda0b1eed9d83d345`
 awaits fresh CI. Gate 4 and Gate 10 remain PARTIAL.
+
+
+## 2026-11-17 current-head CI audit and paired-convergence correction
+
+Workflow 43843783240 completed successfully on PR head
+32f33013d81617ac998ddd0707be374f0bb1ecb6:
+
+- Python regression suite: **131 passed** in 25.90 s.
+- Four-trajectory two-scale smoke scan: **4/4** successful.
+- Homogeneous 100-row baseline: **100/100** integrations, zero failed rows.
+- Dense 256,001-point rerun: **100/100** integrations, 100 unique row keys,
+  zero failed rows and a complete checkpoint.
+- Four-case tolerance/output-grid probe: **36/36** successful integrations.
+- LaTeX build: 42-page PDF generated successfully.
+
+Artifact SHA-256 digests reported by GitHub Actions:
+- 100-row baseline ZIP: 2ae9179bc475cc83289fc4d4216c768d2dc07c5fe2ec4e1c46eeb76ff601e690.
+- 256,001-point dense ZIP: 6504e95396e1799b5162f6074d705a5afc67158291752d24cdffe6ae32be97cb.
+- Targeted convergence ZIP: d8a1e2cff1d7f160053068a1a5402a46b320db2d623f690a9d665af6ecb81515.
+
+The three extracted JSON files parse under strict JSON with NaN/Infinity
+rejected. Their SHA-256 digests are respectively:
+5c86db1631da9efd35f956a266edbd5c30cfdae405de1cb9e6e06029c042c1a2,
+663dc5cee842f81fe67d0063e7341aa6fd6c9555ae7c24f07e76a4c055d08035,
+and
+12af7465fb6b840ff53bbc63fcf93d2c9b21c123e8519e61fa1aaf22b84f988f.
+
+The two separate full scans join to all 100 normalized initial-condition
+keys. Their classification labels and flags agree for all rows. Maximum
+absolute differences in the cycle diagnostics are 2.01e-9 for Q,
+2.00e-10 for averaged w, and 1.39e-10 for the quartic virial ratio.
+Maximum symmetric relative differences in the six final-state variables
+are: Phi 2.86e-13, Phi_dot 1.86e-11, psi 4.42e-9, psi_dot 8.32e-8,
+H 3.36e-13, and total density 6.72e-13. The dense quadrature
+relative-error estimate is at most 5.97e-6.
+
+**Important comparison limitation:** the baseline and refined-grid jobs
+constructed their endpoint-matched scenario parameters independently.
+Their stored Phi_c/M_Pl values differ by about 2.3e-15 relatively,
+so the absolute initial conditions differ at roundoff level even though
+their dimensionless row keys match. The preceding join is a strong
+near-agreement diagnostic, but it is not a perfectly controlled
+same-input output-grid experiment. The finite-difference continuity
+residual maximum falls from 3.7234e-2 to 6.0499e-4 (about 61.5-fold),
+while the maximum difference in the chain-rule residual diagnostic is
+3.87e-10. No physical acceptance gate is promoted by this comparison.
+
+To remove that ambiguity, the workflow now includes a paired study with
+one shared set of scenario parameter objects and exact initial-condition
+values. It will run 100 rows in each of four profiles: 4,001 points at
+1e-9/1e-12, 256,001 points at the same tolerance, then 256,001 points
+at 1e-10/1e-13 and 1e-11/1e-14. This is 400 integrations and 300
+row-by-row comparisons. Strict-JSON checkpoints are written after each
+trajectory. The new paired study is pending CI and is not yet evidence.
+
+The scan classifications remain 89 non-quartic, six insufficient and
+five quartic. All five quartic rows are in the low-scale control at the
+largest classical seed and smallest threshold offset, with only four or
+five late half-cycles. They are not quantum-vacuum-seeded results and
+do not establish a robust quartic attractor.
+
+The LaTeX build remains successful but not warning-free: the final log
+contains 73 Underfull hbox warnings and one Overfull hbox warning at
+source line 1937. Gate 10 remains PARTIAL. Gate 4 remains PARTIAL pending
+the paired study and coupled inhomogeneous dynamics.

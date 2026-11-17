@@ -1373,3 +1373,34 @@ corrected in `7af32e39757f4b4c8cd78f2bda0b1eed9d83d345`; fresh CI is
 required. The five quartic classifications remain concentrated at
 the largest classical seed and do not establish quantum-seeded
 waterfall dynamics or a robust attractor.
+
+
+## 2026-11-17 paired numerical-convergence correction
+
+The current PR-head workflow 43843783240 passed 131 Python tests,
+the 4/4 smoke scan, the 100-row 4,001-point baseline, the 100-row
+256,001-point dense scan, and the four-case 36/36 tolerance probe.
+The extracted JSON artifacts were parsed with non-finite JSON constants
+rejected.
+
+A row-key join across the two separate full scans found unchanged
+classification labels and very small cycle-diagnostic differences
+(maximum absolute differences: Q 2.01e-9, averaged w 2.00e-10,
+quartic virial 1.39e-10). However, the jobs recomputed the exact
+inflation endpoint independently. Their Phi_c/M_Pl values differ by
+about 2.3e-15 relatively, so the actual initial conditions are not
+bitwise identical. This must not be presented as a pure same-input
+output-grid convergence proof. The maximum relative final-state
+differences range from 2.86e-13 (Phi) to 8.32e-8 (psi_dot).
+
+The finite-difference continuity residual maximum decreases from
+3.7234e-2 at 4,001 points to 6.0499e-4 at 256,001 points, while
+the chain-rule residual diagnostic differs by at most 3.87e-10.
+These are separate diagnostics. The dense quadrature relative-error
+estimate is at most 5.97e-6.
+
+A paired 400-run study has been added. It constructs the scenario
+parameters and initial conditions once, then reuses those exact objects
+for 4,001 and 256,001 output points and for the three solver tolerance
+levels. It records strict-JSON checkpoints and compares all 100 rows.
+This paired study awaits fresh CI. No Gate 4 promotion is made yet.

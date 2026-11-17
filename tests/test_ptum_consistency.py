@@ -2490,3 +2490,120 @@ def test_dense_cycle_root_detector_keeps_roundoff_zero_final_endpoint():
         atol=2.0e-10,
     )
     assert len(result["Q_cycle"]) == 4
+
+
+def test_paired_full_grid_study_uses_four_complete_profiles():
+    from ptum_full_grid_convergence_study import STUDY_SPECS
+
+    assert [item["name"] for item in STUDY_SPECS] == [
+        "reference_4001",
+        "grid_256001",
+        "tolerance_1e-10_1e-13",
+        "tolerance_1e-11_1e-14",
+    ]
+    assert STUDY_SPECS[0]["rtol"] == STUDY_SPECS[1]["rtol"] == pytest.approx(1.0e-9)
+    assert STUDY_SPECS[0]["atol"] == STUDY_SPECS[1]["atol"] == pytest.approx(1.0e-12)
+    assert STUDY_SPECS[0]["n_output_points"] == 4001
+    assert all(item["n_output_points"] == 256001 for item in STUDY_SPECS[1:])
+
+
+def test_paired_full_grid_row_key_uses_dimensionless_initial_conditions():
+    from ptum_full_grid_convergence_study import build_row_key
+
+    params = PTUMParameters(V0=1.0e56, m_psi=1.0e13, lambda_psi=0.1)
+    key = build_row_key(
+        "low_scale_underdamped_control",
+        {
+            "psi_init": 2.0 * params.psi_0,
+            "psi_dot_init": 0.5 * params.mu * params.psi_0,
+            "phi_offset": 0.01 * params.Phi_c,
+        },
+        params,
+    )
+    assert key == (
+        "low_scale_underdamped_control|seed=2|velocity=0.5|offset=0.01"
+    )
+
+
+def test_paired_full_grid_comparator_accepts_identical_complete_records():
+    from ptum_full_grid_convergence_study import compare_records
+
+    params = PTUMParameters(V0=1.0e56, m_psi=1.0e13, lambda_psi=0.1)
+    record = {
+        "success": True,
+        "row_key": "synthetic|seed=1|velocity=0|offset=0.01",
+        "final_state": {
+            "Phi": params.Phi_c,
+            "Phi_dot": params.mu * params.Phi_c,
+            "psi": params.psi_0,
+            "psi_dot": params.mu * params.psi_0,
+            "H": params.H_threshold_exact_end,
+            "rho_total": params.V0,
+        },
+        "classification": {
+            "Q_final": 2.2,
+            "w_final": 1.0 / 3.0,
+            "virial_final": 1.0,
+            "quadratic_virial_final": 0.0,
+            "H_over_omega_max": 0.01,
+            "regime": "quartic",
+            "quartic_achieved": True,
+            "n_late_half_cycles": 5,
+            "n_oscillations": 5,
+            "adiabaticity_valid": True,
+        },
+        "diagnostics": {
+            "max_abs_relative_frw_continuity_residual": 1.0e-10,
+            "max_abs_finite_difference_frw_residual_over_Hrho": 1.0e-3,
+        },
+    }
+    comparison = compare_records(record, record, params, "solver_tolerance")
+    assert comparison["comparison_available"]
+    assert comparison["comparison_pass"]
+
+
+def test_paired_full_grid_comparator_rejects_state_or_regime_instability():
+    from copy import deepcopy
+    from ptum_full_grid_convergence_study import compare_records
+
+    params = PTUMParameters(V0=1.0e56, m_psi=1.0e13, lambda_psi=0.1)
+    reference = {
+        "success": True,
+        "row_key": "synthetic|seed=1|velocity=0|offset=0.01",
+        "final_state": {
+            "Phi": params.Phi_c,
+            "Phi_dot": params.mu * params.Phi_c,
+            "psi": params.psi_0,
+            "psi_dot": params.mu * params.psi_0,
+            "H": params.H_threshold_exact_end,
+            "rho_total": params.V0,
+        },
+        "classification": {
+            "Q_final": 2.2,
+            "w_final": 1.0 / 3.0,
+            "virial_final": 1.0,
+            "quadratic_virial_final": 0.0,
+            "H_over_omega_max": 0.01,
+            "regime": "quartic",
+            "quartic_achieved": True,
+            "n_late_half_cycles": 5,
+            "n_oscillations": 5,
+            "adiabaticity_valid": True,
+        },
+        "diagnostics": {
+            "max_abs_relative_frw_continuity_residual": 1.0e-10,
+            "max_abs_finite_difference_frw_residual_over_Hrho": 1.0e-3,
+        },
+    }
+    unstable_state = deepcopy(reference)
+    unstable_state["final_state"]["Phi"] *= 1.0 + 2.0e-6
+    assert not compare_records(
+        reference, unstable_state, params, "solver_tolerance"
+    )["comparison_pass"]
+
+    unstable_regime = deepcopy(reference)
+    unstable_regime["classification"]["regime"] = "non_quartic"
+    unstable_regime["classification"]["quartic_achieved"] = False
+    assert not compare_records(
+        reference, unstable_regime, params, "solver_tolerance"
+    )["comparison_pass"]

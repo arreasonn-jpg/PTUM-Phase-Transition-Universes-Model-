@@ -595,3 +595,30 @@ mass parameter. It was corrected in commit
 `7af32e39757f4b4c8cd78f2bda0b1eed9d83d345`; fresh CI is pending.
 The five quartic classifications occur only at the largest classical
 seed and must not be described as quantum-vacuum-seeded evidence.
+
+
+## 2026-11-17 numerical evidence boundary
+
+Workflow 43843783240 on head 32f33013d81617ac998ddd0707be374f0bb1ecb6
+passed 131 Python tests, the four-row smoke scan, the 100-row baseline,
+the 100-row 256,001-point dense scan, the 36-run targeted convergence
+probe and the LaTeX build. The strict-JSON artifacts were downloaded
+and parsed. The two full scans have matching normalized row keys and
+unchanged classification labels, but their independently recomputed
+endpoint values differ by about 2.3e-15 relatively. This tiny
+roundoff-level input difference means the comparison is not a strict
+same-input output-grid experiment.
+
+A new paired 400-run study now holds each scenario parameter object and
+initial-condition tuple fixed while changing output grid and solver
+tolerance. It is the next accepted numerical test and remains pending
+until its own artifact and CI result are inspected.
+
+The current homogeneous scan still does not evolve the coupled
+inflation-to-waterfall crossing, quantum vacuum fluctuations,
+inhomogeneous tachyonic modes, nonlinear backreaction, rescattering,
+defect networks, thermalization or relic abundance. The five quartic
+classifications are confined to large classical seeds in the low-scale
+control and are not a microscopic proxy-fluid result. The 42-page
+manuscript compiles but still reports 73 Underfull and one Overfull
+hbox warning.
