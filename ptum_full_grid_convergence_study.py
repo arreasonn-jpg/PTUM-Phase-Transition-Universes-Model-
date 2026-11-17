@@ -31,6 +31,7 @@ TOLERANCE_LEVELS = (
     TOLERANCE_REFERENCE,
     (1.0e-10, 1.0e-13),
     (1.0e-11, 1.0e-14),
+    (1.0e-12, 1.0e-15),
 )
 STUDY_SPECS = (
     {
@@ -60,6 +61,13 @@ STUDY_SPECS = (
         "n_output_points": OUTPUT_GRID_REFINED,
         "rtol": TOLERANCE_LEVELS[2][0],
         "atol": TOLERANCE_LEVELS[2][1],
+    },
+    {
+        "name": "tolerance_1e-12_1e-15",
+        "comparison_role": "solver_tolerance",
+        "n_output_points": OUTPUT_GRID_REFINED,
+        "rtol": TOLERANCE_LEVELS[3][0],
+        "atol": TOLERANCE_LEVELS[3][1],
     },
 )
 FINAL_FIELDS = ("Phi", "Phi_dot", "psi", "psi_dot", "H", "rho_total")
@@ -389,7 +397,7 @@ def _payload(records_by_spec: dict[str, list[dict[str, Any]]],
     )
     all_coverage_complete = all(item["complete"] for item in coverage.values())
     all_comparisons_pass = (
-        len(comparisons) == 3 * EXPECTED_ROWS
+        len(comparisons) == (len(STUDY_SPECS) - 1) * EXPECTED_ROWS
         and all(
             item.get("comparison_available") and item.get("comparison_pass")
             for item in comparisons

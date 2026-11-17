@@ -1473,3 +1473,34 @@ divergence calculation and not a full SM/Higgs/fermion evolution.
 Gate 3 remains PARTIAL; no conservation gate is promoted until the
 full sector fields are dynamically evolved and independent variational
 and numerical convergence checks are complete.
+
+
+## 2026-11-17 paired 400-run study: tolerance convergence not yet met
+
+Workflow 44056098156 completed all four profiles with 400/400
+successful integrations, 100 unique rows in every profile, zero
+integration failures and 300 row comparisons. The identical-input
+4,001-to-256,001 output-grid comparison passed 100/100. The two
+solver-tolerance comparisons passed 188/200; 12 comparisons failed
+the existing numerical acceptance limits. All classification flags
+and regime labels remained unchanged, and the chain-rule residual
+difference remained below 3.6e-10. However, the maximum final-state
+relative difference reached 9.14e-6 against the 1e-6 limit, and the
+maximum relative difference in a cycle classification metric reached
+4.37e-5 against the 1e-5 limit. These are real tolerance-sensitivity
+failures; no threshold was relaxed.
+
+The failures are concentrated in the phase-sensitive final psi_dot
+component for selected low-scale oscillatory rows and in relative
+w_final differences where the mean is close to zero for selected
+high-scale rows. The absolute w_final differences are small, but the
+declared relative criterion is not met. This is not treated as a
+successful convergence result.
+
+The paired study now adds a fifth 100-row profile at rtol=1e-12 and
+atol=1e-15, with the same 256,001-point grid and exact shared inputs.
+This raises the study to 500 integrations and 400 comparisons. The
+existing 1e-6 final-state and 1e-5 classification limits are unchanged.
+The additional profile tests whether the 12 discrepancies decrease
+under a further solver refinement or approach a phase/roundoff floor.
+The new profile is pending fresh CI; no outcome is claimed.

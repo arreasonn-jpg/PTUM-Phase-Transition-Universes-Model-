@@ -2479,12 +2479,15 @@ def test_paired_convergence_profiles_reuse_one_complete_initial_condition_grid()
         OUTPUT_GRID_REFINED,
         OUTPUT_GRID_REFINED,
         OUTPUT_GRID_REFINED,
+        OUTPUT_GRID_REFINED,
     ]
+    assert len(STUDY_SPECS) == 5
     assert [(spec["rtol"], spec["atol"]) for spec in STUDY_SPECS] == [
         TOLERANCE_LEVELS[0],
         TOLERANCE_LEVELS[0],
         TOLERANCE_LEVELS[1],
         TOLERANCE_LEVELS[2],
+        TOLERANCE_LEVELS[3],
     ]
 
 
