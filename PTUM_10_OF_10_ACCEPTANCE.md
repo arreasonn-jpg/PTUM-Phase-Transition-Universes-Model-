@@ -9,13 +9,13 @@ This file defines the evidence required before PTUM can be called scientifically
 | 1. Complete action and conventions | One explicit covariant action; fixed metric/sign conventions; all fields, dimensions, gauge representations, potentials, couplings, real/complex field choices and symmetry-breaking structure specified | **MET (classical tree-level EFT)**. The minimally coupled Einstein + PTUM + chiral-SM action, field representations, canonical dimensions, Higgs and Yukawa potentials, dimension-five PTUM operators, and the explicit \(\psi\)/\(\Phi_{\rm res}\) symmetry scope are now specified. Quantum/UV completion remains outside this gate and open separately |
 | 2. Inflation-to-waterfall connection | Exact inflation endpoint; threshold crossing in the same coupled background; stability of all modes before crossing; quantum seed prescription | **PARTIAL**. Exact epsilon_H endpoint is computed; post-threshold scan velocities are now taken from the integrated single-field FRW trajectory at each offset, but the coupled crossing and quantum seeds are not evolved |
 | 3. Hilbert tensors and conservation | Every sector tensor derived from the same action; all Q_i^nu derived; sum of currents cancels; numerical conservation converges independently with solver tolerance and timestep | **PARTIAL**. The classical tree-level gauge, Higgs, chiral-fermion and PTUM Hilbert tensors and all interaction currents are now written from one action; the current solver does not evolve SM fields, and full-sector numerical conservation/timestep-tolerance convergence is not yet demonstrated |
-| 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **PARTIAL**. The separate 100-row 4,001- and 256,001-point scans and the 36/36 four-case tolerance probe completed. The separate jobs recomputed the exact endpoint independently, producing a tiny relative difference in Phi_c (2.3e-15); their normalized row join is therefore not a strictly identical-input grid test. A paired 400-run study now reuses identical parameters and initial conditions across both grids and three tolerances; coupled inhomogeneous dynamics remain open |
+| 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **PARTIAL**. The exact-input paired 500-run study completed all 500 integrations and 400 comparisons with no integration failures. The 4,001-to-256,001 output-grid comparison passed 100/100. Under the original coarsest-reference comparator, only 281/300 tolerance comparisons passed, so the workflow correctly failed. Forensic analysis of successive refinements shows every state and normalized dimensionless-diagnostic error envelope decreases monotonically; the finest adjacent pair (1e-11/1e-14 to 1e-12/1e-15) passes 100/100 with max state relative difference 1.63e-7, max normalized classification difference 6.65e-11, and unchanged flags. A successive-refinement acceptance implementation and regression tests have now been added but await fresh CI. Coupled inhomogeneous dynamics remain open |
 | 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and a defect-topology analysis (including the Z2 domain-wall risk of a real waterfall scalar) | **NOT MET**. Current scan is homogeneous and post-threshold |
 | 6. Resonance and relic abundance | Expanding-background mode equations; converged monodromy/Floquet growth; momentum integration; backreaction; thermalization and entropy dilution; independently reproduced relic abundance | **NOT MET**. A linear mode integrator now evolves supplied expanding-FRW histories with an adiabatic-vacuum check and Wronskian monitor, and a finite-band trapezoidal momentum integral is implemented. The background is not generated self-consistently, the momentum tails and grid are not converged, and no backreaction or entropy dilution is available |
 | 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The closure remains phenomenological; no microscopic realization is established |
 | 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. Conditional potential-dominated T_rh estimate only; branching and thermalization are not computed |
 | 9. Observational reproducibility | Public exact CLASS patch; pinned version/commit; complete configs, likelihoods, data, chains and commands; independent rerun reproduces posteriors and model comparison | **NOT MET**. Reported numbers are author-reported; patch availability and chains remain unverified |
-| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Workflow 43843783240 on head 32f33013 reported 131 Python tests passed, the 4/4 smoke scan, both 100-row scans and the 36/36 targeted convergence probe passed, and the 42-page PDF built. The final LaTeX log still reports 73 Underfull and one Overfull hbox warning. A paired full-grid convergence job has been added and awaits fresh CI |
+| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Workflow 44063032840 on head 6014e116 reported 142 Python tests passed, the 4/4 smoke scan, the 100-row baseline (100/100), the targeted convergence probe (36/36), and the paired study (500/500 integrations, 400 comparisons). The paired job failed its original comparison gate and preserved strict-JSON artifacts. The 43-page PDF built; the final LaTeX pass retains 73 Underfull hbox warnings, with no final-pass Overfull hbox or unresolved reference/citation warning. The successive-refinement comparator and two regression tests are newer than that workflow and await exact-head CI |
 
 ## Current implementation evidence
 
@@ -1289,3 +1289,40 @@ the workflow comment now correctly says four distinct tolerance levels.
 This corrects a test/workflow mismatch only. The five-profile, 500-run
 paired study has not yet completed on the current head, and no tolerance
 convergence claim is made. Gate 4 remains PARTIAL.
+
+
+## 2026-11-18 paired 500-run tolerance audit and comparator correction
+
+Workflow 44063032840 ran on PR head
+6014e116ae372ca25d4f8eac185e6402963016a9 and completed:
+- 142 Python tests passed;
+- the four-trajectory smoke scan passed 4/4;
+- the homogeneous baseline scan passed 100/100;
+- the targeted four-case convergence probe passed 36/36;
+- the paired study completed 500/500 integrations, 100 unique rows in each of five profiles, zero failed integrations, and 400 comparisons;
+- the 43-page manuscript PDF built successfully.
+
+The paired workflow correctly returned failure under its original comparator:
+281/300 solver-tolerance comparisons passed. That comparator compared every refined tolerance directly against the 1e-9/1e-12 profile and used a pure relative difference for every dimensionless classification metric. The strict JSON artifact was downloaded and inspected:
+- ZIP SHA-256: 43fc944f12866c0e74bc079b40a521dab863655215cfb91b2b0950f20748a119.
+- Extracted JSON SHA-256: c01e03bdbf1de0bcb3c801488a60dd77f8d2a83d9c6144a42194e3b53b735a9e.
+- 500/500 integrations succeeded; all five profiles contain 100 unique shared-input rows.
+
+The original failure exposed two distinct comparison issues, not integration failures:
+1. The 1e-9/1e-12 profile is not yet a sufficiently accurate reference for phase-sensitive final psi_dot. Its difference from tighter solutions grows when compared directly to that fixed reference, even though successive refinements converge.
+2. w_final is dimensionless and can be close to zero. Dividing its difference by |w_final| produced relative errors up to 4.38e-5 for absolute changes around 1e-10, an ill-conditioned measure for a bounded dimensionless observable.
+
+Post-hoc successive-pair analysis of the preserved raw rows gives:
+- Maximum final-state relative difference by adjacent tolerance pair:
+  8.079e-6, 1.057e-6, 1.629e-7.
+- Every one of the six state-component error envelopes decreases monotonically across the three refinements.
+- Maximum normalized absolute classification-diagnostic difference by pair:
+  5.091e-9, 3.960e-10, 6.646e-11.
+- Every classification-diagnostic error envelope decreases monotonically; all classification flags and metric-availability states remain unchanged for all 100 rows.
+- Maximum chain-rule residual differences by pair remain below 3.93e-10.
+- Maximum finite-difference residual differences decrease from 1.61e-5 to 3.86e-6 to 1.66e-7.
+
+The convergence driver has been revised to compare adjacent solver-tolerance profiles. It retains the pure relative difference as a diagnostic, but acceptance for dimensionless classification observables now uses
+abs(a-b)/max(1,abs(a),abs(b)), which is absolute for observables below their natural unit scale and relative for values above it. Acceptance requires monotonic reduction of every state and classification error envelope, unchanged flags and metric availability, passing conservation diagnostics, and all 100 rows passing the finest adjacent tolerance pair. The original 1e-6 final-state, 1e-5 normalized classification, 1e-8 chain-rule and 1e-3 finite-difference limits are unchanged.
+
+Commit f546728c02e0b3f10e9970ca55d63c34166468ba implements the successive-refinement comparator and strict-JSON schema v2. Commit 44309ff9091426787102b60614c3f291845854c4 adds regression tests for near-zero dimensionless w and for monotonic-envelope/final-pair acceptance. These changes are newer than workflow 44063032840; the new comparator has not yet been verified by CI. Gate 4 remains PARTIAL until the exact-head 500-run rerun passes. This remains a homogeneous post-threshold scan and does not meet Gates 2, 3, or 5.
