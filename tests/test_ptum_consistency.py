@@ -2899,12 +2899,25 @@ def test_pr2_full_scan_opt_in_runs_paired_full_grid_convergence_job():
     workflow = Path(".github/workflows/ptum-scientific-tests.yml").read_text(
         encoding="utf-8"
     )
-    job = workflow.split("  scan-full-grid-convergence:", 1)[1].split(
-        "  latex-build:", 1
+    push_branches = workflow.split("  push:", 1)[1].split(
+        "  pull_request:", 1
     )[0]
-    assert "contains(github.event.pull_request.title, '[FULL-SCAN]')" in job
-    assert "ptum_full_grid_convergence_study.py" in job
-    assert "ptum-full-grid-convergence-study" in job
+    assert "ptum/scientific-consistency-fixes-2026-11-13" in push_branches
+    assert "contains(github.event.head_commit.message, '[FULL-SCAN]')" in workflow
+    assert "ptum_full_grid_convergence_study.py" in workflow
+
+    for job_name in ("full-waterfall-scan:", "scan-convergence:",
+                     "scan-full-grid-convergence:"):
+        job = workflow.split(f"  {job_name}", 1)[1]
+        if job_name != "scan-full-grid-convergence:":
+            job = job.split(f"  {('scan-convergence:' if job_name == 'full-waterfall-scan:' else 'scan-full-grid-convergence:')}", 1)[0]
+        else:
+            job = job.split("  latex-build:", 1)[0]
+        assert "github.event_name == 'workflow_dispatch'" in job
+        assert "github.event_name == 'push'" in job
+        assert "github.event.head_commit.message" in job
+
+    assert "ptum-full-grid-convergence-study" in workflow
 
 
 def test_action_derived_sector_currents_match_variations_and_cancel():
