@@ -1600,3 +1600,10 @@ Commit 1f2f29cbd2f90d135750936a7c32a5c9c0a02ced adds gauge_anomaly_audit and inc
 ## 2026-11-18 manuscript-level chiral-SM anomaly derivation
 
 Commit 63955448934fae2ab727d54f82a350273455bb63 adds the exact per-generation chiral-SM anomaly sums to main.tex. Right-handed fields are rewritten as left-handed charge conjugates, with the stated Dynkin and cubic-index normalizations. The manuscript displays the SU(3)^3, SU(3)^2 U(1)_Y, SU(2)^2 U(1)_Y, U(1)_Y^3 and mixed gravitational-U(1)_Y cancellations, and explains that the twelve weak doublets across three generations evade the global SU(2) Witten anomaly. Commit 0acac9613abccb916810e6ac7bdd11af6bad67f3 adds a source regression. The manuscript and exact-Fraction code audit now independently present the same representation-level result. No PTUM UV completion or quantum waterfall result is implied; the latest exact-head LaTeX and Python CI is pending.
+
+
+## 2026-11-18 optional convergence-metric availability
+
+The preserved paired-study JSON reports quadratic_virial_final as unavailable in all 100 rows of every refined-grid/tolerance profile. Q_final, w_final and virial_final are available for 94 rows per profile; H_over_omega_max is available for 73. The successive-refinement summary now exposes availability counts, marks a metric consistently unavailable only when it is absent at every refinement, and does not silently treat it as measured. Per-row availability must still match between adjacent profiles, and every state component must be present in every row at every refinement.
+
+Commit 3a8b6b557e2733163e0cf672b16e81174a8697b6 adds explicit availability reporting and fail-closed state completeness. Commit a597cc157505297b82e70387bef7a4b8fc83f598 tests both consistent unavailability and a missing intermediate state component. This does not close the missing quadratic-virial measurement or any proxy-fluid evidence gap. The new exact-head CI has not yet completed.
