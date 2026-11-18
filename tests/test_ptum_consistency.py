@@ -2711,6 +2711,125 @@ def test_paired_full_grid_comparator_rejects_state_or_regime_instability():
     )["comparison_pass"]
 
 
+def test_paired_comparator_normalizes_near_zero_dimensionless_w_absolutely():
+    from copy import deepcopy
+    from ptum_full_grid_convergence_study import compare_records
+
+    params = PTUMParameters(V0=1.0e56, m_psi=1.0e13, lambda_psi=0.1)
+    reference = {
+        "success": True,
+        "row_key": "synthetic|seed=1|velocity=0|offset=0.01",
+        "final_state": {
+            "Phi": params.Phi_c,
+            "Phi_dot": params.mu * params.Phi_c,
+            "psi": params.psi_0,
+            "psi_dot": params.mu * params.psi_0,
+            "H": params.H_threshold_exact_end,
+            "rho_total": params.V0,
+        },
+        "classification": {
+            "Q_final": 1.0,
+            "w_final": -2.5329e-6,
+            "virial_final": 1.0,
+            "quadratic_virial_final": None,
+            "H_over_omega_max": 0.01,
+            "regime": "non_quartic",
+            "quartic_achieved": False,
+            "n_late_half_cycles": 5,
+            "n_oscillations": 5,
+            "adiabaticity_valid": True,
+        },
+        "diagnostics": {
+            "max_abs_relative_frw_continuity_residual": 1.0e-10,
+            "max_abs_finite_difference_frw_residual_over_Hrho": 1.0e-3,
+        },
+    }
+    candidate = deepcopy(reference)
+    candidate["classification"]["w_final"] += 1.0e-10
+
+    comparison = compare_records(
+        reference, candidate, params, "solver_tolerance"
+    )
+    assert (
+        comparison["classification_relative_differences"]["w_final"]
+        > 1.0e-5
+    )
+    assert (
+        comparison["classification_normalized_absolute_differences"]["w_final"]
+        == pytest.approx(1.0e-10)
+    )
+    assert comparison["classification_pass"]
+    assert comparison["comparison_pass"]
+
+
+def test_paired_tolerance_summary_requires_monotonic_envelopes_and_final_pair():
+    from copy import deepcopy
+    from ptum_full_grid_convergence_study import (
+        FINAL_FIELDS,
+        CLASSIFICATION_METRICS,
+        STUDY_SPECS,
+        summarize_solver_tolerance_convergence,
+    )
+
+    tolerance_specs = [
+        item["name"] for item in STUDY_SPECS
+        if item["comparison_role"] == "solver_tolerance"
+    ]
+    comparisons = []
+    for step_index, candidate_spec in enumerate(tolerance_specs):
+        state_error = 1.0e-3 * (0.1 ** step_index)
+        classification_error = 1.0e-5 * (0.1 ** step_index)
+        for row_index in range(2):
+            comparisons.append({
+                "comparison_role": "solver_tolerance",
+                "candidate_spec": candidate_spec,
+                "row_key": f"row-{row_index}",
+                "comparison_pass": step_index == len(tolerance_specs) - 1,
+                "state_relative_differences": {
+                    field: state_error for field in FINAL_FIELDS
+                },
+                "classification_normalized_absolute_differences": {
+                    field: classification_error
+                    for field in CLASSIFICATION_METRICS
+                },
+                "flags_pass": True,
+                "classification_metric_availability_match": True,
+                "chain_rule_pass": True,
+                "finite_difference_residual_pass": True,
+                "max_chain_rule_residual_absolute_difference": 1.0e-10,
+                "max_finite_difference_residual_absolute_difference": 1.0e-6,
+            })
+
+    summary = summarize_solver_tolerance_convergence(
+        comparisons, expected_rows=2
+    )
+    assert summary["pass"]
+    assert summary["final_refinement_passing_comparisons"] == 2
+    assert summary["monotonic_state_error_envelope"]
+    assert summary["monotonic_classification_error_envelope"]
+
+    nonmonotonic = deepcopy(comparisons)
+    last_spec = tolerance_specs[-1]
+    last_row = next(
+        row for row in nonmonotonic
+        if row["candidate_spec"] == last_spec
+    )
+    last_row["state_relative_differences"]["psi_dot"] = 2.0e-3
+    assert not summarize_solver_tolerance_convergence(
+        nonmonotonic, expected_rows=2
+    )["pass"]
+
+    final_pair_failure = deepcopy(comparisons)
+    final_row = next(
+        row for row in final_pair_failure
+        if row["candidate_spec"] == last_spec
+    )
+    final_row["comparison_pass"] = False
+    assert not summarize_solver_tolerance_convergence(
+        final_pair_failure, expected_rows=2
+    )["pass"]
+
+
 def test_pr2_full_scan_opt_in_runs_paired_full_grid_convergence_job():
     from pathlib import Path
 
