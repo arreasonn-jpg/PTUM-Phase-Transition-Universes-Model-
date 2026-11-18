@@ -842,6 +842,22 @@ def test_ptum_sm_yukawa_operators_form_nonabelian_singlets():
     assert all(all(groups.values()) for groups in checks.values())
 
 
+def test_manuscript_displays_chiral_sm_gauge_anomaly_cancellation():
+    from pathlib import Path
+
+    source = " ".join(
+        Path("main.tex").read_text(encoding="utf-8").split()
+    )
+    assert r"\mathcal A_{SU(3)^3}" in source
+    assert r"\mathcal A_{SU(3)^2U(1)_Y}" in source
+    assert r"\mathcal A_{SU(2)^2U(1)_Y}" in source
+    assert r"\mathcal A_{U(1)_Y^3}" in source
+    assert r"\mathcal A_{\mathrm{grav}^2U(1)_Y}" in source
+    assert r"\label{eq:sm_gauge_anomaly_cancellation}" in source
+    assert "twelve across the three generations" in source
+    assert "do not supply a PTUM UV completion" in source
+
+
 def test_ptum_action_operator_mass_dimensions_are_four():
     from fractions import Fraction
     from ptum_covariant_action import operator_mass_dimensions
