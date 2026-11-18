@@ -786,3 +786,8 @@ The paired 500-integration study completed all runs without integration failures
 The comparator has been changed to compare adjacent solver-tolerance profiles, use natural-unit normalized absolute differences for dimensionless observables near zero, and require monotonic error-envelope reduction plus a passing finest pair. The former pure relative difference remains in the artifact as a diagnostic. This is a numerical-methodology correction, not new physical evidence. The new comparator and regression tests await exact-head CI verification.
 
 No claim is added for coupled threshold crossing, quantum-seeded inhomogeneous waterfall, backreaction, rescattering, defect-network evolution, relic abundance, entropy dilution, microscopic proxy-fluid realization or observational reproduction. Gates 2, 3, 4, 5, 6, 7, 8, 9 and 10 retain their current statuses until the corresponding evidence is independently verified.
+
+
+## 2026-11-18 Standard Model anomaly-audit boundary
+
+The chiral-SM registry now verifies exact per-generation cancellation of SU(3)^3, SU(3)^2 U(1)_Y, SU(2)^2 U(1)_Y, U(1)_Y^3 and mixed gravitational-U(1)_Y anomalies, and checks the even number of weak doublets required to avoid the SU(2) Witten anomaly. This supports consistency of the declared minimal SM representation content. It does not imply that the PTUM quantum effective action, UV completion, reheating dynamics, or inhomogeneous waterfall has been solved. The audit and its regression test await exact-head CI.
