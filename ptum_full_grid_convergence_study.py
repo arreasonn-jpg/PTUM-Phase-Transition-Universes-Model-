@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Paired full-grid output-sampling and solver-tolerance convergence study.
 
-All four numerical profiles are run in one process with one immutable set of
-scenario parameters and initial conditions. This avoids confusing tiny
-cross-process endpoint recomputation differences with output-grid effects.
-The study remains a homogeneous post-threshold sensitivity calculation.
+All five numerical profiles are run in one process with one immutable set of
+scenario parameters and initial conditions. Solver-tolerance convergence is
+assessed from successive refinements, not only against the coarsest solver
+tolerance. The study remains a homogeneous post-threshold sensitivity
+calculation.
 """
 from __future__ import annotations
 
@@ -91,7 +92,7 @@ DIAGNOSTIC_FIELDS = (
 )
 LIMITS = {
     "max_final_state_relative_difference": 1.0e-6,
-    "max_classification_relative_difference": 1.0e-5,
+    "max_classification_normalized_absolute_difference": 1.0e-5,
     "max_chain_rule_residual_absolute_difference": 1.0e-8,
     "max_finite_difference_residual_absolute_difference_for_tolerance": 1.0e-3,
 }
@@ -225,18 +226,29 @@ def compare_records(reference: dict[str, Any], candidate: dict[str, Any],
                 left, right, scales[field]
             )
 
-    class_differences = {}
+    class_relative_differences = {}
+    class_normalized_differences = {}
     class_availability_match = True
     for field in CLASSIFICATION_METRICS:
         left = _finite_float(reference["classification"].get(field))
         right = _finite_float(candidate["classification"].get(field))
         if (left is None) != (right is None):
             class_availability_match = False
-            class_differences[field] = None
+            class_relative_differences[field] = None
+            class_normalized_differences[field] = None
         elif left is None:
-            class_differences[field] = None
+            class_relative_differences[field] = None
+            class_normalized_differences[field] = None
         else:
-            class_differences[field] = _relative_difference(left, right, 1.0)
+            class_relative_differences[field] = _relative_difference(
+                left, right, 1.0
+            )
+            # These observables are dimensionless. Normalize by their natural
+            # unit scale so a value near zero (especially w) is not assigned
+            # an arbitrarily large relative error by division by |value|.
+            class_normalized_differences[field] = (
+                abs(left - right) / max(1.0, abs(left), abs(right))
+            )
 
     flag_matches = {
         field: (
@@ -260,8 +272,14 @@ def compare_records(reference: dict[str, Any], candidate: dict[str, Any],
         (value for value in state_differences.values() if value is not None),
         default=None,
     )
-    max_classification = max(
-        (value for value in class_differences.values() if value is not None),
+    max_class_relative = max(
+        (value for value in class_relative_differences.values()
+         if value is not None),
+        default=None,
+    )
+    max_class_normalized = max(
+        (value for value in class_normalized_differences.values()
+         if value is not None),
         default=None,
     )
     chain_difference = diagnostic_differences[
@@ -279,9 +297,9 @@ def compare_records(reference: dict[str, Any], candidate: dict[str, Any],
     classification_pass = (
         class_availability_match
         and (
-            max_classification is None
-            or max_classification
-            <= LIMITS["max_classification_relative_difference"]
+            max_class_normalized is None
+            or max_class_normalized
+            <= LIMITS["max_classification_normalized_absolute_difference"]
         )
     )
     flags_pass = all(flag_matches.values())
@@ -304,14 +322,20 @@ def compare_records(reference: dict[str, Any], candidate: dict[str, Any],
     result.update({
         "comparison_available": True,
         "state_relative_differences": state_differences,
-        "classification_relative_differences": class_differences,
+        "classification_relative_differences": class_relative_differences,
+        "classification_normalized_absolute_differences":
+            class_normalized_differences,
         "classification_flag_matches": flag_matches,
         "classification_metric_availability_match": class_availability_match,
         "diagnostic_absolute_differences": diagnostic_differences,
         "max_final_state_relative_difference": max_state,
-        "max_classification_relative_difference": max_classification,
+        # Retained as a diagnostic only; it is ill-conditioned for dimensionless
+        # observables close to zero and is not used as the acceptance metric.
+        "max_classification_relative_difference": max_class_relative,
+        "max_classification_normalized_absolute_difference":
+            max_class_normalized,
         "classification_metrics_compared": sum(
-            value is not None for value in class_differences.values()
+            value is not None for value in class_normalized_differences.values()
         ),
         "max_chain_rule_residual_absolute_difference": chain_difference,
         "max_finite_difference_residual_absolute_difference":
@@ -332,6 +356,187 @@ def compare_records(reference: dict[str, Any], candidate: dict[str, Any],
     })
     return result
 
+
+def summarize_solver_tolerance_convergence(
+    comparisons: list[dict[str, Any]],
+    expected_rows: int = EXPECTED_ROWS,
+) -> dict[str, Any]:
+    """Assess successive tolerance refinement and require a converged final pair."""
+    tolerance_specs = [
+        item["name"] for item in STUDY_SPECS
+        if item["comparison_role"] == "solver_tolerance"
+    ]
+    state_fields = list(FINAL_FIELDS)
+    classification_fields = list(CLASSIFICATION_METRICS)
+    steps = []
+
+    for candidate_spec in tolerance_specs:
+        items = [
+            item for item in comparisons
+            if item.get("comparison_role") == "solver_tolerance"
+            and item.get("candidate_spec") == candidate_spec
+        ]
+        state_envelope = {
+            field: max(
+                (
+                    row.get("state_relative_differences", {}).get(field)
+                    for row in items
+                    if row.get("state_relative_differences", {}).get(field)
+                    is not None
+                ),
+                default=None,
+            )
+            for field in state_fields
+        }
+        classification_envelope = {
+            field: max(
+                (
+                    row.get(
+                        "classification_normalized_absolute_differences", {}
+                    ).get(field)
+                    for row in items
+                    if row.get(
+                        "classification_normalized_absolute_differences", {}
+                    ).get(field) is not None
+                ),
+                default=None,
+            )
+            for field in classification_fields
+        }
+        steps.append({
+            "candidate_spec": candidate_spec,
+            "comparison_count": len(items),
+            "strictly_passing_comparisons": sum(
+                bool(row.get("comparison_pass")) for row in items
+            ),
+            "max_state_relative_difference_by_field": state_envelope,
+            "max_classification_normalized_absolute_difference_by_field":
+                classification_envelope,
+            "max_chain_rule_residual_absolute_difference": max(
+                (
+                    row.get(
+                        "max_chain_rule_residual_absolute_difference"
+                    )
+                    for row in items
+                    if row.get(
+                        "max_chain_rule_residual_absolute_difference"
+                    ) is not None
+                ),
+                default=None,
+            ),
+            "max_finite_difference_residual_absolute_difference": max(
+                (
+                    row.get(
+                        "max_finite_difference_residual_absolute_difference"
+                    )
+                    for row in items
+                    if row.get(
+                        "max_finite_difference_residual_absolute_difference"
+                    ) is not None
+                ),
+                default=None,
+            ),
+            "all_flags_match": bool(items) and all(
+                row.get("flags_pass", False) for row in items
+            ),
+            "all_metric_availability_matches": bool(items) and all(
+                row.get("classification_metric_availability_match", False)
+                for row in items
+            ),
+            "all_chain_rule_checks_pass": bool(items) and all(
+                row.get("chain_rule_pass", False) for row in items
+            ),
+            "all_finite_difference_checks_pass": bool(items) and all(
+                row.get("finite_difference_residual_pass", False)
+                for row in items
+            ),
+        })
+
+    def monotonic_envelopes(field_name: str, fields: list[str]) -> dict[str, bool]:
+        result = {}
+        for field in fields:
+            values = [step[field_name].get(field) for step in steps]
+            result[field] = (
+                len(values) == len(tolerance_specs)
+                and all(value is not None for value in values)
+                and all(
+                    values[index + 1] <= values[index]
+                    for index in range(len(values) - 1)
+                )
+            )
+        return result
+
+    state_monotonic = monotonic_envelopes(
+        "max_state_relative_difference_by_field", state_fields
+    )
+    classification_monotonic = monotonic_envelopes(
+        "max_classification_normalized_absolute_difference_by_field",
+        classification_fields,
+    )
+    final_step = steps[-1] if steps else {}
+    final_items = [
+        item for item in comparisons
+        if item.get("comparison_role") == "solver_tolerance"
+        and item.get("candidate_spec") == (
+            tolerance_specs[-1] if tolerance_specs else None
+        )
+    ]
+    final_refinement_pass = (
+        len(final_items) == expected_rows
+        and all(item.get("comparison_pass", False) for item in final_items)
+    )
+    complete_steps = (
+        len(steps) == len(tolerance_specs)
+        and all(step["comparison_count"] == expected_rows for step in steps)
+    )
+    all_diagnostics_pass = all(
+        step["all_chain_rule_checks_pass"]
+        and step["all_finite_difference_checks_pass"]
+        and step["all_metric_availability_matches"]
+        and step["all_flags_match"]
+        for step in steps
+    )
+    monotonic_state_pass = bool(state_monotonic) and all(
+        state_monotonic.values()
+    )
+    monotonic_classification_pass = (
+        bool(classification_monotonic)
+        and all(classification_monotonic.values())
+    )
+    passed = bool(
+        complete_steps
+        and monotonic_state_pass
+        and monotonic_classification_pass
+        and all_diagnostics_pass
+        and final_refinement_pass
+    )
+    return {
+        "step_count": len(steps),
+        "steps": steps,
+        "state_error_envelope_monotonic_by_field": state_monotonic,
+        "classification_error_envelope_monotonic_by_field":
+            classification_monotonic,
+        "monotonic_state_error_envelope": monotonic_state_pass,
+        "monotonic_classification_error_envelope":
+            monotonic_classification_pass,
+        "final_refinement_comparison_count": len(final_items),
+        "final_refinement_passing_comparisons": sum(
+            bool(item.get("comparison_pass")) for item in final_items
+        ),
+        "final_refinement_pass": final_refinement_pass,
+        "complete_steps": complete_steps,
+        "all_diagnostics_pass": all_diagnostics_pass,
+        "pass": passed,
+        "interpretation": (
+            "The first tolerance refinements are retained as convergence "
+            "history and may lie outside the final pairwise error limits. "
+            "Acceptance requires monotonic reduction of every state and "
+            "dimensionless diagnostic error envelope, unchanged classification "
+            "flags and metric availability, passing conservation diagnostics, "
+            "and all rows passing the finest adjacent tolerance comparison."
+        ),
+        "final_step": final_step,
+    }
 
 def _build_cases() -> tuple[list[dict[str, Any]], dict[str, Any]]:
     cases: list[dict[str, Any]] = []
@@ -396,20 +601,7 @@ def _payload(records_by_spec: dict[str, list[dict[str, Any]]],
         and all(row.get("success") for row in flat_records)
     )
     all_coverage_complete = all(item["complete"] for item in coverage.values())
-    all_comparisons_pass = (
-        len(comparisons) == (len(STUDY_SPECS) - 1) * EXPECTED_ROWS
-        and all(
-            item.get("comparison_available") and item.get("comparison_pass")
-            for item in comparisons
-        )
-    )
-    full_study_pass = (
-        all_successful
-        and all_coverage_complete
-        and not failures
-        and len(completed_specs) == len(STUDY_SPECS)
-        and all_comparisons_pass
-    )
+
     by_role = {}
     for role in ("output_grid", "solver_tolerance"):
         items = [item for item in comparisons
@@ -425,10 +617,20 @@ def _payload(records_by_spec: dict[str, list[dict[str, Any]]],
                  if item.get("max_final_state_relative_difference") is not None),
                 default=None,
             ),
-            "max_classification_relative_difference": max(
+            "max_classification_relative_difference_diagnostic": max(
                 (item["max_classification_relative_difference"]
                  for item in items
                  if item.get("max_classification_relative_difference") is not None),
+                default=None,
+            ),
+            "max_classification_normalized_absolute_difference": max(
+                (
+                    item["max_classification_normalized_absolute_difference"]
+                    for item in items
+                    if item.get(
+                        "max_classification_normalized_absolute_difference"
+                    ) is not None
+                ),
                 default=None,
             ),
             "max_chain_rule_residual_absolute_difference": max(
@@ -444,8 +646,36 @@ def _payload(records_by_spec: dict[str, list[dict[str, Any]]],
                 default=None,
             ),
         }
+
+    output_grid_items = [
+        item for item in comparisons
+        if item.get("comparison_role") == "output_grid"
+    ]
+    output_grid_pass = (
+        len(output_grid_items) == EXPECTED_ROWS
+        and all(
+            item.get("comparison_available") and item.get("comparison_pass")
+            for item in output_grid_items
+        )
+    )
+    tolerance_convergence = summarize_solver_tolerance_convergence(
+        comparisons, expected_rows=EXPECTED_ROWS
+    )
+    all_comparisons_present = (
+        len(comparisons) == (len(STUDY_SPECS) - 1) * EXPECTED_ROWS
+        and all(item.get("comparison_available") for item in comparisons)
+    )
+    full_study_pass = (
+        all_successful
+        and all_coverage_complete
+        and not failures
+        and len(completed_specs) == len(STUDY_SPECS)
+        and all_comparisons_present
+        and output_grid_pass
+        and tolerance_convergence["pass"]
+    )
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "purpose": "paired full 100-row homogeneous DOP853 output-grid and solver-tolerance convergence study",
         "solver_method": SOLVER_METHOD,
         "t_max_over_mu_inverse": T_MAX,
@@ -460,6 +690,9 @@ def _payload(records_by_spec: dict[str, list[dict[str, Any]]],
         "failed_runs": sum(not bool(row.get("success")) for row in flat_records),
         "comparison_count": len(comparisons),
         "comparisons_by_role": by_role,
+        "output_grid_comparison_pass": output_grid_pass,
+        "solver_tolerance_convergence": tolerance_convergence,
+        "all_comparisons_present": all_comparisons_present,
         "comparisons": comparisons,
         "failures": failures,
         "full_study_pass": bool(full_study_pass),
@@ -467,12 +700,15 @@ def _payload(records_by_spec: dict[str, list[dict[str, Any]]],
         "interpretation": (
             "All output-grid and tolerance variants reuse the same scenario "
             "parameter objects and exact initial-condition values within this "
-            "process. This is a homogeneous post-threshold sensitivity scan, "
+            "process. Solver-tolerance acceptance is based on a monotonically "
+            "decreasing successive-refinement error envelope and a passing "
+            "finest adjacent pair, not on requiring every intermediate solver "
+            "profile to be within the final error threshold of the coarsest "
+            "profile. This is a homogeneous post-threshold sensitivity scan, "
             "not a coupled threshold-crossing, quantum-seeded inhomogeneous "
             "waterfall, backreaction, rescattering, or relic calculation."
         ),
     }
-
 
 def write_json_atomic(payload: dict[str, Any], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -584,7 +820,11 @@ def run_study(output: Path, checkpoint: Path) -> dict[str, Any]:
             reference_name = "reference_4001"
             role = "output_grid"
         elif spec["comparison_role"] == "solver_tolerance":
-            reference_name = "grid_256001"
+            spec_index = next(
+                index for index, item in enumerate(STUDY_SPECS)
+                if item["name"] == spec_name
+            )
+            reference_name = STUDY_SPECS[spec_index - 1]["name"]
             role = "solver_tolerance"
         else:
             reference_name = None
