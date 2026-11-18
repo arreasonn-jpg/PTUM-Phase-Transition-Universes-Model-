@@ -791,3 +791,8 @@ No claim is added for coupled threshold crossing, quantum-seeded inhomogeneous w
 ## 2026-11-18 Standard Model anomaly-audit boundary
 
 The chiral-SM registry now verifies exact per-generation cancellation of SU(3)^3, SU(3)^2 U(1)_Y, SU(2)^2 U(1)_Y, U(1)_Y^3 and mixed gravitational-U(1)_Y anomalies, and checks the even number of weak doublets required to avoid the SU(2) Witten anomaly. This supports consistency of the declared minimal SM representation content. It does not imply that the PTUM quantum effective action, UV completion, reheating dynamics, or inhomogeneous waterfall has been solved. The audit and its regression test await exact-head CI.
+
+
+## 2026-11-18 manuscript anomaly-equation boundary
+
+The manuscript now explicitly shows the per-generation perturbative anomaly sums for the specified minimal chiral Standard Model and the even-doublet Witten check. The representation-level audit is displayed in the paper and tested against the code registry. This supports consistency of the declared SM field content only. It does not establish a PTUM UV completion, solve the quantum effective action, or provide evidence for inhomogeneous waterfall dynamics. The manuscript regression and exact-head LaTeX build await CI.
