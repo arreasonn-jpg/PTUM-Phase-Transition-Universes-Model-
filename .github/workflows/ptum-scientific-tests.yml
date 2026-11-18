@@ -5,12 +5,13 @@ on:
     branches:
       - main
       - 'ptum/full-scan-*'
+      - 'ptum/scientific-consistency-fixes-2026-11-13'
   pull_request:
   workflow_dispatch:
 
 concurrency:
-  group: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/ptum/full-scan-') || (github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[FULL-SCAN]') || startsWith(github.event.pull_request.head.ref, 'ptum/full-scan-')))) && format('ptum-full-scan-{0}', github.event.pull_request.number || github.ref) || format('ptum-scientific-{0}', github.event.pull_request.number || github.ref) }}
-  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/heads/ptum/full-scan-') && !(github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[FULL-SCAN]') || startsWith(github.event.pull_request.head.ref, 'ptum/full-scan-'))) }}
+  group: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/ptum/full-scan-') || (github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[FULL-SCAN]') || startsWith(github.event.pull_request.head.ref, 'ptum/full-scan-'))) || (github.event_name == 'push' && github.ref == 'refs/heads/ptum/scientific-consistency-fixes-2026-11-13' && contains(github.event.head_commit.message, '[FULL-SCAN]'))) && format('ptum-full-scan-{0}', github.event.pull_request.number || github.ref) || format('ptum-scientific-{0}', github.event.pull_request.number || github.ref) }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/heads/ptum/full-scan-') && !(github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[FULL-SCAN]') || startsWith(github.event.pull_request.head.ref, 'ptum/full-scan-'))) && !(github.event_name == 'push' && github.ref == 'refs/heads/ptum/scientific-consistency-fixes-2026-11-13' && contains(github.event.head_commit.message, '[FULL-SCAN]')) }}
 
 permissions:
   contents: read
@@ -52,6 +53,9 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-')) ||
+      (github.event_name == 'push' &&
+       github.ref == 'refs/heads/ptum/scientific-consistency-fixes-2026-11-13' &&
+       contains(github.event.head_commit.message, '[FULL-SCAN]')) ||
       (github.event_name == 'pull_request' &&
        ((github.event.pull_request.head.ref == 'ptum/scientific-consistency-fixes-2026-11-13' &&
          contains(github.event.pull_request.title, '[FULL-SCAN]')) ||
@@ -92,12 +96,16 @@ jobs:
     # Targeted probes run on isolated convergence PRs and on PR #2 when
     # its [FULL-SCAN] opt-in requests a fresh scientific verification pass.
     if: >-
-      github.event_name == 'pull_request' &&
-      (
-        startsWith(github.event.pull_request.head.ref, 'ptum/convergence-') ||
-        (github.event.pull_request.head.ref == 'ptum/scientific-consistency-fixes-2026-11-13' &&
-         contains(github.event.pull_request.title, '[FULL-SCAN]'))
-      )
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' &&
+       github.ref == 'refs/heads/ptum/scientific-consistency-fixes-2026-11-13' &&
+       contains(github.event.head_commit.message, '[FULL-SCAN]')) ||
+      (github.event_name == 'pull_request' &&
+       (
+         startsWith(github.event.pull_request.head.ref, 'ptum/convergence-') ||
+         (github.event.pull_request.head.ref == 'ptum/scientific-consistency-fixes-2026-11-13' &&
+          contains(github.event.pull_request.title, '[FULL-SCAN]'))
+       ))
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
@@ -126,12 +134,16 @@ jobs:
     # Paired 4,001/256,001 output-grid and four-tolerance study on the same
     # 100 initial conditions; this remains homogeneous post-threshold physics.
     if: >-
-      github.event_name == 'pull_request' &&
-      (
-        startsWith(github.event.pull_request.head.ref, 'ptum/full-grid-convergence-') ||
-        (github.event.pull_request.head.ref == 'ptum/scientific-consistency-fixes-2026-11-13' &&
-         contains(github.event.pull_request.title, '[FULL-SCAN]'))
-      )
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' &&
+       github.ref == 'refs/heads/ptum/scientific-consistency-fixes-2026-11-13' &&
+       contains(github.event.head_commit.message, '[FULL-SCAN]')) ||
+      (github.event_name == 'pull_request' &&
+       (
+         startsWith(github.event.pull_request.head.ref, 'ptum/full-grid-convergence-') ||
+         (github.event.pull_request.head.ref == 'ptum/scientific-consistency-fixes-2026-11-13' &&
+          contains(github.event.pull_request.title, '[FULL-SCAN]'))
+       ))
     runs-on: ubuntu-latest
     timeout-minutes: 360
     steps:
