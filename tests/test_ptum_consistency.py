@@ -868,6 +868,29 @@ def test_ptum_covariant_action_registry_passes_all_algebraic_checks():
     assert validate_action_registry()
 
 
+def test_ptum_standard_model_gauge_anomalies_cancel_exactly():
+    from fractions import Fraction
+    from ptum_covariant_action import (
+        gauge_anomaly_audit,
+        validate_gauge_anomaly_cancellation,
+    )
+
+    audit = gauge_anomaly_audit()
+    anomalies = audit["perturbative_anomalies_per_generation"]
+    assert anomalies == {
+        "su3_cubic": 0,
+        "su3_squared_u1": Fraction(0, 1),
+        "su2_squared_u1": Fraction(0, 1),
+        "u1_cubic": Fraction(0, 1),
+        "mixed_gravitational_u1": Fraction(0, 1),
+    }
+    assert audit["weak_doublets_per_generation"] == 4
+    assert audit["weak_doublets_total"] == 12
+    assert audit["witten_su2_anomaly_absent"]
+    assert not audit["right_handed_neutrino_included"]
+    assert validate_gauge_anomaly_cancellation()
+
+
 def test_manuscript_uses_one_waterfall_mass_parameter():
     from pathlib import Path
 
