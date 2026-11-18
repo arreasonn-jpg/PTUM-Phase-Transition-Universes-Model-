@@ -1588,3 +1588,10 @@ The former comparison divided every dimensionless classification difference by t
 The paired study now compares each tolerance profile with its immediately preceding refinement. It requires every state and classification error envelope to decrease monotonically, unchanged flags and metric availability, passing conservation diagnostics, and all rows passing the finest adjacent pair. Intermediate comparisons remain visible and can individually exceed the final tolerance; they are not discarded or relabelled as passes.
 
 Commit f546728c02e0b3f10e9970ca55d63c34166468ba implements the revised comparator and JSON schema v2. Commit 44309ff9091426787102b60614c3f291845854c4 adds regressions for near-zero w normalization, monotonic error envelopes and fail-closed final-pair checks. Both are newer than workflow 44063032840. The revised code and tests await a fresh exact-head CI run; no new pass is claimed. This analysis concerns only the homogeneous post-threshold background scan.
+
+
+## 2026-11-18 exact chiral-SM gauge-anomaly audit
+
+The machine-readable chiral-SM representation registry now computes the perturbative gauge-anomaly sums per generation in exact rational arithmetic. Right-handed fields are converted to left-handed charge conjugates before summing. The checked coefficients are SU(3)^3, SU(3)^2 U(1)_Y, SU(2)^2 U(1)_Y, U(1)_Y^3 and mixed gravitational-U(1)_Y; all vanish exactly. The global SU(2) Witten condition is also checked: four left-handed weak doublets per generation and twelve across three generations, so the total is even.
+
+Commit 1f2f29cbd2f90d135750936a7c32a5c9c0a02ced adds gauge_anomaly_audit and includes it in validate_action_registry. Commit 30650e05f7862b6d02f2ecbf2cdd8b2682b0fe77 adds an exact-Fraction regression test. This verifies anomaly cancellation for the declared minimal chiral-SM field content only. It is not a UV completion, a loop-level PTUM calculation, or evidence for the unresolved inhomogeneous waterfall.
