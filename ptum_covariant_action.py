@@ -103,6 +103,74 @@ def operator_mass_dimensions():
     }
 
 
+def gauge_anomaly_audit():
+    """Return exact one-generation SM perturbative and Witten-anomaly sums.
+
+    Right-handed fermions are represented as left-handed charge conjugates:
+    u_R^c, d_R^c and e_R^c therefore carry the opposite hypercharge and the
+    conjugate colour representation. Dynkin indices are T(3)=T(2)=1/2;
+    the SU(3) cubic index is A(3)=+1 and A(3bar)=-1.
+    """
+    y = {name: rep["hypercharge"]
+         for name, rep in SM_FIELD_REPRESENTATIONS.items()}
+    q = y["Q_L"]
+    u_conjugate = -y["u_R"]
+    d_conjugate = -y["d_R"]
+    lepton_doublet = y["L_L"]
+    electron_conjugate = -y["e_R"]
+    dynkin_fundamental = Fraction(1, 2)
+
+    perturbative = {
+        "su3_cubic": 2 - 1 - 1,
+        "su3_squared_u1": (
+            2 * q * dynkin_fundamental
+            + u_conjugate * dynkin_fundamental
+            + d_conjugate * dynkin_fundamental
+        ),
+        "su2_squared_u1": (
+            3 * q * dynkin_fundamental
+            + lepton_doublet * dynkin_fundamental
+        ),
+        "u1_cubic": (
+            6 * q**3
+            + 3 * u_conjugate**3
+            + 3 * d_conjugate**3
+            + 2 * lepton_doublet**3
+            + electron_conjugate**3
+        ),
+        "mixed_gravitational_u1": (
+            6 * q
+            + 3 * u_conjugate
+            + 3 * d_conjugate
+            + 2 * lepton_doublet
+            + electron_conjugate
+        ),
+    }
+    weak_doublets_per_generation = 3 + 1
+    generation_count = 3
+    weak_doublets_total = generation_count * weak_doublets_per_generation
+    return {
+        "perturbative_anomalies_per_generation": perturbative,
+        "weak_doublets_per_generation": weak_doublets_per_generation,
+        "weak_doublets_total": weak_doublets_total,
+        "witten_su2_anomaly_absent": weak_doublets_total % 2 == 0,
+        "right_handed_neutrino_included": False,
+    }
+
+
+def validate_gauge_anomaly_cancellation():
+    """Check perturbative SM gauge anomalies and the global SU(2) anomaly."""
+    audit = gauge_anomaly_audit()
+    return (
+        all(
+            coefficient == 0
+            for coefficient in
+            audit["perturbative_anomalies_per_generation"].values()
+        )
+        and audit["witten_su2_anomaly_absent"]
+    )
+
+
 def validate_action_registry():
     """Return True only if gauge singlets and dimension-four Lagrangian terms check."""
     hypercharge_ok = all(value == 0 for value in yukawa_hypercharge_residuals().values())
@@ -120,4 +188,10 @@ def validate_action_registry():
         and rep["reality"] == "real"
         for rep in PTUM_SCALAR_REPRESENTATIONS.values()
     )
-    return hypercharge_ok and nonabelian_ok and dimensions_ok and ptum_singlets_ok
+    return (
+        hypercharge_ok
+        and nonabelian_ok
+        and dimensions_ok
+        and ptum_singlets_ok
+        and validate_gauge_anomaly_cancellation()
+    )
