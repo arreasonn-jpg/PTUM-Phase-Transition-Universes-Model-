@@ -801,3 +801,8 @@ The manuscript now explicitly shows the per-generation perturbative anomaly sums
 ## 2026-11-18 optional diagnostic availability boundary
 
 The paired artifact has no quadratic_virial_final values in any of its 100 rows across the refined-grid and tolerance profiles. The updated summary reports this as consistently unavailable, requires matching availability between profiles, and fails closed if any state component is missing. It does not convert the missing quadratic-virial measurement into a pass or a physical result. The corresponding regression and exact-head CI remain pending.
+
+
+## 2026-11-18 CI trigger and convergence-availability boundary
+
+The authorized branch now has a push trigger for ordinary regression/smoke/LaTeX checks and an explicit [FULL-SCAN] commit-message opt-in for the 100-row baseline, targeted convergence probe and paired 500-integration study. The workflow regression guards these conditions. The convergence summary reports the quadratic virial metric as unavailable in all paired profiles, rather than implying it was measured; it fails closed for missing state components and requires matching diagnostic availability across refinements. The latest full-scan run has not yet been inspected, so no new CI pass is claimed.
