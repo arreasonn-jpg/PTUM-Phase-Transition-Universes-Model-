@@ -410,8 +410,25 @@ def summarize_solver_tolerance_convergence(
                 bool(row.get("comparison_pass")) for row in items
             ),
             "max_state_relative_difference_by_field": state_envelope,
+            "all_state_metrics_available": bool(items) and all(
+                all(
+                    row.get("state_relative_differences", {}).get(field)
+                    is not None
+                    for field in state_fields
+                )
+                for row in items
+            ),
             "max_classification_normalized_absolute_difference_by_field":
                 classification_envelope,
+            "classification_metrics_available_by_field": {
+                field: sum(
+                    row.get(
+                        "classification_normalized_absolute_differences", {}
+                    ).get(field) is not None
+                    for row in items
+                )
+                for field in classification_fields
+            },
             "max_chain_rule_residual_absolute_difference": max(
                 (
                     row.get(
@@ -452,10 +469,22 @@ def summarize_solver_tolerance_convergence(
             ),
         })
 
-    def monotonic_envelopes(field_name: str, fields: list[str]) -> dict[str, bool]:
+    def monotonic_envelopes(
+        field_name: str,
+        fields: list[str],
+        *,
+        allow_consistently_unavailable: bool = False,
+    ) -> dict[str, bool]:
         result = {}
         for field in fields:
             values = [step[field_name].get(field) for step in steps]
+            if (
+                allow_consistently_unavailable
+                and len(values) == len(tolerance_specs)
+                and all(value is None for value in values)
+            ):
+                result[field] = True
+                continue
             result[field] = (
                 len(values) == len(tolerance_specs)
                 and all(value is not None for value in values)
@@ -472,7 +501,16 @@ def summarize_solver_tolerance_convergence(
     classification_monotonic = monotonic_envelopes(
         "max_classification_normalized_absolute_difference_by_field",
         classification_fields,
+        allow_consistently_unavailable=True,
     )
+    consistently_unavailable_classification_fields = [
+        field for field in classification_fields
+        if all(
+            step["max_classification_normalized_absolute_difference_by_field"]
+            .get(field) is None
+            for step in steps
+        )
+    ]
     final_step = steps[-1] if steps else {}
     final_items = [
         item for item in comparisons
@@ -490,7 +528,8 @@ def summarize_solver_tolerance_convergence(
         and all(step["comparison_count"] == expected_rows for step in steps)
     )
     all_diagnostics_pass = all(
-        step["all_chain_rule_checks_pass"]
+        step["all_state_metrics_available"]
+        and step["all_chain_rule_checks_pass"]
         and step["all_finite_difference_checks_pass"]
         and step["all_metric_availability_matches"]
         and step["all_flags_match"]
@@ -516,6 +555,8 @@ def summarize_solver_tolerance_convergence(
         "state_error_envelope_monotonic_by_field": state_monotonic,
         "classification_error_envelope_monotonic_by_field":
             classification_monotonic,
+        "consistently_unavailable_classification_fields":
+            consistently_unavailable_classification_fields,
         "monotonic_state_error_envelope": monotonic_state_pass,
         "monotonic_classification_error_envelope":
             monotonic_classification_pass,
