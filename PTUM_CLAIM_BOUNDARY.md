@@ -777,3 +777,12 @@ the explicit chiral-SM action or its Hilbert tensor is missing. This
 is a consistency correction only: it does not promote Gate 3, which
 still requires dynamical SM/Higgs/fermion evolution and independent
 numerical conservation convergence.
+
+
+## 2026-11-18 numerical-convergence claim boundary
+
+The paired 500-integration study completed all runs without integration failures, but its original fixed-reference comparison returned failure (281/300 solver-tolerance comparisons passed). A forensic analysis of the preserved strict-JSON rows found monotonically decreasing state and normalized dimensionless-diagnostic error envelopes across successive tolerance refinements, with the finest adjacent pair passing all 100 rows. The original failure remains recorded; it is not retroactively called a pass.
+
+The comparator has been changed to compare adjacent solver-tolerance profiles, use natural-unit normalized absolute differences for dimensionless observables near zero, and require monotonic error-envelope reduction plus a passing finest pair. The former pure relative difference remains in the artifact as a diagnostic. This is a numerical-methodology correction, not new physical evidence. The new comparator and regression tests await exact-head CI verification.
+
+No claim is added for coupled threshold crossing, quantum-seeded inhomogeneous waterfall, backreaction, rescattering, defect-network evolution, relic abundance, entropy dilution, microscopic proxy-fluid realization or observational reproduction. Gates 2, 3, 4, 5, 6, 7, 8, 9 and 10 retain their current statuses until the corresponding evidence is independently verified.
