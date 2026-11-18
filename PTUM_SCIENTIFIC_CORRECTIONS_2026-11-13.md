@@ -1563,3 +1563,28 @@ This removes a contradictory sentence that incorrectly said the
 explicit SM action and Hilbert tensor were missing. It does not add
 SM dynamics, numerical conservation evidence, or reheating rates.
 Gate 3 remains PARTIAL.
+
+
+## 2026-11-18 paired tolerance study: forensic analysis and successive-refinement method
+
+Workflow 44063032840 completed the five-profile paired study with 500/500 successful integrations, 100 unique shared-input rows per profile, zero integration failures and 400 comparisons. The original gate returned false because only 281/300 solver-tolerance comparisons met the fixed coarsest-reference limits. This result was not waived.
+
+The strict-JSON artifact was downloaded and independently parsed. ZIP SHA-256:
+43fc944f12866c0e74bc079b40a521dab863655215cfb91b2b0950f20748a119.
+Extracted JSON SHA-256:
+c01e03bdbf1de0bcb3c801488a60dd77f8d2a83d9c6144a42194e3b53b735a9e.
+
+A row-by-row successive-pair reanalysis shows:
+- Maximum state-relative differences: 8.079e-6, 1.057e-6 and 1.629e-7 across the three adjacent tolerance refinements.
+- All six state-component maximum error envelopes decrease monotonically.
+- Maximum natural-scale normalized absolute classification differences: 5.091e-9, 3.960e-10 and 6.646e-11; every diagnostic envelope decreases monotonically.
+- All classification flags and metric-availability states agree for all 100 rows.
+- Chain-rule residual differences remain below 3.93e-10.
+- Finite-difference residual differences decrease from 1.61e-5 to 3.86e-6 to 1.66e-7.
+- The finest adjacent tolerance pair passes all 100 rows under the existing 1e-6 state, 1e-5 dimensionless-diagnostic, 1e-8 chain-rule and 1e-3 finite-difference limits.
+
+The former comparison divided every dimensionless classification difference by the magnitude of that observable. This made w near zero ill-conditioned: a roughly 1e-10 absolute change could appear as a 4.38e-5 relative change. The comparator now records that relative quantity diagnostically but uses abs(a-b)/max(1,abs(a),abs(b)) for acceptance of dimensionless classification observables.
+
+The paired study now compares each tolerance profile with its immediately preceding refinement. It requires every state and classification error envelope to decrease monotonically, unchanged flags and metric availability, passing conservation diagnostics, and all rows passing the finest adjacent pair. Intermediate comparisons remain visible and can individually exceed the final tolerance; they are not discarded or relabelled as passes.
+
+Commit f546728c02e0b3f10e9970ca55d63c34166468ba implements the revised comparator and JSON schema v2. Commit 44309ff9091426787102b60614c3f291845854c4 adds regressions for near-zero w normalization, monotonic error envelopes and fail-closed final-pair checks. Both are newer than workflow 44063032840. The revised code and tests await a fresh exact-head CI run; no new pass is claimed. This analysis concerns only the homogeneous post-threshold background scan.
