@@ -2847,6 +2847,30 @@ def test_paired_tolerance_summary_requires_monotonic_envelopes_and_final_pair():
     assert summary["monotonic_state_error_envelope"]
     assert summary["monotonic_classification_error_envelope"]
 
+    unavailable_metric = deepcopy(comparisons)
+    for row in unavailable_metric:
+        row["classification_normalized_absolute_differences"][
+            "quadratic_virial_final"
+        ] = None
+    unavailable_summary = summarize_solver_tolerance_convergence(
+        unavailable_metric, expected_rows=2
+    )
+    assert unavailable_summary["pass"]
+    assert "quadratic_virial_final" in (
+        unavailable_summary["consistently_unavailable_classification_fields"]
+    )
+
+    incomplete_state = deepcopy(comparisons)
+    first_spec = tolerance_specs[0]
+    first_row = next(
+        row for row in incomplete_state
+        if row["candidate_spec"] == first_spec
+    )
+    first_row["state_relative_differences"]["psi"] = None
+    assert not summarize_solver_tolerance_convergence(
+        incomplete_state, expected_rows=2
+    )["pass"]
+
     nonmonotonic = deepcopy(comparisons)
     last_spec = tolerance_specs[-1]
     last_row = next(
