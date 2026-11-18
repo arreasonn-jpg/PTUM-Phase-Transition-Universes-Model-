@@ -796,3 +796,8 @@ The chiral-SM registry now verifies exact per-generation cancellation of SU(3)^3
 ## 2026-11-18 manuscript anomaly-equation boundary
 
 The manuscript now explicitly shows the per-generation perturbative anomaly sums for the specified minimal chiral Standard Model and the even-doublet Witten check. The representation-level audit is displayed in the paper and tested against the code registry. This supports consistency of the declared SM field content only. It does not establish a PTUM UV completion, solve the quantum effective action, or provide evidence for inhomogeneous waterfall dynamics. The manuscript regression and exact-head LaTeX build await CI.
+
+
+## 2026-11-18 optional diagnostic availability boundary
+
+The paired artifact has no quadratic_virial_final values in any of its 100 rows across the refined-grid and tolerance profiles. The updated summary reports this as consistently unavailable, requires matching availability between profiles, and fails closed if any state component is missing. It does not convert the missing quadratic-virial measurement into a pass or a physical result. The corresponding regression and exact-head CI remain pending.
