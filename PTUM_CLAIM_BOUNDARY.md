@@ -913,3 +913,10 @@ is a two-field classical truncation with homogeneous Phi, not the full
 four-field or chiral-SM action. Equation labels and claim boundaries are
 guarded by regression tests.
 
+The exact-head failure in workflow 44502156872 was a stale regression
+expecting the manuscript to deny the existence of any reviewable lattice
+solver. That sentence had correctly been replaced by the limited classical
+prototype description. The test is corrected in 06164c1; this was a
+documentation-regression mismatch, not a numerical or physics failure.
+A fresh exact-head run is still required.
+
