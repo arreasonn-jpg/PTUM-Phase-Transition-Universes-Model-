@@ -1793,3 +1793,9 @@ identity residual to remain below 1e-12. This is an internal consistency
 check of the finite-lattice equations, not an independent continuum
 renormalization or a full-sector Hilbert-tensor conservation proof.
 
+The nearest-neighbour wall estimator now assigns exact-zero lattice sites
+to the non-negative phase. This counts a wall passing through a lattice
+site on one adjacent link rather than dropping both links. A periodic
+planar test checks the expected two crossings per box length. The estimator
+remains finite-grid and resolution dependent.
+
