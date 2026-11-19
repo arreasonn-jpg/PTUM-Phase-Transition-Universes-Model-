@@ -1484,3 +1484,11 @@ vacuum counterterms or continuum renormalization are implemented, and
 lattice spacing/volume/time-step convergence has not been demonstrated.
 The wall-area output is not the analytic scaling area factor. Gate 5
 therefore remains **NOT MET**. Exact-head CI for this prototype is pending.
+
+The lattice solver also reports a chain-rule RHS energy-balance residual
+for d(rho)/d(tau)+3h(rho+p). The homogeneous and inhomogeneous regressions
+require the normalized instantaneous residual to be below 1e-12. This
+checks the finite-lattice energy functional against the implemented
+discrete equations; it does not establish continuum renormalization or
+full-sector covariant conservation. The updated tests await exact-head CI.
+
