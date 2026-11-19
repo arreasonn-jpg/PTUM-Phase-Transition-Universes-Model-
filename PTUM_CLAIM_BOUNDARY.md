@@ -896,3 +896,12 @@ through a grid point. A periodic planar regression checks this convention.
 This improves counting consistency but does not make the finite-grid
 area density a continuum or scaling-network observable.
 
+The manuscript now acknowledges the versioned 3-D classical scalar
+lattice prototype and accurately limits its scope. The earlier statement
+that no reviewable PTUM lattice solver existed has been removed. The
+author-reported isocurvature/lattice calculations remain unreproduced:
+the new prototype is not the authors' original four-field implementation
+and cannot validate their reported numbers. It does not provide quantum
+vacuum seeds, renormalization, SM-sector dynamics, or a physical wall
+network prediction.
+
