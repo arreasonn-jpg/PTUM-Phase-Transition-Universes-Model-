@@ -3411,3 +3411,11 @@ def test_inhomogeneous_lattice_reports_classical_backreaction_and_wall_geometry(
     assert np.all(np.isfinite(result["continuity_residual_relative"]))
     assert result["max_abs_rhs_energy_balance_residual_relative"] < 1.0e-12
 
+def test_lattice_wall_area_counts_zero_crossings_once_with_periodic_boundaries():
+    from ptum_lattice_waterfall import _wall_area_density_over_mu
+
+    profile = np.array([-1.0, 0.0, 1.0, 1.0])
+    field = np.broadcast_to(profile[:, None, None], (4, 4, 4)).copy()
+    # Two planar sign changes per periodic length L=4*dx.
+    assert _wall_area_density_over_mu(field, dx=1.0, scale_factor=1.0) == pytest.approx(0.5)
+
