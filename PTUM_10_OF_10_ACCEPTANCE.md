@@ -10,7 +10,7 @@ This file defines the evidence required before PTUM can be called scientifically
 | 2. Inflation-to-waterfall connection | Exact inflation endpoint; threshold crossing in the same coupled background; stability of all modes before crossing; quantum seed prescription | **PARTIAL**. Exact epsilon_H endpoint is computed; post-threshold scan velocities are now taken from the integrated single-field FRW trajectory at each offset, but the coupled crossing and quantum seeds are not evolved |
 | 3. Hilbert tensors and conservation | Every sector tensor derived from the same action; all Q_i^nu derived; sum of currents cancels; numerical conservation converges independently with solver tolerance and timestep | **PARTIAL**. The classical tree-level gauge, Higgs, chiral-fermion and PTUM Hilbert tensors and all interaction currents are now written from one action; the current solver does not evolve SM fields, and full-sector numerical conservation/timestep-tolerance convergence is not yet demonstrated |
 | 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **MET for the homogeneous two-field post-threshold background domain**. Exact-head workflow 44280971987 completed 500/500 DOP853 integrations, 400/400 paired comparisons and all five 100-row profiles with zero failures. The 4,001-to-256,001 output-grid comparison passed 100/100; all final states/classification flags were unchanged. Independent finite-difference continuity residual maxima fell 3.7234e-2 to 6.0499e-4 (61.5x); all 100 row-wise residuals decreased, with median observed order 0.991 and minimum reduction factor 1.38. Successive solver refinements gave 98/100, 99/100 and 100/100 strict comparisons, monotonic state/diagnostic envelopes, unchanged flags/availability, and a final maximum state-relative difference 1.63e-7. All 500 final H and rho values are finite and positive; the RHS rejects non-positive total density at every evaluation. This gate is scoped to the homogeneous post-threshold two-field equations and does not close Gates 2 or 5 |
-| 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and a defect-topology analysis (including the Z2 domain-wall risk of a real waterfall scalar) | **NOT MET**. The real-psi kink and tension are analytic, and the conditional scaling-network estimate now quantifies the risk for mu_eff=m_psi=1e13 GeV, lambda_psi=0.1: with area factor A=1, H_dom is about 5.30e2 GeV versus H_BBN about 1.11e-23 GeV. An unbiased network would dominate long before BBN; a small linear source of about 7.90e28 GeV^3 (6.49e-11 epsilon_crit) is required in this estimate. The actual bias is not predicted because the renormalized SM expectation value, Wilson coefficients and thermal history are unspecified. No quantum-seeded inhomogeneous waterfall, defect-network evolution, backreaction or rescattering has been performed |
+| 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and a defect-topology analysis (including the Z2 domain-wall risk of a real waterfall scalar) | **NOT MET**. The real-psi kink and tension are analytic, and the conditional scaling-network estimate now quantifies the risk for mu_eff=m_psi=1e13 GeV, lambda_psi=0.1: with area factor A=1, H_dom is about 5.30e2 GeV versus H_BBN about 1.11e-23 GeV. An unbiased network would dominate long before BBN; a small linear source of about 7.90e28 GeV^3 (6.49e-11 epsilon_crit) is required in this estimate. The actual bias is not predicted because the renormalized SM expectation value, Wilson coefficients and thermal history are unspecified. The scaling ansatz gives a critical area factor A_crit=2.10315e-26 for H_dom=H_BBN; A=1 exceeds this by about 4.75e25, but A_crit is a conditional sensitivity threshold, not a measurement of the network geometry. No quantum-seeded inhomogeneous waterfall, defect-network evolution, backreaction or rescattering has been performed |
 | 6. Resonance and relic abundance | Expanding-background mode equations; converged monodromy/Floquet growth; momentum integration; backreaction; thermalization and entropy dilution; independently reproduced relic abundance | **NOT MET**. A linear mode integrator now evolves supplied expanding-FRW histories with an adiabatic-vacuum check and Wronskian monitor, and a finite-band trapezoidal momentum integral is implemented. The background is not generated self-consistently, the momentum tails and grid are not converged, and no backreaction or entropy dilution is available |
 | 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The closure remains phenomenological; no microscopic realization is established |
 | 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. Conditional potential-dominated T_rh estimate only; branching and thermalization are not computed |
@@ -1419,3 +1419,39 @@ regression suite on this head had 149 passes and one assertion mismatch
 between test wording and the manuscript; that assertion has been aligned
 with the manuscript wording without changing any scientific threshold.
 A fresh exact-head Python CI run is required.
+
+
+## 2026-11-19 domain-wall network geometry sensitivity
+
+The analytic scaling estimate now reports the critical area factor
+A_crit = 3 Mbar_Pl^2 H_BBN / sigma_wall. For the conditional benchmark
+mu_eff=1e13 GeV, lambda_psi=0.1, T_BBN=5 MeV and g*=10.75,
+A_crit=2.1031456023788425e-26. The scaling estimate predicts
+H_dom/H_BBN=A/A_crit. Thus A=1 implies domination far before BBN,
+whereas A below A_crit does not dominate before BBN in this ansatz.
+This is an explicit sensitivity threshold, not a determination of the
+network area factor or a defect-network simulation.
+
+Commit d742d283017f704b42f54f082b5b169817f9280b adds the critical-area
+diagnostics; commit acad9566af23a1a0254dfddd2499695a84a586fd adds
+regressions for the threshold and its two sides. Commit
+eb42b1908476e967069cfd3b9eb784836bc59ad1 displays the same relation
+and benchmark value in main.tex; commit
+6fae0105ded05fe0c6cb9f67df1ed6a7cc782ce4 guards the manuscript equation.
+The source-text regression now normalizes whitespace before checking
+the wrapped LaTeX sentence.
+
+## 2026-11-19 latest exact-head CI status
+
+Workflow 44495908967 ran on PR merge commit 2b3f23d5461400c0f5ad677e5ca3f65f868749aa,
+whose head was branch commit 8a88479a9da61166c490d0fe76e866ce39e6d565.
+The LaTeX build and PDF upload passed. Python regression reported
+149 passed and one failed: a literal phrase assertion crossed a source
+line break in main.tex. The four-trajectory smoke scan and all three
+full-scan jobs were skipped after the Python job failed. The assertion
+has since been changed to compare whitespace-normalized manuscript
+text, and the area-factor regression and manuscript equation are newer
+than this run. They require a fresh exact-head CI run. Seventy-four
+Underfull hbox warnings remain in the last verified final LaTeX pass;
+the final pass had no Overfull hbox or unresolved reference/citation
+warnings. Gate 10 remains PARTIAL.
