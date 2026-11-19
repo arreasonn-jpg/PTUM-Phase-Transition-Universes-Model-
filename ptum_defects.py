@@ -306,6 +306,10 @@ def domain_wall_bias_diagnostics(
         true_minimum = -true_minimum
         false_minimum = -false_minimum
     h_dom = network_area_factor * sigma / (3.0 * reduced_planck_mass**2)
+    critical_area_factor = (
+        3.0 * reduced_planck_mass**2 * hubble_bbn / sigma
+    )
+    wall_domination_before_bbn = bool(h_dom > hubble_bbn)
     required_delta_v = sigma * max(hubble_bbn, h_dom)
     required_epsilon_linear = required_delta_v / (2.0 * v)
     epsilon_critical = float(tilted["epsilon_critical"])
@@ -352,6 +356,11 @@ def domain_wall_bias_diagnostics(
         "small_bias_tension_approx_valid": small_bias_valid,
         "hubble_annihilation_estimate": h_ann,
         "hubble_domination_estimate": h_dom,
+        "wall_domination_hubble_ratio_to_bbn": h_dom / hubble_bbn,
+        "critical_network_area_factor_for_domination_before_bbn": (
+            critical_area_factor
+        ),
+        "wall_domination_before_bbn": wall_domination_before_bbn,
         "annihilation_before_bbn": before_bbn,
         "annihilation_before_wall_domination": before_domination,
         "required_vacuum_bias_for_bbn_and_domination": required_delta_v,
