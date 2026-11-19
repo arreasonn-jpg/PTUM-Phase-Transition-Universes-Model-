@@ -1517,3 +1517,12 @@ regressions passed 155 Python tests on intermediate head
 the later displayed-equation and manuscript-boundary regression awaits
 the current exact-head run. Gate 5 remains **NOT MET**.
 
+Workflow 44502156872 on head 7ce82fec2335300de2074bfb1fa90157bebfd430
+reported 155 passed and one failed. The sole failure was a stale manuscript
+test expecting the obsolete "no reviewable solver" sentence after the
+appendix had correctly documented the classical prototype. Commit
+06164c1b7ac9c2333f9e869d7d5bd73223765e9b updates that regression to check
+the new claim boundary and reject the obsolete sentence. No scientific
+tolerance was weakened. Gate 10 remains **PARTIAL** until the fresh
+exact-head Python and LaTeX jobs complete.
+
