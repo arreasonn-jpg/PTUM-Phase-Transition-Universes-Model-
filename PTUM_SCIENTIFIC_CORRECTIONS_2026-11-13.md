@@ -1696,3 +1696,42 @@ failure was a source-text assertion expecting the phrase
 actual wording and the existing scientific caveats; no numerical
 threshold or physical criterion was weakened. The next exact-head CI
 must confirm this correction.
+
+
+## 2026-11-19 domain-wall area-factor threshold
+
+For the real-$\\psi$ double-well scaling ansatz
+$\\rho_{\\rm wall}\\simeq\\mathcal A\\sigma_{\\rm wall}H$,
+the domination scale is
+$H_{\\rm dom}=\\mathcal A\\sigma_{\\rm wall}/(3M_{\\rm Pl}^2)$.
+Equating this with the radiation-era BBN Hubble scale gives the
+critical network area factor
+$\\mathcal A_{\\rm crit}=3M_{\\rm Pl}^2H_{\\rm BBN}/\\sigma_{\\rm wall}$.
+For $\\mu_{\\rm eff}=10^{13}$ GeV, $\\lambda_\\psi=0.1$,
+$T_{\\rm BBN}=5$ MeV and $g_*=10.75$ this is
+$2.1031456023788425\\times10^{-26}$. The ratio is exactly
+$H_{\\rm dom}/H_{\\rm BBN}=\\mathcal A/\\mathcal A_{\\rm crit}$
+within the scaling ansatz. An order-unity area factor therefore gives
+domination long before BBN; only an extremely small area factor below
+the threshold avoids domination before BBN in this estimate.
+
+The implementation returns the critical area factor, the domination
+Hubble ratio and a boolean comparison. Regression tests evaluate the
+benchmark and points on both sides of the threshold. This does not
+determine the network area factor, establish that a scaling network
+forms, or replace nonlinear defect evolution. The actual SM-induced
+bias still requires renormalized Wilson coefficients, the finite-T
+expectation value of the relevant chiral operator, and a coupled
+thermal history. Gate 5 remains NOT MET.
+
+## 2026-11-19 latest CI and source-regression repair
+
+Workflow 44495908967 tested PR head 8a88479a9da61166c490d0fe76e866ce39e6d565.
+The LaTeX job passed. The Python job reported 149 passed and one failed:
+the manuscript phrase "does not evolve wall formation or annihilation"
+was split by a source newline, while the test compared an unnormalized
+literal substring. The regression now normalizes whitespace before
+checking source prose. This is a test robustness correction only; it
+does not change any physical equation, threshold or acceptance limit.
+The domain-wall area-factor implementation, manuscript equation and
+new tests are newer than this workflow and await exact-head CI.
