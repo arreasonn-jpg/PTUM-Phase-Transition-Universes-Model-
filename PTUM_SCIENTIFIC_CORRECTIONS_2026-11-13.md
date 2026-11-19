@@ -1784,3 +1784,12 @@ two-field ODE, and an inhomogeneous run that checks gradient energy,
 backreaction metadata and a nonzero sign-crossing wall estimator. These
 tests and the new solver await exact-head CI.
 
+The lattice output now also includes an instantaneous RHS-level energy-balance
+residual. It differentiates the discrete energy functional by the chain rule
+and checks d(rho)/d(tau)+3h(rho+p)=0 using the same discrete Laplacian,
+forward-gradient operator and coupling force as the evolution equations.
+The homogeneous and inhomogeneous regressions require this normalized
+identity residual to remain below 1e-12. This is an internal consistency
+check of the finite-lattice equations, not an independent continuum
+renormalization or a full-sector Hilbert-tensor conservation proof.
+
