@@ -905,3 +905,11 @@ and cannot validate their reported numbers. It does not provide quantum
 vacuum seeds, renormalization, SM-sector dynamics, or a physical wall
 network prediction.
 
+The appendix now states the equations implemented by the limited lattice
+prototype, including the Phi force from one-half times the derivative of
+m_eff squared times the spatial average of psi squared, the same scalar
+energy in the Friedmann source, and the isotropic gradient pressure. This
+is a two-field classical truncation with homogeneous Phi, not the full
+four-field or chiral-SM action. Equation labels and claim boundaries are
+guarded by regression tests.
+
