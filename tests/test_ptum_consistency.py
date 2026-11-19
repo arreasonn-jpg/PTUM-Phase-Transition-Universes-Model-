@@ -3299,3 +3299,113 @@ def test_dirac_and_real_scalar_reheating_examples_are_explicitly_toy_models():
     assert "not identified with the Standard Model Higgs doublet" in normalized
     assert r"\eqref{eq:sm_hilbert_tensor}" in normalized
     assert "do not replace the still-missing explicit SM action" not in normalized
+
+def test_periodic_lattice_operators_satisfy_discrete_integration_by_parts():
+    from ptum_lattice_waterfall import periodic_laplacian_and_gradient_energy
+
+    rng = np.random.default_rng(20261119)
+    field = rng.normal(size=(8, 8, 8))
+    laplacian, gradient_norm_squared = periodic_laplacian_and_gradient_energy(
+        field, dx=0.37
+    )
+    np.testing.assert_allclose(
+        np.mean(field * laplacian),
+        -np.mean(gradient_norm_squared),
+        rtol=2.0e-14,
+        atol=2.0e-14,
+    )
+
+
+def test_lattice_homogeneous_limit_matches_existing_two_field_ode():
+    from ptum_lattice_waterfall import run_lattice_waterfall
+
+    params = PTUMParameters(V0=1.0e56)
+    mu = params.mu
+    psi0 = params.psi_0
+    phi = 0.99 * params.Phi_c
+    phi_dot = -0.005 * mu * params.Phi_c
+    psi = 0.03 * psi0
+    psi_dot = 0.001 * mu * psi0
+    tau = np.linspace(0.0, 0.03, 31)
+
+    lattice = run_lattice_waterfall(
+        params,
+        Phi_initial=phi,
+        Phi_dot_initial=phi_dot,
+        psi_initial=np.full((4, 4, 4), psi),
+        psi_dot_initial=np.full((4, 4, 4), psi_dot),
+        box_size_over_mu=4.0,
+        tau_span=(float(tau[0]), float(tau[-1])),
+        n_output_points=len(tau),
+        rtol=1.0e-10,
+        atol=1.0e-12,
+    )
+    ode = run_simulation(
+        params,
+        InitialConditions(
+            Phi=phi,
+            Phi_dot=phi_dot,
+            psi=psi,
+            psi_dot=psi_dot,
+        ),
+        (float(tau[0] / mu), float(tau[-1] / mu)),
+        t_eval=tau / mu,
+        rtol=1.0e-10,
+        atol=1.0e-12,
+        max_rhs_evaluations=None,
+    )
+
+    assert ode["success"]
+    np.testing.assert_allclose(lattice["Phi"], ode["Phi"], rtol=5.0e-8)
+    np.testing.assert_allclose(lattice["Phi_dot"], ode["Phi_dot"], rtol=5.0e-8)
+    np.testing.assert_allclose(
+        lattice["psi"][:, 0, 0, 0], ode["psi"], rtol=5.0e-8
+    )
+    np.testing.assert_allclose(
+        lattice["psi_dot"][:, 0, 0, 0], ode["psi_dot"], rtol=5.0e-8
+    )
+    np.testing.assert_allclose(lattice["H"], ode["H"], rtol=5.0e-8)
+    assert np.allclose(lattice["wall_area_density_over_mu"], 0.0)
+
+
+def test_inhomogeneous_lattice_reports_classical_backreaction_and_wall_geometry():
+    from ptum_lattice_waterfall import run_lattice_waterfall
+
+    params = PTUMParameters(V0=1.0e56)
+    n = 8
+    coordinate = np.arange(n, dtype=float)
+    profile = np.cos(2.0 * np.pi * coordinate / n + 0.23)
+    psi_initial = (
+        0.03 * params.psi_0
+        * profile[:, None, None]
+        * np.ones((1, n, n))
+    )
+    result = run_lattice_waterfall(
+        params,
+        Phi_initial=0.99 * params.Phi_c,
+        Phi_dot_initial=-0.005 * params.mu * params.Phi_c,
+        psi_initial=psi_initial,
+        psi_dot_initial=np.zeros_like(psi_initial),
+        box_size_over_mu=8.0,
+        tau_span=(0.0, 0.02),
+        n_output_points=21,
+        rtol=1.0e-9,
+        atol=1.0e-11,
+    )
+
+    assert result["success"]
+    assert result["backreaction_included"]
+    assert result["nonlinear_mode_coupling_included"]
+    assert result["classical_rescattering_included"]
+    assert not result["quantum_vacuum_seeded"]
+    assert not result["vacuum_renormalized"]
+    assert not result["continuum_limit_demonstrated"]
+    assert result["initial_seed_interpretation"] == "caller_supplied_classical_field"
+    assert np.all(np.isfinite(result["rho_total"]))
+    assert np.all(np.isfinite(result["psi_gradient_energy_density"]))
+    assert np.max(result["psi_gradient_energy_density"]) > 0.0
+    assert np.max(result["psi_variance"]) > 0.0
+    assert np.max(result["wall_area_density_over_mu"]) > 0.0
+    assert np.all(np.diff(result["scale_factor"]) > 0.0)
+    assert np.all(np.isfinite(result["continuity_residual_relative"]))
+
