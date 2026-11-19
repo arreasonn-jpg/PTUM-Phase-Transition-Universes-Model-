@@ -883,3 +883,10 @@ network. It does not close Gate 5, does not establish the actual SM bias,
 and does not support a relic-abundance claim. Exact-head regression and
 LaTeX checks are pending.
 
+The lattice solver additionally reports an instantaneous RHS-level
+stress-energy balance residual computed by differentiating its discrete
+energy functional. This verifies the internal consistency of the chosen
+finite-difference operators and the Phi-psi force at the tested states.
+It is not a substitute for continuum convergence, quantum renormalization,
+or independent conservation of all PTUM/SM sectors.
+
