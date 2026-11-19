@@ -1675,3 +1675,24 @@ still requires renormalized Wilson coefficients, the finite-temperature
 SM expectation value and a self-consistent thermal history. Gate 5
 remains NOT MET. The radiation-Hubble helper, benchmark regressions and
 manuscript estimate are newer than workflow 44280971987 and await CI.
+
+
+## 2026-11-19 final-pass LaTeX audit and regression correction
+
+The LaTeX job 135459775171 on commit
+82806504c37fe16be97b8c672e13e892a8f1999a completed successfully. The
+long anomaly equations were wrapped; the final third pdflatex pass has
+zero Overfull hbox warnings and no unresolved reference/citation
+warnings. The first pass emitted undefined-reference messages while
+writing labels, but these disappeared in the final pass. Seventy-four
+Underfull hbox warnings remain in the final pass, including several
+badness-10000 paragraphs, so the manuscript build is successful but not
+warning-free.
+
+The Python run on that commit reported 149 passed and one failed. The
+failure was a source-text assertion expecting the phrase
+'unbiased real-psi benchmark', while the manuscript accurately said
+'For a conditional benchmark'. The test is corrected to assert the
+actual wording and the existing scientific caveats; no numerical
+threshold or physical criterion was weakened. The next exact-head CI
+must confirm this correction.

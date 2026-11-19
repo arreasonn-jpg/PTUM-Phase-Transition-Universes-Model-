@@ -127,18 +127,29 @@ f4d6566db7984c83f3564688a0ceac762dcc4f3ee7905cd0fa0e8a2ed6d25842;
 the strict-JSON SHA-256 is
 800661282f7a5ee0a92d887def3c6f0207028b6992741127f726a1ccdbea3f3c.
 
-The 43-page manuscript PDF compiled and was uploaded. Its log still
-contains one 43.24 pt Overfull hbox in the anomaly align block and
-multiple Underfull hbox warnings. The anomaly equations have since been
-line-broken, and a new regression plus an explicit output-grid
-finite-difference convergence gate have been added. These edits await
-fresh exact-head CI; no result is claimed for them yet.
+The 43-page manuscript PDF compiled and was uploaded. The final third
+pdflatex pass has no Overfull hbox and no unresolved reference/citation
+warnings; the 74 Underfull hbox warnings remain, including several
+badness-10000 paragraphs. The first pass reports unresolved labels as
+expected while writing the auxiliary file, but the final pass resolves
+them. The anomaly equation wrap has therefore removed the prior
+43.24 pt overfull line. The output-grid finite-difference convergence
+gate and domain-wall benchmark are newer than the prior exact-head
+artifact and require their own full-study/CI confirmation.
 
 The paired run reports a homogeneous post-threshold numerical result
 only. It does not establish coupled threshold crossing, quantum-seeded
 inhomogeneous waterfall dynamics, backreaction, rescattering, relic
 abundance, entropy dilution or a microscopic proxy-fluid realization.
 The tracked main.pdf is not treated as the current build artifact.
+
+
+The historical repository URL https://github.com/ErdemEsa/ptum-cosmology.git
+returned HTTP 404 during the 2026-11-13 API review. The current repository
+does not expose the CLASS patch as an individually reviewable tracked
+source file, and the archive contents have not been verified. Public
+availability and apply-check success for that patch remain UNVERIFIED.
+See PTUM_REPRODUCIBILITY_NOTES.md.
 
 ## 9. Historical results that must not be reused
 

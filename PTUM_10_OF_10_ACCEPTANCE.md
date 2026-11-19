@@ -1403,3 +1403,19 @@ The current LaTeX log for the verified head contains one Overfull hbox
 The anomaly expressions are now line-broken, and the output-grid
 finite-difference reduction is promoted to an explicit CI acceptance
 condition. These newest edits await exact-head CI; Gate 10 remains PARTIAL.
+
+
+## 2026-11-19 final-pass LaTeX audit
+
+The exact-head LaTeX job 135459775171 on commit
+82806504c37fe16be97b8c672e13e892a8f1999a completed successfully. The
+anomaly align block no longer produces an Overfull hbox. The first
+pdflatex pass reported undefined references while labels were being
+written; the final third pdflatex pass has no unresolved reference or
+citation warnings. Seventy-four Underfull hbox warnings remain in the
+final pass, including several badness-10000 paragraphs. The build is
+successful but not typographically warning-free. The source-level
+regression suite on this head had 149 passes and one assertion mismatch
+between test wording and the manuscript; that assertion has been aligned
+with the manuscript wording without changing any scientific threshold.
+A fresh exact-head Python CI run is required.

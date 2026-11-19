@@ -1699,9 +1699,9 @@ def test_manuscript_thermal_domain_wall_bias_keeps_ideal_gas_scope_explicit():
     assert "ideal-gas contribution only" in manuscript
     assert "electroweak crossover" in manuscript
     assert "not a prediction of the PTUM bias or" in manuscript
-    assert "unbiased real-psi benchmark" in manuscript
+    assert "For a conditional benchmark" in manuscript
     assert "6.49\\times10^{-11}" in manuscript
-    assert "not a defect-network simulation" in manuscript
+    assert "does not evolve wall formation or annihilation" in manuscript
 
 
 
