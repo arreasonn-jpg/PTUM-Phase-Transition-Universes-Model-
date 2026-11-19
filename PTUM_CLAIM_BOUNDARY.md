@@ -844,3 +844,23 @@ The paired artifact has no quadratic_virial_final values in any of its 100 rows 
 ## 2026-11-18 CI trigger and convergence-availability boundary
 
 The authorized branch now has a push trigger for ordinary regression/smoke/LaTeX checks and an explicit [FULL-SCAN] commit-message opt-in for the 100-row baseline, targeted convergence probe and paired 500-integration study. The workflow regression guards these conditions. The convergence summary reports the quadratic virial metric as unavailable in all paired profiles, rather than implying it was measured; it fails closed for missing state components and requires matching diagnostic availability across refinements. The latest full-scan run has not yet been inspected, so no new CI pass is claimed.
+
+
+## 2026-11-19 real-psi network geometry sensitivity
+
+The code and manuscript now expose the scaling-ansatz threshold
+$\\mathcal A_{\\rm crit}=3M_{\\rm Pl}^2H_{\\rm BBN}/\\sigma_{\\rm wall}$.
+For the stated $10^{13}$ GeV, $\\lambda_\\psi=0.1$ benchmark,
+$\\mathcal A_{\\rm crit}=2.10315\\times10^{-26}$ and
+$H_{\\rm dom}/H_{\\rm BBN}=\\mathcal A/\\mathcal A_{\\rm crit}$.
+This quantifies why the conditional $\\mathcal A=1$ estimate is
+catastrophic. It does not measure $\\mathcal A$, show that a scaling
+network forms, or calculate its evolution. The real-$\\psi$ topology
+therefore remains an unresolved physical risk until a quantum-seeded
+inhomogeneous simulation follows formation, coarsening, bias-driven
+annihilation and expansion.
+
+The source-text regression for the conditional thermal-bias discussion
+now normalizes whitespace so a LaTeX line wrap cannot cause a false
+failure. This is not a scientific acceptance shortcut. Exact-head CI
+is pending for the implementation, manuscript equation and regressions.
