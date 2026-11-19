@@ -280,27 +280,76 @@ def run_lattice_waterfall(
     psi_mean_history = np.empty(n_times)
     psi_rms_history = np.empty(n_times)
     psi_variance_history = np.empty(n_times)
+    rhs_balance_relative_history = np.empty(n_times)
 
     for index in range(n_times):
         field = field_history[index]
         velocity = velocity_history[index]
-        rho_norm, pressure_norm, gradient_mean, _eta = energy_pressure(
-            float(x_history[index]),
-            float(u_history[index]),
-            field,
-            velocity,
-            float(log_a_history[index]),
+        x_now = float(x_history[index])
+        u_now = float(u_history[index])
+        log_a_now = float(log_a_history[index])
+        rho_norm, pressure_norm, gradient_mean, eta = energy_pressure(
+            x_now, u_now, field, velocity, log_a_now
         )
         if not np.isfinite(rho_norm) or rho_norm <= 0.0:
             raise ValueError("non-positive lattice energy in output history")
+
+        scale_factor_now = float(scale_factor_history[index])
+        hubble_over_mu_now = hubble_prefactor * np.sqrt(rho_norm)
+        phi_now = phi_scale * x_now
+        laplacian, _gradient_norm_squared = periodic_laplacian_and_gradient_energy(
+            field, dx
+        )
+        phi_acceleration = (
+            -3.0 * hubble_over_mu_now * u_now
+            - float(dveff_dphi(phi_now, params)) / (mu**2 * phi_scale)
+            - phi_psi_force_coefficient * x_now * float(np.mean(field**2))
+        )
+        field_acceleration = (
+            laplacian / scale_factor_now**2
+            - 3.0 * hubble_over_mu_now * velocity
+            - eta * field
+            - field**3
+        )
+        eta_x = (
+            2.0 * params.m_psi**2 * params.alpha * phi_scale**2 * x_now
+            / (mu**2 * params.E_th**2)
+        )
+        gradient_dot = 0.0
+        for axis in range(3):
+            grad_field = np.roll(field, -1, axis=axis) - field
+            grad_velocity = np.roll(velocity, -1, axis=axis) - velocity
+            gradient_dot += float(np.mean(grad_field * grad_velocity) / dx**2)
+        potential_derivative_norm = (
+            float(dveff_dphi(phi_now, params)) * phi_scale / rho_scale
+        )
+        rho_derivative_norm = (
+            fuel_kinetic_coefficient * u_now * phi_acceleration
+            + potential_derivative_norm * u_now
+            + float(np.mean(velocity * field_acceleration))
+            + gradient_dot / scale_factor_now**2
+            - hubble_over_mu_now * gradient_mean / scale_factor_now**2
+            + 0.5 * eta_x * u_now * float(np.mean(field**2))
+            + eta * float(np.mean(field * velocity))
+            + float(np.mean(field**3 * velocity))
+        )
+        rhs_balance_residual = (
+            rho_derivative_norm
+            + 3.0 * hubble_over_mu_now * (rho_norm + pressure_norm)
+        )
+        rhs_balance_relative_history[index] = (
+            abs(rhs_balance_residual)
+            / max(abs(rho_norm), np.finfo(float).tiny)
+        )
+
         rho_history[index] = rho_norm * rho_scale
         pressure_history[index] = pressure_norm * rho_scale
         gradient_history[index] = (
-            0.5 * rho_scale * gradient_mean / scale_factor_history[index]**2
+            0.5 * rho_scale * gradient_mean / scale_factor_now**2
         )
-        hubble_history[index] = mu * hubble_prefactor * np.sqrt(rho_norm)
+        hubble_history[index] = mu * hubble_over_mu_now
         wall_area_history[index] = _wall_area_density_over_mu(
-            field, dx, float(scale_factor_history[index])
+            field, dx, scale_factor_now
         )
         physical_field = psi0 * field
         psi_mean_history[index] = float(np.mean(physical_field))
@@ -340,6 +389,10 @@ def run_lattice_waterfall(
         "continuity_residual_relative": continuity_relative,
         "max_abs_continuity_residual_relative": float(
             np.max(continuity_relative)
+        ),
+        "rhs_energy_balance_residual_relative": rhs_balance_relative_history,
+        "max_abs_rhs_energy_balance_residual_relative": float(
+            np.max(rhs_balance_relative_history)
         ),
         "grid_shape": list(psi0_field.shape),
         "box_size_over_mu": box_length,
