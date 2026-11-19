@@ -890,3 +890,9 @@ finite-difference operators and the Phi-psi force at the tested states.
 It is not a substitute for continuum convergence, quantum renormalization,
 or independent conservation of all PTUM/SM sectors.
 
+For the lattice wall-area diagnostic, exact-zero sites are assigned to
+the non-negative phase, avoiding a lost crossing when a wall passes
+through a grid point. A periodic planar regression checks this convention.
+This improves counting consistency but does not make the finite-grid
+area density a continuum or scaling-network observable.
+
