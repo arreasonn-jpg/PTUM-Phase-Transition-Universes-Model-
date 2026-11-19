@@ -1810,3 +1810,12 @@ PTUM lattice solver existed is removed. The author-reported lattice/
 perturbation results are separately identified as not reproduced by this
 limited prototype. A manuscript regression guards these boundaries.
 
+The manuscript appendix now displays the actual equations evolved by the
+classical lattice prototype: the inhomogeneous psi equation, the homogeneous
+Phi equation with the volume-averaged mass-force term, the Friedmann source,
+and the isotropic pressure. It defines the derivative of m_eff^2 and states
+the periodic discrete integration-by-parts identity. These equations
+describe the two-field classical truncation only; they are not the full
+chiral-SM or four-field action. A source regression checks all equation
+labels and the explicit quantum/renormalization limitations.
+
