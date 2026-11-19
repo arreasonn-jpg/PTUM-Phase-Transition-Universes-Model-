@@ -1492,3 +1492,9 @@ checks the finite-lattice energy functional against the implemented
 discrete equations; it does not establish continuum renormalization or
 full-sector covariant conservation. The updated tests await exact-head CI.
 
+The finite-grid sign-crossing estimator now assigns exact-zero sites to
+the non-negative phase and has a periodic planar two-wall regression.
+This removes a zero-site undercount in the diagnostic; it does not remove
+its lattice-spacing, box-size or wall-resolution dependence. Gate 5
+remains **NOT MET**.
+
