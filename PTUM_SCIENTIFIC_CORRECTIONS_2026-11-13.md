@@ -1799,3 +1799,14 @@ site on one adjacent link rather than dropping both links. A periodic
 planar test checks the expected two crossings per box length. The estimator
 remains finite-grid and resolution dependent.
 
+The manuscript appendix has been corrected to distinguish the new limited
+classical lattice subsystem from the absent full quantum/four-field
+calculation. It now states that the repository exposes a periodic 3-D
+real-psi solver with homogeneous-Phi backreaction and classical mode
+coupling, while explicitly withholding claims of adiabatic-vacuum seeds,
+vacuum renormalization, full SM dynamics, continuum convergence, and
+physical defect probabilities. The previous statement that no reviewable
+PTUM lattice solver existed is removed. The author-reported lattice/
+perturbation results are separately identified as not reproduced by this
+limited prototype. A manuscript regression guards these boundaries.
+
