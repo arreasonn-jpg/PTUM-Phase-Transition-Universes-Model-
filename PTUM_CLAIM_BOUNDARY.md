@@ -864,3 +864,22 @@ The source-text regression for the conditional thermal-bias discussion
 now normalizes whitespace so a LaTeX line wrap cannot cause a false
 failure. This is not a scientific acceptance shortcut. Exact-head CI
 is pending for the implementation, manuscript equation and regressions.
+
+## 2026-11-19 nonlinear lattice claim boundary
+
+The new 3-D periodic lattice solver evolves the real waterfall field
+nonlinearly, includes spatial gradients, a homogeneous Phi response to
+the volume-averaged psi^2, and the corresponding scalar-field contribution
+to the expanding-FRW Friedmann equation. Classical nonlinear mode coupling
+can produce rescattering and sign domains from caller-supplied classical
+initial fields. The nearest-neighbour wall-area density is resolution and
+box dependent; it is not the analytic scaling area factor A.
+
+No quantum vacuum seed is generated, no vacuum renormalization is applied,
+and no continuum/volume/time-step convergence study has yet been performed.
+The code therefore provides a classical nonlinear numerical prototype,
+not a physical prediction for the quantum waterfall or a domain-wall
+network. It does not close Gate 5, does not establish the actual SM bias,
+and does not support a relic-abundance claim. Exact-head regression and
+LaTeX checks are pending.
+
