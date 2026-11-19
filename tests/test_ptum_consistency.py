@@ -3419,3 +3419,21 @@ def test_lattice_wall_area_counts_zero_crossings_once_with_periodic_boundaries()
     # Two planar sign changes per periodic length L=4*dx.
     assert _wall_area_density_over_mu(field, dx=1.0, scale_factor=1.0) == pytest.approx(0.5)
 
+def test_manuscript_distinguishes_classical_lattice_prototype_from_quantum_waterfall():
+    from pathlib import Path
+
+    source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
+    required = (
+        r"\texttt{ptum\_lattice\_waterfall.py}",
+        "caller-supplied classical initial fields",
+        "does not generate adiabatic-vacuum initial conditions",
+        "vacuum counterterms or continuum renormalization",
+        "not a nonlinear lattice simulation of the full four-field system",
+        "internal identity of the implemented discrete equations",
+        "the authors' original lattice/perturbation implementation is not public",
+    )
+    for phrase in required:
+        assert phrase in source
+    assert "does not expose an individually reviewable PTUM lattice solver" not in source
+    assert "lattice code not yet public" not in source
+
