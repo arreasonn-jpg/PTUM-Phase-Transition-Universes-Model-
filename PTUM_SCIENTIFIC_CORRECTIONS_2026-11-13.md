@@ -1819,3 +1819,13 @@ describe the two-field classical truncation only; they are not the full
 chiral-SM or four-field action. A source regression checks all equation
 labels and the explicit quantum/renormalization limitations.
 
+Exact-head workflow 44502156872 on commit 7ce82fec2335300de2074bfb1fa90157bebfd430
+ran 156 pytest cases: 155 passed and one failed because an older appendix regression
+still required the now-obsolete sentence that no reviewable PTUM lattice
+solver existed. The new manuscript correctly acknowledges the classical
+prototype, so the stale test was updated in commit
+06164c1b7ac9c2333f9e869d7d5bd73223765e9b to require the new scope statement
+and reject the obsolete claim. No physical threshold or numerical tolerance
+was changed. A fresh exact-head CI run is required; the LaTeX job from
+44502156872 was still running when this correction was made.
+
