@@ -1498,3 +1498,12 @@ This removes a zero-site undercount in the diagnostic; it does not remove
 its lattice-spacing, box-size or wall-resolution dependence. Gate 5
 remains **NOT MET**.
 
+The manuscript's lattice appendix now acknowledges the public
+ptum_lattice_waterfall.py prototype while distinguishing it from a
+quantum-seeded, renormalized, converged full-field calculation. It also
+clarifies that the author-reported lattice/perturbation implementation
+is distinct and remains unavailable for independent reproduction.
+A new source regression guards these statements. Gate 5 remains
+**NOT MET**; this is a claim-boundary correction, not new physical
+evidence.
+
