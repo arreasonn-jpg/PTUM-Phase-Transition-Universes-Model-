@@ -1614,3 +1614,64 @@ Commit 3a8b6b557e2733163e0cf672b16e81174a8697b6 adds explicit availability repor
 The paired convergence summary now reports per-diagnostic availability. The quadratic virial metric is absent in all 100 rows of all four refined-grid/tolerance profiles; it is explicitly listed as consistently unavailable, not presented as a measured converged quantity. Q, w and virial are available in 94 rows per profile and H_over_omega in 73. Adjacent-profile availability must match, and all six state components must be present in every row at every refinement. Regressions verify that a missing intermediate state component fails the summary while a consistently unavailable optional diagnostic is reported transparently.
 
 Commit 529e02f7188e02229dd01c8c45f857d985764418 adds push triggers for the authorized branch. A normal push runs short regression/smoke/LaTeX CI; a commit message explicitly containing [FULL-SCAN] also runs the full baseline, targeted probe and paired 500-integration study. The full-scan concurrency group is isolated from ordinary commits. Commit 4daed65a0ab1e47970714dd0d99cffcfff2bd352 guards these conditions with regression assertions. The acceptance document is updated in commit f8ad891887c71179d3cf8a7173fe961fba4d2423, whose [FULL-SCAN] message triggers the first exact-head run of the revised code. No result is claimed before inspecting that run.
+
+
+## 2026-11-19 exact-head paired convergence verification
+
+Workflow 44280971987 on head
+1c975a73c7e7daa17c01adffe0fd19d929e8d7bb completed all five jobs
+successfully. The Python suite passed 146 tests; the smoke scan passed
+4/4; the 100-row baseline passed 100/100; the targeted convergence probe
+passed 36/36; and the paired study completed 500/500 integrations and
+400/400 comparisons with full_study_pass=true. Every one of the five
+paired profiles contains 100 unique shared-input rows and there were no
+integration failures.
+
+The 4,001-to-256,001 output-grid comparison preserved all final states
+and classification flags in all 100 rows. The independently computed
+finite-difference continuity residual maximum fell from 3.7233747e-2 to
+6.0499428e-4. Post-hoc paired-row analysis gives a minimum reduction factor
+of 1.3797 and a median observed order of 0.9906 for the 64-fold spacing
+refinement. Solver tolerance refinements produced 98/100, 99/100 and
+100/100 strict comparisons. All six state-component error envelopes and
+all available normalized classification-diagnostic envelopes decrease
+monotonically; the finest adjacent pair has maximum state-relative error
+1.6279e-7, maximum normalized classification difference 6.6461e-11,
+maximum chain-rule residual difference 1.5666e-10 and maximum
+finite-difference residual difference 1.8113e-7. The prior 281/300
+fixed-reference failure remains a historical failed criterion; it is not
+retroactively called a pass.
+
+The 100-row baseline has 89 non-quartic, 6 insufficient-oscillation and
+5 quartic classifications. The five quartic labels are confined to the
+low-scale underdamped control. The zero-seed rows are exact classical
+invariant controls, not quantum vacuum seeds. All final H and rho values
+are finite and positive, and the RHS rejects non-positive total density
+at every evaluation. Gate 4 is therefore MET for the homogeneous
+post-threshold two-field background domain only. Gates 2 and 5 remain
+unmet/partial as previously stated.
+
+Artifact ZIP SHA-256:
+f4d6566db7984c83f3564688a0ceac762dcc4f3ee7905cd0fa0e8a2ed6d25842.
+Strict-JSON SHA-256:
+800661282f7a5ee0a92d887def3c6f0207028b6992741127f726a1ccdbea3f3c.
+
+## 2026-11-19 conditional real-psi domain-wall benchmark
+
+For the late broken-phase frozen-background limit Phi=0,
+mu_eff=m_psi=1e13 GeV and lambda_psi=0.1, the analytic kink tension is
+9.42809e39 GeV^3. Using the reduced-Planck radiation Friedmann equation
+at T_BBN=5 MeV and g*=10.75 gives H_BBN=1.11474e-23 GeV. With the
+scaling-network ansatz rho_wall=A sigma H and A=1, the corresponding
+wall-domination scale is H_dom=530.035 GeV. The unbiased network therefore
+reaches domination far before BBN in this conditional estimate. The
+small-bias linear source needed for annihilation before both is
+7.90130e28 GeV^3, or 6.49158e-11 epsilon_crit. A factor-of-two larger
+source passes the analytic annihilation-before-domination and BBN checks.
+
+This is not a wall-network simulation. It freezes Phi=0, assumes a scaling
+network with A=1, and does not predict the SM-induced bias. The latter
+still requires renormalized Wilson coefficients, the finite-temperature
+SM expectation value and a self-consistent thermal history. Gate 5
+remains NOT MET. The radiation-Hubble helper, benchmark regressions and
+manuscript estimate are newer than workflow 44280971987 and await CI.

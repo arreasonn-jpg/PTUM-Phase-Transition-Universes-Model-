@@ -854,6 +854,8 @@ def test_manuscript_displays_chiral_sm_gauge_anomaly_cancellation():
     assert r"\mathcal A_{U(1)_Y^3}" in source
     assert r"\mathcal A_{\mathrm{grav}^2U(1)_Y}" in source
     assert r"\label{eq:sm_gauge_anomaly_cancellation}" in source
+    assert r"&=6\left(\frac16\right)^3+3\left(-\frac23\right)^3" in source
+    assert r"&\quad+3\left(\frac13\right)^3" in source
     assert "twelve across the three generations" in source
     assert "do not supply a PTUM UV completion" in source
 
@@ -1387,6 +1389,67 @@ def test_manuscript_requires_final_wkb_adiabaticity_for_particle_number():
 
 
 
+def test_radiation_hubble_rate_uses_reduced_planck_friedmann_equation():
+    from ptum_defects import radiation_hubble_rate
+
+    value = radiation_hubble_rate(
+        temperature=5.0e-3,
+        g_star=10.75,
+        reduced_planck_mass=2.435e18,
+    )
+    assert value == pytest.approx(1.1147407908489041e-23, rel=2.0e-15)
+    with pytest.raises(ValueError):
+        radiation_hubble_rate(temperature=0.0, g_star=10.75,
+                              reduced_planck_mass=2.435e18)
+    with pytest.raises(ValueError):
+        radiation_hubble_rate(temperature=5.0e-3, g_star=-1.0,
+                              reduced_planck_mass=2.435e18)
+
+
+def test_ptum_real_psi_benchmark_has_catastrophic_unbiased_wall_scaling():
+    from ptum_defects import (
+        domain_wall_bias_diagnostics,
+        radiation_hubble_rate,
+    )
+
+    mu_eff = 1.0e13
+    lambda_psi = 0.1
+    reduced_planck_mass = 2.435e18
+    hubble_bbn = radiation_hubble_rate(
+        temperature=5.0e-3,
+        g_star=10.75,
+        reduced_planck_mass=reduced_planck_mass,
+    )
+    unbiased = domain_wall_bias_diagnostics(
+        mu_eff, lambda_psi, 0.0,
+        hubble_bbn=hubble_bbn,
+        reduced_planck_mass=reduced_planck_mass,
+        network_area_factor=1.0,
+    )
+    assert unbiased["wall_tension"] == pytest.approx(9.428090415820633e39)
+    assert unbiased["hubble_domination_estimate"] == pytest.approx(
+        530.0350054642124, rel=2.0e-14
+    )
+    assert unbiased["hubble_domination_estimate"] / hubble_bbn > 4.0e25
+    assert not unbiased["annihilation_before_bbn"]
+    assert not unbiased["annihilation_before_wall_domination"]
+
+    required_source = unbiased["required_linear_source_for_bbn_and_domination"]
+    required_ratio = required_source / unbiased["epsilon_critical"]
+    assert required_source == pytest.approx(7.9012953511496755e28, rel=2.0e-14)
+    assert required_ratio == pytest.approx(6.49157654600307e-11, rel=2.0e-14)
+
+    safely_biased = domain_wall_bias_diagnostics(
+        mu_eff, lambda_psi, 2.0 * required_source,
+        hubble_bbn=hubble_bbn,
+        reduced_planck_mass=reduced_planck_mass,
+        network_area_factor=1.0,
+    )
+    assert safely_biased["small_bias_tension_approx_valid"]
+    assert safely_biased["annihilation_before_bbn"]
+    assert safely_biased["annihilation_before_wall_domination"]
+
+
 def test_real_psi_domain_wall_kink_solves_static_field_equation():
     from ptum_defects import domain_wall_profile
 
@@ -1636,6 +1699,9 @@ def test_manuscript_thermal_domain_wall_bias_keeps_ideal_gas_scope_explicit():
     assert "ideal-gas contribution only" in manuscript
     assert "electroweak crossover" in manuscript
     assert "not a prediction of the PTUM bias or" in manuscript
+    assert "unbiased real-psi benchmark" in manuscript
+    assert "6.49\\times10^{-11}" in manuscript
+    assert "not a defect-network simulation" in manuscript
 
 
 
@@ -2799,6 +2865,92 @@ def test_paired_comparator_normalizes_near_zero_dimensionless_w_absolutely():
     )
     assert comparison["classification_pass"]
     assert comparison["comparison_pass"]
+
+
+def test_output_grid_comparison_requires_finite_difference_residual_reduction():
+    from copy import deepcopy
+    from ptum_full_grid_convergence_study import compare_records
+
+    params = PTUMParameters(V0=1.0e56, m_psi=1.0e13, lambda_psi=0.1)
+    reference = {
+        "success": True,
+        "row_key": "synthetic|seed=1|velocity=0|offset=0.01",
+        "final_state": {
+            "Phi": params.Phi_c,
+            "Phi_dot": params.mu * params.Phi_c,
+            "psi": params.psi_0,
+            "psi_dot": params.mu * params.psi_0,
+            "H": params.H_threshold_exact_end,
+            "rho_total": params.V0,
+        },
+        "classification": {
+            "Q_final": 2.2,
+            "w_final": 1.0 / 3.0,
+            "virial_final": 1.0,
+            "quadratic_virial_final": None,
+            "H_over_omega_max": 0.01,
+            "regime": "non_quartic",
+            "quartic_achieved": False,
+            "n_late_half_cycles": 5,
+            "n_oscillations": 5,
+            "adiabaticity_valid": True,
+        },
+        "diagnostics": {
+            "max_abs_relative_frw_continuity_residual": 1.0e-10,
+            "max_abs_finite_difference_frw_residual_over_Hrho": 1.0e-2,
+        },
+    }
+    refined = deepcopy(reference)
+    refined["diagnostics"][
+        "max_abs_finite_difference_frw_residual_over_Hrho"
+    ] = 1.0e-2 / 64.0
+    comparison = compare_records(reference, refined, params, "output_grid")
+    assert comparison["comparison_pass"]
+    assert comparison["finite_difference_residual_grid_reduction_factor"] == pytest.approx(64.0)
+    assert comparison["finite_difference_residual_grid_observed_order"] == pytest.approx(1.0)
+
+    no_improvement = deepcopy(reference)
+    no_improvement["diagnostics"][
+        "max_abs_finite_difference_frw_residual_over_Hrho"
+    ] = 1.01e-2
+    assert not compare_records(
+        reference, no_improvement, params, "output_grid"
+    )["comparison_pass"]
+
+
+def test_output_grid_fd_summary_requires_all_rows_and_near_first_order_scaling():
+    from ptum_full_grid_convergence_study import (
+        summarize_output_grid_finite_difference_convergence,
+    )
+
+    comparisons = [
+        {
+            "comparison_role": "output_grid",
+            "comparison_available": True,
+            "reference_finite_difference_residual_over_Hrho": 1.0,
+            "candidate_finite_difference_residual_over_Hrho": 1.0 / 64.0,
+        },
+        {
+            "comparison_role": "output_grid",
+            "comparison_available": True,
+            "reference_finite_difference_residual_over_Hrho": 1.0,
+            "candidate_finite_difference_residual_over_Hrho": 1.0 / 32.0,
+        },
+    ]
+    summary = summarize_output_grid_finite_difference_convergence(
+        comparisons, expected_rows=2
+    )
+    assert summary["pass"]
+    assert summary["median_observed_order"] == pytest.approx(11.0 / 12.0)
+
+    failed = [dict(item) for item in comparisons]
+    failed[1]["candidate_finite_difference_residual_over_Hrho"] = 1.1
+    assert not summarize_output_grid_finite_difference_convergence(
+        failed, expected_rows=2
+    )["pass"]
+    assert not summarize_output_grid_finite_difference_convergence(
+        comparisons[:1], expected_rows=2
+    )["pass"]
 
 
 def test_paired_tolerance_summary_requires_monotonic_envelopes_and_final_pair():

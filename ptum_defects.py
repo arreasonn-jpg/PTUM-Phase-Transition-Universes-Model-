@@ -24,6 +24,28 @@ def _validate_nonnegative(name: str, value: float) -> float:
     return value
 
 
+def radiation_hubble_rate(
+    temperature: float,
+    g_star: float,
+    reduced_planck_mass: float,
+) -> float:
+    """Return H(T) for a radiation bath using the reduced Planck mass.
+
+    From rho_rad = pi^2 g_* T^4 / 30 and
+    3 Mbar_Pl^2 H^2 = rho_rad, H = sqrt(pi^2 g_*/90) T^2/Mbar_Pl.
+    All dimensional inputs are in the same natural-unit mass convention.
+    """
+    temperature = _validate_positive("temperature", temperature)
+    g_star = _validate_positive("g_star", g_star)
+    reduced_planck_mass = _validate_positive(
+        "reduced_planck_mass", reduced_planck_mass
+    )
+    return float(
+        np.sqrt(np.pi**2 * g_star / 90.0)
+        * temperature**2 / reduced_planck_mass
+    )
+
+
 def domain_wall_vev(mu_eff: float, lambda_psi: float) -> float:
     """Return v=mu_eff/sqrt(lambda_psi) for V=lambda(psi^2-v^2)^2/4."""
     mu_eff = _validate_positive("mu_eff", mu_eff)

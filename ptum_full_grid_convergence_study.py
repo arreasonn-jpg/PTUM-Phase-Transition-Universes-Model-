@@ -27,6 +27,9 @@ MAX_RHS_EVALUATIONS = 1_000_000
 SOLVER_METHOD = "DOP853"
 OUTPUT_GRID_REFERENCE = 4001
 OUTPUT_GRID_REFINED = 256001
+OUTPUT_GRID_REFINEMENT_RATIO = (
+    (OUTPUT_GRID_REFINED - 1) / (OUTPUT_GRID_REFERENCE - 1)
+)
 TOLERANCE_REFERENCE = (1.0e-9, 1.0e-12)
 TOLERANCE_LEVELS = (
     TOLERANCE_REFERENCE,
@@ -268,6 +271,32 @@ def compare_records(reference: dict[str, Any], candidate: dict[str, Any],
         else:
             diagnostic_differences[field] = abs(left - right)
 
+    finite_difference_field = (
+        "max_abs_finite_difference_frw_residual_over_Hrho"
+    )
+    reference_finite_difference_residual = _finite_float(
+        reference["diagnostics"].get(finite_difference_field)
+    )
+    candidate_finite_difference_residual = _finite_float(
+        candidate["diagnostics"].get(finite_difference_field)
+    )
+    finite_difference_grid_reduction_factor = None
+    finite_difference_grid_observed_order = None
+    if (
+        reference_finite_difference_residual is not None
+        and candidate_finite_difference_residual is not None
+        and reference_finite_difference_residual > 0.0
+        and candidate_finite_difference_residual > 0.0
+    ):
+        finite_difference_grid_reduction_factor = (
+            reference_finite_difference_residual
+            / candidate_finite_difference_residual
+        )
+        finite_difference_grid_observed_order = (
+            math.log(finite_difference_grid_reduction_factor)
+            / math.log(OUTPUT_GRID_REFINEMENT_RATIO)
+        )
+
     max_state = max(
         (value for value in state_differences.values() if value is not None),
         default=None,
@@ -308,16 +337,22 @@ def compare_records(reference: dict[str, Any], candidate: dict[str, Any],
         and chain_difference
         <= LIMITS["max_chain_rule_residual_absolute_difference"]
     )
-    finite_difference_pass = (
-        comparison_role == "output_grid"
-        or (
+    if comparison_role == "output_grid":
+        finite_difference_pass = (
+            reference_finite_difference_residual is not None
+            and candidate_finite_difference_residual is not None
+            and reference_finite_difference_residual > 0.0
+            and candidate_finite_difference_residual
+            < reference_finite_difference_residual
+        )
+    else:
+        finite_difference_pass = (
             finite_difference_residual_difference is not None
             and finite_difference_residual_difference
             <= LIMITS[
                 "max_finite_difference_residual_absolute_difference_for_tolerance"
             ]
         )
-    )
 
     result.update({
         "comparison_available": True,
@@ -340,6 +375,14 @@ def compare_records(reference: dict[str, Any], candidate: dict[str, Any],
         "max_chain_rule_residual_absolute_difference": chain_difference,
         "max_finite_difference_residual_absolute_difference":
             finite_difference_residual_difference,
+        "reference_finite_difference_residual_over_Hrho":
+            reference_finite_difference_residual,
+        "candidate_finite_difference_residual_over_Hrho":
+            candidate_finite_difference_residual,
+        "finite_difference_residual_grid_reduction_factor":
+            finite_difference_grid_reduction_factor,
+        "finite_difference_residual_grid_observed_order":
+            finite_difference_grid_observed_order,
         "state_pass": bool(state_pass),
         "classification_pass": bool(classification_pass),
         "flags_pass": bool(flags_pass),
@@ -355,6 +398,85 @@ def compare_records(reference: dict[str, Any], candidate: dict[str, Any],
         ),
     })
     return result
+
+
+def summarize_output_grid_finite_difference_convergence(
+    comparisons: list[dict[str, Any]],
+    expected_rows: int = EXPECTED_ROWS,
+) -> dict[str, Any]:
+    """Require row-wise FD-residual reduction and near-first-order grid scaling.
+
+    np.gradient uses a first-order one-sided boundary stencil by default.
+    The maximum normalized continuity residual is therefore expected to
+    approach first-order scaling when the output spacing is refined. The
+    median observed order is required to be at least 0.8; every paired row
+    must independently show a strict residual reduction.
+    """
+    items = [
+        item for item in comparisons
+        if item.get("comparison_role") == "output_grid"
+        and item.get("comparison_available")
+    ]
+    reductions = []
+    orders = []
+    all_available = len(items) == expected_rows
+    all_rows_improve = len(items) == expected_rows
+
+    for item in items:
+        coarse = _finite_float(
+            item.get("reference_finite_difference_residual_over_Hrho")
+        )
+        refined = _finite_float(
+            item.get("candidate_finite_difference_residual_over_Hrho")
+        )
+        if (
+            coarse is None or refined is None
+            or coarse <= 0.0 or refined <= 0.0
+        ):
+            all_available = False
+            all_rows_improve = False
+            continue
+        reduction = coarse / refined
+        order = math.log(reduction) / math.log(
+            OUTPUT_GRID_REFINEMENT_RATIO
+        )
+        reductions.append(reduction)
+        orders.append(order)
+        if refined >= coarse:
+            all_rows_improve = False
+
+    median_order = (
+        float(np.median(orders)) if len(orders) == expected_rows else None
+    )
+    passed = bool(
+        all_available
+        and all_rows_improve
+        and median_order is not None
+        and median_order >= 0.8
+    )
+    return {
+        "comparison_count": len(items),
+        "expected_comparison_count": expected_rows,
+        "grid_refinement_ratio": OUTPUT_GRID_REFINEMENT_RATIO,
+        "available_reduction_count": len(reductions),
+        "all_rows_improve": all_rows_improve,
+        "minimum_reduction_factor": (
+            min(reductions) if len(reductions) == expected_rows else None
+        ),
+        "median_reduction_factor": (
+            float(np.median(reductions))
+            if len(reductions) == expected_rows else None
+        ),
+        "minimum_observed_order": (
+            min(orders) if len(orders) == expected_rows else None
+        ),
+        "median_observed_order": median_order,
+        "maximum_observed_order": (
+            max(orders) if len(orders) == expected_rows else None
+        ),
+        "all_diagnostics_available": all_available,
+        "pass": passed,
+    }
 
 
 def summarize_solver_tolerance_convergence(
@@ -699,6 +821,11 @@ def _payload(records_by_spec: dict[str, list[dict[str, Any]]],
             for item in output_grid_items
         )
     )
+    output_grid_fd_convergence = (
+        summarize_output_grid_finite_difference_convergence(
+            comparisons, expected_rows=EXPECTED_ROWS
+        )
+    )
     tolerance_convergence = summarize_solver_tolerance_convergence(
         comparisons, expected_rows=EXPECTED_ROWS
     )
@@ -713,10 +840,11 @@ def _payload(records_by_spec: dict[str, list[dict[str, Any]]],
         and len(completed_specs) == len(STUDY_SPECS)
         and all_comparisons_present
         and output_grid_pass
+        and output_grid_fd_convergence["pass"]
         and tolerance_convergence["pass"]
     )
     return {
-        "schema_version": 2,
+        "schema_version": 3,
         "purpose": "paired full 100-row homogeneous DOP853 output-grid and solver-tolerance convergence study",
         "solver_method": SOLVER_METHOD,
         "t_max_over_mu_inverse": T_MAX,
@@ -732,6 +860,8 @@ def _payload(records_by_spec: dict[str, list[dict[str, Any]]],
         "comparison_count": len(comparisons),
         "comparisons_by_role": by_role,
         "output_grid_comparison_pass": output_grid_pass,
+        "output_grid_finite_difference_convergence":
+            output_grid_fd_convergence,
         "solver_tolerance_convergence": tolerance_convergence,
         "all_comparisons_present": all_comparisons_present,
         "comparisons": comparisons,
@@ -745,7 +875,10 @@ def _payload(records_by_spec: dict[str, list[dict[str, Any]]],
             "decreasing successive-refinement error envelope and a passing "
             "finest adjacent pair, not on requiring every intermediate solver "
             "profile to be within the final error threshold of the coarsest "
-            "profile. This is a homogeneous post-threshold sensitivity scan, "
+            "profile. The independent finite-difference continuity residual "
+            "must also decrease for every output-grid pair, with median "
+            "observed order at least 0.8. This is a homogeneous "
+            "post-threshold sensitivity scan, "
             "not a coupled threshold-crossing, quantum-seeded inhomogeneous "
             "waterfall, backreaction, rescattering, or relic calculation."
         ),

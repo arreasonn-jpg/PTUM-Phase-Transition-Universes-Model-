@@ -1,6 +1,6 @@
 # PTUM Claim Boundary and Verification Status
 
-**Snapshot:** 2026-11-13  
+**Snapshot:** 2026-11-19  
 **Canonical repository:** https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-  
 **Scientific correction branch:** `ptum/scientific-consistency-fixes-2026-11-13`
 
@@ -67,7 +67,7 @@ Each scenario has a (5\times5\times2) initial-condition grid, giving 50 trajecto
 
 This remains a homogeneous **post-threshold sensitivity scan**. It does not evolve the coupled threshold crossing, quantum vacuum seeds, inhomogeneous tachyonic growth, rescattering, or backreaction. Exactly zero classical (\psi) initial data remain invariant under the deterministic homogeneous equations; they are not quantum-vacuum seeds.
 
-The latest observed scan attempt was cancelled when a newer commit superseded its workflow run. No complete 100-row artifact has been validated. No regime conclusion from the revised 100-point scan is currently claimed.
+The exact-head workflow 44280971987 completed the revised 100-row baseline with 100/100 successful integrations. The paired 500-run study completed all five profiles (100 unique rows each), 400/400 comparisons and zero failures. The 4,001-to-256,001 output-grid comparison preserved final states and classification flags in all 100 rows. The independent finite-difference continuity residual maximum decreased from 3.7234e-2 to 6.0499e-4 (61.5x); row-wise analysis gives minimum reduction factor 1.38 and median observed order 0.991. Solver-tolerance comparisons pass 98/100, 99/100 and 100/100 in successive refinements, with monotonic error envelopes and unchanged flags/availability. The finest-pair maximum state-relative difference is 1.63e-7. The baseline classifications are 89 non-quartic, 6 insufficient-oscillation and 5 quartic, all five quartic labels confined to the low-scale underdamped control. This supports Gate 4 only for the homogeneous post-threshold two-field background problem. It does not validate the coupled crossing, quantum seeds or inhomogeneous dynamics.
 
 ## 5. Energy-momentum tensors and Standard Model EFT
 
@@ -101,17 +101,44 @@ The real (\psi) waterfall potential has two degenerate tachyonic minima,
 ]
 A spatially inhomogeneous transition can therefore produce (Z_2) domain walls. The model does not derive cosmic strings from this real-scalar truncation. The odd dimension-five fermion-Higgs operator may explicitly break (Z_2), but the induced vacuum bias and wall lifetime depend on Wilson coefficients and any additional discrete charge assignments; neither has been calculated. No defect-free claim is made.
 
+For a conditional benchmark with frozen Phi=0, mu_eff=m_psi=1e13 GeV,
+lambda_psi=0.1, T_BBN=5 MeV, g*=10.75 and scaling-network area factor
+A=1, the analytic wall estimate gives sigma_wall=9.42809e39 GeV^3,
+H_BBN=1.11474e-23 GeV and H_dom=530.035 GeV. An unbiased scaling
+network would dominate far before BBN. The small-bias source needed to
+annihilate before both is approximately 7.90130e28 GeV^3, or
+6.49158e-11 epsilon_crit. This is a conditional order-of-magnitude
+estimate, not a prediction of the actual SM-induced bias or a defect
+network simulation; Wilson coefficients, the renormalized SM
+expectation value and the thermal history are unspecified.
+
 Likewise, (w=1/3,c_s^2=1/3,\sigma=0) is not a demonstrated microscopic attractor. It remains a conditional phenomenological closure until field-level perturbations, sound speed, anisotropic stress, and stability are derived and converged.
 
 ## 8. Reproducibility and current CI boundary
 
-The latest branch contains **51 regression tests**, including scalar/action checks, FRW diagnostics, frozen Floquet tests, expanding-mode vacuum and Wronskian checks, FRW history consistency, intermediate tachyonic evolution, and finite-band momentum-grid validation.
+The exact-head workflow 44280971987 on commit
+1c975a73c7e7daa17c01adffe0fd19d929e8d7bb completed successfully:
+146 Python tests passed; the two-scale smoke scan passed 4/4; the
+100-row baseline passed 100/100; the targeted convergence probe passed
+36/36; and the paired full-grid study completed 500/500 integrations
+and 400 comparisons with full_study_pass=true. All five jobs passed.
+The paired artifact ZIP SHA-256 is
+f4d6566db7984c83f3564688a0ceac762dcc4f3ee7905cd0fa0e8a2ed6d25842;
+the strict-JSON SHA-256 is
+800661282f7a5ee0a92d887def3c6f0207028b6992741127f726a1ccdbea3f3c.
 
-The latest previously completed workflow run (43400134268) passed its 43-test Python regression step but failed the LaTeX job because `mathrsfs` was not loaded for `\mathscr D_\mu`. The package was added, the on-shell SM tensor double-counting issue was corrected, and further mode tests were added. A new workflow run (43405427845) has been triggered for the latest branch; at the time of this snapshot it is pending, so the 51-test suite, 100-trajectory scan, and corrected LaTeX build are **not yet claimed as passing**.
+The 43-page manuscript PDF compiled and was uploaded. Its log still
+contains one 43.24 pt Overfull hbox in the anomaly align block and
+multiple Underfull hbox warnings. The anomaly equations have since been
+line-broken, and a new regression plus an explicit output-grid
+finite-difference convergence gate have been added. These edits await
+fresh exact-head CI; no result is claimed for them yet.
 
-The tracked `main.pdf` is an older library artifact and is not the current compiled manuscript. Fresh PDF and scan outputs must come from the CI artifacts. Generated LaTeX auxiliary files and stale scan summaries are excluded from the correction branch.
-
-The historical repository URL `https://github.com/ErdemEsa/ptum-cosmology.git` returned HTTP 404 during the 2026-11-13 API review. The current repository does not expose the CLASS patch as an individually reviewable tracked source file, and the archive contents have not been verified. Public availability and apply-check success for that patch are therefore **UNVERIFIED**. See `PTUM_REPRODUCIBILITY_NOTES.md`.
+The paired run reports a homogeneous post-threshold numerical result
+only. It does not establish coupled threshold crossing, quantum-seeded
+inhomogeneous waterfall dynamics, backreaction, rescattering, relic
+abundance, entropy dilution or a microscopic proxy-fluid realization.
+The tracked main.pdf is not treated as the current build artifact.
 
 ## 9. Historical results that must not be reused
 
