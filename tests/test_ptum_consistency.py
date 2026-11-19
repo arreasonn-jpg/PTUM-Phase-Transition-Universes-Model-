@@ -1755,6 +1755,8 @@ def test_manuscript_thermal_domain_wall_bias_keeps_ideal_gas_scope_explicit():
     assert "not a prediction of the PTUM bias or" in normalized_manuscript
     assert "For a conditional benchmark" in normalized_manuscript
     assert "6.49\\times10^{-11}" in normalized_manuscript
+    assert "eq:ptum_domain_wall_area_critical" in normalized_manuscript
+    assert "2.10\\times10^{-26}" in normalized_manuscript
     assert "does not evolve wall formation or annihilation" in normalized_manuscript
 
 
