@@ -4800,7 +4800,44 @@ self-interaction and spatial gradients, couples its volume-averaged
 $\langle\psi^2\rangle$ back to a homogeneous $\Phi$, and includes the
 same scalar-sector energy in the expanding-FRW Friedmann source.
 Nonlinear mode coupling permits classical rescattering and sign-domain
-formation for caller-supplied classical initial fields.
+formation for caller-supplied classical initial fields. With the
+spatial average over the periodic comoving box denoted by
+$\langle\cdots\rangle_V$, the implemented classical truncation is
+
+\begin{align}
+\ddot\psi+3H\dot\psi-\frac{\nabla^2\psi}{a^2}
++m_{\rm eff}^2(\Phi)\psi+\lambda_\psi\psi^3&=0,
+\label{eq:ptum_lattice_psi}\\
+\ddot\Phi+3H\dot\Phi+V_{{\rm eff},\Phi}
++\frac12\partial_\Phi m_{\rm eff}^2(\Phi)
+\langle\psi^2\rangle_V&=0,
+\label{eq:ptum_lattice_phi}\\
+3M_{\rm Pl}^2H^2&=
+\frac12\dot\Phi^2+V_{\rm eff}(\Phi)
++\left\langle
+\frac12\dot\psi^2+\frac{|\nabla\psi|^2}{2a^2}
++\frac12m_{\rm eff}^2(\Phi)\psi^2
++\frac{\lambda_\psi}{4}\psi^4
+\right\rangle_V.
+\label{eq:ptum_lattice_friedmann}
+\end{align}
+The corresponding isotropic pressure is
+\begin{equation}
+p_{\rm tot}=\frac12\dot\Phi^2-V_{\rm eff}(\Phi)
++\left\langle
+\frac12\dot\psi^2-\frac{|\nabla\psi|^2}{6a^2}
+-\frac12m_{\rm eff}^2(\Phi)\psi^2
+-\frac{\lambda_\psi}{4}\psi^4
+\right\rangle_V.
+\label{eq:ptum_lattice_pressure}
+\end{equation}
+Here $\partial_\Phi m_{\rm eff}^2=
+2m_\psi^2\alpha\Phi/E_{\rm th}^2$. The periodic central-difference
+Laplacian and forward-difference gradient obey the discrete identity
+$\langle\psi\Delta_d\psi\rangle_V
+=-\langle|\nabla_d\psi|^2\rangle_V$, which is used in the
+finite-lattice energy-balance diagnostic. These equations evolve
+inhomogeneous $\psi$ but retain a homogeneous $\Phi$.
 
 This prototype is not a quantum-seeded waterfall calculation. It does
 not generate adiabatic-vacuum initial conditions, apply vacuum
