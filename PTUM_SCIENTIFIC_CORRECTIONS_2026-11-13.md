@@ -1735,3 +1735,52 @@ checking source prose. This is a test robustness correction only; it
 does not change any physical equation, threshold or acceptance limit.
 The domain-wall area-factor implementation, manuscript equation and
 new tests are newer than this workflow and await exact-head CI.
+
+## 2026-11-19 nonlinear 3-D classical waterfall lattice prototype
+
+A new periodic cubic finite-difference solver, ptum_lattice_waterfall.py,
+evolves a homogeneous fuel field and a real inhomogeneous waterfall field
+on an expanding FRW background. In natural units and with comoving
+coordinates measured in mu^{-1}, its equations are
+
+\[
+\ddot\psi+3H\dot\psi-a^{-2}\nabla^2\psi
++m_{\rm eff}^2(\Phi)\psi+\lambda_\psi\psi^3=0,
+\]
+
+\[
+\ddot\Phi+3H\dot\Phi+V_{{\rm eff},\Phi}
++\frac12\,m_{{\rm eff},\Phi}^2\langle\psi^2\rangle=0,
+\]
+
+\[
+3M_{\rm Pl}^2H^2=
+\frac12\dot\Phi^2+V_{\rm eff}(\Phi)
++\left\langle\frac12\dot\psi^2+
+\frac{|\nabla\psi|^2}{2a^2}
++\frac12m_{\rm eff}^2(\Phi)\psi^2
++\frac{\lambda_\psi}{4}\psi^4\right\rangle.
+\]
+
+The spatial force and Friedmann source use the same volume average.
+The periodic central Laplacian and forward-difference gradient energy
+satisfy a discrete integration-by-parts identity. The pressure includes
+the isotropic gradient contribution -<|grad psi|^2>/(6a^2).
+The nearest-neighbour sign-crossing output is a finite-grid wall-area
+density estimator, not the scaling-network area factor used in the
+analytic domain-wall sensitivity estimate.
+
+The solver includes classical Phi backreaction, nonlinear mode coupling
+and classical rescattering for caller-supplied real psi(x), psi_dot(x).
+It deliberately does not label those inputs as quantum vacuum seeds.
+There are no adiabatic vacuum counterterms, continuum renormalization,
+SM fields, or UV/IR continuum extrapolations. The result is a finite-box
+classical prototype only. It does not satisfy Gate 5 and cannot be used
+for a quantum-seeded waterfall or relic-abundance claim.
+
+Three regressions were added: the discrete periodic integration-by-parts
+identity, agreement of the homogeneous lattice limit with the existing
+two-field ODE, and an inhomogeneous run that checks gradient energy,
+backreaction metadata and a nonzero sign-crossing wall estimator. These
+tests and the new solver await exact-head CI.
+
