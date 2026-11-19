@@ -69,10 +69,9 @@ def _wall_area_density_over_mu(field: np.ndarray, dx: float, scale_factor: float
     crossings = 0
     for axis in range(3):
         neighbour = np.roll(field, -1, axis=axis)
-        nonzero = (field != 0.0) & (neighbour != 0.0)
-        crossings += int(np.count_nonzero(
-            nonzero & (np.signbit(field) != np.signbit(neighbour))
-        ))
+        # Treat exact zeros as the non-negative phase so a wall passing
+        # through a lattice site is counted on one adjacent link, not lost.
+        crossings += int(np.count_nonzero((field < 0.0) != (neighbour < 0.0)))
     return float(crossings / (field.size * dx * scale_factor))
 
 
