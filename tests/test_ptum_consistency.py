@@ -1305,10 +1305,13 @@ def test_manuscript_withdraws_unverified_lattice_outputs_and_reproduction_claims
     end = source.index("%============================================================\n% REFERENCES", start)
     section = source[start:end]
     normalized_section = " ".join(section.split()).lower()
-    assert "does not expose an individually reviewable ptum lattice solver" in normalized_section
+    assert "versioned periodic cubic finite-difference prototype" in normalized_section
+    assert "not a quantum-seeded waterfall calculation" in normalized_section
+    assert "does not generate adiabatic-vacuum initial conditions" in normalized_section
+    assert "does not expose an individually reviewable ptum lattice solver" not in normalized_section
     assert r"does \emph{not} claim".lower() in normalized_section
-    assert "sub-percent energy-conservation" in normalized_section
-    assert "raw outputs and checksums" in normalized_section
+    assert "sub-percent time-integrated energy-conservation" in normalized_section
+    assert "raw field configurations, outputs, and checksums" in normalized_section
     for unsupported_claim in (
         "The following lattice outputs are included",
         "convergence tested up to",
