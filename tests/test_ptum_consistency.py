@@ -1450,6 +1450,59 @@ def test_ptum_real_psi_benchmark_has_catastrophic_unbiased_wall_scaling():
     assert safely_biased["annihilation_before_wall_domination"]
 
 
+def test_domain_wall_bbn_risk_reports_critical_network_area_factor():
+    from ptum_defects import (
+        domain_wall_bias_diagnostics,
+        radiation_hubble_rate,
+    )
+
+    mu_eff = 1.0e13
+    lambda_psi = 0.1
+    reduced_planck_mass = 2.435e18
+    hubble_bbn = radiation_hubble_rate(
+        temperature=5.0e-3,
+        g_star=10.75,
+        reduced_planck_mass=reduced_planck_mass,
+    )
+    benchmark = domain_wall_bias_diagnostics(
+        mu_eff, lambda_psi, 0.0,
+        hubble_bbn=hubble_bbn,
+        reduced_planck_mass=reduced_planck_mass,
+        network_area_factor=1.0,
+    )
+    critical_area = benchmark[
+        "critical_network_area_factor_for_domination_before_bbn"
+    ]
+    assert critical_area == pytest.approx(2.1031456023788425e-26, rel=2.0e-14)
+    assert benchmark["wall_domination_before_bbn"]
+    assert benchmark["wall_domination_hubble_ratio_to_bbn"] == pytest.approx(
+        1.0 / critical_area, rel=2.0e-14
+    )
+
+    below = domain_wall_bias_diagnostics(
+        mu_eff, lambda_psi, 0.0,
+        hubble_bbn=hubble_bbn,
+        reduced_planck_mass=reduced_planck_mass,
+        network_area_factor=0.5 * critical_area,
+    )
+    above = domain_wall_bias_diagnostics(
+        mu_eff, lambda_psi, 0.0,
+        hubble_bbn=hubble_bbn,
+        reduced_planck_mass=reduced_planck_mass,
+        network_area_factor=2.0 * critical_area,
+    )
+    assert not below["wall_domination_before_bbn"]
+    assert below["wall_domination_hubble_ratio_to_bbn"] == pytest.approx(0.5)
+    assert above["wall_domination_before_bbn"]
+    assert above["wall_domination_hubble_ratio_to_bbn"] == pytest.approx(2.0)
+    assert below["required_vacuum_bias_for_bbn_and_domination"] == pytest.approx(
+        below["wall_tension"] * hubble_bbn
+    )
+    assert above["required_vacuum_bias_for_bbn_and_domination"] == pytest.approx(
+        above["wall_tension"] * 2.0 * hubble_bbn
+    )
+
+
 def test_real_psi_domain_wall_kink_solves_static_field_equation():
     from ptum_defects import domain_wall_profile
 
@@ -1693,15 +1746,16 @@ def test_manuscript_thermal_domain_wall_bias_keeps_ideal_gas_scope_explicit():
     from pathlib import Path
 
     manuscript = Path("main.tex").read_text(encoding="utf-8")
-    assert "eq:ptum_thermal_fermion_condensate" in manuscript
-    assert "eq:ptum_thermal_bias" in manuscript
-    assert "Re}[(C_f)_{ii}]" in manuscript
-    assert "ideal-gas contribution only" in manuscript
-    assert "electroweak crossover" in manuscript
-    assert "not a prediction of the PTUM bias or" in manuscript
-    assert "For a conditional benchmark" in manuscript
-    assert "6.49\\times10^{-11}" in manuscript
-    assert "does not evolve wall formation or annihilation" in manuscript
+    normalized_manuscript = " ".join(manuscript.split())
+    assert "eq:ptum_thermal_fermion_condensate" in normalized_manuscript
+    assert "eq:ptum_thermal_bias" in normalized_manuscript
+    assert "Re}[(C_f)_{ii}]" in normalized_manuscript
+    assert "ideal-gas contribution only" in normalized_manuscript
+    assert "electroweak crossover" in normalized_manuscript
+    assert "not a prediction of the PTUM bias or" in normalized_manuscript
+    assert "For a conditional benchmark" in normalized_manuscript
+    assert "6.49\\times10^{-11}" in normalized_manuscript
+    assert "does not evolve wall formation or annihilation" in normalized_manuscript
 
 
 
