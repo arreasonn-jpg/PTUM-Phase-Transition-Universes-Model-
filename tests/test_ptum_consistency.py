@@ -3366,6 +3366,7 @@ def test_lattice_homogeneous_limit_matches_existing_two_field_ode():
     )
     np.testing.assert_allclose(lattice["H"], ode["H"], rtol=5.0e-8)
     assert np.allclose(lattice["wall_area_density_over_mu"], 0.0)
+    assert lattice["max_abs_rhs_energy_balance_residual_relative"] < 1.0e-12
 
 
 def test_inhomogeneous_lattice_reports_classical_backreaction_and_wall_geometry():
@@ -3408,4 +3409,5 @@ def test_inhomogeneous_lattice_reports_classical_backreaction_and_wall_geometry(
     assert np.max(result["wall_area_density_over_mu"]) > 0.0
     assert np.all(np.diff(result["scale_factor"]) > 0.0)
     assert np.all(np.isfinite(result["continuity_residual_relative"]))
+    assert result["max_abs_rhs_energy_balance_residual_relative"] < 1.0e-12
 
