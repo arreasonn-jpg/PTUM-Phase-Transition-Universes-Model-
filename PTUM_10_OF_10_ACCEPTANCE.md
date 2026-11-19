@@ -1455,3 +1455,15 @@ than this run. They require a fresh exact-head CI run. Seventy-four
 Underfull hbox warnings remain in the last verified final LaTeX pass;
 the final pass had no Overfull hbox or unresolved reference/citation
 warnings. Gate 10 remains PARTIAL.
+
+
+## 2026-11-19 exact-head re-verification request
+
+The latest branch now includes the domain-wall area-factor threshold,
+its two-sided regression, the manuscript equation, and a whitespace-
+normalized source assertion. These changes postdate workflow 44495908967.
+The next branch commit explicitly opts into a fresh full scan as well as
+the normal regression, smoke and LaTeX jobs. Until those jobs complete,
+the new code and manuscript edits are pending verification. The prior
+workflow 44280971987 remains evidence only for the homogeneous
+post-threshold two-field scan and its then-current source tree.
