@@ -3425,6 +3425,11 @@ def test_manuscript_distinguishes_classical_lattice_prototype_from_quantum_water
     source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
     required = (
         r"\texttt{ptum\_lattice\_waterfall.py}",
+        r"\label{eq:ptum_lattice_psi}",
+        r"\label{eq:ptum_lattice_phi}",
+        r"\label{eq:ptum_lattice_friedmann}",
+        r"\label{eq:ptum_lattice_pressure}",
+        r"\partial_\Phi m_{\rm eff}^2",
         "caller-supplied classical initial fields",
         "does not generate adiabatic-vacuum initial conditions",
         "vacuum counterterms or continuum renormalization",
