@@ -272,6 +272,8 @@ def sample_adiabatic_vacuum_initial_conditions(
         "initial_background_approximation": (
             "homogeneous_Phi_only_FRW_without_psi_vacuum_backreaction"
         ),
+        "initial_hubble_self_consistent_with_lattice": False,
+        "subsequent_lattice_includes_bare_psi_energy": True,
         "psi_initial_sha256": _array_sha256(psi_initial),
         "psi_dot_initial_sha256": _array_sha256(psi_dot_initial),
     }
@@ -386,6 +388,10 @@ def run_lattice_waterfall(
             initial_state_metadata.get("vacuum_subtraction_applied") is not False
         ) or initial_state_metadata.get("full_quantum_evolution") is not False:
             raise ValueError("bare Gaussian samples cannot claim renormalized quantum evolution")
+        if initial_state_metadata.get("initial_hubble_self_consistent_with_lattice") is not False or (
+            initial_state_metadata.get("subsequent_lattice_includes_bare_psi_energy") is not True
+        ):
+            raise ValueError("bare test-field initial state must disclose its Hubble mismatch")
         if initial_state_metadata.get("psi_initial_sha256") != _array_sha256(psi0_field):
             raise ValueError("initial-state metadata psi field hash does not match")
         if initial_state_metadata.get("psi_dot_initial_sha256") != _array_sha256(psi0_velocity):
@@ -658,4 +664,22 @@ def run_lattice_waterfall(
             if seed_metadata is not None else "caller_supplied_classical_field"
         ),
         "initial_state_metadata": seed_metadata,
+        "initial_sampler_H_over_mu": (
+            float(seed_metadata["H_background_over_mu"])
+            if seed_metadata is not None else None
+        ),
+        "initial_lattice_H_over_mu": float(hubble_over_mu_history[0]),
+        "initial_H_relative_mismatch_vs_sampler_background": (
+            float(
+                (hubble_over_mu_history[0] - float(seed_metadata["H_background_over_mu"]))
+                / float(seed_metadata["H_background_over_mu"])
+            )
+            if seed_metadata is not None else None
+        ),
+        "initial_hubble_self_consistent_with_lattice": (
+            False if seed_metadata is not None else None
+        ),
+        "subsequent_lattice_includes_bare_psi_energy": (
+            True if seed_metadata is not None else None
+        ),
     }

@@ -934,3 +934,13 @@ renormalization. The subsequent nonlinear solver remains classical and
 UV-cutoff dependent. A successful sampler regression must not be
 reported as a physical quantum-seeded waterfall, a defect-network
 prediction, or a relic-abundance result. Gate 5 remains NOT MET.
+
+
+The bare WKB sampler is a test-field initialization: its Hubble
+frequency and derivatives use the homogeneous-Phi energy only, whereas
+the subsequent classical lattice Friedmann source includes the raw
+sampled psi energy. The solver therefore starts with a different total
+H than the H used to construct the WKB sample. This mismatch is
+reported explicitly and is another reason the sample is not a
+self-consistent quantum initial state. No physical waterfall or relic
+claim follows from evolving it without renormalization.

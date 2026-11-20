@@ -1862,3 +1862,20 @@ bookkeeping but does not close Gate 5. Four regressions test the
 lattice dispersion and deterministic seed, tachyonic/non-adiabatic
 refusal, ensemble covariance of a non-self-conjugate Fourier mode,
 and provenance/hash validation by the lattice solver.
+
+
+## 2026-11-20 test-field WKB versus bare lattice Friedmann mismatch
+
+The WKB sampler computes $H,h',h''$ on the homogeneous-Phi background
+and intentionally omits the bare psi vacuum energy. The subsequent
+classical lattice solver, however, includes the sampled bare psi kinetic,
+gradient, mass and quartic energy in its Friedmann source. Thus the
+test-field H used to define the initial WKB frequencies is not the
+same as the solver's initial total H. This is an explicit
+non-self-consistency, not a renormalization prescription. The sampler
+metadata records both sides, and the solver output reports the
+relative initial-H mismatch. A regression requires the total lattice
+H to exceed the Phi-only sampler H for the stable positive-energy test
+configuration. No physical quantum-waterfall interpretation is allowed
+until a consistent renormalized stress tensor and counterterms are
+implemented.

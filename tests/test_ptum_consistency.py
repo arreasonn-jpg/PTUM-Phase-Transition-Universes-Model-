@@ -3620,6 +3620,10 @@ def test_lattice_tracks_bare_adiabatic_sample_without_claiming_quantum_evolution
     assert result["quantum_vacuum_seeded"] is False
     assert result["vacuum_renormalized"] is False
     assert result["initial_state_metadata"]["seed"] == 41
+    assert result["initial_hubble_self_consistent_with_lattice"] is False
+    assert result["subsequent_lattice_includes_bare_psi_energy"] is True
+    assert result["initial_lattice_H_over_mu"] > result["initial_sampler_H_over_mu"]
+    assert result["initial_H_relative_mismatch_vs_sampler_background"] > 0.0
 
     altered_field = sample["psi_initial"].copy()
     altered_field[0, 0, 0] += 1.0

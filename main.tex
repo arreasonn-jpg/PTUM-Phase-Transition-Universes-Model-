@@ -4876,6 +4876,10 @@ $\max_{\mathbf{k}}\{|\Omega_k'/\Omega_k^2|,|h/\Omega_k|\}$
 exceeds the declared adiabaticity tolerance. The initial $H$, $h'$,
 and $h''$ are evaluated on the homogeneous-$\Phi$ background; vacuum
 $\psi$ backreaction is omitted when constructing the initial state.
+The subsequent lattice Friedmann source does include the sampled bare
+$\psi$ energy, so its initial $H$ differs from the test-field $H$ used
+for the WKB frequencies. This mismatch is recorded in the run metadata;
+the bare sample is not a self-consistent renormalized initial background.
 
 These are bare first-order adiabatic-WKB Gaussian samples, not a
 renormalized quantum-seeded waterfall. They are real classical
