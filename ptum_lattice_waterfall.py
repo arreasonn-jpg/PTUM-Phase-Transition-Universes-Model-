@@ -9,13 +9,17 @@ therefore permits classical rescattering and Z2 wall formation for supplied
 classical initial fields.
 
 Scientific boundary:
-- Initial psi(x) and psi_dot(x) are supplied by the caller. They are not
-  generated from a quantum adiabatic vacuum.
-- No vacuum counterterms or continuum renormalization are implemented.
-- Results are finite-volume, finite-lattice classical results. They must not
-  be interpreted as quantum-seeded waterfall predictions or relic abundances.
-- A lattice/volume/time-step convergence study and a renormalized quantum
-  initial-state prescription are required before physical claims.
+- The optional first-order adiabatic-WKB helper draws bare Gaussian samples
+  of the free-mode symmetrized covariance before the tachyonic threshold.
+- These are classical-statistical initial fields, not quantum evolution.
+  Their zero-point energy is retained; no vacuum subtraction, counterterms,
+  or continuum renormalization are implemented.
+- The initial Hubble derivatives use homogeneous Phi only and omit psi
+  vacuum backreaction. The nonlinear evolution remains UV-cutoff dependent.
+- Results are finite-volume, finite-lattice classical results and must not
+  be interpreted as physical quantum-waterfall predictions or relic abundances.
+- Lattice/volume/time/ensemble convergence and a renormalized initial-state
+  prescription are required before physical claims.
 
 Natural units are used. The comoving coordinates are measured in mu^{-1},
 where mu=params.mu, and tau=mu*t. The scale factor is initialized to one.

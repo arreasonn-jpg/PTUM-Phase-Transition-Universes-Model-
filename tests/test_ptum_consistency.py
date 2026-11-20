@@ -3438,7 +3438,7 @@ def test_manuscript_distinguishes_classical_lattice_prototype_from_quantum_water
         "symmetrized free-mode two-point covariance",
         "zero-point energy is retained",
         "not a renormalized quantum-seeded waterfall",
-        "vacuum counterterms or continuum renormalization",
+        "No vacuum subtraction, counterterms, or continuum renormalization are applied",
         "not a nonlinear lattice simulation of the full four-field system",
         "internal identity of the implemented discrete equations",
         "the authors' original lattice/perturbation implementation is not public",
