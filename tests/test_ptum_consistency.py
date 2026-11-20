@@ -1306,8 +1306,11 @@ def test_manuscript_withdraws_unverified_lattice_outputs_and_reproduction_claims
     section = source[start:end]
     normalized_section = " ".join(section.split()).lower()
     assert "versioned periodic cubic finite-difference prototype" in normalized_section
-    assert "not a quantum-seeded waterfall calculation" in normalized_section
-    assert "does not generate adiabatic-vacuum initial conditions" in normalized_section
+    assert "not a renormalized quantum-seeded waterfall" in normalized_section
+    assert "bare first-order adiabatic-wkb gaussian samples" in normalized_section
+    assert "zero-point energy is retained" in normalized_section
+    assert "vacuum subtraction" in normalized_section
+    assert "does not generate adiabatic-vacuum initial conditions" not in normalized_section
     assert "does not expose an individually reviewable ptum lattice solver" not in normalized_section
     assert r"does \emph{not} claim".lower() in normalized_section
     assert "sub-percent time-integrated energy-conservation" in normalized_section
