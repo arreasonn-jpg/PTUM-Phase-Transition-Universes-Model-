@@ -920,3 +920,17 @@ prototype description. The test is corrected in 06164c1; this was a
 documentation-regression mismatch, not a numerical or physics failure.
 A fresh exact-head run is still required.
 
+
+
+## 2026-11-20 adiabatic-WKB initial-sample claim boundary
+
+The lattice module now samples the first-order adiabatic-WKB symmetrized
+free-mode covariance for stable, adiabatic modes on a homogeneous-Phi
+background. This is a bare Gaussian classical-statistical initial
+ensemble, not a quantum evolution. The initializer retains zero-point
+energy, applies no vacuum subtraction/counterterms, omits psi vacuum
+backreaction in the initial H derivatives, and has no continuum
+renormalization. The subsequent nonlinear solver remains classical and
+UV-cutoff dependent. A successful sampler regression must not be
+reported as a physical quantum-seeded waterfall, a defect-network
+prediction, or a relic-abundance result. Gate 5 remains NOT MET.

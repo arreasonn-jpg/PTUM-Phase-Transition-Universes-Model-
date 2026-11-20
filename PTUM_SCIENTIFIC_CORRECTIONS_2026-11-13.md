@@ -1829,3 +1829,36 @@ and reject the obsolete claim. No physical threshold or numerical tolerance
 was changed. A fresh exact-head CI run is required; the LaTeX job from
 44502156872 was still running when this correction was made.
 
+
+
+## 2026-11-20 bare first-order adiabatic-WKB lattice initializer
+
+ptum_lattice_waterfall.py now includes a finite-volume Gaussian
+initializer for the free real-psi modes before the tachyonic threshold.
+It uses $X=a^{3/2}\psi/\psi_0$ and
+$\Omega_k^2=\widehat{k}^2/a^2+m_{\rm eff}^2/\mu^2
+-3h'/2-9h^2/4$, where $\widehat{k}^2$ is the eigenvalue of the same
+periodic central-difference Laplacian used by the evolution. The
+first-order WKB amplitude derivative is included in the field/velocity
+cross-covariance. The Fourier normalization is stated explicitly and
+real white-noise FFTs enforce Hermitian symmetry.
+
+The sampler refuses $m_{\rm eff}^2\leq0$, non-positive canonical
+frequency squared for any lattice mode, or a maximum of
+$|\Omega'_k/\Omega_k^2|$ and $|h/\Omega_k|$ above the requested
+adiabaticity tolerance. It computes $H,h',h''$ on the homogeneous-Phi
+background and therefore omits the vacuum psi backreaction at
+initialization. Deterministic seed, dispersion/frequency diagnostics,
+adiabaticity summaries, and SHA-256 hashes of the two physical initial
+arrays are returned. run_lattice_waterfall can verify this provenance
+and labels the input as a bare adiabatic-WKB Gaussian classical sample;
+it continues to report quantum_vacuum_seeded=False.
+
+This is not a renormalized quantum initial state or quantum evolution.
+The zero-point energy is retained, no vacuum subtraction or
+counterterms are applied, and nonlinear classical evolution remains
+UV-cutoff dependent. The helper therefore advances the initial-state
+bookkeeping but does not close Gate 5. Four regressions test the
+lattice dispersion and deterministic seed, tachyonic/non-adiabatic
+refusal, ensemble covariance of a non-self-conjugate Fourier mode,
+and provenance/hash validation by the lattice solver.

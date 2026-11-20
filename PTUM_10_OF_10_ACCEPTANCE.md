@@ -10,12 +10,12 @@ This file defines the evidence required before PTUM can be called scientifically
 | 2. Inflation-to-waterfall connection | Exact inflation endpoint; threshold crossing in the same coupled background; stability of all modes before crossing; quantum seed prescription | **PARTIAL**. Exact epsilon_H endpoint is computed; post-threshold scan velocities are now taken from the integrated single-field FRW trajectory at each offset, but the coupled crossing and quantum seeds are not evolved |
 | 3. Hilbert tensors and conservation | Every sector tensor derived from the same action; all Q_i^nu derived; sum of currents cancels; numerical conservation converges independently with solver tolerance and timestep | **PARTIAL**. The classical tree-level gauge, Higgs, chiral-fermion and PTUM Hilbert tensors and all interaction currents are now written from one action; the current solver does not evolve SM fields, and full-sector numerical conservation/timestep-tolerance convergence is not yet demonstrated |
 | 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **MET for the homogeneous two-field post-threshold background domain**. Exact-head workflow 44280971987 completed 500/500 DOP853 integrations, 400/400 paired comparisons and all five 100-row profiles with zero failures. The 4,001-to-256,001 output-grid comparison passed 100/100; all final states/classification flags were unchanged. Independent finite-difference continuity residual maxima fell 3.7234e-2 to 6.0499e-4 (61.5x); all 100 row-wise residuals decreased, with median observed order 0.991 and minimum reduction factor 1.38. Successive solver refinements gave 98/100, 99/100 and 100/100 strict comparisons, monotonic state/diagnostic envelopes, unchanged flags/availability, and a final maximum state-relative difference 1.63e-7. All 500 final H and rho values are finite and positive; the RHS rejects non-positive total density at every evaluation. This gate is scoped to the homogeneous post-threshold two-field equations and does not close Gates 2 or 5 |
-| 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and a defect-topology analysis (including the Z2 domain-wall risk of a real waterfall scalar) | **NOT MET**. In addition to the linear adiabatic-vacuum mode solver and analytic real-psi kink/network sensitivity estimates, a periodic 3-D nonlinear classical lattice prototype evolves inhomogeneous psi, spatial gradients, homogeneous Phi backreaction and the expanding-FRW source; nonlinear mode coupling permits classical rescattering and sign-domain formation for caller-supplied classical fields. Four numerical lattice regressions (discrete integration-by-parts, homogeneous ODE limit, inhomogeneous evolution, and zero-site wall counting) passed within 155 Python tests on intermediate head 0b738954de21468b876e81734129b90b6d2e4cf9 (workflow 44501482600). The manuscript-equation regression and displayed equations were added afterward and await exact-head CI. The prototype does not generate quantum vacuum seeds, apply vacuum counterterms, demonstrate continuum/volume/time-step convergence, evolve SM fields or predict the renormalized bias. Its nearest-neighbour wall-area estimator is not the scaling area factor A. No quantum-seeded inhomogeneous waterfall or physical defect-network prediction is claimed |
+| 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and a defect-topology analysis (including the Z2 domain-wall risk of a real waterfall scalar) | **NOT MET**. In addition to the linear expanding-background mode solver and analytic real-psi kink/network sensitivity estimates, a periodic 3-D nonlinear classical lattice prototype evolves inhomogeneous psi, spatial gradients, homogeneous Phi backreaction and the expanding-FRW source; nonlinear mode coupling permits classical rescattering and sign-domain formation. A new first-order adiabatic-WKB initializer samples the symmetrized free-mode covariance using the exact central-difference lattice dispersion, the canonical variable a^(3/2) psi, and the homogeneous-Phi FRW curvature terms. It refuses tachyonic or non-adiabatic initial backgrounds and records deterministic seed, mode diagnostics and initial-array hashes. Four new regressions cover lattice dispersion/reproducibility, rejection of invalid vacuum states, ensemble covariance, and provenance tracking. This is a bare Gaussian classical-statistical sample: zero-point energy is retained, no subtraction/counterterms or continuum renormalization are applied, and subsequent evolution remains classical. The initial H derivatives omit psi vacuum backreaction. Lattice/volume/time/ensemble convergence, Phi perturbations, SM fields and the renormalized bias remain absent. The wall-area estimator is finite-grid and is not the scaling area factor A. No physical quantum-seeded waterfall or defect-network prediction is claimed. |
 | 6. Resonance and relic abundance | Expanding-background mode equations; converged monodromy/Floquet growth; momentum integration; backreaction; thermalization and entropy dilution; independently reproduced relic abundance | **NOT MET**. A linear mode integrator now evolves supplied expanding-FRW histories with an adiabatic-vacuum check and Wronskian monitor, and a finite-band trapezoidal momentum integral is implemented. The background is not generated self-consistently, the momentum tails and grid are not converged, and no backreaction or entropy dilution is available |
 | 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The closure remains phenomenological; no microscopic realization is established |
 | 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. Conditional potential-dominated T_rh estimate only; branching and thermalization are not computed |
 | 9. Observational reproducibility | Public exact CLASS patch; pinned version/commit; complete configs, likelihoods, data, chains and commands; independent rerun reproduces posteriors and model comparison | **NOT MET**. Reported numbers are author-reported; patch availability and chains remain unverified |
-| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Exact-head workflow 44280971987 on 1c975a73c7e7daa17c01adffe0fd19d929e8d7bb passed all five jobs: 146 Python tests, 4/4 smoke integrations, 100/100 baseline scan, 36/36 targeted convergence integrations, and 500/500 paired integrations with 400 comparisons and full_study_pass=true. The strict-JSON paired artifact SHA-256 is f4d6566db7984c83f3564688a0ceac762dcc4f3ee7905cd0fa0e8a2ed6d25842; JSON SHA-256 is 800661282f7a5ee0a92d887def3c6f0207028b6992741127f726a1ccdbea3f3c. The 43-page PDF built, but the log still reports one 43.24 pt Overfull hbox and numerous Underfull hbox warnings. The latest anomaly-equation wrap, grid-residual gate, and domain-wall benchmark changes are newer than this run and require fresh exact-head CI |
+| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. The latest exact-head workflow 44502331090 on 4ebaa7175f1ebcb460082eac6063a8ff1d07235c passed Python regression (156 passed), the four-trajectory smoke scan, and the 43-page LaTeX build. Its final LaTeX log still contains two Overfull hbox warnings (186.03 pt and 28.77 pt) and numerous Underfull hbox warnings, so Gate 10 is not clean. The full homogeneous scan workflow 44498664018 on 49c820b2e23e16a9109ff5a8877fdd0fd6bf71db passed all five jobs: 100/100 baseline trajectories, 36/36 targeted convergence integrations, 500/500 paired integrations and 400/400 comparisons with full_study_pass=true. The paired JSON SHA-256 is 15b7a0f87f709816f25cab156226d03b8dddae0ebb0ebd584403a8b41c314d14; ZIP SHA-256 is ecd1223a08aeadbf29f86b60bc7dd6a1387cee24fa52dcb75078e05e8d6a89. The 100-row baseline JSON SHA-256 is 5c86db1631da9efd35f956a266edbd5c30cfdae405de1cb9e6e06029c042c1a2. A compare audit from 49c820 to the current pre-change head 4ebaa shows only acceptance/correction/claim-boundary documents, main.tex, ptum_lattice_waterfall.py and tests changed; the homogeneous scan and background solver sources were unchanged. The new WKB initializer and its four regressions in the current change require exact-head CI. |
 
 ## Current implementation evidence
 
@@ -1526,3 +1526,54 @@ the new claim boundary and reject the obsolete sentence. No scientific
 tolerance was weakened. Gate 10 remains **PARTIAL** until the fresh
 exact-head Python and LaTeX jobs complete.
 
+
+
+## 2026-11-20 bare adiabatic-WKB Gaussian initializer
+
+The classical lattice module now contains
+sample_adiabatic_vacuum_initial_conditions. It uses the canonical
+$X=a^{3/2}\psi/\psi_0$ mode and the central-difference lattice
+dispersion, including the $-3h'/2-9h^2/4$ FRW terms. The first-order
+WKB amplitude derivative is retained when constructing the correlated
+field/velocity covariance. All lattice modes, including the zero mode,
+must have positive canonical frequency squared and satisfy the declared
+adiabaticity bound. A deterministic NumPy seed and SHA-256 hashes of
+the generated physical arrays are recorded; the lattice solver verifies
+the hashes if this provenance is supplied.
+
+This is a bare Gaussian classical-statistical representation of the
+symmetrized free-field two-point function at one initial time. It is not
+a quantum evolution: it does not reproduce commutators or entanglement,
+the zero-point energy is retained, and no vacuum subtraction,
+counterterms or continuum renormalization are applied. The initial
+background derivatives use homogeneous Phi only and omit psi vacuum
+backreaction. Consequently the bare ensemble still has UV-cutoff
+dependence and cannot support a physical quantum-waterfall, defect
+probability or relic claim. Four regressions check lattice dispersion
+and deterministic seeding, refusal of tachyonic/non-adiabatic states,
+ensemble covariance, and provenance/hash enforcement. Gate 5 remains
+**NOT MET**.
+
+The exact-head CI before this change, workflow 44502331090 on
+4ebaa7175f1ebcb460082eac6063a8ff1d07235c, passed 156 Python tests,
+the four-trajectory smoke scan, and a 43-page LaTeX build. Its final
+LaTeX log still contained two Overfull hbox warnings (186.03 pt and
+28.77 pt) and numerous Underfull hbox warnings. The new initializer,
+manuscript equations and four regressions await exact-head CI.
+
+The full homogeneous scan workflow 44498664018 completed on
+49c820b2e23e16a9109ff5a8877fdd0fd6bf71db. All five jobs passed:
+100/100 baseline trajectories, 36/36 targeted convergence integrations,
+500/500 paired integrations and 400/400 comparisons. The paired strict
+JSON has SHA-256
+15b7a0f87f709816f25cab156226d03b8dddae0ebb0ebd584403a8b41c314d14;
+the 100-row baseline JSON has SHA-256
+5c86db1631da9efd35f956a266edbd5c30cfdae405de1cb9e6e06029c042c1a2.
+The baseline labels were 89 non-quartic, 6 insufficient-oscillation,
+and 5 quartic; all five quartic labels occurred in the low-scale
+underdamped control and do not establish a benchmark-wide attractor.
+The scan metadata marks all 100 rows as not quantum-vacuum seeded.
+A GitHub compare audit confirms that the interval from 49c820 to
+4ebaa changed no homogeneous background or scan source file; the scan
+artifacts remain evidence only for that unchanged homogeneous domain,
+not for the new lattice initializer.

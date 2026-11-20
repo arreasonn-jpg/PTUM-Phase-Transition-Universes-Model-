@@ -22,6 +22,7 @@ where mu=params.mu, and tau=mu*t. The scale factor is initialized to one.
 """
 from __future__ import annotations
 
+import hashlib
 from typing import Iterable
 
 import numpy as np
@@ -75,6 +76,215 @@ def _wall_area_density_over_mu(field: np.ndarray, dx: float, scale_factor: float
     return float(crossings / (field.size * dx * scale_factor))
 
 
+
+def _array_sha256(values: np.ndarray) -> str:
+    """Hash a canonical contiguous float array for initial-state provenance."""
+    return hashlib.sha256(np.ascontiguousarray(values, dtype=float).tobytes()).hexdigest()
+
+
+def _sample_real_gaussian_field_with_power(
+    mode_power: np.ndarray,
+    rng: np.random.Generator,
+    dx: float,
+) -> np.ndarray:
+    """Draw a real periodic Gaussian field with <|q_k|^2>=mode_power[k].
+
+    The Fourier convention is q(x)=V^(-1/2) sum_k q_k exp(i k.x),
+    with V=(N*dx)^3. FFTs of real white noise enforce Hermitian symmetry.
+    """
+    power = np.asarray(mode_power, dtype=float)
+    if power.ndim != 3 or len(set(power.shape)) != 1:
+        raise ValueError("mode_power must be a cubic 3-D array")
+    if not np.all(np.isfinite(power)) or np.any(power <= 0.0):
+        raise ValueError("all Gaussian mode powers must be finite and positive")
+    n = power.shape[0]
+    volume = (n * float(dx)) ** 3
+    white_noise = rng.standard_normal(power.shape)
+    fourier = np.fft.fftn(white_noise)
+    fourier *= np.sqrt((n**3 / volume) * power)
+    return np.fft.ifftn(fourier).real
+
+
+def sample_adiabatic_vacuum_initial_conditions(
+    params: PTUMParameters,
+    *,
+    grid_size: int,
+    box_size_over_mu: float,
+    Phi_initial: float,
+    Phi_dot_initial: float,
+    seed: int | None,
+    adiabaticity_tolerance: float = 0.1,
+) -> dict[str, object]:
+    """Draw a bare first-order adiabatic-WKB Gaussian sample for the free psi modes.
+
+    The canonical variable is X=a^(3/2) psi/psi_0. In tau=mu*t units,
+    X_k'' + Omega_k^2 X_k=0, with the exact central-difference lattice
+    dispersion and the homogeneous-Phi-only FRW curvature terms. The
+    sampled real fields reproduce the symmetrized two-point covariance
+    of the first-order WKB state. They are classical-statistical samples,
+    not quantum evolution. The bare zero-point energy is retained; no
+    vacuum subtraction or renormalization is performed.
+
+    The initial H and its derivatives use the single homogeneous Phi
+    background and omit psi vacuum backreaction. Every lattice mode,
+    including the zero mode, must be stable and adiabatic or the routine
+    refuses to manufacture a vacuum sample.
+    """
+    if (isinstance(grid_size, (bool, np.bool_))
+            or int(grid_size) != grid_size or grid_size < 4):
+        raise ValueError("grid_size must be an integer >= 4")
+    n = int(grid_size)
+    box_length = float(box_size_over_mu)
+    if not np.isfinite(box_length) or box_length <= 0.0:
+        raise ValueError("box_size_over_mu must be finite and positive")
+    if not np.isfinite(Phi_initial) or not np.isfinite(Phi_dot_initial):
+        raise ValueError("initial Phi and Phi_dot must be finite")
+    if seed is not None and (
+        isinstance(seed, (bool, np.bool_))
+        or not isinstance(seed, (int, np.integer))
+    ):
+        raise ValueError("seed must be an integer or None")
+    tolerance = float(adiabaticity_tolerance)
+    if not np.isfinite(tolerance) or tolerance <= 0.0:
+        raise ValueError("adiabaticity_tolerance must be finite and positive")
+
+    mu = float(params.mu)
+    psi0 = float(params.psi_0)
+    if (not np.isfinite(mu) or mu <= 0.0 or not np.isfinite(psi0)
+            or psi0 <= 0.0 or not np.isfinite(params.lambda_psi)
+            or params.lambda_psi <= 0.0):
+        raise ValueError("PTUM mass, field scale and quartic coupling must be positive")
+
+    phi = float(Phi_initial)
+    phi_dot = float(Phi_dot_initial)
+    eta = float(meff_sq_psi(phi, params) / mu**2)
+    if not np.isfinite(eta) or eta <= 0.0:
+        raise ValueError(
+            "adiabatic vacuum sampling is forbidden at or below the tachyonic threshold"
+        )
+
+    rho_phi = 0.5 * phi_dot**2 + float(veff_phi(phi, params))
+    if not np.isfinite(rho_phi) or rho_phi <= 0.0:
+        raise ValueError("homogeneous Phi background energy must be finite and positive")
+    hubble = float(np.sqrt(rho_phi / (3.0 * M_PL**2)))
+    h = hubble / mu
+    h_prime = -0.5 * phi_dot**2 / (M_PL**2 * mu**2)
+    phi_acceleration = -3.0 * hubble * phi_dot - float(dveff_dphi(phi, params))
+    h_second = -phi_dot * phi_acceleration / (M_PL**2 * mu**3)
+    eta_prime = (
+        2.0 * params.m_psi**2 * params.alpha * phi * phi_dot
+        / (mu**3 * params.E_th**2)
+    )
+
+    dx = box_length / n
+    k_axis = 2.0 * np.pi * np.fft.fftfreq(n, d=dx)
+    lattice_k_squared = np.zeros((n, n, n), dtype=float)
+    for axis in range(3):
+        shape = [1, 1, 1]
+        shape[axis] = n
+        k_component = k_axis.reshape(shape)
+        lattice_k_squared += (
+            4.0 * np.sin(0.5 * k_component * dx) ** 2 / dx**2
+        )
+
+    omega_squared = (
+        lattice_k_squared + eta - 1.5 * h_prime - 2.25 * h**2
+    )
+    if not np.all(np.isfinite(omega_squared)) or np.any(omega_squared <= 0.0):
+        raise ValueError(
+            "no adiabatic vacuum exists for this finite lattice: "
+            "at least one canonical mode has non-positive frequency squared"
+        )
+    omega = np.sqrt(omega_squared)
+    omega_squared_prime = (
+        -2.0 * h * lattice_k_squared
+        + eta_prime
+        - 1.5 * h_second
+        - 4.5 * h * h_prime
+    )
+    omega_prime = 0.5 * omega_squared_prime / omega
+    wkb_parameter = np.abs(omega_prime) / omega**2
+    expansion_parameter = np.abs(h) / omega
+    adiabaticity = np.maximum(wkb_parameter, expansion_parameter)
+    max_wkb = float(np.max(wkb_parameter))
+    max_expansion = float(np.max(expansion_parameter))
+    max_adiabaticity = float(np.max(adiabaticity))
+    if not np.isfinite(max_adiabaticity) or max_adiabaticity > tolerance:
+        raise ValueError(
+            "initial background is not adiabatic for every lattice mode: "
+            f"maximum parameter {max_adiabaticity:.6g} exceeds {tolerance:.6g}"
+        )
+
+    # For X=a^(3/2)s, the first-order WKB covariance is
+    # <XX*> = lambda_psi/(2 Omega), with the WKB amplitude derivative
+    # included in the symmetrized X-X' covariance. Transforming back to
+    # s gives the velocity shift below and an independent residual mode.
+    q_power = params.lambda_psi / (2.0 * omega)
+    residual_velocity_power = params.lambda_psi * omega / 2.0
+    rng = np.random.default_rng(seed)
+    s = _sample_real_gaussian_field_with_power(q_power, rng, dx)
+    residual_velocity = _sample_real_gaussian_field_with_power(
+        residual_velocity_power, rng, dx
+    )
+    velocity_shift = -0.5 * (omega_prime / omega + 3.0 * h)
+    s_prime = velocity_shift * s + residual_velocity
+
+    psi_initial = psi0 * s
+    psi_dot_initial = mu * psi0 * s_prime
+    if not np.all(np.isfinite(psi_initial)) or not np.all(np.isfinite(psi_dot_initial)):
+        raise FloatingPointError("adiabatic vacuum sampler produced non-finite fields")
+
+    metadata = {
+        "kind": "bare_first_order_adiabatic_wkb_gaussian_classical_sample",
+        "representation": "classical_statistical_sample_of_symmetrized_free_mode_covariance",
+        "adiabatic_order": 1,
+        "canonical_variable": "a^(3/2) psi/psi_0",
+        "mode_frequency": "sqrt(khat^2/a^2 + m_eff^2/mu^2 - 3 h'/2 - 9 h^2/4)",
+        "fourier_normalization": "psi(x)=V^(-1/2) sum_k psi_k exp(i k.x)",
+        "grid_shape": [n, n, n],
+        "box_size_over_mu": box_length,
+        "dx_over_mu_inverse": dx,
+        "seed": None if seed is None else int(seed),
+        "Phi_initial_GeV": phi,
+        "Phi_dot_initial_GeV2": phi_dot,
+        "H_background_over_mu": h,
+        "H_prime_over_mu2": h_prime,
+        "H_second_over_mu3": h_second,
+        "m_eff_squared_over_mu2": eta,
+        "m_eff_squared_prime_over_mu2": eta_prime,
+        "minimum_canonical_frequency_squared_over_mu2": float(np.min(omega_squared)),
+        "minimum_canonical_frequency_over_mu": float(np.min(omega)),
+        "maximum_canonical_frequency_over_mu": float(np.max(omega)),
+        "maximum_abs_frequency_derivative_over_frequency_squared": max_wkb,
+        "maximum_abs_H_over_frequency": max_expansion,
+        "maximum_adiabaticity_parameter": max_adiabaticity,
+        "adiabaticity_tolerance": tolerance,
+        "all_modes_stable": True,
+        "all_modes_adiabatic": True,
+        "vacuum_subtraction_applied": False,
+        "vacuum_renormalized": False,
+        "zero_point_energy_retained": True,
+        "full_quantum_evolution": False,
+        "initial_background_approximation": (
+            "homogeneous_Phi_only_FRW_without_psi_vacuum_backreaction"
+        ),
+        "psi_initial_sha256": _array_sha256(psi_initial),
+        "psi_dot_initial_sha256": _array_sha256(psi_dot_initial),
+    }
+    return {
+        "psi_initial": psi_initial,
+        "psi_dot_initial": psi_dot_initial,
+        "metadata": metadata,
+        "diagnostics": {
+            "lattice_k_squared_over_mu2": lattice_k_squared,
+            "mode_frequency_over_mu": omega,
+            "mode_frequency_derivative": omega_prime,
+            "velocity_shift": velocity_shift,
+            "adiabaticity_parameter": adiabaticity,
+        },
+    }
+
+
 def run_lattice_waterfall(
     params: PTUMParameters,
     *,
@@ -88,6 +298,7 @@ def run_lattice_waterfall(
     rtol: float = 1.0e-9,
     atol: float = 1.0e-11,
     max_rhs_evaluations: int | None = 200_000,
+    initial_state_metadata: dict[str, object] | None = None,
 ) -> dict[str, object]:
     """Evolve a periodic cubic 3-D classical psi lattice with FRW backreaction.
 
@@ -148,6 +359,34 @@ def run_lattice_waterfall(
     grid_size = psi0_field.shape[0]
     dx = box_length / grid_size
     cell_count = psi0_field.size
+    seed_metadata = None
+    if initial_state_metadata is not None:
+        if not isinstance(initial_state_metadata, dict):
+            raise ValueError("initial_state_metadata must be a dictionary")
+        if initial_state_metadata.get("kind") != (
+            "bare_first_order_adiabatic_wkb_gaussian_classical_sample"
+        ):
+            raise ValueError("unsupported initial-state provenance metadata")
+        if initial_state_metadata.get("grid_shape") != list(psi0_field.shape):
+            raise ValueError("initial-state metadata grid shape does not match fields")
+        if not np.isclose(
+            float(initial_state_metadata.get("box_size_over_mu", np.nan)),
+            box_length, rtol=1.0e-14, atol=0.0
+        ):
+            raise ValueError("initial-state metadata box size does not match fields")
+        if initial_state_metadata.get("all_modes_stable") is not True or (
+            initial_state_metadata.get("all_modes_adiabatic") is not True
+        ):
+            raise ValueError("initial-state metadata does not establish stable adiabatic modes")
+        if initial_state_metadata.get("vacuum_renormalized") is not False or (
+            initial_state_metadata.get("vacuum_subtraction_applied") is not False
+        ) or initial_state_metadata.get("full_quantum_evolution") is not False:
+            raise ValueError("bare Gaussian samples cannot claim renormalized quantum evolution")
+        if initial_state_metadata.get("psi_initial_sha256") != _array_sha256(psi0_field):
+            raise ValueError("initial-state metadata psi field hash does not match")
+        if initial_state_metadata.get("psi_dot_initial_sha256") != _array_sha256(psi0_velocity):
+            raise ValueError("initial-state metadata psi velocity hash does not match")
+        seed_metadata = dict(initial_state_metadata)
     rho_scale = mu**2 * psi0**2
     fuel_kinetic_coefficient = (phi_scale / psi0) ** 2
     phi_psi_force_coefficient = (
@@ -403,8 +642,16 @@ def run_lattice_waterfall(
         "nonlinear_mode_coupling_included": True,
         "classical_rescattering_included": True,
         "quantum_vacuum_seeded": False,
+        "bare_adiabatic_vacuum_sampled": seed_metadata is not None,
+        "bare_zero_point_energy_present": (
+            True if seed_metadata is not None else None
+        ),
         "vacuum_renormalized": False,
         "continuum_limit_demonstrated": False,
         "sm_sector_included": False,
-        "initial_seed_interpretation": "caller_supplied_classical_field",
+        "initial_seed_interpretation": (
+            "bare_first_order_adiabatic_wkb_gaussian_classical_statistical_sample"
+            if seed_metadata is not None else "caller_supplied_classical_field"
+        ),
+        "initial_state_metadata": seed_metadata,
     }

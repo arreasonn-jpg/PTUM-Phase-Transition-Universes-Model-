@@ -3434,7 +3434,10 @@ def test_manuscript_distinguishes_classical_lattice_prototype_from_quantum_water
         r"\label{eq:ptum_lattice_pressure}",
         r"\partial_\Phi m_{\rm eff}^2",
         "caller-supplied classical initial fields",
-        "does not generate adiabatic-vacuum initial conditions",
+        "bare first-order adiabatic-WKB Gaussian samples",
+        "symmetrized free-mode two-point covariance",
+        "zero-point energy is retained",
+        "not a renormalized quantum-seeded waterfall",
         "vacuum counterterms or continuum renormalization",
         "not a nonlinear lattice simulation of the full four-field system",
         "internal identity of the implemented discrete equations",
@@ -3445,3 +3448,187 @@ def test_manuscript_distinguishes_classical_lattice_prototype_from_quantum_water
     assert "does not expose an individually reviewable PTUM lattice solver" not in source
     assert "lattice code not yet public" not in source
 
+
+
+def test_adiabatic_vacuum_sampler_is_reproducible_and_uses_lattice_dispersion():
+    from ptum_lattice_waterfall import sample_adiabatic_vacuum_initial_conditions
+
+    params = PTUMParameters(V0=1.0e56)
+    n = 4
+    box = 8.0
+    phi = 1.2 * params.Phi_c
+    phi_dot = -1.0e-4 * params.mu * params.Phi_c
+    first = sample_adiabatic_vacuum_initial_conditions(
+        params,
+        grid_size=n,
+        box_size_over_mu=box,
+        Phi_initial=phi,
+        Phi_dot_initial=phi_dot,
+        seed=20261120,
+    )
+    repeated = sample_adiabatic_vacuum_initial_conditions(
+        params,
+        grid_size=n,
+        box_size_over_mu=box,
+        Phi_initial=phi,
+        Phi_dot_initial=phi_dot,
+        seed=20261120,
+    )
+
+    np.testing.assert_array_equal(first["psi_initial"], repeated["psi_initial"])
+    np.testing.assert_array_equal(first["psi_dot_initial"], repeated["psi_dot_initial"])
+    assert first["metadata"]["all_modes_stable"]
+    assert first["metadata"]["all_modes_adiabatic"]
+    assert first["metadata"]["maximum_adiabaticity_parameter"] <= 0.1
+    assert first["metadata"]["vacuum_renormalized"] is False
+    assert first["metadata"]["zero_point_energy_retained"] is True
+    assert first["metadata"]["full_quantum_evolution"] is False
+
+    dx = box / n
+    expected_k2 = 4.0 * np.sin(np.pi / n) ** 2 / dx**2
+    assert first["diagnostics"]["lattice_k_squared_over_mu2"][1, 0, 0] == pytest.approx(
+        expected_k2, rel=1.0e-14
+    )
+    eta = first["metadata"]["m_eff_squared_over_mu2"]
+    h = first["metadata"]["H_background_over_mu"]
+    h_prime = first["metadata"]["H_prime_over_mu2"]
+    expected_omega_squared = expected_k2 + eta - 1.5 * h_prime - 2.25 * h**2
+    omega = first["diagnostics"]["mode_frequency_over_mu"][1, 0, 0]
+    assert omega**2 == pytest.approx(expected_omega_squared, rel=1.0e-13)
+
+
+def test_adiabatic_vacuum_sampler_rejects_tachyonic_and_nonadiabatic_states():
+    from ptum_lattice_waterfall import sample_adiabatic_vacuum_initial_conditions
+
+    params = PTUMParameters(V0=1.0e56)
+    common = {
+        "grid_size": 4,
+        "box_size_over_mu": 8.0,
+        "Phi_dot_initial": -1.0e-4 * params.mu * params.Phi_c,
+        "seed": 7,
+    }
+    with pytest.raises(ValueError, match="tachyonic threshold"):
+        sample_adiabatic_vacuum_initial_conditions(
+            params, Phi_initial=0.99 * params.Phi_c, **common
+        )
+    with pytest.raises(ValueError, match="not adiabatic"):
+        sample_adiabatic_vacuum_initial_conditions(
+            params,
+            Phi_initial=1.2 * params.Phi_c,
+            adiabaticity_tolerance=1.0e-12,
+            **common,
+        )
+
+
+def test_adiabatic_vacuum_sampler_reproduces_symmetrized_free_mode_covariance():
+    from ptum_lattice_waterfall import sample_adiabatic_vacuum_initial_conditions
+
+    params = PTUMParameters(V0=1.0e56)
+    n = 4
+    box = 8.0
+    volume = box**3
+    mode = (1, 0, 0)
+    phi = 1.2 * params.Phi_c
+    phi_dot = -1.0e-4 * params.mu * params.Phi_c
+    reference = sample_adiabatic_vacuum_initial_conditions(
+        params,
+        grid_size=n,
+        box_size_over_mu=box,
+        Phi_initial=phi,
+        Phi_dot_initial=phi_dot,
+        seed=0,
+    )
+    omega = reference["diagnostics"]["mode_frequency_over_mu"][mode]
+    omega_prime = reference["diagnostics"]["mode_frequency_derivative"][mode]
+    velocity_shift = reference["diagnostics"]["velocity_shift"]
+    expected_field_power = params.lambda_psi / (2.0 * omega)
+    expected_residual_velocity_power = params.lambda_psi * omega / 2.0
+
+    field_powers = []
+    residual_velocity_powers = []
+    cross_powers = []
+    for realization in range(256):
+        sample = sample_adiabatic_vacuum_initial_conditions(
+            params,
+            grid_size=n,
+            box_size_over_mu=box,
+            Phi_initial=phi,
+            Phi_dot_initial=phi_dot,
+            seed=realization,
+        )
+        dimensionless_field = sample["psi_initial"] / params.psi_0
+        dimensionless_velocity = sample["psi_dot_initial"] / (
+            params.mu * params.psi_0
+        )
+        field_fourier = np.fft.fftn(dimensionless_field) * np.sqrt(volume) / n**3
+        residual_fourier = (
+            np.fft.fftn(dimensionless_velocity - velocity_shift * dimensionless_field)
+            * np.sqrt(volume) / n**3
+        )
+        q_mode = field_fourier[mode]
+        r_mode = residual_fourier[mode]
+        field_powers.append(abs(q_mode) ** 2)
+        residual_velocity_powers.append(abs(r_mode) ** 2)
+        cross_powers.append((q_mode * np.conjugate(r_mode)).real)
+
+    assert np.mean(field_powers) == pytest.approx(expected_field_power, rel=0.2)
+    assert np.mean(residual_velocity_powers) == pytest.approx(
+        expected_residual_velocity_power, rel=0.2
+    )
+    assert abs(np.mean(cross_powers)) < (
+        0.15 * np.sqrt(expected_field_power * expected_residual_velocity_power)
+    )
+    assert np.isfinite(omega_prime)
+
+
+def test_lattice_tracks_bare_adiabatic_sample_without_claiming_quantum_evolution():
+    from ptum_lattice_waterfall import (
+        run_lattice_waterfall,
+        sample_adiabatic_vacuum_initial_conditions,
+    )
+
+    params = PTUMParameters(V0=1.0e56)
+    sample = sample_adiabatic_vacuum_initial_conditions(
+        params,
+        grid_size=4,
+        box_size_over_mu=4.0,
+        Phi_initial=1.2 * params.Phi_c,
+        Phi_dot_initial=-1.0e-4 * params.mu * params.Phi_c,
+        seed=41,
+    )
+    result = run_lattice_waterfall(
+        params,
+        Phi_initial=1.2 * params.Phi_c,
+        Phi_dot_initial=-1.0e-4 * params.mu * params.Phi_c,
+        psi_initial=sample["psi_initial"],
+        psi_dot_initial=sample["psi_dot_initial"],
+        box_size_over_mu=4.0,
+        tau_span=(0.0, 1.0e-3),
+        n_output_points=3,
+        rtol=1.0e-8,
+        atol=1.0e-10,
+        initial_state_metadata=sample["metadata"],
+    )
+    assert result["bare_adiabatic_vacuum_sampled"]
+    assert result["bare_zero_point_energy_present"]
+    assert result["initial_seed_interpretation"] == (
+        "bare_first_order_adiabatic_wkb_gaussian_classical_statistical_sample"
+    )
+    assert result["quantum_vacuum_seeded"] is False
+    assert result["vacuum_renormalized"] is False
+    assert result["initial_state_metadata"]["seed"] == 41
+
+    altered_field = sample["psi_initial"].copy()
+    altered_field[0, 0, 0] += 1.0
+    with pytest.raises(ValueError, match="field hash does not match"):
+        run_lattice_waterfall(
+            params,
+            Phi_initial=1.2 * params.Phi_c,
+            Phi_dot_initial=-1.0e-4 * params.mu * params.Phi_c,
+            psi_initial=altered_field,
+            psi_dot_initial=sample["psi_dot_initial"],
+            box_size_over_mu=4.0,
+            tau_span=(0.0, 1.0e-3),
+            n_output_points=3,
+            initial_state_metadata=sample["metadata"],
+        )

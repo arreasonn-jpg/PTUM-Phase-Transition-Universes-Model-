@@ -4839,13 +4839,53 @@ $\langle\psi\Delta_d\psi\rangle_V
 finite-lattice energy-balance diagnostic. These equations evolve
 inhomogeneous $\psi$ but retain a homogeneous $\Phi$.
 
-This prototype is not a quantum-seeded waterfall calculation. It does
-not generate adiabatic-vacuum initial conditions, apply vacuum
-counterterms or continuum renormalization, evolve $\Phi$ perturbations
-or the SM/Higgs/fermion fields, or demonstrate lattice-spacing,
-volume, timestep, or ensemble convergence. Its nearest-neighbour
-wall-area output is a finite-grid diagnostic, not the analytic scaling
-area factor. The reported chain-rule RHS energy-balance residual is an
+A separate initializer now draws bare first-order adiabatic-WKB
+Gaussian samples for the free $\psi$ modes. With
+$s=\psi/\psi_0$, $\psi_0=\mu/\sqrt{\lambda_\psi}$,
+$\tau=\mu t$, $h=H/\mu$, and $X=a^{3/2}s$, the canonical mode equation
+and the frequency used by the finite-difference lattice are
+\begin{align}
+X_k''+\Omega_k^2X_k&=0,\\
+\Omega_k^2&=\frac{\widehat{k}^{\,2}}{a^2}
++\frac{m_{\rm eff}^2(\Phi)}{\mu^2}
+-\frac32 h'-\frac94h^2,\\
+\widehat{k}^{\,2}&=\frac{4}{\Delta x^2}
+\sum_{i=1}^3\sin^2\!\left(\frac{k_i\Delta x}{2}\right).
+\end{align}
+The first-order WKB mode is
+\begin{equation}
+u_k(\tau)=\sqrt{\frac{\lambda_\psi}{2\Omega_k}}\,
+e^{-i\int^\tau\Omega_k\,d\tau'},\qquad
+u_k'=\left(-i\Omega_k-\frac{\Omega_k'}{2\Omega_k}\right)u_k .
+\end{equation}
+The real Gaussian samples reproduce the corresponding symmetrized
+free-mode two-point covariance, with Fourier convention
+$\psi(\mathbf{x})=V^{-1/2}\sum_{\mathbf{k}}\psi_{\mathbf{k}}
+e^{i\mathbf{k}\cdot\mathbf{x}}$. The initializer rejects a background
+if any canonical lattice mode has $\Omega_k^2\leq0$, or if
+$\max_{\mathbf{k}}\{|\Omega_k'/\Omega_k^2|,|h/\Omega_k|\}$
+exceeds the declared adiabaticity tolerance. The initial $H$, $h'$,
+and $h''$ are evaluated on the homogeneous-$\Phi$ background; vacuum
+$\psi$ backreaction is omitted when constructing the initial state.
+
+These are bare first-order adiabatic-WKB Gaussian samples, not a
+renormalized quantum-seeded waterfall. They are real classical
+statistical field configurations that reproduce a free-field
+symmetrized covariance at the initial time; they do not implement
+quantum commutators, entanglement, or nonlinear quantum evolution.
+The zero-point energy is retained. No vacuum subtraction,
+counterterms, or continuum renormalization are applied, so evolving
+these samples with the classical nonlinear solver retains UV-cutoff
+dependence and is not a physical quantum prediction. The helper
+records the seed, mode stability, adiabaticity diagnostics, and hashes
+of both initial arrays; the lattice solver checks this provenance but
+continues to label the subsequent evolution as classical.
+
+The prototype does not evolve $\Phi$ perturbations or the
+SM/Higgs/fermion fields, or demonstrate lattice-spacing, volume,
+timestep, or ensemble convergence. Its nearest-neighbour wall-area
+output is a finite-grid diagnostic, not the analytic scaling area
+factor. The reported chain-rule RHS energy-balance residual is an
 internal identity of the implemented discrete equations, not a
 time-integrated energy-conservation measurement or a continuum
 conservation proof.
