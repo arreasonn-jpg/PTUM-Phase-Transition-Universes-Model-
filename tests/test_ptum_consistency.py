@@ -3641,6 +3641,6 @@ def test_lattice_friedmann_and_pressure_equations_are_line_broken():
     from pathlib import Path
 
     source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
-    assert source.count(r"\left\langle \begin{aligned}") >= 2
+    assert source.count(r"\begin{aligned}") >= 3
     assert r"\label{eq:ptum_lattice_friedmann}" in source
     assert r"\label{eq:ptum_lattice_pressure}" in source

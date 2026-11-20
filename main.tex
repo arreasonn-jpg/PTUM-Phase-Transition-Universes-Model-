@@ -4810,31 +4810,32 @@ $\langle\cdots\rangle_V$, the implemented classical truncation is
 \label{eq:ptum_lattice_psi}\\
 \ddot\Phi+3H\dot\Phi+V_{{\rm eff},\Phi}
 +\frac12\partial_\Phi m_{\rm eff}^2(\Phi)
-\langle\psi^2\rangle_V&=0,
-\label{eq:ptum_lattice_phi}\\
-3M_{\rm Pl}^2H^2&=
-\frac12\dot\Phi^2+V_{\rm eff}(\Phi)
-+\left\langle
-\begin{aligned}
-\frac12\dot\psi^2
-&+\frac{|\nabla\psi|^2}{2a^2}\\
-&+\frac12m_{\rm eff}^2(\Phi)\psi^2
-+\frac{\lambda_\psi}{4}\psi^4
-\end{aligned}
-\right\rangle_V.
-\label{eq:ptum_lattice_friedmann}
+\langle\psi^2\rangle_V&=0.
+\label{eq:ptum_lattice_phi}
 \end{align}
+\begin{equation}
+\begin{aligned}
+3M_{\rm Pl}^2H^2
+&=\frac12\dot\Phi^2+V_{\rm eff}(\Phi)\\
+&\quad+\left\langle
+\frac12\dot\psi^2+\frac{|\nabla\psi|^2}{2a^2}\right.\\
+&\qquad\left.+\frac12m_{\rm eff}^2(\Phi)\psi^2
++\frac{\lambda_\psi}{4}\psi^4
+\right\rangle_V.
+\end{aligned}
+\label{eq:ptum_lattice_friedmann}
+\end{equation}
 The corresponding isotropic pressure is
 \begin{equation}
-p_{\rm tot}=\frac12\dot\Phi^2-V_{\rm eff}(\Phi)
-+\left\langle
 \begin{aligned}
-\frac12\dot\psi^2
-&-\frac{|\nabla\psi|^2}{6a^2}\\
-&-\frac12m_{\rm eff}^2(\Phi)\psi^2
+p_{\rm tot}
+&=\frac12\dot\Phi^2-V_{\rm eff}(\Phi)\\
+&\quad+\left\langle
+\frac12\dot\psi^2-\frac{|\nabla\psi|^2}{6a^2}\right.\\
+&\qquad\left.-\frac12m_{\rm eff}^2(\Phi)\psi^2
 -\frac{\lambda_\psi}{4}\psi^4
-\end{aligned}
 \right\rangle_V.
+\end{aligned}
 \label{eq:ptum_lattice_pressure}
 \end{equation}
 Here $\partial_\Phi m_{\rm eff}^2=
@@ -4860,9 +4861,11 @@ X_k''+\Omega_k^2X_k&=0,\\
 \end{align}
 The first-order WKB mode is
 \begin{equation}
-u_k(\tau)=\sqrt{\frac{\lambda_\psi}{2\Omega_k}}\,
-e^{-i\int^\tau\Omega_k\,d\tau'},\qquad
-u_k'=\left(-i\Omega_k-\frac{\Omega_k'}{2\Omega_k}\right)u_k .
+\begin{aligned}
+u_k(\tau)&=\sqrt{\frac{\lambda_\psi}{2\Omega_k}}\,
+e^{-i\int^\tau\Omega_k\,d\tau'},\\
+u_k'&=\left(-i\Omega_k-\frac{\Omega_k'}{2\Omega_k}\right)u_k .
+\end{aligned}
 \end{equation}
 The real Gaussian samples reproduce the corresponding symmetrized
 free-mode two-point covariance, with Fourier convention
