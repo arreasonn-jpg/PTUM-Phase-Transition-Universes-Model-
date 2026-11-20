@@ -3635,3 +3635,12 @@ def test_lattice_tracks_bare_adiabatic_sample_without_claiming_quantum_evolution
             n_output_points=3,
             initial_state_metadata=sample["metadata"],
         )
+
+
+def test_lattice_friedmann_and_pressure_equations_are_line_broken():
+    from pathlib import Path
+
+    source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
+    assert source.count(r"\left\langle \begin{aligned}") >= 2
+    assert r"\label{eq:ptum_lattice_friedmann}" in source
+    assert r"\label{eq:ptum_lattice_pressure}" in source
