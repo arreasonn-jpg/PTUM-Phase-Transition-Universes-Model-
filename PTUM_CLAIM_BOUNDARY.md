@@ -1059,3 +1059,33 @@ This confirms the source-regression correction and the bare mode-sum
 diagnostics only. It does not provide vacuum subtraction, counterterms,
 a renormalized continuum limit, time-evolved lattice convergence, or a
 physical quantum-waterfall result. Gate 5 remains NOT MET.
+
+
+## 2026-11-21 CP-resolved broken-phase fermion operator matching
+
+The gauge-invariant dimension-five interaction
+$-\psi\mathcal O_{\rm SM}/\Lambda$ is now matched in a single-flavour
+mass basis with complex diagonal coefficient
+$C_{f,ii}=c^S_{fi}+i c^P_{fi}$. The manuscript displays
+$y^S_{\psi f}=c^S_{fi}v/(\sqrt2\Lambda)$ and
+$y^P_{\psi f}=c^P_{fi}v/(\sqrt2\Lambda)$ in
+$-\psi\bar f(y^S+i y^P\gamma_5)f$. The ideal CP-even equilibrium
+thermal-bias estimator is explicitly restricted to the scalar
+one-point function; it assumes the thermal pseudoscalar condensate
+vanishes.
+
+ptum_defects.py now maps a supplied diagonal complex Wilson
+coefficient, broken-phase Higgs vev and EFT cutoff into scalar and
+pseudoscalar couplings, then passes only the scalar component to the
+existing ideal Dirac-gas bias integral. Regressions cover real/imaginary
+parts, cutoff scaling, pure-pseudoscalar zero bias in the stated
+CP-even approximation, and agreement with the direct scalar-coupling
+path.
+
+This is a matching/API consistency improvement, not a prediction of
+the bias. The diagonal Wilson coefficients, cutoff, temperature-
+dependent Higgs vev, renormalized zero-temperature condensates, QCD
+effects, off-diagonal flavour dynamics and thermal history remain
+unspecified. The free-gas result remains conditional. Gate 5 remains
+NOT MET; no domain-wall network evolution or annihilation time is
+claimed.

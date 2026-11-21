@@ -152,6 +152,35 @@ def thermal_dirac_scalar_condensate(
     )
 
 
+def broken_phase_fermion_couplings_from_wilson(
+    wilson_coefficient: complex,
+    higgs_vev: float,
+    cutoff: float,
+) -> dict[str, float]:
+    """Map one diagonal dimension-five Wilson coefficient to broken-phase couplings.
+
+    For C_f=c_S+i*c_P in a single-flavour mass basis,
+        y_S = Re(C_f) v/(sqrt(2) Lambda),
+        y_P = Im(C_f) v/(sqrt(2) Lambda).
+    The interaction convention is -psi*bar(f)*(y_S+i*y_P*gamma5)*f.
+    Inputs v and Lambda must use the same mass units. This is a tree-level
+    broken-phase matching relation, not a thermal-history calculation.
+    """
+    try:
+        coefficient = complex(wilson_coefficient)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError("wilson_coefficient must be a finite complex number") from exc
+    if not np.isfinite(coefficient.real) or not np.isfinite(coefficient.imag):
+        raise ValueError("wilson_coefficient must be finite")
+    higgs_vev = _validate_nonnegative("higgs_vev", higgs_vev)
+    cutoff = _validate_positive("cutoff", cutoff)
+    factor = higgs_vev / (np.sqrt(2.0) * cutoff)
+    return {
+        "scalar_coupling": float(coefficient.real * factor),
+        "pseudoscalar_coupling": float(coefficient.imag * factor),
+    }
+
+
 def thermal_fermion_bias(
     fermions: list[tuple[float, float, int]],
     temperature: float,
@@ -205,6 +234,62 @@ def thermal_fermion_bias(
         "uses_zero_temperature_subtracted_condensate": True,
         "ideal_equilibrium_dirac_gas_only": True,
     }
+
+def thermal_fermion_bias_from_wilson(
+    fermions: list[tuple[float, complex, int]],
+    temperature: float,
+    higgs_vev: float,
+    cutoff: float,
+) -> dict[str, object]:
+    """Map diagonal dimension-five Wilson coefficients to an ideal-gas bias.
+
+    Each species is (Dirac mass, diagonal C_f, colour multiplicity) in the
+    broken-phase mass basis. The Higgs vev is v(T), and cutoff uses the same
+    mass units. Only the CP-even scalar coupling contributes because this
+    approximation assumes a CP-even equilibrium ensemble with
+    <bar(f) i gamma5 f>_T = 0. Off-diagonal flavour condensates, the
+    zero-temperature condensate, QCD interactions, thermal masses, the
+    electroweak crossover and non-equilibrium effects are omitted.
+    """
+    temperature = _validate_nonnegative("temperature", temperature)
+    higgs_vev = _validate_nonnegative("higgs_vev", higgs_vev)
+    cutoff = _validate_positive("cutoff", cutoff)
+    mapped_species = []
+    coupling_metadata = []
+    for index, item in enumerate(fermions):
+        if len(item) != 3:
+            raise ValueError(
+                "each fermion entry must be (mass, diagonal C_f, N_c)"
+            )
+        mass, coefficient, color_multiplicity = item
+        couplings = broken_phase_fermion_couplings_from_wilson(
+            coefficient, higgs_vev, cutoff
+        )
+        mapped_species.append((
+            mass, couplings["scalar_coupling"], color_multiplicity
+        ))
+        coefficient_complex = complex(coefficient)
+        coupling_metadata.append({
+            "index": index,
+            "wilson_coefficient_real": float(coefficient_complex.real),
+            "wilson_coefficient_imag": float(coefficient_complex.imag),
+            "scalar_coupling": couplings["scalar_coupling"],
+            "pseudoscalar_coupling": couplings["pseudoscalar_coupling"],
+        })
+
+    result = thermal_fermion_bias(mapped_species, temperature)
+    for term, metadata in zip(result["species_terms"], coupling_metadata):
+        term.update(metadata)
+    result.update({
+        "higgs_vev": higgs_vev,
+        "cutoff": cutoff,
+        "matching": "y_S,P = Re,Im(C_f) * v(T)/(sqrt(2)*Lambda)",
+        "pseudoscalar_thermal_condensate_assumed_zero": True,
+        "off_diagonal_flavour_condensates_omitted": True,
+        "zero_temperature_condensate_included": False,
+    })
+    return result
+
 
 def _tilted_minima(mu_eff: float, lambda_psi: float, epsilon_bias: float):
     """Solve the exact stationary cubic for the tilted double-well potential."""

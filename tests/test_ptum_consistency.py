@@ -1687,6 +1687,75 @@ def test_domain_wall_bias_required_source_can_annihilate_before_bbn():
     assert result["annihilation_before_wall_domination"]
 
 
+def test_complex_dimension_five_wilson_coefficient_splits_scalar_and_pseudoscalar_couplings():
+    from ptum_defects import broken_phase_fermion_couplings_from_wilson
+
+    coefficient = 0.3 + 0.4j
+    vev = 246.0
+    cutoff = 1.0e5
+    result = broken_phase_fermion_couplings_from_wilson(
+        coefficient, higgs_vev=vev, cutoff=cutoff
+    )
+    factor = vev / (np.sqrt(2.0) * cutoff)
+    assert result["scalar_coupling"] == pytest.approx(0.3 * factor)
+    assert result["pseudoscalar_coupling"] == pytest.approx(0.4 * factor)
+    pure_imaginary = broken_phase_fermion_couplings_from_wilson(
+        0.5j, higgs_vev=vev, cutoff=cutoff
+    )
+    assert pure_imaginary["scalar_coupling"] == 0.0
+    assert pure_imaginary["pseudoscalar_coupling"] != 0.0
+    doubled_cutoff = broken_phase_fermion_couplings_from_wilson(
+        coefficient, higgs_vev=vev, cutoff=2.0 * cutoff
+    )
+    assert doubled_cutoff["scalar_coupling"] == pytest.approx(
+        0.5 * result["scalar_coupling"]
+    )
+    with pytest.raises(ValueError):
+        broken_phase_fermion_couplings_from_wilson(
+            coefficient, higgs_vev=vev, cutoff=0.0
+        )
+
+
+def test_wilson_derived_thermal_bias_uses_only_cp_even_scalar_component():
+    from ptum_defects import (
+        thermal_fermion_bias,
+        thermal_fermion_bias_from_wilson,
+    )
+
+    temperature = 1.0
+    higgs_vev = 246.0
+    cutoff = 1.0e5
+    coefficient = 0.3 + 0.4j
+    scalar_coupling = coefficient.real * higgs_vev / (np.sqrt(2.0) * cutoff)
+    result = thermal_fermion_bias_from_wilson(
+        [(0.5, coefficient, 3)],
+        temperature=temperature,
+        higgs_vev=higgs_vev,
+        cutoff=cutoff,
+    )
+    direct = thermal_fermion_bias(
+        [(0.5, scalar_coupling, 3)], temperature=temperature
+    )
+    assert result["epsilon_bias"] == pytest.approx(
+        direct["epsilon_bias"], rel=2.0e-14
+    )
+    term = result["species_terms"][0]
+    assert term["pseudoscalar_coupling"] == pytest.approx(
+        coefficient.imag * higgs_vev / (np.sqrt(2.0) * cutoff)
+    )
+    assert result["pseudoscalar_thermal_condensate_assumed_zero"] is True
+    assert result["zero_temperature_condensate_included"] is False
+
+    pseudoscalar_only = thermal_fermion_bias_from_wilson(
+        [(0.5, 0.4j, 3)],
+        temperature=temperature,
+        higgs_vev=higgs_vev,
+        cutoff=cutoff,
+    )
+    assert pseudoscalar_only["epsilon_bias"] == 0.0
+    assert pseudoscalar_only["species_terms"][0]["pseudoscalar_coupling"] != 0.0
+
+
 def test_dimension_five_operator_vev_maps_to_dimension_three_bias_source():
     from ptum_defects import bias_from_operator_vev
 
