@@ -1693,3 +1693,35 @@ while the manuscript says "or defines a physical continuum limit".
 The source assertion now follows the exact sentence. The lattice audit
 and LaTeX jobs again passed; the fresh push run was still completing at
 the time of this update. No physical criterion or tolerance changed.
+
+
+## 2026-11-21 exact-head verification of extended bare WKB audit
+
+Push workflow 44897514397 completed successfully on exact head
+242552ae69baaddbfc1f5c1b671c135f636b0744:
+- Python regression: 166 passed.
+- Four-trajectory, two-scale smoke scan: 4/4 successful; two rows
+  classified as insufficient oscillation data and two as non-quartic.
+  All four records explicitly say quantum_vacuum_seeded=false.
+- Extended bare WKB UV/volume audit: passed and produced strict JSON.
+- LaTeX: 44-page PDF built successfully.
+- The full 100-row and paired homogeneous scans were skipped because
+  this commit did not opt into [FULL-SCAN]; no new full-scan result is
+  claimed from this workflow.
+
+The final LaTeX pass has 77 Underfull hbox warnings, zero Overfull
+hboxes, and zero unresolved references/citations. Gate 10 therefore
+remains PARTIAL.
+
+The exact-head audit artifact reproduces the extended result recorded
+above: bare stress rises by a factor 16664.2325 at fixed L=8 mu^-1,
+the N=32-to-64 log slope is 3.8822733, and the fixed-spacing volume
+spread is 2.38067e-13. The strict-JSON SHA-256 is
+260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749;
+the exact-head ZIP SHA-256 is
+671fb04d320d80b00abc383970c5575a8be8e863fbb591a878c4b92c0391f49b.
+
+This confirms the source-regression correction and the bare mode-sum
+diagnostics only. It does not provide vacuum subtraction, counterterms,
+a renormalized continuum limit, time-evolved lattice convergence, or a
+physical quantum-waterfall result. Gate 5 remains NOT MET.
