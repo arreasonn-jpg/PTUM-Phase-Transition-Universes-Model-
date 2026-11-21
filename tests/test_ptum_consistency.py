@@ -3730,7 +3730,7 @@ def test_manuscript_documents_bare_wkb_mode_sum_and_cutoff_dependence():
         r"factor $1.66642\times10^4$",
         r"the $N=32\to64$ log slope is $3.88227$",
         r"relative spread of the equal-time bare energy density is $2.38\times10^{-13}$",
-        "does not subtract the vacuum energy",
+        "Neither sequence subtracts the vacuum energy",
         "define a physical continuum limit",
     )
     for phrase in required:

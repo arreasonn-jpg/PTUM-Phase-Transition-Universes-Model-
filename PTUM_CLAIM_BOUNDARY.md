@@ -1006,3 +1006,15 @@ The exact-head run's only Python failure was a stale manuscript phrase
 assertion; the numerical UV audit and LaTeX jobs passed. The assertion
 is being aligned to the manuscript's actual wording without relaxing
 any numerical or scientific acceptance threshold.
+
+
+The first follow-up exact-head run after the extended audit, workflow
+44896882170 on 26f1a4b, again reported 165 passed and one failed. The
+remaining failure was a second stale source phrase: the test expected
+"does not subtract the vacuum energy", while the manuscript states
+"Neither sequence subtracts the vacuum energy". The numerical UV audit
+and 44-page LaTeX build both passed; the final LaTeX pass retained 77
+Underfull hbox warnings and had zero Overfull hboxes or unresolved
+references/citations. The test is now aligned to the exact manuscript
+wording. A fresh exact-head regression run is required; no physical
+threshold or numerical tolerance was changed.

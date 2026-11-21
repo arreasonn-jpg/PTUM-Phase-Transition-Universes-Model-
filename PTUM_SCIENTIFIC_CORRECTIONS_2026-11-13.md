@@ -1958,3 +1958,15 @@ a stale literal manuscript assertion; the dedicated audit and LaTeX
 jobs passed. The 44-page final LaTeX pass had zero Overfull hboxes and
 zero unresolved references/citations, with 77 Underfull hbox warnings.
 A wording-aligned regression and exact-head rerun are required.
+
+
+The first follow-up exact-head run after the extended audit, workflow
+44896882170 on 26f1a4b, again reported 165 passed and one failed. The
+remaining failure was a second stale source phrase: the test expected
+"does not subtract the vacuum energy", while the manuscript states
+"Neither sequence subtracts the vacuum energy". The numerical UV audit
+and 44-page LaTeX build both passed; the final LaTeX pass retained 77
+Underfull hbox warnings and had zero Overfull hboxes or unresolved
+references/citations. The test is now aligned to the exact manuscript
+wording. A fresh exact-head regression run is required; no physical
+threshold or numerical tolerance was changed.
