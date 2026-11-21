@@ -1915,3 +1915,15 @@ its shape and finiteness. A manuscript source regression was also
 changed to match the actual wording without changing the equations.
 The initial run had 161 passing and 3 failing pytest cases. The fix
 awaits a fresh exact-head CI run.
+
+
+## 2026-11-21 exact-head bare WKB stress audit
+
+Workflow 44893367362 on exact head 9d9def8ac72205bc8b912590553fcf0ab38f7f73 completed successfully: 164 Python tests, the four-trajectory/two-scale smoke scan, the four-grid WKB audit and the 44-page LaTeX build passed. The final LaTeX pass had no Overfull hboxes or unresolved references/citations, but retained 77 Underfull hbox warnings.
+
+The fixed-box N=4,6,8,10 bare Gaussian mode sum used L=8 mu^-1 and seed 20261121. The lattice cutoff increased 1.73205 to 4.33013 mu; bare psi stress increased 18.0182-fold (1.20260e48 to 2.16686e49 GeV^4), with end-to-end log slope 3.15553. The bare-total Hubble mismatch increased from 2.13247e-7 to 3.84232e-6. The result is evidence of unsubtracted UV-cutoff dependence only. It is not a renormalized stress tensor or a physical initial state.
+
+Artifact ZIP SHA-256: c4fd531a8de4bd6a31177514afa9e0c7f8f46b67b12cef538315c2b73b643f12.
+Strict-JSON SHA-256: 3f24f7c54748b2498d9e3cf57500bd3a738b2b0491cc63ae1a2baf0076f68fbf.
+
+The follow-up audit extends the fixed-box sequence to N=64 and adds a fixed-lattice-spacing, increasing-volume sequence. It is designed to distinguish UV-cutoff growth from finite-volume effects in the equal-time bare Gaussian mode sum. Exact-head CI is required before its results are recorded.
