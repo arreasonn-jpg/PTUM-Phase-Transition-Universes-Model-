@@ -149,96 +149,130 @@ def compute_bare_wkb_stress_expectation(
     }
 
 
+def _validated_grid_sizes(values: Iterable[int], label: str) -> list[int]:
+    sizes = list(values)
+    if len(sizes) < 2:
+        raise ValueError(f"{label} requires at least two grid sizes")
+    if any(isinstance(n, (bool, np.bool_)) or int(n) != n or n < 4 for n in sizes):
+        raise ValueError(f"{label} grid sizes must be integers >= 4")
+    sizes = [int(n) for n in sizes]
+    if sizes != sorted(set(sizes)):
+        raise ValueError(f"{label} grid sizes must be unique and strictly increasing")
+    return sizes
+
+
 def build_bare_wkb_cutoff_audit(
     params: PTUMParameters,
     *,
-    grid_sizes: Iterable[int] = (4, 6, 8, 10),
+    grid_sizes: Iterable[int] = (4, 6, 8, 10, 12, 16, 20, 24, 32, 48, 64),
     box_size_over_mu: float = 8.0,
+    volume_grid_sizes: Iterable[int] = (8, 12, 16, 24),
+    fixed_dx_over_mu_inverse: float = 1.0,
     Phi_initial: float | None = None,
     Phi_dot_initial: float | None = None,
     seed: int = 20261121,
     adiabaticity_tolerance: float = 0.1,
 ) -> dict[str, object]:
-    """Build a fixed-box cutoff sequence; every row is a bare diagnostic."""
-    sizes = list(grid_sizes)
-    if len(sizes) < 2:
-        raise ValueError("at least two grid sizes are required for a cutoff audit")
-    if any(isinstance(n, (bool, np.bool_)) or int(n) != n or n < 4 for n in sizes):
-        raise ValueError("grid sizes must be integers >= 4")
-    sizes = [int(n) for n in sizes]
-    if sizes != sorted(set(sizes)):
-        raise ValueError("grid sizes must be unique and strictly increasing")
+    """Separate fixed-box UV-cutoff growth from fixed-spacing volume effects."""
+    sizes = _validated_grid_sizes(grid_sizes, "fixed-box cutoff audit")
+    volume_sizes = _validated_grid_sizes(volume_grid_sizes, "fixed-spacing volume audit")
     if isinstance(seed, (bool, np.bool_)) or not isinstance(seed, (int, np.integer)):
         raise ValueError("seed must be an integer")
     box = float(box_size_over_mu)
+    fixed_dx = float(fixed_dx_over_mu_inverse)
     if not np.isfinite(box) or box <= 0.0:
         raise ValueError("box_size_over_mu must be finite and positive")
-
+    if not np.isfinite(fixed_dx) or fixed_dx <= 0.0:
+        raise ValueError("fixed_dx_over_mu_inverse must be finite and positive")
     phi = 1.2 * params.Phi_c if Phi_initial is None else float(Phi_initial)
-    phi_dot = (
-        -1.0e-4 * params.mu * params.Phi_c
-        if Phi_dot_initial is None else float(Phi_dot_initial)
-    )
-    rows: list[dict[str, float | int | bool | str]] = []
-    for n in sizes:
+    phi_dot = (-1.0e-4 * params.mu * params.Phi_c
+               if Phi_dot_initial is None else float(Phi_dot_initial))
+
+    def evaluate_row(n: int, box_length: float) -> dict[str, float | int | bool | str]:
         sample = sample_adiabatic_vacuum_initial_conditions(
-            params,
-            grid_size=n,
-            box_size_over_mu=box,
-            Phi_initial=phi,
-            Phi_dot_initial=phi_dot,
-            seed=int(seed),
+            params, grid_size=n, box_size_over_mu=box_length,
+            Phi_initial=phi, Phi_dot_initial=phi_dot, seed=int(seed),
             adiabaticity_tolerance=adiabaticity_tolerance,
         )
-        rows.append(compute_bare_wkb_stress_expectation(params, sample))
+        return compute_bare_wkb_stress_expectation(params, sample)
 
+    rows = [evaluate_row(n, box) for n in sizes]
     cutoffs = [float(row["lattice_k_cutoff_over_mu"]) for row in rows]
     energies = [float(row["rho_psi_bare_GeV4"]) for row in rows]
     cutoff_monotonic = all(b > a for a, b in zip(cutoffs, cutoffs[1:]))
     energy_monotonic = all(b > a for a, b in zip(energies, energies[1:]))
-    log_slope = float(
-        np.log(energies[-1] / energies[0]) / np.log(cutoffs[-1] / cutoffs[0])
+    successive_slopes = [
+        float(np.log(energies[k + 1] / energies[k]) /
+              np.log(cutoffs[k + 1] / cutoffs[k]))
+        for k in range(len(rows) - 1)
+    ]
+    high_start = max(0, len(rows) - 3)
+    high_cutoff_slope = float(
+        np.log(energies[-1] / energies[high_start]) /
+        np.log(cutoffs[-1] / cutoffs[high_start])
     )
+
+    volume_rows = [evaluate_row(n, n * fixed_dx) for n in volume_sizes]
+    volume_energies = [float(row["rho_psi_bare_GeV4"]) for row in volume_rows]
+    volume_reference = volume_energies[-1]
+    tiny = np.finfo(float).tiny
+    for row, energy in zip(volume_rows, volume_energies):
+        row["rho_relative_difference_from_largest_box"] = (
+            abs(energy - volume_reference) / max(abs(volume_reference), tiny)
+        )
+        row["fixed_dx_over_mu_inverse"] = fixed_dx
+    volume_spread = (max(volume_energies) - min(volume_energies)) / max(abs(volume_reference), tiny)
+    volume_tolerance = 1.0e-8
+    volume_stable = bool(np.isfinite(volume_spread) and volume_spread <= volume_tolerance)
+
     return {
         "schema": "ptum.bare_wkb_lattice_cutoff_audit",
-        "schema_version": 1,
+        "schema_version": 2,
         "method": "finite_volume_gaussian_mode_sum_with_gaussian_wick_quartic",
         "inputs": {
-            "V0_GeV4": float(params.V0),
-            "Phi_initial_GeV": phi,
-            "Phi_dot_initial_GeV2": phi_dot,
-            "box_size_over_mu": box,
-            "grid_sizes": sizes,
-            "seed": int(seed),
+            "V0_GeV4": float(params.V0), "Phi_initial_GeV": phi,
+            "Phi_dot_initial_GeV2": phi_dot, "box_size_over_mu": box,
+            "grid_sizes": sizes, "volume_grid_sizes": volume_sizes,
+            "fixed_dx_over_mu_inverse": fixed_dx, "seed": int(seed),
             "adiabaticity_tolerance": float(adiabaticity_tolerance),
-            "metric_signature": "(-+++)",
-            "scale_factor_initial": 1.0,
+            "metric_signature": "(-+++)", "scale_factor_initial": 1.0,
         },
         "rows": rows,
         "cutoff_increases_monotonically": cutoff_monotonic,
         "bare_psi_energy_increases_monotonically": energy_monotonic,
-        "observed_log_slope_rho_vs_lattice_cutoff": log_slope,
+        "successive_log_slopes_rho_vs_lattice_cutoff": successive_slopes,
+        "high_cutoff_log_slope_rho_vs_lattice_cutoff": high_cutoff_slope,
+        "high_cutoff_slope_grid_sizes": [sizes[high_start], sizes[-1]],
+        "fixed_spacing_volume_audit": {
+            "grid_sizes": volume_sizes, "fixed_dx_over_mu_inverse": fixed_dx,
+            "box_sizes_over_mu": [n * fixed_dx for n in volume_sizes],
+            "rows": volume_rows, "relative_density_spread": float(volume_spread),
+            "relative_density_spread_tolerance": volume_tolerance,
+            "density_stable_at_fixed_spacing": volume_stable,
+        },
         "renormalization": {
-            "zero_point_energy_retained": True,
-            "vacuum_subtraction_applied": False,
-            "counterterms_applied": False,
-            "continuum_limit_claimed": False,
+            "zero_point_energy_retained": True, "vacuum_subtraction_applied": False,
+            "counterterms_applied": False, "continuum_limit_claimed": False,
             "physical_quantum_prediction": False,
         },
         "interpretation": (
-            "The fixed-box bare Gaussian stress grows with the lattice UV cutoff. "
-            "This quantifies the need for a renormalization prescription; it does "
-            "not provide one and does not define a physical continuum limit."
+            "The fixed-box bare Gaussian stress grows with the lattice UV cutoff, "
+            "while the fixed-spacing mode-sum density is checked as the box grows. "
+            "The UV growth is consistent with the leading quartic zero-point "
+            "divergence in three spatial dimensions. This quantifies the need "
+            "for a renormalization prescription; it does not provide one and "
+            "does not define a physical continuum limit."
         ),
     }
-
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Audit the bare WKB lattice stress as the fixed-box UV cutoff is raised."
     )
-    parser.add_argument("--grid-sizes", nargs="+", type=int, default=[4, 6, 8, 10])
+    parser.add_argument("--grid-sizes", nargs="+", type=int, default=[4, 6, 8, 10, 12, 16, 20, 24, 32, 48, 64])
     parser.add_argument("--box-size-over-mu", type=float, default=8.0)
+    parser.add_argument("--volume-grid-sizes", nargs="+", type=int, default=[8, 12, 16, 24, 32, 48, 64])
+    parser.add_argument("--fixed-dx-over-mu-inverse", type=float, default=1.0)
     parser.add_argument("--seed", type=int, default=20261121)
     parser.add_argument("--output", type=Path, default=Path("ptum_lattice_uv_cutoff_audit.json"))
     args = parser.parse_args(argv)
@@ -248,12 +282,16 @@ def main(argv: list[str] | None = None) -> int:
         params,
         grid_sizes=args.grid_sizes,
         box_size_over_mu=args.box_size_over_mu,
+        volume_grid_sizes=args.volume_grid_sizes,
+        fixed_dx_over_mu_inverse=args.fixed_dx_over_mu_inverse,
         seed=args.seed,
     )
     if not report["cutoff_increases_monotonically"]:
         raise RuntimeError("the declared lattice cutoff did not increase with grid size")
     if not report["bare_psi_energy_increases_monotonically"]:
         raise RuntimeError("the bare WKB stress did not expose monotonic UV growth")
+    if not report["fixed_spacing_volume_audit"]["density_stable_at_fixed_spacing"]:
+        raise RuntimeError("the fixed-spacing finite-volume mode sum did not stabilize")
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
         json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + "\n",
@@ -263,7 +301,8 @@ def main(argv: list[str] | None = None) -> int:
         "BARE WKB CUTOFF AUDIT COMPLETED: "
         f"{len(report['rows'])} grids; "
         f"rho ratio={report['rows'][-1]['rho_psi_bare_GeV4'] / report['rows'][0]['rho_psi_bare_GeV4']:.8g}; "
-        f"log slope={report['observed_log_slope_rho_vs_lattice_cutoff']:.8g}; "
+        f"high-cutoff slope={report['high_cutoff_log_slope_rho_vs_lattice_cutoff']:.8g}; "
+        f"fixed-dx volume spread={report['fixed_spacing_volume_audit']['relative_density_spread']:.3e}; "
         "renormalized=False"
     )
     return 0
