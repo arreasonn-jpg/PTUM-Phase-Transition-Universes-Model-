@@ -4914,6 +4914,66 @@ until the complete physical initial state, renormalization prescription,
 raw outputs, and convergence evidence are available. They must not be
 used as quantitative support for the present conclusions.
 
+
+
+\paragraph{Bare finite-cutoff stress audit.}
+The WKB covariance also fixes the equal-time Gaussian expectation of the
+bare stress tensor on each finite lattice. Define
+$P_k=\lambda_\psi/(2\Omega_k)$,
+$R_k=\lambda_\psi\Omega_k/2$, and
+$\nu_k=-(\Omega_k'/\Omega_k+3h)/2$. At the initial scale factor
+$a=1$, the mode sums are
+\begin{align}
+\sigma_s^2&=\frac{1}{V_c}\sum_{\mathbf{k}}P_k,
+&
+\sigma_v^2&=\frac{1}{V_c}\sum_{\mathbf{k}}
+\left(R_k+\nu_k^2P_k\right),
+\\
+\mathcal G_d&=\frac{1}{V_c}\sum_{\mathbf{k}}
+\widehat{k}^{\,2}P_k,
+&
+\eta&=\frac{m_{\rm eff}^2(\Phi)}{\mu^2}.
+\label{eq:ptum_wkb_bare_variances}
+\end{align}
+For the Gaussian ensemble, Wick's identity gives
+$\langle s^4\rangle=3\sigma_s^4$. The quadratic and Gaussian-quartic
+contributions to the scalar energy and isotropic pressure are therefore
+\begin{align}
+\frac{\rho_{\psi,\mathrm{bare}}}{\mu^2\psi_0^2}
+&=\frac12\left(\sigma_v^2+\mathcal G_d+\eta\sigma_s^2\right)
++\frac34\sigma_s^4,
+\\
+\frac{p_{\psi,\mathrm{bare}}}{\mu^2\psi_0^2}
+&=\frac12\sigma_v^2-\frac16\mathcal G_d
+-\frac12\eta\sigma_s^2-\frac34\sigma_s^4.
+\label{eq:ptum_wkb_bare_stress}
+\end{align}
+The corresponding diagnostic total Friedmann rate and its first
+dimensionless derivative are
+\begin{align}
+\frac{H_{\mathrm{bare}}}{\mu}
+&=\frac{1}{\mu}
+\sqrt{\frac{\rho_\Phi+\rho_{\psi,\mathrm{bare}}}
+{3M_{\mathrm{Pl}}^2}},
+\\
+h'_{\mathrm{bare}}
+&=-\frac{\dot\Phi^2+\mu^2\psi_0^2
+\left(\sigma_v^2+\mathcal G_d/3\right)}
+{2M_{\mathrm{Pl}}^2\mu^2}.
+\label{eq:ptum_wkb_bare_friedmann}
+\end{align}
+The audit evaluates these sums with the same central-difference
+dispersion and Fourier normalization as the sampler. It records the
+difference between these bare total values and the homogeneous-$\Phi$
+test-field values used to construct the WKB frequencies. The Gaussian
+quartic term is an ensemble Wick expectation, not a counterterm.
+At fixed comoving box size, increasing the grid size raises the lattice
+UV cutoff and the unsubtracted zero-point stress. The resulting
+fixed-box UV-cutoff audit quantifies this growth; it does not subtract
+the vacuum energy, determine renormalized couplings, or define a
+physical continuum limit. The bare stress and its Hubble mismatch
+must not be interpreted as a quantum-waterfall prediction.
+
 \paragraph{Minimum requirements for a physically interpretable lattice result.}
 The current prototype supplies a reviewable solver source, periodic
 second-order spatial discretization, a stated comoving box, and an

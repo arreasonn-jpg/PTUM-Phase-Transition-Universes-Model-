@@ -944,3 +944,20 @@ H than the H used to construct the WKB sample. This mismatch is
 reported explicitly and is another reason the sample is not a
 self-consistent quantum initial state. No physical waterfall or relic
 claim follows from evolving it without renormalization.
+
+
+## 2026-11-21 bare WKB UV-cutoff audit claim boundary
+
+The repository now computes the finite-volume Gaussian expectation of
+the bare WKB lattice stress, including the first-order velocity-shift
+covariance, central-difference gradient contribution and Gaussian Wick
+quartic expectation. It reports the bare Friedmann H and H-prime implied
+by that stress and compares them to the homogeneous-Phi test-field
+background used by the sampler. A fixed-box grid sequence makes the
+cutoff dependence explicit.
+
+This is not vacuum renormalization. No zero-point subtraction,
+counterterms, coupling renormalization or continuum extrapolation is
+performed. The audit cannot be used as a physical initial state,
+quantum-waterfall simulation, defect probability or relic calculation.
+Gate 5 remains NOT MET.

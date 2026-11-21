@@ -1879,3 +1879,26 @@ H to exceed the Phi-only sampler H for the stable positive-energy test
 configuration. No physical quantum-waterfall interpretation is allowed
 until a consistent renormalized stress tensor and counterterms are
 implemented.
+
+
+## 2026-11-21 bare WKB finite-cutoff stress audit
+
+The new ptum_lattice_uv_audit.py module evaluates the equal-time Gaussian
+expectation of the bare lattice stress tensor implied by the existing
+first-order WKB sampler. With P_k=lambda_psi/(2 Omega_k),
+R_k=lambda_psi Omega_k/2 and velocity shift
+nu_k=-(Omega'_k/Omega_k+3h)/2, it computes the field, velocity and
+central-difference gradient variances by finite-volume mode sums. The
+quartic energy and pressure use the Gaussian Wick identity
+<psi^4> = 3 <psi^2>^2 after the dimensionless field normalization.
+The audit also computes the bare total Friedmann H and H-prime from this
+stress and compares them with the homogeneous-Phi test-field values used
+by the sampler.
+
+A fixed-box N=4,6,8,10 CI artifact is intended to quantify how the
+unsubtracted bare stress changes with the lattice UV cutoff. This is
+diagnostic evidence of cutoff dependence, not a renormalization scheme:
+zero-point energy remains, no counterterms are applied, and no physical
+continuum or quantum-waterfall prediction is claimed. Gate 5 remains
+NOT MET. Exact-head CI and artifact inspection are required before
+recording numerical cutoff ratios.

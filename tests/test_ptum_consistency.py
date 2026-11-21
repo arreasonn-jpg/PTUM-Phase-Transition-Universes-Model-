@@ -3648,3 +3648,81 @@ def test_lattice_friedmann_and_pressure_equations_are_line_broken():
     assert source.count(r"\begin{aligned}") >= 3
     assert r"\label{eq:ptum_lattice_friedmann}" in source
     assert r"\label{eq:ptum_lattice_pressure}" in source
+
+
+def test_bare_wkb_stress_expectation_matches_gaussian_lattice_mode_sum():
+    from ptum_lattice_uv_audit import compute_bare_wkb_stress_expectation
+    from ptum_lattice_waterfall import sample_adiabatic_vacuum_initial_conditions
+
+    params = PTUMParameters(V0=1.0e56)
+    sample = sample_adiabatic_vacuum_initial_conditions(
+        params,
+        grid_size=4,
+        box_size_over_mu=8.0,
+        Phi_initial=1.2 * params.Phi_c,
+        Phi_dot_initial=-1.0e-4 * params.mu * params.Phi_c,
+        seed=20261121,
+    )
+    diagnostics = sample["diagnostics"]
+    omega = diagnostics["mode_frequency_over_mu"]
+    k_squared = diagnostics["lattice_k_squared_over_mu2"]
+    shift = diagnostics["velocity_shift"]
+    volume = 8.0**3
+    field_power = params.lambda_psi / (2.0 * omega)
+    residual_power = params.lambda_psi * omega / 2.0
+    field_variance = np.sum(field_power) / volume
+    velocity_variance = np.sum(residual_power + shift**2 * field_power) / volume
+    gradient_variance = np.sum(k_squared * field_power) / volume
+
+    result = compute_bare_wkb_stress_expectation(params, sample)
+    assert result["mean_s_squared"] == pytest.approx(field_variance, rel=1e-14)
+    assert result["mean_s_prime_squared"] == pytest.approx(velocity_variance, rel=1e-14)
+    assert result["mean_lattice_gradient_squared"] == pytest.approx(
+        gradient_variance, rel=1e-14
+    )
+    assert result["rho_psi_quartic_wick_over_rho_scale"] == pytest.approx(
+        0.75 * field_variance**2, rel=1e-14
+    )
+    assert result["vacuum_subtraction_applied"] is False
+    assert result["counterterms_applied"] is False
+    assert result["vacuum_renormalized"] is False
+    assert result["H_bare_total_over_mu"] > result["H_background_over_mu"]
+
+
+def test_bare_wkb_fixed_box_cutoff_audit_exposes_uv_growth():
+    import json
+    from ptum_lattice_uv_audit import build_bare_wkb_cutoff_audit
+
+    params = PTUMParameters(V0=1.0e56)
+    report = build_bare_wkb_cutoff_audit(
+        params,
+        grid_sizes=(4, 6, 8),
+        box_size_over_mu=8.0,
+        seed=20261121,
+    )
+    assert report["schema"] == "ptum.bare_wkb_lattice_cutoff_audit"
+    assert report["cutoff_increases_monotonically"] is True
+    assert report["bare_psi_energy_increases_monotonically"] is True
+    assert report["observed_log_slope_rho_vs_lattice_cutoff"] > 0.0
+    assert [row["grid_size"] for row in report["rows"]] == [4, 6, 8]
+    assert all(row["H_relative_mismatch"] > 0.0 for row in report["rows"])
+    assert all(row["vacuum_subtraction_applied"] is False for row in report["rows"])
+    assert report["renormalization"]["physical_quantum_prediction"] is False
+    json.dumps(report, allow_nan=False)
+
+
+def test_manuscript_documents_bare_wkb_mode_sum_and_cutoff_dependence():
+    from pathlib import Path
+
+    source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
+    required = (
+        r"\label{eq:ptum_wkb_bare_variances}",
+        r"\label{eq:ptum_wkb_bare_stress}",
+        r"\label{eq:ptum_wkb_bare_friedmann}",
+        "Gaussian Wick estimate",
+        "fixed-box UV-cutoff audit",
+        "It applies no vacuum subtraction",
+        "define a physical continuum limit",
+    )
+    for phrase in required:
+        assert phrase in source

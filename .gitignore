@@ -19,3 +19,4 @@ htmlcov/
 ptum_inflation_scan.json
 
 task1_parameter_scan_results.json
+ptum_lattice_uv_cutoff_audit.json

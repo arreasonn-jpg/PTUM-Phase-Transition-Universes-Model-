@@ -1577,3 +1577,33 @@ A GitHub compare audit confirms that the interval from 49c820 to
 4ebaa changed no homogeneous background or scan source file; the scan
 artifacts remain evidence only for that unchanged homogeneous domain,
 not for the new lattice initializer.
+
+
+## 2026-11-21 bare WKB stress and fixed-box UV-cutoff audit
+
+The latest exact-head workflow 44715189629 on commit
+7d35cc775531bacbf1fdca729da705d34d2577d6 completed successfully:
+161 Python tests passed, the four-trajectory/two-scale smoke scan passed,
+and the 44-page LaTeX PDF built. The full 100-row and paired convergence
+jobs were skipped because this was not a [FULL-SCAN] run. The final LaTeX
+pass has no Overfull hbox or unresolved cross-reference/citation warning,
+but numerous Underfull hbox warnings remain.
+
+A new independent audit module, ptum_lattice_uv_audit.py, evaluates the
+Gaussian ensemble expectation of the bare finite-lattice stress tensor
+from the WKB mode covariances. It includes the velocity-shift covariance,
+the central-difference gradient energy, and the Gaussian Wick estimate
+< s^4 >= 3 < s^2 >^2 for the quartic term. It computes the corresponding
+bare total H and H-prime, so the difference from the homogeneous-Phi
+test-field background is quantified rather than hidden.
+
+The CI audit is configured for fixed comoving box size and N=4,6,8,10.
+Its purpose is to expose the cutoff dependence of the unsubtracted
+zero-point stress. It applies no vacuum subtraction or counterterms and
+does not claim a continuum limit. Gate 5 remains NOT MET. The actual
+artifact values and SHA-256 are to be recorded after the exact-head
+workflow completes.
+
+Gate 10 remains PARTIAL: a successful Python/LaTeX build does not erase
+the remaining Underfull hbox warnings, and the long homogeneous scan jobs
+were skipped on this non-full-scan run.
