@@ -1970,3 +1970,12 @@ Underfull hbox warnings and had zero Overfull hboxes or unresolved
 references/citations. The test is now aligned to the exact manuscript
 wording. A fresh exact-head regression run is required; no physical
 threshold or numerical tolerance was changed.
+
+
+The next exact-head PR run 44897305916 on 8ce8d59 reported 165
+passed and one failed. The sole remaining failure was another literal
+wording mismatch: the test expected "define a physical continuum limit"
+while the manuscript says "or defines a physical continuum limit".
+The source assertion now follows the exact sentence. The lattice audit
+and LaTeX jobs again passed; the fresh push run was still completing at
+the time of this update. No physical criterion or tolerance changed.
