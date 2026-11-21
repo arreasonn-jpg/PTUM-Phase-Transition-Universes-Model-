@@ -48,7 +48,7 @@ jobs:
 
   lattice-uv-cutoff-audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -63,8 +63,10 @@ jobs:
       - name: Run fixed-box bare WKB UV-cutoff audit
         run: >-
           python ptum_lattice_uv_audit.py
-          --grid-sizes 4 6 8 10
+          --grid-sizes 4 6 8 10 12 16 20 24 32 48 64
           --box-size-over-mu 8
+          --volume-grid-sizes 8 12 16 24 32 48 64
+          --fixed-dx-over-mu-inverse 1
           --seed 20261121
           --output ptum_lattice_uv_cutoff_audit.json
       - name: Upload bare WKB UV-cutoff audit
