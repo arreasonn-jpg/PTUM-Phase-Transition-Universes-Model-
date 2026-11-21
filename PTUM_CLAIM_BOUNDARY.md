@@ -967,3 +967,12 @@ The first UV-audit CI attempt failed because the WKB velocity shift is
 mode-dependent. The implementation now treats nu_k as an array and
 uses its mode-by-mode contribution to the velocity variance. The first
 run produced no numerical artifact and is not evidence of cutoff growth.
+
+
+## 2026-11-21 exact-head bare WKB stress audit
+
+Exact-head workflow 44893367362 (9d9def8) passed 164 Python tests, the two-scale smoke scan, the bare WKB audit and the 44-page LaTeX build. The final LaTeX pass had zero Overfull hboxes and no unresolved references/citations, with 77 Underfull hbox warnings remaining.
+
+For the fixed-box N=4,6,8,10 bare Gaussian audit at L=8 mu^-1, the lattice cutoff rose 1.73205 to 4.33013 mu and the unsubtracted psi stress rose by a factor 18.0182. The end-to-end log slope was 3.15553, and the bare Hubble mismatch rose from 2.13e-7 to 3.84e-6. This is cutoff-dependence evidence, not renormalization or a physical quantum prediction. ZIP SHA-256 c4fd531a8de4bd6a31177514afa9e0c7f8f46b67b12cef538315c2b73b643f12; JSON SHA-256 3f24f7c54748b2498d9e3cf57500bd3a738b2b0491cc63ae1a2baf0076f68fbf.
+
+An extended fixed-box sequence through N=64 and a fixed-spacing volume sequence have been added. Their exact-head CI and artifact inspection are pending.
