@@ -3701,12 +3701,18 @@ def test_bare_wkb_fixed_box_cutoff_audit_exposes_uv_growth():
         seed=20261121,
     )
     assert report["schema"] == "ptum.bare_wkb_lattice_cutoff_audit"
+    assert report["schema_version"] == 2
     assert report["cutoff_increases_monotonically"] is True
     assert report["bare_psi_energy_increases_monotonically"] is True
-    assert report["observed_log_slope_rho_vs_lattice_cutoff"] > 0.0
+    assert report["successive_log_slopes_rho_vs_lattice_cutoff"]
+    assert report["high_cutoff_log_slope_rho_vs_lattice_cutoff"] > 0.0
     assert [row["grid_size"] for row in report["rows"]] == [4, 6, 8]
     assert all(row["H_relative_mismatch"] > 0.0 for row in report["rows"])
     assert all(row["vacuum_subtraction_applied"] is False for row in report["rows"])
+    volume = report["fixed_spacing_volume_audit"]
+    assert volume["density_stable_at_fixed_spacing"] is True
+    assert volume["relative_density_spread"] < volume["relative_density_spread_tolerance"]
+    assert [row["grid_size"] for row in volume["rows"]] == [8, 12, 16, 24]
     assert report["renormalization"]["physical_quantum_prediction"] is False
     json.dumps(report, allow_nan=False)
 
@@ -3726,3 +3732,42 @@ def test_manuscript_documents_bare_wkb_mode_sum_and_cutoff_dependence():
     )
     for phrase in required:
         assert phrase in source
+
+
+def test_bare_wkb_uv_slope_approaches_three_dimensional_quartic_divergence():
+    from ptum_lattice_uv_audit import build_bare_wkb_cutoff_audit
+
+    report = build_bare_wkb_cutoff_audit(
+        PTUMParameters(V0=1.0e56),
+        grid_sizes=(16, 24, 32, 48, 64),
+        box_size_over_mu=8.0,
+        volume_grid_sizes=(8, 12, 16, 24),
+        fixed_dx_over_mu_inverse=1.0,
+        seed=20261121,
+    )
+    slopes = report["successive_log_slopes_rho_vs_lattice_cutoff"]
+    assert len(slopes) == 4
+    assert all(right > left for left, right in zip(slopes, slopes[1:]))
+    # In three spatial dimensions the leading bare zero-point stress scales as Lambda^4.
+    assert 3.5 < report["high_cutoff_log_slope_rho_vs_lattice_cutoff"] < 4.5
+    assert report["renormalization"]["vacuum_subtraction_applied"] is False
+    assert report["renormalization"]["continuum_limit_claimed"] is False
+
+
+def test_bare_wkb_fixed_spacing_volume_sequence_stabilizes_mode_sum_density():
+    from ptum_lattice_uv_audit import build_bare_wkb_cutoff_audit
+
+    report = build_bare_wkb_cutoff_audit(
+        PTUMParameters(V0=1.0e56),
+        grid_sizes=(4, 6, 8),
+        box_size_over_mu=8.0,
+        volume_grid_sizes=(8, 12, 16, 24, 32),
+        fixed_dx_over_mu_inverse=1.0,
+        seed=20261121,
+    )
+    volume = report["fixed_spacing_volume_audit"]
+    assert volume["box_sizes_over_mu"] == [8.0, 12.0, 16.0, 24.0, 32.0]
+    assert all(row["dx_over_mu_inverse"] == pytest.approx(1.0) for row in volume["rows"])
+    assert volume["density_stable_at_fixed_spacing"] is True
+    assert volume["relative_density_spread"] < 1.0e-8
+    assert all(row["rho_relative_difference_from_largest_box"] >= 0.0 for row in volume["rows"])
