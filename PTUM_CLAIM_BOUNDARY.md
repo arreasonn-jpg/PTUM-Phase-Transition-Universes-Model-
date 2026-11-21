@@ -976,3 +976,33 @@ Exact-head workflow 44893367362 (9d9def8) passed 164 Python tests, the two-scale
 For the fixed-box N=4,6,8,10 bare Gaussian audit at L=8 mu^-1, the lattice cutoff rose 1.73205 to 4.33013 mu and the unsubtracted psi stress rose by a factor 18.0182. The end-to-end log slope was 3.15553, and the bare Hubble mismatch rose from 2.13e-7 to 3.84e-6. This is cutoff-dependence evidence, not renormalization or a physical quantum prediction. ZIP SHA-256 c4fd531a8de4bd6a31177514afa9e0c7f8f46b67b12cef538315c2b73b643f12; JSON SHA-256 3f24f7c54748b2498d9e3cf57500bd3a738b2b0491cc63ae1a2baf0076f68fbf.
 
 An extended fixed-box sequence through N=64 and a fixed-spacing volume sequence have been added. Their exact-head CI and artifact inspection are pending.
+
+
+## 2026-11-21 extended bare WKB UV/volume audit
+
+The exact-head bare Gaussian audit now spans fixed-box N=4 through N=64
+and a separate fixed-spacing N=8 through N=64 volume sequence. At
+L=8 mu^-1, the bare psi stress grows by a factor 16664.2325 as the
+reported lattice cutoff rises by a factor 16; the N=32-to-64 log slope
+is 3.8822733, consistent with the expected leading quartic UV
+sensitivity. At fixed dx=mu^-1, the equal-time bare density spread over
+increasing box sizes is 2.38067e-13. These results distinguish UV
+cutoff growth from finite-volume effects in the bare Gaussian mode sum.
+
+The bare-total Hubble mismatch relative to the homogeneous-Phi
+test-field background grows to 3.54730e-3 at N=64. This confirms that
+the sampler's test-field FRW background is not a self-consistent
+Friedmann initial state once the raw zero-point stress is included.
+No vacuum subtraction, counterterms, coupling renormalization or
+continuum extrapolation has been performed. The audit is not a physical
+quantum-waterfall result, defect probability, or relic prediction.
+Gate 5 remains NOT MET.
+
+The audit ZIP SHA-256 is
+1b99b0fa6a9bc6058690aaaf2b9e60312e7e03e43c266210162201ed902d6b1d;
+the strict-JSON SHA-256 is
+260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749.
+The exact-head run's only Python failure was a stale manuscript phrase
+assertion; the numerical UV audit and LaTeX jobs passed. The assertion
+is being aligned to the manuscript's actual wording without relaxing
+any numerical or scientific acceptance threshold.

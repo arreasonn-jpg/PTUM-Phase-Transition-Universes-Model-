@@ -1630,3 +1630,45 @@ Artifact ZIP SHA-256: c4fd531a8de4bd6a31177514afa9e0c7f8f46b67b12cef538315c2b73b
 Extracted strict-JSON SHA-256: 3f24f7c54748b2498d9e3cf57500bd3a738b2b0491cc63ae1a2baf0076f68fbf.
 
 The next audit extension holds the comoving box fixed through N=64 to examine the high-cutoff slope, and separately holds dx fixed while increasing the box to test finite-volume stability of the equal-time Gaussian mode sum. This is a numerical audit of the bare initial covariance, not time-evolved lattice convergence or renormalization. The extended study awaits exact-head CI.
+
+
+## 2026-11-21 extended bare WKB UV/volume audit
+
+Exact-head workflow 44895764302 on commit
+25b46d4b2ec9442842af089d636259a184e16e99 completed the dedicated
+lattice-UV audit and LaTeX jobs successfully. The Python job reported
+165 passed and one failed. Its sole failure was a stale source assertion
+expecting the phrase "fixed-box UV-cutoff audit", while the manuscript
+accurately says "fixed-box sequence therefore isolates UV-cutoff
+dependence". This is a test/manuscript wording mismatch, not a numerical
+failure. The regression is being aligned to the actual manuscript text
+and now also guards the archived numerical benchmark.
+
+The strict-JSON audit used seed 20261121 and fixed comoving box
+L=8 mu^-1 for N=4,6,8,10,12,16,20,24,32,48,64. The reported lattice
+cutoff increased from 1.7320508076 mu to 27.7128129211 mu. The bare
+psi stress increased from 1.2025979590e48 to 2.0040371966e52 GeV^4,
+a factor 16664.2325. The N=32-to-64 high-cutoff log slope was 3.8822733,
+consistent with the leading Lambda^4 zero-point divergence over this
+finite range. The bare-total versus homogeneous-Phi Hubble mismatch
+increased from 2.13247e-7 to 3.54730e-3, exposing the increasing
+test-field/Friedmann inconsistency as the UV cutoff is raised.
+
+The separate fixed-spacing sequence used dx=mu^-1 and
+N=8,12,16,24,32,48,64. Its equal-time bare density relative spread was
+2.38067e-13, below the declared 1e-8 finite-volume stability threshold.
+This is finite-volume stability of the same bare Gaussian mode sum at
+fixed spacing. It is not a UV continuum limit, a subtraction scheme,
+a renormalized stress tensor, or time-evolved lattice convergence.
+
+Artifact ZIP SHA-256:
+1b99b0fa6a9bc6058690aaaf2b9e60312e7e03e43c266210162201ed902d6b1d.
+Extracted strict-JSON SHA-256:
+260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749.
+
+The 44-page LaTeX build passed. Its final pass had zero Overfull hboxes
+and zero unresolved references/citations, but 77 Underfull hbox warnings
+remain. Gate 5 remains NOT MET because the Gaussian stress is bare,
+UV divergent and not self-consistent with the WKB test-field background.
+Gate 10 remains PARTIAL. The corrected Python source regression requires
+a fresh exact-head run.

@@ -1927,3 +1927,34 @@ Artifact ZIP SHA-256: c4fd531a8de4bd6a31177514afa9e0c7f8f46b67b12cef538315c2b73b
 Strict-JSON SHA-256: 3f24f7c54748b2498d9e3cf57500bd3a738b2b0491cc63ae1a2baf0076f68fbf.
 
 The follow-up audit extends the fixed-box sequence to N=64 and adds a fixed-lattice-spacing, increasing-volume sequence. It is designed to distinguish UV-cutoff growth from finite-volume effects in the equal-time bare Gaussian mode sum. Exact-head CI is required before its results are recorded.
+
+
+## 2026-11-21 extended bare WKB UV/volume audit
+
+Exact-head workflow 44895764302 on 25b46d4 completed the dedicated
+lattice-UV audit and LaTeX build. The audit artifact reports, at fixed
+L=8 mu^-1 and seed 20261121, a rise in bare psi stress from
+1.2025979590e48 to 2.0040371966e52 GeV^4 as N increases from 4 to 64.
+The reported lattice cutoff rises from 1.7320508076 mu to
+27.7128129211 mu; the N=32-to-64 log slope is 3.8822733. This is
+consistent with the expected leading Lambda^4 zero-point divergence
+over the tested finite range, not a renormalized observable.
+
+At fixed dx=mu^-1, the N=8,12,16,24,32,48,64 increasing-volume
+sequence has a relative bare-density spread 2.38067e-13, below the
+declared 1e-8 finite-volume threshold. This supports finite-volume
+stability of the equal-time mode sum at fixed spacing only. The
+bare-total/Hubble mismatch relative to the homogeneous-Phi WKB
+background grows from 2.13247e-7 to 3.54730e-3 across the fixed-box
+sequence, so the test-field initial background becomes increasingly
+inconsistent as the retained zero-point UV stress grows.
+
+The artifact ZIP SHA-256 is
+1b99b0fa6a9bc6058690aaaf2b9e60312e7e03e43c266210162201ed902d6b1d;
+the extracted strict-JSON SHA-256 is
+260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749.
+The exact-head Python job had 165 passes and one failure caused only by
+a stale literal manuscript assertion; the dedicated audit and LaTeX
+jobs passed. The 44-page final LaTeX pass had zero Overfull hboxes and
+zero unresolved references/citations, with 77 Underfull hbox warnings.
+A wording-aligned regression and exact-head rerun are required.
