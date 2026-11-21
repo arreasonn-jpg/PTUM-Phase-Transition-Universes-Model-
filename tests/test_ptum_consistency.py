@@ -3719,9 +3719,9 @@ def test_manuscript_documents_bare_wkb_mode_sum_and_cutoff_dependence():
         r"\label{eq:ptum_wkb_bare_variances}",
         r"\label{eq:ptum_wkb_bare_stress}",
         r"\label{eq:ptum_wkb_bare_friedmann}",
-        "Gaussian Wick estimate",
+        "Gaussian quartic term is an ensemble Wick expectation",
         "fixed-box UV-cutoff audit",
-        "It applies no vacuum subtraction",
+        "does not subtract the vacuum energy",
         "define a physical continuum limit",
     )
     for phrase in required:

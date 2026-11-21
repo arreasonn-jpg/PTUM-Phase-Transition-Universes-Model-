@@ -961,3 +961,9 @@ counterterms, coupling renormalization or continuum extrapolation is
 performed. The audit cannot be used as a physical initial state,
 quantum-waterfall simulation, defect probability or relic calculation.
 Gate 5 remains NOT MET.
+
+
+The first UV-audit CI attempt failed because the WKB velocity shift is
+mode-dependent. The implementation now treats nu_k as an array and
+uses its mode-by-mode contribution to the velocity variance. The first
+run produced no numerical artifact and is not evidence of cutoff growth.

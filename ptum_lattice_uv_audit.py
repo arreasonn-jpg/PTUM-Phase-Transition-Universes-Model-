@@ -59,13 +59,13 @@ def compute_bare_wkb_stress_expectation(
 
     box = float(metadata.get("box_size_over_mu", np.nan))
     eta = float(metadata.get("m_eff_squared_over_mu2", np.nan))
-    velocity_shift = float(diagnostics.get("velocity_shift", np.nan))
+    velocity_shift = np.asarray(diagnostics.get("velocity_shift"), dtype=float)
     mu = float(params.mu)
     psi0 = float(params.psi_0)
     lam = float(params.lambda_psi)
     if (not np.isfinite(box) or box <= 0.0 or not np.isfinite(eta) or eta <= 0.0
-            or not np.isfinite(velocity_shift) or mu <= 0.0 or psi0 <= 0.0
-            or lam <= 0.0):
+            or velocity_shift.shape != shape or not np.all(np.isfinite(velocity_shift))
+            or mu <= 0.0 or psi0 <= 0.0 or lam <= 0.0):
         raise ValueError("WKB background and PTUM scales must be finite and positive")
 
     volume = box**3

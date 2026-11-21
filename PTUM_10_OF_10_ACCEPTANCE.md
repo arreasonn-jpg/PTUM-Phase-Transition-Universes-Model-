@@ -1607,3 +1607,14 @@ workflow completes.
 Gate 10 remains PARTIAL: a successful Python/LaTeX build does not erase
 the remaining Underfull hbox warnings, and the long homogeneous scan jobs
 were skipped on this non-full-scan run.
+
+
+The first exact-head run for the new audit, workflow 44893207629 on
+86a57c7599e941595b2638f57bdf2ea94298dd5b, exposed an implementation
+error: the WKB velocity shift is a mode-dependent array, not a scalar.
+The first regression run therefore reported 161 passed and 3 failed,
+and no cutoff artifact was produced. The audit now validates and sums
+the full mode-dependent shift array. A manuscript source assertion was
+also aligned with the exact prose already present. The corrected
+implementation requires a fresh exact-head run; no numerical cutoff
+ratio is claimed from the failed attempt.

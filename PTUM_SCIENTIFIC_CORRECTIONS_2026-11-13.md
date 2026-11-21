@@ -1902,3 +1902,16 @@ zero-point energy remains, no counterterms are applied, and no physical
 continuum or quantum-waterfall prediction is claimed. Gate 5 remains
 NOT MET. Exact-head CI and artifact inspection are required before
 recording numerical cutoff ratios.
+
+
+## 2026-11-21 UV-audit first-run correction
+
+The first exact-head audit run (44893207629, commit 86a57c7) correctly
+failed before producing an artifact. The implementation had treated the
+WKB velocity shift nu_k as a scalar, but the sampler returns one value
+per lattice mode. The stress sum now uses the full mode-dependent
+nu_k array in <v^2> = V_c^{-1} sum_k [R_k + nu_k^2 P_k] and validates
+its shape and finiteness. A manuscript source regression was also
+changed to match the actual wording without changing the equations.
+The initial run had 161 passing and 3 failing pytest cases. The fix
+awaits a fresh exact-head CI run.
