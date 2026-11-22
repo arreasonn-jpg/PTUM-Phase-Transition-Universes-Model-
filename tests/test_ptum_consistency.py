@@ -3997,3 +3997,20 @@ def test_unbroken_phase_reheating_report_tracks_branching_bbn_and_phase_validity
         )
     with pytest.raises(ValueError):
         reheating_temperature_from_width(0.0, 100.0)
+
+
+
+def test_reheating_width_derivations_and_phase_boundaries_are_in_manuscript():
+    from pathlib import Path
+
+    source = Path("main.tex").read_text(encoding="utf-8")
+    normalized = " ".join(source.split())
+    assert "eq:ptum_broken_phase_decay_width" in normalized
+    assert "eq:ptum_unbroken_phase_three_body_width" in normalized
+    assert "(y^S_{\\psi f})^2\\beta_f^3" in normalized
+    assert "(y^P_{\\psi f})^2\\beta_f" in normalized
+    assert "|C_f|^2m_{\\rm osc}^3}{1536\\pi^3\\Lambda^2" in normalized
+    assert "N_{\\rm ch}" in normalized
+    assert "Coherent amplitudes to the same final state must be summed before squaring" in normalized
+    assert "not a condensate-depletion rate" in normalized
+    assert "ptum\\_reheating.py" in normalized
