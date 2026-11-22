@@ -1109,3 +1109,8 @@ claimed.
 - Omitting thermal masses, Pauli blocking, Bose enhancement, Higgs-portal pair production, nonperturbative preheating or rescattering while describing the result as a complete reheating history.
 
 The new module is a tree-level rate calculator with explicit assumptions, not a completion of Gate 8. Its exact-head tests and manuscript-source regression await CI after the latest commits.
+
+
+## 2026-11-22 verification status for reheating helpers
+
+The conditional width implementation and its numerical regressions passed in PR workflow 45009882010 (173 tests). This verifies the coded vacuum formulas and report bookkeeping only. It does not supply physical Wilson coefficients, a PTUM quasiparticle spectrum, thermal rates or a reheating history. The manuscript's three overfull equation displays were reflowed in commit 32f94f3; the new exact-head LaTeX result is pending. Gate 8 remains PARTIAL and Gate 10 remains PARTIAL.
