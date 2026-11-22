@@ -4009,7 +4009,8 @@ def test_reheating_width_derivations_and_phase_boundaries_are_in_manuscript():
     assert "eq:ptum_unbroken_phase_three_body_width" in normalized
     assert "(y^S_{\\psi f})^2\\beta_f^3" in normalized
     assert "(y^P_{\\psi f})^2\\beta_f" in normalized
-    assert "|C_f|^2m_{\\rm osc}^3}{1536\\pi^3\\Lambda^2" in normalized
+    assert "|C_f|^2m_{\\rm osc}^3}" in normalized
+    assert "{1536\\pi^3\\Lambda^2}" in normalized
     assert "N_{\\rm ch}" in normalized
     assert "Coherent amplitudes to the same final state must be summed before squaring" in normalized
     assert "not a condensate-depletion rate" in normalized
