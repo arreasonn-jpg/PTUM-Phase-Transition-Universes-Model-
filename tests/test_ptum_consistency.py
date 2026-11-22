@@ -3843,3 +3843,157 @@ def test_bare_wkb_fixed_spacing_volume_sequence_stabilizes_mode_sum_density():
     assert volume["density_stable_at_fixed_spacing"] is True
     assert volume["relative_density_spread"] < 1.0e-8
     assert all(row["rho_relative_difference_from_largest_box"] >= 0.0 for row in volume["rows"])
+
+
+
+def test_unbroken_dimension_five_chiral_three_body_width_matches_phase_space_integral():
+    from math import pi
+    from scipy.integrate import quad
+    from ptum_reheating import chiral_dimension_five_three_body_width
+
+    mass = 4.0e5
+    cutoff = 1.0e8
+    coefficient = 0.6 + 0.8j
+    multiplicity = 12
+    observed = chiral_dimension_five_three_body_width(
+        mass, coefficient, cutoff, channel_multiplicity=multiplicity
+    )
+    phase_space_integral, _ = quad(
+        lambda invariant: invariant * (mass**2 - invariant),
+        0.0, mass**2, epsabs=0.0, epsrel=1.0e-12,
+    )
+    expected = (
+        multiplicity * abs(coefficient)**2
+        * phase_space_integral
+        / (256.0 * pi**3 * mass**3 * cutoff**2)
+    )
+    assert observed == pytest.approx(expected, rel=2.0e-14)
+    assert observed > 0.0
+
+
+def test_unbroken_dimension_five_width_has_correct_mass_cutoff_and_wilson_scaling():
+    from ptum_reheating import chiral_dimension_five_three_body_width
+
+    base = chiral_dimension_five_three_body_width(
+        2.0e5, 0.5 + 0.25j, 1.0e8, channel_multiplicity=3
+    )
+    doubled_mass = chiral_dimension_five_three_body_width(
+        4.0e5, 0.5 + 0.25j, 1.0e8, channel_multiplicity=3
+    )
+    doubled_cutoff = chiral_dimension_five_three_body_width(
+        2.0e5, 0.5 + 0.25j, 2.0e8, channel_multiplicity=3
+    )
+    doubled_coefficient = chiral_dimension_five_three_body_width(
+        2.0e5, 1.0 + 0.5j, 1.0e8, channel_multiplicity=3
+    )
+    doubled_channels = chiral_dimension_five_three_body_width(
+        2.0e5, 0.5 + 0.25j, 1.0e8, channel_multiplicity=6
+    )
+    assert doubled_mass == pytest.approx(8.0 * base, rel=2.0e-14)
+    assert doubled_cutoff == pytest.approx(0.25 * base, rel=2.0e-14)
+    assert doubled_coefficient == pytest.approx(4.0 * base, rel=2.0e-14)
+    assert doubled_channels == pytest.approx(2.0 * base, rel=2.0e-14)
+    with pytest.raises(ValueError):
+        chiral_dimension_five_three_body_width(
+            1.0e8, 1.0, 1.0e8, channel_multiplicity=1
+        )
+    with pytest.raises(ValueError):
+        chiral_dimension_five_three_body_width(
+            1.0e5, 1.0, 1.0e8, channel_multiplicity=0
+        )
+
+
+def test_broken_phase_dirac_width_separates_scalar_and_pseudoscalar_thresholds():
+    from math import pi, sqrt
+    from ptum_reheating import broken_phase_dirac_pair_width
+
+    mass = 10.0
+    fermion_mass = 4.0
+    colors = 3
+    beta = sqrt(1.0 - 4.0 * fermion_mass**2 / mass**2)
+    scalar = broken_phase_dirac_pair_width(
+        mass, fermion_mass, 0.2, 0.0, color_multiplicity=colors
+    )
+    pseudoscalar = broken_phase_dirac_pair_width(
+        mass, fermion_mass, 0.0, 0.3, color_multiplicity=colors
+    )
+    combined = broken_phase_dirac_pair_width(
+        mass, fermion_mass, 0.2, 0.3, color_multiplicity=colors
+    )
+    expected_scalar = colors * mass * 0.2**2 * beta**3 / (8.0 * pi)
+    expected_pseudoscalar = colors * mass * 0.3**2 * beta / (8.0 * pi)
+    assert scalar == pytest.approx(expected_scalar, rel=2.0e-14)
+    assert pseudoscalar == pytest.approx(expected_pseudoscalar, rel=2.0e-14)
+    assert combined == pytest.approx(scalar + pseudoscalar, rel=2.0e-14)
+    assert pseudoscalar > scalar
+    assert broken_phase_dirac_pair_width(
+        8.0, 4.0, 1.0, 1.0
+    ) == 0.0
+    assert broken_phase_dirac_pair_width(
+        7.0, 4.0, 1.0, 1.0
+    ) == 0.0
+    massless = broken_phase_dirac_pair_width(
+        10.0, 0.0, 0.2, 0.3, color_multiplicity=colors
+    )
+    assert massless == pytest.approx(
+        colors * mass * (0.2**2 + 0.3**2) / (8.0 * pi),
+        rel=2.0e-14,
+    )
+
+
+def test_unbroken_phase_reheating_report_tracks_branching_bbn_and_phase_validity():
+    from math import pi, sqrt
+    from ptum_reheating import (
+        build_unbroken_phase_reheating_report,
+        reheating_temperature_from_width,
+    )
+
+    channels = [
+        {
+            "name": "up-type example",
+            "wilson_coefficient": 1.0e-5 + 2.0e-5j,
+            "cutoff": 1.0e8,
+            "channel_multiplicity": 6,
+        },
+        {
+            "name": "charged-lepton example",
+            "wilson_coefficient": 2.0e-5,
+            "cutoff": 2.0e8,
+            "channel_multiplicity": 2,
+        },
+    ]
+    report = build_unbroken_phase_reheating_report(
+        1.0e5, channels, g_star=100.0
+    )
+    widths = [row["partial_width_GeV"] for row in report["channels"]]
+    assert report["total_width_GeV"] == pytest.approx(sum(widths), rel=2.0e-14)
+    assert sum(row["branching_fraction"] for row in report["channels"]) == pytest.approx(
+        1.0, rel=2.0e-14
+    )
+    assert report["sudden_decay_reheating_temperature_GeV"] == pytest.approx(
+        reheating_temperature_from_width(report["total_width_GeV"], 100.0),
+        rel=2.0e-14,
+    )
+    assert report["electroweak_symmetric_approximation_consistent_with_T_RH"] is False
+    assert report["reheating_temperature_below_all_channel_cutoffs"] is True
+    assert report["assumptions"]["thermal_blocking_and_enhancement"] is False
+
+    zero = build_unbroken_phase_reheating_report(
+        1.0e5,
+        [{
+            "name": "zero-coupling limit",
+            "wilson_coefficient": 0.0,
+            "cutoff": 1.0e8,
+            "channel_multiplicity": 1,
+        }],
+        g_star=100.0,
+    )
+    assert zero["total_width_GeV"] == 0.0
+    assert zero["sudden_decay_reheating_temperature_GeV"] is None
+    assert zero["bbn_temperature_test_passes_under_sudden_decay_assumption"] is None
+    with pytest.raises(ValueError):
+        build_unbroken_phase_reheating_report(
+            1.0e5, [], g_star=100.0
+        )
+    with pytest.raises(ValueError):
+        reheating_temperature_from_width(0.0, 100.0)
