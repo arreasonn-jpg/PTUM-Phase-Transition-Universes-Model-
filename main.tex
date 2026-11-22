@@ -2585,17 +2585,54 @@ symmetry breaking, the first term gives effective couplings
 $y_{\psi f}^{\rm eff}=C_fv/(\sqrt2\Lambda)$. For a well-defined
 scalar quasiparticle oscillating about a fixed broken-phase
 minimum, the local curvature mass is
-$m_{\rm osc}^2=-2m_{\rm eff}^2$. If
+$m_{\rm osc}^2=-2m_{\rm eff}^2$. Define
+$\beta_f=(1-4m_f^2/m_{\rm osc}^2)^{1/2}$. If
 $m_{\rm osc}>2m_f$ and the EFT interaction is perturbative, the
-conditional partial width is
+tree-level vacuum partial width is
 \begin{equation}
 \Gamma_{\psi\to f\bar f}=
-\frac{N_c|y_{\psi f}^{\rm eff}|^2m_{\rm osc}}{8\pi}
-\left(1-\frac{4m_f^2}{m_{\rm osc}^2}\right)^{3/2}.
+\frac{N_c m_{\rm osc}}{8\pi}
+\left[(y^S_{\psi f})^2\beta_f^3
++(y^P_{\psi f})^2\beta_f\right].
+\label{eq:ptum_broken_phase_decay_width}
 \end{equation}
-This expression applies to small oscillations about a fixed
-minimum. It is not automatically the decay rate of a nonlinear,
-time-dependent waterfall condensate.
+The scalar and pseudoscalar spin-summed contributions do not
+interfere. The different powers of $\beta_f$ follow from the
+CP-even and CP-odd two-body amplitudes. This expression applies to
+small oscillations about a fixed minimum. It is not automatically
+the decay rate of a nonlinear, time-dependent waterfall condensate.
+
+Above the electroweak crossover, the Higgs expectation value is
+not the source of a two-body fermion coupling. The gauge-invariant
+dimension-five operator instead permits three-body channels
+$\psi\to f_L\bar f_R H$ and their conjugates. For one
+distinguishable chiral channel with massless final states, let
+$s=(p_f+p_{\bar f})^2$. The spin sum and integrated phase space are
+\begin{equation}
+\sum|\mathcal M|^2=\frac{|C_f|^2s}{\Lambda^2},
+\qquad
+\frac{d\Phi_3}{ds}=
+\frac{m_{\rm osc}^2-s}{128\pi^3m_{\rm osc}^2},
+\quad 0\leq s\leq m_{\rm osc}^2.
+\end{equation}
+Integrating $d\Gamma=(2m_{\rm osc})^{-1}
+\sum|\mathcal M|^2d\Phi_3$ gives
+\begin{equation}
+\Gamma_{3,\,\mathrm{one\ channel}}=
+\frac{|C_f|^2m_{\rm osc}^3}{1536\pi^3\Lambda^2},
+\qquad
+\Gamma_{3,\,\mathrm{total}}=
+N_{\rm ch}\Gamma_{3,\,\mathrm{one\ channel}}.
+\label{eq:ptum_unbroken_phase_three_body_width}
+\end{equation}
+Here $N_{\rm ch}$ counts distinct orthogonal colour, weak,
+flavour and charge-conjugate final states. Coherent amplitudes to
+the same final state must be summed before squaring, not counted
+as separate channels. The formula assumes vacuum matrix elements,
+negligible final-state masses and $m_{\rm osc}<\Lambda$; it
+does not include thermal masses, Pauli blocking or Bose enhancement.
+It is therefore a conditional quasiparticle width, not a
+condensate-depletion rate.
 
 The Higgs portal $\psi^2H^\dagger H$ preserves the isolated
 $\psi\mapsto-\psi$ symmetry and therefore does not produce a
@@ -2617,21 +2654,36 @@ potential. A consistent $\rho_{\psi,\rm exc}$ requires subtracting
 the moving minimum energy and including the associated
 $\Phi$-dependent contribution in the total stress tensor and
 $\Phi$ equation. That calculation has not yet been implemented.
-Consequently, no numerical decay width, branching fraction, or
-perturbative reheating temperature is claimed from the EFT
-couplings.
+Consequently, no benchmark numerical decay width, branching
+fraction, or perturbative reheating temperature is claimed from
+the PTUM parameters because the Wilson matrices, cutoff and
+time-dependent quasiparticle spectrum are not fixed. The module
+\texttt{ptum\_reheating.py} evaluates the conditional vacuum
+two-body broken-phase and massless three-body electroweak-symmetric
+widths once those inputs and explicit channel multiplicities are
+supplied. It also reports branching fractions and phase/cutoff
+consistency flags; it does not evolve the condensate or the
+radiation bath.
 
 If perturbative decay dominates and thermalization is rapid, the
 usual conditional estimate is
 \begin{equation}
 T_{\rm rh}\simeq
 \left(\frac{90}{\pi^2g_*}\right)^{1/4}
-\sqrt{\Gamma_\psi M_{\rm Pl}}.
+\sqrt{\Gamma_\psi M_{\rm Pl}},
+\qquad H(T_{\rm rh})=\Gamma_\psi.
 \end{equation}
-The Wilson coefficients $C_f$, cutoff $\Lambda$, Higgs-portal
-coupling $g_{\psi H}$, condensate history, and competing
-non-perturbative channels are not fixed, so this formula is not
-assigned a numerical value here.
+The helper uses $M_{\rm Pl}=2.435\times10^{18}$ GeV and can
+compare the sudden-decay estimate with a 5 MeV BBN benchmark and
+an electroweak-crossover benchmark. These are conditional checks,
+not a thermal-history calculation. In particular, the unbroken-
+phase three-body approximation is self-consistent with the
+electroweak-symmetric bath only when the resulting $T_{\rm rh}$
+lies above the crossover; otherwise broken-phase channels and
+the intervening thermal evolution must be treated. The Wilson
+coefficients $C_f$, cutoff $\Lambda$, Higgs-portal coupling
+$g_{\psi H}$, condensate history, and competing non-perturbative
+channels are not fixed, so no PTUM benchmark value is assigned.
 
 The energy density at the exact single-field endpoint is not
 $V_0$. For $\Phi_c=\Phi_{\rm end}^{(H)}
