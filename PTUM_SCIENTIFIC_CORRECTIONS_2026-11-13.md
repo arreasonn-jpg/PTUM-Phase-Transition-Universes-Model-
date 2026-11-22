@@ -2041,3 +2041,31 @@ effects, off-diagonal flavour dynamics and thermal history remain
 unspecified. The free-gas result remains conditional. Gate 5 remains
 NOT MET; no domain-wall network evolution or annihilation time is
 claimed.
+
+
+## 2026-11-22 tree-level reheating-width correction
+
+The previous reheating discussion displayed only the CP-even broken-phase two-body width and left the electroweak-symmetric dimension-five decay channel unquantified. This was incomplete because the gauge-invariant operator contains the Higgs doublet and, above electroweak symmetry restoration, the Higgs expectation value does not generate the two-body fermion coupling.
+
+The broken-phase interaction is
+`-psi bar(f) (y_S + i y_P gamma5) f`. For a real scalar quasiparticle of mass M and beta=(1-4 m_f^2/M^2)^(1/2), the vacuum width is
+[
+\Gamma_{2}=\frac{N_cM}{8\pi}(y_S^2\beta^3+y_P^2\beta).
+]
+The pseudoscalar threshold factor is beta, not beta^3. The scalar/pseudoscalar interference vanishes after the spin sum.
+
+In the electroweak-symmetric phase, one massless chiral channel from
+`-(C_f/Lambda) psi (bar f_L H f_R) + h.c.` has
+[
+\sum|\mathcal M|^2=\frac{|C_f|^2s}{\Lambda^2},\quad
+\frac{d\Phi_3}{ds}=\frac{M^2-s}{128\pi^3M^2}.
+]
+The integrated vacuum width is
+[
+\Gamma_{3,1}=\frac{|C_f|^2M^3}{1536\pi^3\Lambda^2}.
+]
+An explicit integer multiplicity counts orthogonal colour, weak, flavour and charge-conjugate channels. Contributions leading to the same final state must be added at amplitude level before squaring.
+
+The new `ptum_reheating.py` module implements both limits, channel summation, branching fractions and the sudden-decay estimate using the reduced Planck mass 2.435e18 GeV. It reports conditional 5 MeV BBN, electroweak-crossover and EFT-cutoff checks. It does not include thermal masses, Pauli blocking, Bose enhancement, the Higgs-portal pair channels, nonperturbative preheating, condensate depletion, coupled Boltzmann evolution or entropy production. The Wilson matrices, EFT cutoff and time-dependent quasiparticle mass remain unspecified; therefore no PTUM benchmark decay width or reheating temperature is inferred.
+
+Regression coverage checks the three-body phase-space integral, M^3/Lambda^2/|C|^2/multiplicity scaling, the distinct beta^3 and beta threshold factors, branching normalization, zero-width behavior and manuscript equations. These tests and the manuscript changes postdate the latest successful exact-head CI (44898158765 on be5fb4f) and require a new exact-head run.
