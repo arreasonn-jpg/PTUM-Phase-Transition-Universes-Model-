@@ -1089,3 +1089,23 @@ effects, off-diagonal flavour dynamics and thermal history remain
 unspecified. The free-gas result remains conditional. Gate 5 remains
 NOT MET; no domain-wall network evolution or annihilation time is
 claimed.
+
+
+## 2026-11-22 perturbative reheating-width claim boundary
+
+### Supported conditional statements
+
+- For a specified real-scalar quasiparticle mass and real broken-phase couplings, the vacuum Dirac-pair width is
+  `N_c M [y_S^2 beta^3 + y_P^2 beta]/(8 pi)`, with beta=sqrt(1-4 m_f^2/M^2). The scalar and pseudoscalar contributions are separate and have different threshold powers.
+- For one massless chiral channel of the gauge-invariant dimension-five operator in the electroweak-symmetric phase, the vacuum three-body width is `|C_f|^2 M^3/(1536 pi^3 Lambda^2)`. Explicit channel multiplicities may sum orthogonal final states.
+- Given a positive total perturbative width and g-star, the sudden-decay estimate `T_RH=(90/(pi^2 g-star))^(1/4) sqrt(Mbar_Pl Gamma)` can be evaluated conditionally. A 5 MeV BBN comparison and phase/cutoff flags are diagnostics under the stated assumptions.
+
+### Not supported
+
+- A numerical PTUM benchmark width, branching ratio, reheating temperature or BBN verdict: Wilson matrices, cutoff, quasiparticle mass history and actual channel multiplicities are not fixed.
+- Applying the broken-phase two-body formula above electroweak symmetry restoration, or applying the unbroken-phase massless three-body formula below the crossover without matching the thermal phase.
+- Treating the sudden-decay estimate as a solution of the coupled condensate/radiation Boltzmann system.
+- Claiming thermalization, entropy conservation after reheating, the final radiation fraction, or the absence of late entropy injection.
+- Omitting thermal masses, Pauli blocking, Bose enhancement, Higgs-portal pair production, nonperturbative preheating or rescattering while describing the result as a complete reheating history.
+
+The new module is a tree-level rate calculator with explicit assumptions, not a completion of Gate 8. Its exact-head tests and manuscript-source regression await CI after the latest commits.
