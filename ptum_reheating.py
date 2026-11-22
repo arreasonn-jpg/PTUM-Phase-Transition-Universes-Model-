@@ -27,6 +27,8 @@ DEFAULT_ELECTROWEAK_CROSSOVER_GEV = 160.0
 
 
 def _finite_real(name: str, value: object) -> float:
+    if isinstance(value, bool):
+        raise ValueError(f"{name} must be a finite real number")
     try:
         result = float(value)
     except (TypeError, ValueError, OverflowError) as exc:
@@ -63,6 +65,8 @@ def _positive_integer(name: str, value: object) -> int:
 
 
 def _finite_complex(name: str, value: object) -> complex:
+    if isinstance(value, bool):
+        raise ValueError(f"{name} must be a finite complex number")
     try:
         result = complex(value)
     except (TypeError, ValueError, OverflowError) as exc:
