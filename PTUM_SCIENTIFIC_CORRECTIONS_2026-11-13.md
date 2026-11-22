@@ -2069,3 +2069,10 @@ An explicit integer multiplicity counts orthogonal colour, weak, flavour and cha
 The new `ptum_reheating.py` module implements both limits, channel summation, branching fractions and the sudden-decay estimate using the reduced Planck mass 2.435e18 GeV. It reports conditional 5 MeV BBN, electroweak-crossover and EFT-cutoff checks. It does not include thermal masses, Pauli blocking, Bose enhancement, the Higgs-portal pair channels, nonperturbative preheating, condensate depletion, coupled Boltzmann evolution or entropy production. The Wilson matrices, EFT cutoff and time-dependent quasiparticle mass remain unspecified; therefore no PTUM benchmark decay width or reheating temperature is inferred.
 
 Regression coverage checks the three-body phase-space integral, M^3/Lambda^2/|C|^2/multiplicity scaling, the distinct beta^3 and beta threshold factors, branching normalization, zero-width behavior and manuscript equations. These tests and the manuscript changes postdate the latest successful exact-head CI (44898158765 on be5fb4f) and require a new exact-head run.
+
+
+## 2026-11-22 exact-head regression and LaTeX overflow audit
+
+PR workflow 45009882010 on head 5c4c1756271063542bffd3d7ac5a4539313fd171 passed 173 pytest cases, the 4/4 two-scale smoke scan and the extended 11-grid bare WKB UV/volume audit. The 45-page manuscript built successfully. The second LaTeX pass had no unresolved references or citations but reported 76 Underfull and three Overfull hboxes. The three overflows were localized to the broken-phase complex Wilson matching display and the two new three-body phase-space/width displays.
+
+Commit 32f94f30504b2db0771c45aed97d4b9e20cb840c rewrites those three displays using aligned multi-line equations. The equations and normalization are unchanged. This formatting correction requires a fresh exact-head LaTeX run; no claim of warning-free output is made yet.
