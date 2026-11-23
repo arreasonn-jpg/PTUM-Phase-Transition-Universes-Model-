@@ -596,6 +596,16 @@ For spatially inhomogeneous classical fields, the same action gives
 \end{align}
 Equations~(\ref{eq:frw1})--(\ref{eq:frw2}) are their homogeneous
 limit, obtained by setting spatial gradients to zero. The Task~1
+The in-repository Task~1 solver evolves only the homogeneous
+two-field truncation and uses the tree-level plateau part of
+$V_{\rm eff}$; it does not include the Coleman--Weinberg loop term.
+This omission is deliberate in the tachyonic branch, where the naive
+one-loop logarithm becomes complex for negative field-dependent
+mass-squared values and cannot be inserted as a real potential by
+replacing $m^2$ with $|m^2|$. A real-time non-equilibrium effective
+action or a renormalized lattice treatment is needed before that
+correction can be included consistently.
+
 ODE solver therefore validates the homogeneous background only. It
 does not resolve the tachyonic band $k/a<|m_{\rm eff}|$, nonlinear
 mode growth, rescattering, or defect formation. Those phenomena require
@@ -1315,10 +1325,13 @@ affect the observational predictions derived in this work.
 \subsubsection{Inflation-discharge connection}
 \label{sec:inflation_discharge}
 
-The end of inflation and the onset of the discharge are dynamically
-connected through the fuel field $\Phi$. During the slow-roll
-inflationary phase, $\Phi$ rolls down the plateau potential
-$V(\Phi) = V_0(1 - e^{-\lambda\Phi^2/M_{\rm Pl}^2})$. The slow-roll parameters
+The fuel field evolves down the plateau potential
+$V(\Phi)=V_0(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2})$ during slow roll.
+Because the tachyonic condition is $|\Phi|>\Phi_c$, this downhill
+motion decreases $|\Phi|$ and, if it crosses $\Phi_c$, takes the system
+from the tachyonic region into the dormant region. It therefore does
+not by itself provide a dormant-to-tachyonic discharge trigger at the
+end of inflation. The slow-roll parameters
 are
 \begin{align}
 \epsilon_V &= \frac{M_{\rm Pl}^2}{2}\left(\frac{V_{,\Phi}}{V}\right)^2
@@ -1331,9 +1344,13 @@ For $\lambda \sim 0.02$, this occurs at $\Phi_{\rm end} \sim
 M_{\rm Pl}/\sqrt{\lambda} \sim 7 M_{\rm Pl}$.
 
 The discharge threshold is at $\Phi_c = E_{\rm th}/\sqrt{\alpha}$.
-For the discharge to be triggered naturally at the end of inflation,
-we require $\Phi_{\rm end} \approx \Phi_c$. This gives a relation
-between the threshold scale and the inflationary parameters:
+A numerical coincidence $\Phi_{\rm end}\approx\Phi_c$ can place
+the threshold near the end of inflation, but it does not establish the
+required direction of activation. With the present sign of
+$m_{\rm eff}^2(\Phi)$, a discharge at that time requires an additional
+driving mechanism, a specified uphill initial state, or a revised
+effective-mass dependence. The scale matching is therefore a
+parameter relation, not yet a derived dynamical trigger:
 \begin{equation}
 E_{\rm th} \approx \sqrt{\alpha}\,\Phi_{\rm end}
 \sim \sqrt{\alpha}\,\frac{M_{\rm Pl}}{\sqrt{\lambda}}.
@@ -3653,8 +3670,10 @@ The manuscript reports that the simulations confirm the linear perturbation resu
 \item The tachyonic growth rate matches the linear prediction
       $\Gamma_k \approx \sqrt{|m_{\rm eff}^2| - k^2/a^2}$ for
       $k \lesssim a|m_{\rm eff}|$.
-\item The transition to quartic oscillations occurs at $\psi \sim
-      \psi_0 \equiv \sqrt{m^2/\lambda_\psi}$ as predicted.
+\item A quartic-dominated orbit requires $|\psi|\gg\psi_0$;
+      the crossover near $|\psi|\sim\psi_0$ is not itself a quartic
+      regime. The reported lattice claim is not independently
+      reproducible from the released source archive.
 \item Non-linear effects (mode coupling, bubble formation) become
       significant only after $\psi$ reaches $\mathcal{O}(\psi_0)$,
       i.e., at the end of the linear growth phase.
