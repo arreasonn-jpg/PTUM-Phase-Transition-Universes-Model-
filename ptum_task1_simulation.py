@@ -940,12 +940,15 @@ if __name__ == "__main__":
         E_th=1e16
     )
     
-    # Define parameter ranges for scan (smaller for quick test)
+    # Full reproducible benchmark scan; these settings match the CI workflow.
     psi_init_range = [0.0, 0.01*params.psi_0, 0.1*params.psi_0]
     psi_dot_init_range = [0.0, 0.1*params.mu*params.psi_0, params.mu*params.psi_0]
     phi_offset_range = [0.01*params.Phi_c, 0.1*params.Phi_c]
     
-    results = run_parameter_scan(params, psi_init_range, psi_dot_init_range, phi_offset_range, t_max=20.0, n_points=200)
+    results = run_parameter_scan(
+        params, psi_init_range, psi_dot_init_range, phi_offset_range,
+        t_max=4000.0, n_points=40000
+    )
     
     # Save results
     save_results(results, "task1_parameter_scan_results.json")
