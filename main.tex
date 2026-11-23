@@ -880,15 +880,35 @@ $V_{\rm act}(\psi;\Phi)$ appearing in the stated action:
 \rho_{\psi,\mathrm{act}}&=\frac12\dot\psi^2+V_{\rm act}(\psi;\Phi),\notag\\
 p_{\psi,\mathrm{act}}&=\frac12\dot\psi^2-V_{\rm act}(\psi;\Phi).
 \end{align}
-The shifted quantities above may be used to diagnose energy above the moving
-minimum, but their evolution includes work associated with the changing
-$V_{\rm min}(\Phi)$ and they must not be substituted into the Friedmann
-constraint without modifying the full action consistently. In the quartic
-dominated limit $|\psi|\gg\psi_0$, the distinction becomes subleading and
-the averaged result $w_\psi\to1/3$ is unchanged. For fixed $\mu$, when
-expansion and interactions are negligible, the excitation energy is
-conserved; in an expanding universe it is not. The barrier height
-measured from either minimum is
+The shifted potential can be used in an exact bookkeeping split without
+changing the action or its equations of motion, provided the moving
+minimum is assigned to the complementary $\Phi$ sector. Define
+\begin{align}
+\rho_{\psi,\mathrm{exc}}&=\frac12\dot\psi^2+U(\psi;\Phi),&
+p_{\psi,\mathrm{exc}}&=\frac12\dot\psi^2-U(\psi;\Phi),\\
+\rho_{\Phi,\mathrm{split}}&=\frac12\dot\Phi^2+V_{\rm eff}(\Phi)
++V_{\rm min}(\Phi),&
+p_{\Phi,\mathrm{split}}&=\frac12\dot\Phi^2-V_{\rm eff}(\Phi)
+-V_{\rm min}(\Phi).
+\end{align}
+Then $\rho_{\psi,\mathrm{exc}}+\rho_{\Phi,\mathrm{split}}$ and
+$p_{\psi,\mathrm{exc}}+p_{\Phi,\mathrm{split}}$ reproduce exactly the
+unshifted two-field Hilbert energy density and pressure. The transfer
+terms in this bookkeeping convention are
+\begin{equation}
+Q_{\Phi,\mathrm{split}}
+=Q_\Phi+V_{\rm min}'(\Phi)\dot\Phi,\qquad
+Q_{\psi,\mathrm{exc}}=-Q_{\Phi,\mathrm{split}},
+\end{equation}
+so the total Friedmann source and total conservation law are unchanged.
+The term $V_{\rm min}'$ is a transfer-bookkeeping contribution only; it
+must not be added to the $\Phi$ equation of motion. This decomposition
+gives a meaningful equation of state for oscillatory excitation above
+the moving minimum. In the quartic-dominated limit $|\psi|\gg\psi_0$,
+the minimum offset is subleading and the averaged result
+$w_{\psi,\mathrm{exc}}\to1/3$ is unchanged. For fixed $\mu$, the
+excitation energy is conserved only in the absence of expansion and
+external transfer. The barrier height measured from either minimum is
 \begin{equation}
 U(0)=\frac{\mu^4}{4\lambda_\psi}
 =\frac{\lambda_\psi\psi_0^4}{4}.
