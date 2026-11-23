@@ -292,7 +292,7 @@ def run_simulation(params: PTUMParameters,
                        for i in range(n_diag)])
     h_diag = np.array([hubble_rate(phi_d[i], phi_dot_d[i], psi_d[i], psi_dot_d[i], params)
                        for i in range(n_diag)])
-    rho_dot_diag = np.gradient(rho_diag, t_diag, edge_order=2)
+    rho_dot_diag = _uniform_time_derivative(rho_diag, t_diag)
     continuity = rho_dot_diag + 3.0 * h_diag * (rho_diag + p_diag)
     continuity_scale = np.maximum.reduce([
         np.abs(rho_dot_diag), np.abs(3.0 * h_diag * (rho_diag + p_diag)),
@@ -315,8 +315,8 @@ def run_simulation(params: PTUMParameters,
         params.alpha*params.m_psi**2/params.E_th**2
         * phi_d*psi_d**2*phi_dot_d + vmin_prime_diag*phi_dot_d
     )
-    rho_phi_dot = np.gradient(rho_phi_split, t_diag, edge_order=2)
-    rho_psi_exc_dot = np.gradient(rho_psi_exc_diag, t_diag, edge_order=2)
+    rho_phi_dot = _uniform_time_derivative(rho_phi_split, t_diag)
+    rho_psi_exc_dot = _uniform_time_derivative(rho_psi_exc_diag, t_diag)
     residual_phi_split = rho_phi_dot + 3*h_diag*(rho_phi_split+p_phi_split) - transfer_phi_split
     residual_psi_split = rho_psi_exc_dot + 3*h_diag*(rho_psi_exc_diag+p_psi_exc_diag) + transfer_phi_split
     split_scale = np.maximum.reduce([
@@ -386,6 +386,23 @@ def _turning_point_intervals(psi_dot: np.ndarray) -> np.ndarray:
         groups = np.split(exact_zeros, np.where(np.diff(exact_zeros) > 1)[0] + 1)
         zero_groups = [int(group[len(group) // 2]) for group in groups if len(group)]
     return np.unique(np.concatenate([crossings, np.asarray(zero_groups, dtype=int)])).astype(int)
+
+
+def _uniform_time_derivative(values: np.ndarray, t: np.ndarray) -> np.ndarray:
+    """Fourth-order centered derivative on a uniform grid, with safe edge stencils."""
+    values = np.asarray(values, dtype=float)
+    t = np.asarray(t, dtype=float)
+    if len(t) < 5:
+        return np.gradient(values, t, edge_order=2)
+    steps = np.diff(t)
+    if not np.allclose(steps, steps[0], rtol=1e-9, atol=0.0):
+        return np.gradient(values, t, edge_order=2)
+    derivative = np.gradient(values, t, edge_order=2)
+    h = float(steps[0])
+    derivative[2:-2] = (
+        values[:-4] - 8.0*values[1:-3] + 8.0*values[3:-1] - values[4:]
+    ) / (12.0*h)
+    return derivative
 
 
 def _tachyonic_trajectory_diagnostics(t: np.ndarray, Phi: np.ndarray,
