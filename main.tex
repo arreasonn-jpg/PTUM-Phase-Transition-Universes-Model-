@@ -457,10 +457,28 @@ Equivalently, the effective discharge trigger can be written as
 }
 \label{eq:ptum_threshold_box}
 \end{equation}
-This condition defines the transition from the dormant proxy phase to the
-activated proxy phase. It should be interpreted as an effective threshold
-criterion, not as a microscopic derivation of the pre-discharge background.
-Here, $E_{\rm th}$ is the dimensionful discharge threshold scale (naturally related to the creation energy $V_0^{1/4}$), and $\alpha$ is a dimensionless coupling constant. The tachyonic instability is triggered when the fuel field crosses the critical threshold $\Phi = E_{\rm th}/\sqrt{\alpha}$. The transition timescale is assumed to be much shorter than the local Hubble time ($H^{-1}$), allowing the discharge to be treated as a nearly instantaneous phase transition at the background level that partitions the available energy into the residual dark sector and standard radiation. For \(m_{\rm eff}^2>0\) the proxy mode is dormant; for \(m_{\rm eff}^2<0\) it is activated by the tachyonic instability.
+This inequality is the instantaneous sign criterion separating the dormant
+($m_{\rm eff}^2>0$) and tachyonic ($m_{\rm eff}^2<0$) regions. It does not,
+by itself, determine the direction or cause of a threshold crossing. In
+particular, for the specified fuel potential
+$V_{\rm eff}(\Phi)=V_0(1-e^{-\lambda\Phi^2})$ one has
+$V_{\rm eff}'(\Phi)=2\lambda V_0\Phi e^{-\lambda\Phi^2}$, so the homogeneous
+force $-V_{\rm eff}'$ points toward $\Phi=0$. With Hubble friction and no
+additional driving source, slow-roll motion therefore carries a field
+initially at $|\Phi|>\Phi_c$ toward the dormant region; it does not naturally
+drive a field from $|\Phi|<\Phi_c$ outward into the tachyonic region. At the
+very large values $\lambda\Phi^2\gg1$ relevant to the nominal threshold,
+the exponential force is also extremely suppressed, so the field can be
+nearly frozen. A dormant-to-tachyonic crossing consequently requires an
+explicitly specified uphill initial velocity, an additional force/source,
+or a modified fuel potential. Such an input must be included in the
+initial-value problem and its energy budget; it cannot be inferred from the
+threshold inequality. The threshold is therefore an effective activation
+criterion, not yet a dynamical derivation of the pre-discharge transition.
+Here $E_{\rm th}$ is the dimensionful discharge scale and $\alpha$ is
+dimensionless. The assumed rapid partition of the available energy into
+residual dark energy and standard radiation remains a phenomenological
+prescription until the crossing dynamics and transfer process are derived.
 
 The dark-matter sector is
 \begin{equation}
@@ -709,14 +727,17 @@ $\psi=0$ and $\psi=\pm\psi_0$, where
 V_{\rm min}=-\frac{\mu^4}{4\lambda_\psi}.
 \end{equation}
 The origin is a local maximum and the two non-zero stationary points are
-minima. A constant shift of the potential is dynamically irrelevant to the
-field equation; when discussing the excitation energy of the activated
-sector, it is useful to set the minima to zero:
+minima. At fixed $\Phi$, it is useful to define the instantaneous
+minimum-subtracted diagnostic potential
 \begin{equation}
-U(\psi)\equiv V_{\rm act}(\psi)-V_{\rm min}
-=\frac{\lambda_\psi}{4}(\psi^2-\psi_0^2)^2\geq0.
+U(\psi;\Phi)\equiv V_{\rm act}(\psi;\Phi)-V_{\rm min}(\Phi)
+=\frac{\lambda_\psi}{4}(\psi^2-\psi_0^2(\Phi))^2\geq0.
 \label{eq:U_double_well_corrected}
 \end{equation}
+Because $V_{\rm min}$ depends on the evolving field $\Phi$, this is not a
+constant shift of the coupled action. It is an instantaneous diagnostic
+only; the unshifted $V_{\rm act}$ must remain in the field equations,
+Hilbert stress tensor, and Friedmann source.
 
 For a homogeneous field in an expanding FRW spacetime,
 \begin{equation}
