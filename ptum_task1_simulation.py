@@ -346,7 +346,7 @@ def _time_average(t_seg: np.ndarray, values: np.ndarray) -> float:
     duration = float(t_seg[-1] - t_seg[0])
     if duration <= 0.0:
         return float('nan')
-    return float(np.trapz(values, t_seg) / duration)
+    return float(np.trapezoid(values, t_seg) / duration)
 
 
 def compute_quartic_dominance(t: np.ndarray, Phi: np.ndarray, psi: np.ndarray,
@@ -395,14 +395,14 @@ def compute_full_cycle_diagnostics(t: np.ndarray, Phi: np.ndarray, psi: np.ndarr
         if period <= 0.0:
             continue
         m2 = np.abs(np.array([meff_sq_psi(x, params) for x in Phi[sl]]))
-        v2 = float(np.trapz(0.5 * m2 * psi[sl]**2, ts))
-        v4 = float(np.trapz(0.25 * params.lambda_psi * psi[sl]**4, ts))
-        kinetic = float(np.trapz(psi_dot[sl]**2, ts))
-        rint, pint = float(np.trapz(rho[sl], ts)), float(np.trapz(p[sl], ts))
-        rabs = float(np.trapz(np.abs(rho[sl]), ts))
+        v2 = float(np.trapezoid(0.5 * m2 * psi[sl]**2, ts))
+        v4 = float(np.trapezoid(0.25 * params.lambda_psi * psi[sl]**4, ts))
+        kinetic = float(np.trapezoid(psi_dot[sl]**2, ts))
+        rint, pint = float(np.trapezoid(rho[sl], ts)), float(np.trapezoid(p[sl], ts))
+        rabs = float(np.trapezoid(np.abs(rho[sl]), ts))
         if not np.isfinite(rint) or abs(rint) <= 32*np.finfo(float).eps*rabs:
             continue
-        havg = float(np.trapz(H[sl], ts) / period)
+        havg = float(np.trapezoid(H[sl], ts) / period)
         cycles.append({'t_mid': 0.5*(ts[0]+ts[-1]), 'period': period,
                        'w': pint/rint, 'Q4': v4/v2 if v2 > 0 else float('inf'),
                        'virial': kinetic/(4*v4) if v4 > 0 else float('nan'),
@@ -424,9 +424,9 @@ def compute_time_averaged_w(t: np.ndarray, rho: np.ndarray, p: np.ndarray,
         start, end = int(turning_points[i]), int(turning_points[i + 2])
         if end - start < 3:
             continue
-        rho_int = float(np.trapz(rho[start:end + 1], t[start:end + 1]))
-        p_int = float(np.trapz(p[start:end + 1], t[start:end + 1]))
-        scale = float(np.trapz(np.abs(rho[start:end + 1]), t[start:end + 1]))
+        rho_int = float(np.trapezoid(rho[start:end + 1], t[start:end + 1]))
+        p_int = float(np.trapezoid(p[start:end + 1], t[start:end + 1]))
+        scale = float(np.trapezoid(np.abs(rho[start:end + 1]), t[start:end + 1]))
         if not np.isfinite(rho_int) or abs(rho_int) <= np.finfo(float).eps * scale:
             continue
         w_avg.append(p_int / rho_int)
