@@ -268,7 +268,7 @@ def run_simulation(params: PTUMParameters,
     max_relative_continuity_residual = float(np.max(np.abs(continuity) / continuity_scale))
     meff_sq_arr = np.array([meff_sq_psi(x, params) for x in Phi])
     tachyonic_duration, tachyonic_fraction, threshold_crossings = \
-        _tachyonic_trajectory_diagnostics(t, Phi, params)
+        _tachyonic_trajectory_diagnostics(t_diag, phi_d, params)
     seedless_invariant = (ic.psi == 0.0 and ic.psi_dot == 0.0)
 
     return {
