@@ -370,7 +370,7 @@ The total effective Lagrangian is
 The fuel sector is
 \begin{equation}
 \mathcal{L}_{\rm fuel}
-=\tfrac{1}{2}(\partial_\mu\Phi)^2
+=-\tfrac{1}{2}g^{\mu\nu}\partial_\mu\Phi\partial_\nu\Phi
 -V_{\rm eff}(\Phi),
 \end{equation}
 with
@@ -436,7 +436,7 @@ condition.
 The activation sector is
 \begin{equation}
 \mathcal{L}_{\rm activation}
-=\tfrac{1}{2}(\partial_\mu\psi)^2
+=-\tfrac{1}{2}g^{\mu\nu}\partial_\mu\psi\partial_\nu\psi
 -\frac{m^2}{2}\psi^2\!\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)
 -\frac{\lambda_\psi}{4}\psi^4,
 \label{eq:lact}
@@ -463,14 +463,14 @@ Here, $E_{\rm th}$ is the dimensionful discharge threshold scale (naturally rela
 The dark-matter sector is
 \begin{equation}
 \mathcal{L}_{\rm DM}
-=\tfrac{1}{2}(\partial_\mu\chi)^2
+=-\tfrac{1}{2}g^{\mu\nu}\partial_\mu\chi\partial_\nu\chi
 -\tfrac{1}{2}m_\chi^2\chi^2
 -g_{\rm DM}\chi^2\Phi_{\rm res}^2,
 \end{equation}
 and the dark-energy sector is
 \begin{equation}
 \mathcal{L}_{\rm DE}
-=\tfrac{1}{2}(\partial_\mu\Phi_{\rm res})^2
+=-\tfrac{1}{2}g^{\mu\nu}\partial_\mu\Phi_{\rm res}\partial_\nu\Phi_{\rm res}
 -W(\Phi_{\rm res}),
 \end{equation}
 with
@@ -528,7 +528,7 @@ S = \int d^4x\,\sqrt{-g}\,\mathcal{L}_{\rm PTUM},
 \end{equation}
 with $\sqrt{-g} = a^3(t)$ in FRW.
 For a scalar field \(\phi\) with Lagrangian
-\(\mathcal{L} = \tfrac{1}{2}g^{\mu\nu}\partial_\mu\phi\partial_\nu\phi
+\(\mathcal{L} = -\tfrac{1}{2}g^{\mu\nu}\partial_\mu\phi\partial_\nu\phi
 - V(\phi)\), the Euler--Lagrange equation is
 \begin{equation}
 \frac{1}{\sqrt{-g}}\partial_\mu\left(\sqrt{-g}\,g^{\mu\nu}
@@ -1575,12 +1575,12 @@ interaction generates an energy-momentum transfer between the two
 sectors. The covariant energy-momentum tensors for the dark matter
 and dark energy sectors are
 \begin{align}
-T^{\mu\nu}_{\rm DM} &= \partial^\mu\chi\partial^\nu\chi
-- g^{\mu\nu}\left[\tfrac12(\partial_\rho\chi)^2
-- \tfrac12 m_\chi^2\chi^2 - g_{\rm DM}\chi^2\Phi_{\rm res}^2\right], \\
-T^{\mu\nu}_{\rm DE} &= \partial^\mu\Phi_{\rm res}\partial^\nu\Phi_{\rm res}
-- g^{\mu\nu}\left[\tfrac12(\partial_\rho\Phi_{\rm res})^2
-- W(\Phi_{\rm res})\right].
+T^{\mu\nu}_{\rm DM} &= \nabla^\mu\chi\nabla^\nu\chi
+- g^{\mu\nu}\left[\tfrac12\nabla_\rho\chi\nabla^\rho\chi
++\tfrac12 m_\chi^2\chi^2+g_{\rm DM}\chi^2\Phi_{\rm res}^2\right], \\
+T^{\mu\nu}_{\rm DE} &= \nabla^\mu\Phi_{\rm res}\nabla^\nu\Phi_{\rm res}
+- g^{\mu\nu}\left[\tfrac12\nabla_\rho\Phi_{\rm res}\nabla^\rho\Phi_{\rm res}
++W(\Phi_{\rm res})\right].
 \end{align}
 The interaction term contributes to the divergence of each
 energy-momentum tensor. Computing the covariant divergence yields
@@ -1662,55 +1662,122 @@ event itself.
 \subsubsection{Microscopic interactions for energy transfer}
 \label{sec:microscopic_transfer}
 
-The covariant energy-momentum transfer four-vectors $Q_i^\nu$ arise
-from the microscopic interactions in the PTUM Lagrangian. The total
-Lagrangian is
+We use the metric signature $(-+++)$ and define
+$\nabla_\mu T_i^{\mu\nu}=Q_i^\nu$ and $Q_i=Q_i^0$ in the
+homogeneous FRW background. The complete matter action relevant to
+the transfer calculation is
 \begin{equation}
-\mathcal{L}_{\rm PTUM} = \mathcal{L}_{\rm fuel} + \mathcal{L}_{\rm activation} + \mathcal{L}_{\rm DM} + \mathcal{L}_{\rm DE} + \mathcal{L}_{\rm rh},
+S_{\rm matter}=\int d^4x\sqrt{-g}\,
+\left[
+-\frac12\sum_{A=\Phi,\psi,\chi,\Phi_{\rm res},h}
+\nabla_\mu A\nabla^\mu A
+-V_{\rm total}
++\mathcal L_{D,0}
+-y_\psi\psi\bar f f
+\right],
 \end{equation}
-where the interaction terms are:
+where $h\equiv\phi_{\rm SM}$, $\mathcal L_{D,0}$ is the free Dirac
+Lagrangian including the fermion mass, and
 \begin{align}
-\mathcal{L}_{\rm int}^{\psi\Phi} &= -\frac{1}{2}\alpha m^2 \frac{\Phi^2}{E_{\rm th}^2} \psi^2, \\
-\mathcal{L}_{\rm int}^{\chi\Phi_{\rm res}} &= -g_{\rm DM} \chi^2 \Phi_{\rm res}^2, \\
-\mathcal{L}_{\rm rh} &= -y_\psi \psi \bar{f} f - \frac{1}{2} g_\psi \psi^2 \phi_{\rm SM}^2.
+V_{\rm total}={}&V_{\rm eff}(\Phi)
++\frac12m^2\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi^2
++\frac{\lambda_\psi}{4}\psi^4
++\frac12m_\chi^2\chi^2+W(\Phi_{\rm res})+U(h)
+\nonumber\\
+&+g_{\rm DM}\chi^2\Phi_{\rm res}^2
++\frac12g_\psi\psi^2h^2 .
 \end{align}
+The interaction potential between $\Phi$ and $\psi$ is therefore
+$V_{\Phi\psi}^{\rm int}
+=-\frac12\alpha m^2\Phi^2\psi^2/E_{\rm th}^2$.
+Consequently its Lagrangian contribution is positive:
+\begin{equation}
+\mathcal L_{\Phi\psi}^{\rm int}
+=+\frac12\alpha m^2\frac{\Phi^2}{E_{\rm th}^2}\psi^2 .
+\end{equation}
+This sign is required by the effective mass
+$m_{\rm eff}^2=m^2(1-\alpha\Phi^2/E_{\rm th}^2)$ and by the
+$\Phi$ and $\psi$ equations of motion. All scalar kinetic terms in
+this action have the canonical sign for $(-+++)$.
 
-The energy-momentum tensor for each sector is $T_i^{\mu\nu} = \frac{2}{\sqrt{-g}}\frac{\delta(\sqrt{-g}\mathcal{L}_i)}{\delta g_{\mu\nu}}$. The covariant divergence gives the transfer vectors. Each interaction term in the total Lagrangian contributes once to the divergence of the total tensor; assigning each contribution with opposite signs to the two exchanging sectors yields the closed system:
+For a canonical scalar sector with potential $V_i$, we use
+\begin{equation}
+T_i^{\mu\nu}
+=\nabla^\mu\phi_i\nabla^\nu\phi_i
+-g^{\mu\nu}\left[\frac12\nabla_\rho\phi_i\nabla^\rho\phi_i+V_i\right].
+\end{equation}
+Interaction potentials are assigned exactly once to the sector
+specified below. This is a bookkeeping convention: individual
+$Q_i^\nu$ depend on that allocation, whereas the total tensor and
+its conservation do not.
+
+We assign $V_{\Phi\psi}^{\rm int}$ and
+$V_{\psi h}^{\rm int}=\frac12g_\psi\psi^2h^2$ to the $\psi$ tensor,
+and $V_{\chi\Phi_{\rm res}}^{\rm int}
+=g_{\rm DM}\chi^2\Phi_{\rm res}^2$ to the DM tensor.
+The Yukawa interaction is included in the full Dirac sector.
+With these definitions, the transfer four-vectors are
 \begin{align}
-Q_\psi^\nu &= +\alpha m^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi
- + y_\psi \psi \bar{f}\gamma^\nu f
- + g_\psi \psi^2 \phi_{\rm SM} \partial^\nu\phi_{\rm SM}, \\
-Q_\Phi^\nu &= -\alpha m^2 \frac{\Phi}{E_{\rm th}^2} \psi^2 \partial^\nu\Phi, \\
-Q_{\rm DM}^\nu &= -2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
-Q_{\rm DE}^\nu &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}, \\
-Q_{\rm SM}^\nu &= -y_\psi \psi \bar{f}\gamma^\nu f - g_\psi \psi^2 \phi_{\rm SM} \partial^\nu\phi_{\rm SM}.
+Q_\Phi^\nu
+&=-\alpha m^2\frac{\Phi}{E_{\rm th}^2}
+\psi^2\nabla^\nu\Phi,\\
+Q_\psi^\nu
+&=+\alpha m^2\frac{\Phi}{E_{\rm th}^2}
+\psi^2\nabla^\nu\Phi
+-g_\psi\psi^2h\nabla^\nu h
++y_\psi\bar f f\nabla^\nu\psi,\\
+Q_{\rm DM}^\nu
+&=-2g_{\rm DM}\chi^2\Phi_{\rm res}
+\nabla^\nu\Phi_{\rm res},\\
+Q_{\rm DE}^\nu
+&=+2g_{\rm DM}\chi^2\Phi_{\rm res}
+\nabla^\nu\Phi_{\rm res},\\
+Q_h^\nu
+&=+g_\psi\psi^2h\nabla^\nu h,\\
+Q_f^\nu
+&=-y_\psi\bar f f\nabla^\nu\psi .
 \end{align}
-Direct summation now gives $\sum_i Q_i^\nu = 0$ identically, as required
-by $\nabla_\mu T^{\mu\nu}_{\rm total}=0$ (GÖSTERİLDİ). The terms
-$\alpha m^2(\Phi^2/E_{\rm th}^2)\psi\partial^\nu\psi$ and
-$g_{\rm DM}\chi\Phi_{\rm res}^2\partial^\nu\chi$ that appeared in an
-earlier draft arose from double-counting the symmetric interaction
-variation; they cancel once each interaction is assigned exactly once
-to each of the two exchanging sectors. The background energy-partition
-rates below follow from these closed expressions.
-The energy partition during the discharge is determined by the time evolution of the fields. During the tachyonic growth phase ($\Phi \approx \Phi_c$, $\psi$ growing exponentially), the dominant transfer is from the fuel field to the proxy field:
+Here $T_f^{\mu\nu}$ is the on-shell Hilbert tensor obtained from
+the complete Dirac action, including the Yukawa term. It must not
+be combined with a second, separately added Yukawa interaction
+stress tensor.
+
+The expressions above obey the identity
 \begin{equation}
-Q_\psi \approx -Q_\Phi \approx \alpha m^2 \frac{\Phi_c}{E_{\rm th}^2} \psi^2 \dot\Phi
-\qquad\text{(GÖSTERİLDİ from the closed } Q_i^\nu \text{ above).}
+\boxed{\sum_{i=\Phi,\psi,{\rm DM},{\rm DE},h,f}Q_i^\nu=0}
 \end{equation}
-(The additional term \(\alpha m^2(\Phi_c^2/E_{\rm th}^2)\psi\dot\psi\)
-that appeared in an earlier draft is not part of \(Q_\Phi^\nu\); it
-belongs to the proxy sector's own energy balance and is already
-contained in \(\dot\rho_\psi+3H(\rho_\psi+p_\psi)\) on the left-hand
-side of the sector conservation equation.)
-During the quartic oscillation phase, the proxy field decays to SM radiation via $\mathcal{L}_{\rm rh}$, with
-\begin{equation}
-Q_{\rm SM} \approx -Q_\psi \approx \Gamma_\psi \rho_\psi.
-\end{equation}
-The dark matter production occurs via parametric resonance when $\Phi_{\rm res}(t)$ oscillates, with the energy transfer rate
-\begin{equation}
-Q_{\rm DM} \approx -Q_{\rm DE} \approx 2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res}.
-\end{equation}
+and hence $\nabla_\mu T_{\rm total}^{\mu\nu}=0$ on the coupled
+field equations. In homogeneous FRW, $\nabla^0\phi=-\dot\phi$,
+so the corresponding energy-transfer rates are
+\begin{align}
+Q_\Phi&=+\alpha m^2\frac{\Phi}{E_{\rm th}^2}\psi^2\dot\Phi,\\
+Q_\psi&=-\alpha m^2\frac{\Phi}{E_{\rm th}^2}\psi^2\dot\Phi
++g_\psi\psi^2h\dot h-y_\psi\bar f f\dot\psi,\\
+Q_{\rm DM}&=+2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res},\\
+Q_{\rm DE}&=-2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res},\\
+Q_h&=-g_\psi\psi^2h\dot h,\qquad
+Q_f=+y_\psi\bar f f\dot\psi .
+\end{align}
+Thus $\sum_i Q_i=0$ exactly with the stated convention.
+
+The DM--DE covariant transfer pair is retained, but its FRW signs
+are fixed by $Q_i=Q_i^0$. A signed oscillation-period average of
+$\dot\Phi_{\rm res}$ alone is zero for a strictly periodic field;
+therefore a nonzero averaged transfer must be calculated from the
+correlated quantity
+$\langle\chi^2\Phi_{\rm res}\dot\Phi_{\rm res}\rangle$ along the
+actual coupled solution. Replacing it by
+$\langle\dot\Phi_{\rm res}\rangle\sim m_{\rm res}\Phi_{\rm res}$
+is only an amplitude estimate, not a literal signed time average.
+
+During the tachyonic growth phase, the fuel-to-proxy transfer
+is the $\Phi$--$\psi$ pair above. In the quartic oscillation phase,
+the approximate reheating relation
+$Q_{\rm SM}\simeq-Q_\psi\simeq\Gamma_\psi\rho_\psi$
+is a phenomenological condensate-averaged closure, not a result
+of the classical covariant transfer identity alone. Its use requires
+the decay, backreaction, and thermalization calculation described
+below.
 
 \noindent\textbf{Complete reheating derivation.}
 The reheating sector $\mathcal{L}_{\rm rh} = -y_\psi \psi \bar{f} f - \frac{1}{2} g_\psi \psi^2 \phi_{\rm SM}^2$ governs the decay of the proxy field $\psi$ into Standard Model particles. During the quartic oscillation phase, $\psi$ oscillates coherently with amplitude $\mathcal{A} \sim \psi_0$ and effective mass $m_\psi \sim \sqrt{\lambda_\psi}\psi_0$. The perturbative decay width into fermions is
