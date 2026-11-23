@@ -296,8 +296,17 @@ def run_simulation(params: PTUMParameters,
 
 
 def _turning_point_intervals(psi_dot: np.ndarray) -> np.ndarray:
-    """Indices of successive turning points (zeros of ψ̇), defining half-cycles."""
-    return np.where(np.diff(np.sign(psi_dot)))[0]
+    """Indices bracketing successive ψ̇ sign changes (half-cycle boundaries)."""
+    values = np.asarray(psi_dot, dtype=float)
+    sign = np.sign(values)
+    exact_zeros = np.flatnonzero(sign == 0.0)
+    crossings = np.flatnonzero(sign[:-1] * sign[1:] < 0.0)
+    # Include exact sampled zeros, but collapse adjacent zero runs to one midpoint.
+    zero_groups = []
+    if exact_zeros.size:
+        groups = np.split(exact_zeros, np.where(np.diff(exact_zeros) > 1)[0] + 1)
+        zero_groups = [int(group[len(group) // 2]) for group in groups if len(group)]
+    return np.unique(np.concatenate([crossings, np.asarray(zero_groups, dtype=int)])).astype(int)
 
 
 def _time_average(t_seg: np.ndarray, values: np.ndarray) -> float:
@@ -342,17 +351,20 @@ def compute_time_averaged_w(t: np.ndarray, rho: np.ndarray, p: np.ndarray,
                             psi_dot: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     """Compute cycle-averaged equation of state as integral(p dt)/integral(rho dt)."""
     turning_points = _turning_point_intervals(psi_dot)
-    if len(turning_points) < 2:
+    if len(turning_points) < 3:
         return np.array([]), np.array([])
 
     w_avg, t_avg = [], []
-    for start, end in zip(turning_points[:-1], turning_points[1:]):
-        if end - start < 2:
+    # A full oscillation runs from one turning point to the next same-side
+    # turning point, i.e. across two consecutive half-cycles.
+    for i in range(0, len(turning_points) - 2, 2):
+        start, end = int(turning_points[i]), int(turning_points[i + 2])
+        if end - start < 3:
             continue
         rho_int = float(np.trapz(rho[start:end + 1], t[start:end + 1]))
         p_int = float(np.trapz(p[start:end + 1], t[start:end + 1]))
         scale = float(np.trapz(np.abs(rho[start:end + 1]), t[start:end + 1]))
-        if not np.isfinite(rho_int) or abs(rho_int) <= np.finfo(float).eps * max(scale, 1.0):
+        if not np.isfinite(rho_int) or abs(rho_int) <= np.finfo(float).eps * scale:
             continue
         w_avg.append(p_int / rho_int)
         t_avg.append(0.5 * (t[start] + t[end]))
@@ -504,27 +516,24 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     Q = result['Q']
     virial = result['virial_ratio']
     
-    # Reduce each diagnostic over the same turning-point intervals.
-    # This avoids treating many samples from one final half-cycle as
-    # independent evidence for a sustained regime.
+    # Reduce Q and the virial diagnostic over full oscillations, matching
+    # the full-period <p>/<rho> windows returned by compute_time_averaged_w.
     turning_points = _turning_point_intervals(result['psi_dot'])
     q_cycle, virial_cycle = [], []
-    for start, end in zip(turning_points[:-1], turning_points[1:]):
-        if end - start < 2:
+    for i in range(0, len(turning_points) - 2, 2):
+        start, end = int(turning_points[i]), int(turning_points[i + 2])
+        if end - start < 3:
             continue
-        q_seg = Q[start:end]
-        v_seg = virial[start:end]
-        # +inf is a valid limiting value when the quadratic contribution
-        # vanishes; only NaNs denote an undefined diagnostic.
+        q_seg = Q[start:end + 1]
+        v_seg = virial[start:end + 1]
         q_seg = q_seg[~np.isnan(q_seg)]
         v_seg = v_seg[np.isfinite(v_seg)]
         if len(q_seg) and len(v_seg):
-            q_cycle.append(float(np.mean(q_seg)))
+            q_cycle.append(float('inf') if np.isinf(q_seg).any() else float(np.mean(q_seg)))
             virial_cycle.append(float(np.mean(v_seg)))
 
-    # Require several resolved half-cycles; a single transient crossing is
-    # not evidence for a sustained oscillatory equation of state.
-    if len(w_avg) >= 6 and len(q_cycle) >= 6 and len(virial_cycle) >= 6:
+    # Require at least three resolved full periods and test the final three.
+    if len(w_avg) >= 3 and len(q_cycle) >= 3 and len(virial_cycle) >= 3:
         w_last = np.asarray(w_avg[-3:], dtype=float)
         q_last = np.asarray(q_cycle[-3:], dtype=float)
         virial_last = np.asarray(virial_cycle[-3:], dtype=float)
@@ -537,8 +546,8 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
         Q_final = float(np.mean(q_cycle[-3:])) if q_cycle else 0.0
         virial_final = float(np.mean(virial_cycle[-3:])) if virial_cycle else np.nan
 
-    # Q is the quartic-to-quadratic potential-energy ratio. Require at least
-    # six half-cycles and all final-three averages near the quartic limits.
+    # Q is the quartic-to-quadratic potential-energy ratio. Require three
+    # complete final periods, with all diagnostics near their quartic limits.
     quartic_achieved = (len(w_last) == 3 and
                         np.all(np.abs(w_last - 1/3) < 0.05) and
                         np.all(np.asarray(q_cycle[-3:]) > 5) and
