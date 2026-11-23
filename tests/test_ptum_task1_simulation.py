@@ -164,3 +164,12 @@ def test_fuel_potential_uses_planck_normalized_dimensionless_exponent():
     ic = sim.create_initial_conditions(p, phi_offset=0.01*p.Phi_c)
     assert np.isfinite(ic.Phi_dot)
     assert ic.Phi_dot < 0.0
+
+
+def test_fourth_order_dense_derivative_resolves_oscillatory_signal():
+    t = np.linspace(0.0, 20.0, 4001)
+    values = np.sin(3.0*t)
+    derivative = sim._uniform_time_derivative(values, t)
+    interior = slice(3, -3)
+    error = np.max(np.abs(derivative[interior] - 3.0*np.cos(3.0*t[interior])))
+    assert error < 2e-7
