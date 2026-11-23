@@ -59,7 +59,7 @@ def test_fuel_velocity_can_be_supplied_without_slow_roll_guess():
     assert ic.Phi_dot == chosen_velocity
 
 
-def test_exact_zero_proxy_solution_is_classified_separately():
+def test_exact_zero_proxy_solution_is_classified_and_json_exported(tmp_path):
     p = sim.PTUMParameters(V0=1e56)
     ic = sim.InitialConditions(
         Phi=0.5 * p.Phi_c, Phi_dot=0.0, psi=0.0, psi_dot=0.0
@@ -71,7 +71,18 @@ def test_exact_zero_proxy_solution_is_classified_separately():
     assert result["success"]
     assert result["seedless_invariant"]
     assert np.max(np.abs(result["psi"])) == 0.0
-    assert sim.classify_outcome(result, p)["regime"] == "unseeded_invariant"
+    result["classification"] = sim.classify_outcome(result, p)
+    result["ic_params"] = {
+        "psi_init": 0.0, "psi_dot_init": 0.0, "phi_offset": -0.5*p.Phi_c
+    }
+    assert result["classification"]["regime"] == "unseeded_invariant"
+    output = tmp_path / "zero_seed.json"
+    sim.save_results([result], str(output))
+    import json
+    saved = json.loads(output.read_text(encoding="utf-8"))
+    assert saved[0]["initially_tachyonic"] is False
+    assert saved[0]["finally_tachyonic"] is False
+    assert "max_relative_split_continuity_residual" in saved[0]
 
 
 def test_full_cycle_integral_diagnostics_recover_quartic_virial_limit():
@@ -173,3 +184,47 @@ def test_fourth_order_dense_derivative_resolves_oscillatory_signal():
     interior = slice(3, -3)
     error = np.max(np.abs(derivative[interior] - 3.0*np.cos(3.0*t[interior])))
     assert error < 2e-7
+
+
+def test_underdamped_initializer_uses_dimensionless_slow_roll_and_override():
+    p = sim.PTUMParameters()
+    chosen_velocity = 1.234e27
+    ic = sim.create_initial_conditions_underdamped(
+        p, psi_init=0.01*p.psi_0, phi_ratio=1.01,
+        phi_dot_init=chosen_velocity
+    )
+    assert ic.Phi_dot == chosen_velocity
+
+    default_ic = sim.create_initial_conditions_underdamped(
+        p, psi_init=0.01*p.psi_0, phi_ratio=1.01
+    )
+    v = sim.veff_phi(default_ic.Phi, p)
+    dv = sim.dveff_dphi(default_ic.Phi, p)
+    eps = 0.5*(sim.M_PL*dv/v)**2
+    expected = -np.sqrt(2.0*eps)*p.H_star*sim.M_PL
+    assert np.isclose(default_ic.Phi_dot, expected, rtol=2e-14)
+    assert default_ic.Phi_dot < 0.0
+
+
+def test_moving_minimum_split_is_exact_in_dormant_phase():
+    p = sim.PTUMParameters()
+    phi = 0.5 * p.Phi_c
+    phi_dot = -0.2e27
+    psi = 0.7 * p.psi_0
+    psi_dot = 0.3 * p.mu * p.psi_0
+    m2 = sim.meff_sq_psi(phi, p)
+    assert m2 > 0.0
+
+    expected_excitation_potential = 0.5*m2*psi**2 + 0.25*p.lambda_psi*psi**4
+    actual = sim.shifted_potential_psi(phi, psi, p)
+    assert np.isclose(actual, expected_excitation_potential, rtol=2e-14)
+
+    rho_phi_split = 0.5*phi_dot**2 + sim.veff_phi(phi, p)
+    p_phi_split = 0.5*phi_dot**2 - sim.veff_phi(phi, p)
+    rho_psi_exc = 0.5*psi_dot**2 + actual
+    p_psi_exc = 0.5*psi_dot**2 - actual
+    rho_total = sim.rho_phi(phi, phi_dot, psi, p) + sim.rho_psi(phi, psi, psi_dot, p)
+    p_total = 0.5*phi_dot**2 - sim.veff_phi(phi, p) + sim.pressure_psi(phi, psi, psi_dot, p)
+    assert np.isclose(rho_phi_split + rho_psi_exc, rho_total, rtol=2e-14)
+    assert np.isclose(p_phi_split + p_psi_exc, p_total, rtol=2e-14)
+

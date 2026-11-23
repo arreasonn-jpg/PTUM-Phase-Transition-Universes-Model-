@@ -154,10 +154,16 @@ def dminimum_value_psi_dphi(Phi: float, params: PTUMParameters) -> float:
 
 
 def shifted_potential_psi(Phi: float, psi: float, params: PTUMParameters) -> float:
-    """Instantaneous excitation potential above the moving minimum."""
+    """Exact activation potential measured above its instantaneous minimum."""
     m_eff_sq = meff_sq_psi(Phi, params)
-    mu_sq = max(-m_eff_sq, 0.0)
-    psi0_sq = mu_sq / params.lambda_psi
+    quartic = 0.25 * params.lambda_psi * psi**4
+    if m_eff_sq >= 0.0:
+        # In the dormant phase the minimum is at psi=0, so the positive
+        # quadratic mass term remains part of the excitation potential.
+        return 0.5 * m_eff_sq * psi**2 + quartic
+    # In the tachyonic phase subtract V_min=-m_eff^4/(4 lambda):
+    # V_act - V_min = lambda/4 * (psi^2 - psi_0^2)^2.
+    psi0_sq = -m_eff_sq / params.lambda_psi
     return 0.25 * params.lambda_psi * (psi**2 - psi0_sq)**2
 
 
@@ -280,7 +286,9 @@ def run_simulation(params: PTUMParameters,
     # finite-difference derivative of the interpolant measures solver
     # consistency; the action-derived energy derivatives test the exact
     # total and moving-minimum sector identities separately.
-    n_diag = max(len(t), 120000)
+    # Oversample the solver output grid by at least 3x for a converged
+    # fourth-order dense-output derivative audit of the fastest psi modes.
+    n_diag = max(len(t) * 3, 120000)
     t_diag = np.linspace(float(t[0]), float(t[-1]), n_diag)
     y_diag = sol.sol(t_diag)
     phi_d, phi_dot_d, psi_d, psi_dot_d = y_diag
@@ -634,12 +642,13 @@ def create_initial_conditions_underdamped(params: PTUMParameters,
     """
     Phi = phi_ratio * params.Phi_c
     
-    # Slow-roll Φ̇
+    # Slow-roll epsilon is dimensionless only after multiplication by M_Pl^2.
     V = veff_phi(Phi, params)
     V_prime = dveff_dphi(Phi, params)
-    epsilon_V = 0.5 * (V_prime / V)**2 if V > 0 else 0.01
+    epsilon_V = 0.5 * (M_PL * V_prime / V)**2 if V > 0 else 0.01
     H = params.H_star
-    Phi_dot = -np.sqrt(2 * epsilon_V) * H * M_PL
+    slow_roll_phi_dot = -np.sqrt(2 * epsilon_V) * H * M_PL
+    Phi_dot = slow_roll_phi_dot if phi_dot_init is None else float(phi_dot_init)
     
     return InitialConditions(
         Phi=Phi,
@@ -931,12 +940,15 @@ if __name__ == "__main__":
         E_th=1e16
     )
     
-    # Define parameter ranges for scan (smaller for quick test)
+    # Full reproducible benchmark scan; these settings match the CI workflow.
     psi_init_range = [0.0, 0.01*params.psi_0, 0.1*params.psi_0]
     psi_dot_init_range = [0.0, 0.1*params.mu*params.psi_0, params.mu*params.psi_0]
     phi_offset_range = [0.01*params.Phi_c, 0.1*params.Phi_c]
     
-    results = run_parameter_scan(params, psi_init_range, psi_dot_init_range, phi_offset_range, t_max=20.0, n_points=200)
+    results = run_parameter_scan(
+        params, psi_init_range, psi_dot_init_range, phi_offset_range,
+        t_max=4000.0, n_points=40000
+    )
     
     # Save results
     save_results(results, "task1_parameter_scan_results.json")

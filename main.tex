@@ -469,9 +469,11 @@ force $-V_{\rm eff}'$ points toward $\Phi=0$. With Hubble friction and no
 additional driving source, slow-roll motion therefore carries a field
 initially at $|\Phi|>\Phi_c$ toward the dormant region; it does not naturally
 drive a field from $|\Phi|<\Phi_c$ outward into the tachyonic region. At the
-very large values $\lambda\Phi^2/M_{\rm Pl}^2\gg1$ relevant to the nominal threshold,
-the exponential force is also extremely suppressed, so the field can be
-nearly frozen. A dormant-to-tachyonic crossing consequently requires an
+nominal threshold $\Phi_c=M_{\rm Pl}/\sqrt{\lambda}$, the exponent
+is exactly unity and the exponential factor is $e^{-1}$. It is therefore
+not asymptotically suppressed at the threshold; the slow-roll velocity
+follows from the dimensionally normalized potential slope and the
+Friedmann background. A dormant-to-tachyonic crossing consequently requires an
 explicitly specified uphill initial velocity, an additional force/source,
 or a modified fuel potential. Such an input must be included in the
 initial-value problem and its energy budget; it cannot be inferred from the
@@ -835,20 +837,29 @@ V_{\rm act}(\psi)=\frac{1}{2}m_{\rm eff}^2\psi^2
 m_{\rm eff}^2<0,\quad \lambda_\psi>0.
 \label{eq:V_double_well_corrected}
 \end{equation}
-Writing $\mu^2\equiv |m_{\rm eff}^2|$, its stationary points are
-$\psi=0$ and $\psi=\pm\psi_0$, where
+For $m_{\rm eff}^2<0$, writing $\mu^2\equiv -m_{\rm eff}^2$,
+the stationary points are $\psi=0$ and $\psi=\pm\psi_0$, where
 \begin{equation}
 \psi_0^2=\frac{\mu^2}{\lambda_\psi},\qquad
 V_{\rm min}=-\frac{\mu^4}{4\lambda_\psi}.
 \end{equation}
-The origin is a local maximum and the two non-zero stationary points are
-minima. At fixed $\Phi$, it is useful to define the instantaneous
-minimum-subtracted diagnostic potential
+For $m_{\rm eff}^2\geq0$, the unique minimum is at $\psi=0$ and
+$V_{\rm min}=0$. At fixed $\Phi$, define the instantaneous
+minimum-subtracted diagnostic potential by the piecewise expression
 \begin{equation}
 U(\psi;\Phi)\equiv V_{\rm act}(\psi;\Phi)-V_{\rm min}(\Phi)
-=\frac{\lambda_\psi}{4}(\psi^2-\psi_0^2(\Phi))^2\geq0.
+=
+\begin{cases}
+\displaystyle\frac{\lambda_\psi}{4}
+(\psi^2-\psi_0^2(\Phi))^2,&m_{\rm eff}^2(\Phi)<0,\\[6pt]
+\displaystyle\frac12m_{\rm eff}^2(\Phi)\psi^2
++\frac{\lambda_\psi}{4}\psi^4,&m_{\rm eff}^2(\Phi)\geq0,
+\end{cases}
 \label{eq:U_double_well_corrected}
 \end{equation}
+where $\psi_0^2=-m_{\rm eff}^2/\lambda_\psi$ is used only on the
+tachyonic branch. This retains the positive quadratic excitation energy
+in the dormant phase.
 Because $V_{\rm min}$ depends on the evolving field $\Phi$, this is not a
 constant shift of the coupled action. It is an instantaneous diagnostic
 only; the unshifted $V_{\rm act}$ must remain in the field equations,
@@ -1130,14 +1141,25 @@ integration; no such run exists in the public script.
 \item \emph{Sustained energy injection:} rescattering of the rolling
 $\Phi$ field into $\psi$ (the $\alpha m^2\Phi^2\psi^2/E_{\rm th}^2$
 interaction) could maintain oscillations after barrier crossing even
-when the bare damping is large. The earlier 18-point scan in
-\texttt{ptum\_task1\_simulation.py} is not accepted as decisive
-evidence: source review found duplicated interaction-energy accounting
-and inconsistent quartic-virial diagnostics in that implementation.
-Those diagnostics have now been corrected in the development branch,
-but the scan must be rerun before any conclusion about the 18 points is
-retained. The route is therefore \textbf{unresolved}, not numerically
-excluded.
+when the bare damping is large. The corrected 18-point homogeneous scan has now been rerun with
+single-counted interaction energy, the exact moving-minimum split,
+complete-period integral averages, and an oversampled dense-output
+derivative audit. All 18 integrations succeeded. Two exactly
+zero-seed trajectories remained on the invariant $\psi=0$ solution;
+the 16 seeded trajectories crossed from tachyonic to dormant and
+were classified as quadratic oscillatory regimes. Across those 16
+trajectories, the final-three-period averages satisfy
+$-0.0117\lesssim w_{\psi,\rm exc}\lesssim0.0045$ and
+$1.5\times10^{-9}\lesssim Q_4\lesssim4.7\times10^{-5}$;
+the quartic virial ratios are far above unity, not near it.
+No trajectory met the joint quartic criteria
+($w\simeq1/3$, $Q_4>5$, virial ratio near one, and $\omega/H>10$).
+The maximum relative total-continuity, moving-minimum split-continuity,
+and dense state-derivative residuals were respectively
+$6.3\times10^{-17}$, $2.53\times10^{-14}$, and $2.67\times10^{-4}$.
+This rules out a sustained quartic regime only for the stated finite
+18-point grid and the deliberately underdamped diagnostic parameter
+set; it is not a global exclusion over parameter space.
 \item \emph{Reframed benchmark:} accept $w_\psi=0$ (overdamped, field
 pinned at the barrier top) at the CMB-normalized benchmark and treat
 the $w=1/3$ proxy-fluid as a separate, lower-$V_0$ phenomenological
@@ -1147,9 +1169,14 @@ $\Delta N_{\rm fluid}$ constraint is a constraint on the
 \emph{phenomenological} fluid component, not on a first-principles
 derivation at the benchmark point.
 \end{enumerate}
-Resolving the tension definitively (options (a) or (b)) requires a
-full numerical background solution plus nonlinear lattice evolution
-and is left for future work.
+The homogeneous background scan is now complete for the stated
+18-point underdamped diagnostic grid. The remaining first-principles
+test is a nonlinear spatial-lattice evolution with a specified
+initial fluctuation spectrum, lattice-volume and spacing convergence,
+and renormalized energy accounting. Until that calculation is done,
+the radiation-like proxy-fluid remains a conditional phenomenological
+sector rather than a demonstrated outcome of the homogeneous
+$\Phi$--$\psi$ dynamics.
 
 
 \subsection{Operational stability and observable closure of the discharge sector}
@@ -1488,10 +1515,12 @@ and the standard approximate observables
 \begin{equation}
 n_s\simeq1-6\epsilon_V+2\eta_V,\qquad r\simeq16\epsilon_V.
 \end{equation}
-A scan over \(\lambda\) shows that for \(\lambda\gtrsim0.02\) the
-PTUM creation sector naturally predicts \(n_s\sim0.957\)--\(0.961\)
-and \(r\ll0.036\), compatible with current
-constraints~\cite{BICEPKeck2021,Planck2018params}.
+For the corrected tree-level potential at $\lambda=0.02$,
+potential slow-roll integration gives approximately
+$n_s\simeq0.955$--$0.962$ and $r\simeq0.018$--$0.026$ for
+$N_*=50$--$60$. These are analytic slow-roll estimates; a full
+likelihood analysis is needed before treating them as a data fit
+\cite{BICEPKeck2021,Planck2018params}.
 
 \subsection{Non-Gaussianity}
 
