@@ -1,114 +1,56 @@
-# PTUM Manuscript Revision - Final Summary
+# PTUM Work Package Summary
 
-**Date**: Current session  
-**Status**: All 11 referee report tasks complete, PDF compiles (40 pages)
+**Updated:** 2026-11-24  
+**Canonical source:** `main` at `1136c4e589be44f6dbe201c59d0d6decb1ae0141`
 
----
+## Completed in the current homogeneous Phi-Psi work package
 
-## Referee Report Tasks Completed (11/11)
+1. Dimensionally consistent Planck-normalized fuel potential and derivative.
+2. Coupled homogeneous Phi-Psi background equations with the declared field-dependent activation mass.
+3. Unshifted Hilbert/Friedmann energy source, with the interaction counted exactly once.
+4. Exact moving-minimum split between excitation energy and the minimum contribution.
+5. Sector transfer bookkeeping including the derivative of the moving minimum.
+6. Full-cycle equation-of-state, quartic-dominance, virial, and adiabaticity diagnostics.
+7. Threshold crossing direction/duration and exact-zero-seed invariant classification.
+8. Dense-output state-derivative and total/split continuity diagnostics.
+9. Regression coverage for the key mathematical identities and numerical edge cases.
+10. Automated 18-point scan in GitHub Actions.
 
-### P0 - Critical (4/4)
-1. ✅ **tachyonic_quartic_energy** - Fixed tachyonic-to-quartic transition energy definition (Sec 3.4/3.5.6)
-2. ✅ **sound_speed_contradiction** - Resolved c_eff² contradiction between Sec 3.5.6 and 6.1.3
-3. ✅ **energy_transfer_closure** - Closed energy-momentum transfer system (Sec 3.5.3)
-4. ✅ **tachyonic_quartic_oscillation** - Clarified oscillation regime: ψ ~ ψ₀ vs |ψ| ≫ ψ₀
+## Verified result
 
-### P1 - Major (4/4)
-5. ✅ **dm_relic_vs_class** - Separated DM relic production from CLASS evolution (Sec 11.1.1)
-6. ✅ **eft_hierarchy_fix** - Fixed EFT energy hierarchy numerical inconsistency (Sec 8.4)
-7. ✅ **gauge_rest_frame_clarification** - Clarified gauge/rest-frame distinction for sound speed
-8. ✅ **lattice_outputs** - Provided concrete lattice simulation outputs (Appendix B)
-9. ✅ **reheating_derivation** - Completed reheating sector derivation (Sec 7)
+GitHub Actions run [45257091704](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45257091704) passed on 2026-11-23:
+- module compilation passed;
+- 11 mathematical regression tests passed;
+- all 18 scan integrations succeeded;
+- scan artifact upload succeeded.
 
-### P2 - Minor (2/2)
-10. ✅ **cross_references** - Fixed remaining cross-references and [?] placeholders
-11. ✅ **figure7_regeneration** - Regenerated Figure 7 with correct c=0.3854
+The merged PR #30 reports:
+- 2 zero-seed cases remain exactly on `psi = 0`;
+- 16 cases become quadratic after leaving the tachyonic phase;
+- no case meets the joint quartic-fluid classifier;
+- maximum relative total continuity residual = 6.26e-17;
+- maximum relative moving-minimum split residual = 2.53e-14;
+- maximum relative dense state-derivative residual = 2.67e-4.
 
----
+## Central physical result
 
-## Critical Numerical Finding (Task 1)
+For the implemented convention `m_eff^2 = m_psi^2(1 - alpha Phi^2/E_th^2)`, tachyonic activation occurs at `|Phi| > Phi_c`. The current downhill homogeneous fuel trajectory exits that region rather than entering it. The present calculation therefore does not establish the claimed post-inflationary tachyonic trigger. It also does not produce a sustained quartic-dominated phase.
 
-**The tachyonic-to-quartic transition is NOT achieved with the paper's benchmark parameters.**
+This is a substantive negative result. It must remain visible in the manuscript and project claims; it must not be hidden by relabeling the scan or by changing the mass sign without deriving that change from the action.
 
-| Parameter | Value | Result |
-|-----------|-------|--------|
-| V₀ | 10⁶⁴ GeV⁴ | Overdamped (3H/2μ ≈ 25) |
-| H* | 10¹³ GeV | No oscillations |
-| ψ(t_c) = 0, ψ̇(t_c) = 0 | Field at top of barrier | w = 0, never reaches quartic regime |
+## Remaining major scientific work
 
-**Quartic regime requires:**
-- V₀ ≲ 10⁵⁸ GeV⁴ (H* ≲ 10¹⁰ GeV) — 1000× smaller than benchmark
-- Sufficient initial kinetic energy in ψ
-- Continuing energy input from Φ rolling or rescattering
+1. Derive a physically consistent cosmological trajectory that enters the tachyonic region at the intended epoch, or revise the mechanism/claim.
+2. Recompute the homogeneous dynamics and parameter scan on that corrected physical history, including solver/tolerance/time-grid convergence.
+3. Develop an inhomogeneous quantum-seeded waterfall with controlled UV/IR initialization, backreaction, rescattering, energy accounting, and lattice/volume convergence.
+4. Derive or explicitly retain as phenomenological the radiation-like proxy-fluid closure.
+5. Couple resonance to Boltzmann evolution and compute relic abundance rather than treating the target abundance as a result.
+6. Compute reheating, thermalization, and entropy history self-consistently.
+7. Release the complete observational pipeline (CLASS patch, production Cobaya configurations, data/likelihood versions, chains, and checksums) if those results remain part of the paper.
+8. Perform a fresh LaTeX build from the current manuscript source and archive the exact build log/PDF.
 
----
+## Final disposition
 
-## Manuscript Updates
+The **homogeneous numerical work package is complete and its declared CI gates pass**. The broader PTUM scientific program is **not complete and is not 10/10**. The open items above require new physical derivations and simulations; they cannot honestly be closed by documentation edits or by the successful 18-point background scan.
 
-### 5 Critical Caveats Added:
-1. **Abstract** - Explicit statement that quartic regime not achieved with benchmark parameters
-2. **Introduction (Sec 1)** - Caveat on proxy-fluid closure conditional on unverified dynamics
-3. **Scope & Claim Boundaries (Sec 1)** - Detailed caveat on quartic-fluid closure
-4. **Sec 3.5.6 (Validity conditions)** - Critical numerical finding paragraph
-5. **Sec 6.1.2 (Operational stability)** - Overdamped finding with parameters
-
-### Key Technical Fixes:
-- **Energy reference**: V_min = -λ_ψψ₀⁴/4, shifted potential Ṽ_act(ψ) = λ_ψ/4(ψ² - ψ₀²)² ≥ 0
-- **Sound speed**: c_a² = 1/3 (adiabatic, rest-frame) vs c_eff²(k,a) → 1/3 for observable modes
-- **Energy-momentum**: ∑Q_i^ν = 0 identically from L_rh = -y_ψψf̄f - ½g_ψψ²φ_SM²
-- **EFT hierarchy**: Λ_EFT ~ V₀¹ᐟ⁴ ~ 10¹⁵-10¹⁶ GeV (not 10¹³ GeV), H_*/Λ_EFT ~ 10⁻³-10⁻⁴
-- **DM relic**: Ω_χh² ~ 0.12 is parametric resonance target, not CLASS output
-- **Lattice**: Appendix B with 256³ grid, L=10/H_*, adaptive RK4, quantum fluctuation ICs
-
----
-
-## Files Modified
-
-| File | Changes |
-|------|---------|
-| **main.tex** | All 11 referee tasks + 5 critical caveats |
-| **PTUM_CLAIM_BOUNDARY.md** | Updated with Task 1 numerical findings |
-| **PTUM_THEORETICAL_INVENTORY_REPORT.md** | Updated with Gap 1 resolution |
-| **TASK1_FINAL_FINDINGS.md** | Complete numerical findings document |
-
----
-
-## Files Created (Session Artifacts)
-
-| File | Purpose |
-|------|---------|
-| **ptum_task1_simulation.py** | Numerical simulation code (tested, Unicode fixed) |
-| **TASK1_TACHYONIC_QUARTIC_RESEARCH_PLAN.md** | Mathematical derivation & numerical plan |
-| **TASK1_FINDINGS_SUMMARY.md** | Initial findings summary |
-| **task1_parameter_scan_results.json** | 18 configuration parameter scan |
-| **fix_indent.py**, **fix_indent2.py** | Helper scripts |
-
----
-
-## PDF Verification
-
-- ✅ Compiles successfully (40 pages, 3.6 MB)
-- ✅ No undefined references
-- ✅ Only pre-existing float specifier warnings
-- ✅ All figures present and referenced
-
----
-
-## Honest Framing for Resubmission
-
-> *"An effective framework where a threshold-triggered discharge CAN generate [dark sectors], conditional on the quartic-dominance regime being dynamically achieved — which requires further numerical demonstration."*
-
-This aligns with:
-- PTUM_CLAIM_BOUNDARY.md (safe core claims only)
-- Referee's demand for "mathematically and physically verifiable" theory
-- Numerical evidence from Task 1 simulation
-
----
-
-## Remaining Work (Post-Resubmission)
-
-1. **Release lattice artifacts** - Code, configs, seeds, outputs, analysis scripts
-2. **Release Cobaya YAML files and MCMC chain summaries**
-3. **Self-consistent reheating calculation** - Kinetic theory or lattice + Boltzmann
-4. **Coupled resonance + Boltzmann evolution** for DM production
-5. **Full parameter scan** mapping (ψ_init, ψ̇_init, Φ_offset, V₀, λ_ψ) space for quartic regime
+This summary supersedes earlier historical summaries that reported 11 referee tasks as complete while relying on pre-correction lattice, reheating, or publication-pipeline claims.
