@@ -1141,14 +1141,25 @@ integration; no such run exists in the public script.
 \item \emph{Sustained energy injection:} rescattering of the rolling
 $\Phi$ field into $\psi$ (the $\alpha m^2\Phi^2\psi^2/E_{\rm th}^2$
 interaction) could maintain oscillations after barrier crossing even
-when the bare damping is large. The earlier 18-point scan in
-\texttt{ptum\_task1\_simulation.py} is not accepted as decisive
-evidence: source review found duplicated interaction-energy accounting
-and inconsistent quartic-virial diagnostics in that implementation.
-Those diagnostics have now been corrected in the development branch,
-but the scan must be rerun before any conclusion about the 18 points is
-retained. The route is therefore \textbf{unresolved}, not numerically
-excluded.
+when the bare damping is large. The corrected 18-point homogeneous scan has now been rerun with
+single-counted interaction energy, the exact moving-minimum split,
+complete-period integral averages, and an oversampled dense-output
+derivative audit. All 18 integrations succeeded. Two exactly
+zero-seed trajectories remained on the invariant $\psi=0$ solution;
+the 16 seeded trajectories crossed from tachyonic to dormant and
+were classified as quadratic oscillatory regimes. Across those 16
+trajectories, the final-three-period averages satisfy
+$-0.0117\lesssim w_{\psi,\rm exc}\lesssim0.0045$ and
+$1.5\times10^{-9}\lesssim Q_4\lesssim4.7\times10^{-5}$;
+the quartic virial ratios are far above unity, not near it.
+No trajectory met the joint quartic criteria
+($w\simeq1/3$, $Q_4>5$, virial ratio near one, and $\omega/H>10$).
+The maximum relative total-continuity, moving-minimum split-continuity,
+and dense state-derivative residuals were respectively
+$6.3\times10^{-17}$, $2.53\times10^{-14}$, and $2.67\times10^{-4}$.
+This rules out a sustained quartic regime only for the stated finite
+18-point grid and the deliberately underdamped diagnostic parameter
+set; it is not a global exclusion over parameter space.
 \item \emph{Reframed benchmark:} accept $w_\psi=0$ (overdamped, field
 pinned at the barrier top) at the CMB-normalized benchmark and treat
 the $w=1/3$ proxy-fluid as a separate, lower-$V_0$ phenomenological
@@ -1158,9 +1169,14 @@ $\Delta N_{\rm fluid}$ constraint is a constraint on the
 \emph{phenomenological} fluid component, not on a first-principles
 derivation at the benchmark point.
 \end{enumerate}
-Resolving the tension definitively (options (a) or (b)) requires a
-full numerical background solution plus nonlinear lattice evolution
-and is left for future work.
+The homogeneous background scan is now complete for the stated
+18-point underdamped diagnostic grid. The remaining first-principles
+test is a nonlinear spatial-lattice evolution with a specified
+initial fluctuation spectrum, lattice-volume and spacing convergence,
+and renormalized energy accounting. Until that calculation is done,
+the radiation-like proxy-fluid remains a conditional phenomenological
+sector rather than a demonstrated outcome of the homogeneous
+$\Phi$--$\psi$ dynamics.
 
 
 \subsection{Operational stability and observable closure of the discharge sector}
