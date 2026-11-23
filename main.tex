@@ -837,20 +837,29 @@ V_{\rm act}(\psi)=\frac{1}{2}m_{\rm eff}^2\psi^2
 m_{\rm eff}^2<0,\quad \lambda_\psi>0.
 \label{eq:V_double_well_corrected}
 \end{equation}
-Writing $\mu^2\equiv |m_{\rm eff}^2|$, its stationary points are
-$\psi=0$ and $\psi=\pm\psi_0$, where
+For $m_{\rm eff}^2<0$, writing $\mu^2\equiv -m_{\rm eff}^2$,
+the stationary points are $\psi=0$ and $\psi=\pm\psi_0$, where
 \begin{equation}
 \psi_0^2=\frac{\mu^2}{\lambda_\psi},\qquad
 V_{\rm min}=-\frac{\mu^4}{4\lambda_\psi}.
 \end{equation}
-The origin is a local maximum and the two non-zero stationary points are
-minima. At fixed $\Phi$, it is useful to define the instantaneous
-minimum-subtracted diagnostic potential
+For $m_{\rm eff}^2\geq0$, the unique minimum is at $\psi=0$ and
+$V_{\rm min}=0$. At fixed $\Phi$, define the instantaneous
+minimum-subtracted diagnostic potential by the piecewise expression
 \begin{equation}
 U(\psi;\Phi)\equiv V_{\rm act}(\psi;\Phi)-V_{\rm min}(\Phi)
-=\frac{\lambda_\psi}{4}(\psi^2-\psi_0^2(\Phi))^2\geq0.
+=
+\begin{cases}
+\displaystyle\frac{\lambda_\psi}{4}
+(\psi^2-\psi_0^2(\Phi))^2,&m_{\rm eff}^2(\Phi)<0,\\[6pt]
+\displaystyle\frac12m_{\rm eff}^2(\Phi)\psi^2
++\frac{\lambda_\psi}{4}\psi^4,&m_{\rm eff}^2(\Phi)\geq0,
+\end{cases}
 \label{eq:U_double_well_corrected}
 \end{equation}
+where $\psi_0^2=-m_{\rm eff}^2/\lambda_\psi$ is used only on the
+tachyonic branch. This retains the positive quadratic excitation energy
+in the dormant phase.
 Because $V_{\rm min}$ depends on the evolving field $\Phi$, this is not a
 constant shift of the coupled action. It is an instantaneous diagnostic
 only; the unshifted $V_{\rm act}$ must remain in the field equations,
