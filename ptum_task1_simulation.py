@@ -276,53 +276,90 @@ def run_simulation(params: PTUMParameters,
     # The latter is biased near turning points and when rho varies strongly.
     w_avg, t_avg = compute_time_averaged_w(t, rho_psi_exc_arr, p_psi_exc_arr, psi_dot)
     
-    # Dense-output continuity diagnostic, independent of the requested output grid.
-    p_phi_arr = 0.5 * Phi_dot**2 - np.array([veff_phi(x, params) for x in Phi])
-    rho_total_arr = rho_phi_arr + rho_psi_arr
-    p_total_arr = p_phi_arr + p_psi_arr
+    # Evaluate the ODE vector field on a dense interpolation grid. The
+    # finite-difference derivative of the interpolant measures solver
+    # consistency; the action-derived energy derivatives test the exact
+    # total and moving-minimum sector identities separately.
     n_diag = max(len(t), 120000)
     t_diag = np.linspace(float(t[0]), float(t[-1]), n_diag)
     y_diag = sol.sol(t_diag)
     phi_d, phi_dot_d, psi_d, psi_dot_d = y_diag
-    rho_diag = np.array([rho_phi(phi_d[i], phi_dot_d[i], psi_d[i], params)
-                         + rho_psi(phi_d[i], psi_d[i], psi_dot_d[i], params)
-                         for i in range(n_diag)])
-    p_diag = np.array([0.5 * phi_dot_d[i]**2 - veff_phi(phi_d[i], params)
-                       + pressure_psi(phi_d[i], psi_d[i], psi_dot_d[i], params)
-                       for i in range(n_diag)])
-    h_diag = np.array([hubble_rate(phi_d[i], phi_dot_d[i], psi_d[i], psi_dot_d[i], params)
-                       for i in range(n_diag)])
-    rho_dot_diag = _uniform_time_derivative(rho_diag, t_diag)
-    continuity = rho_dot_diag + 3.0 * h_diag * (rho_diag + p_diag)
-    continuity_scale = np.maximum.reduce([
-        np.abs(rho_dot_diag), np.abs(3.0 * h_diag * (rho_diag + p_diag)),
-        np.abs(h_diag * rho_diag), np.full_like(t_diag, np.finfo(float).tiny)
+    rhs_diag = np.asarray([
+        background_equations(t_diag[i], y_diag[:, i], params)
+        for i in range(n_diag)
+    ], dtype=float).T
+    dense_dydt = np.vstack([
+        _uniform_time_derivative(y_diag[i], t_diag) for i in range(4)
     ])
-    max_relative_continuity_residual = float(np.max(np.abs(continuity) / continuity_scale))
+    derivative_scale = np.maximum.reduce([
+        np.abs(rhs_diag), np.abs(dense_dydt),
+        np.abs(y_diag) / max(float(t_diag[-1]-t_diag[0]), np.finfo(float).tiny) * 1e-8,
+        np.full_like(rhs_diag, np.finfo(float).tiny)
+    ])
+    max_relative_state_derivative_residual = float(np.max(
+        np.abs(dense_dydt-rhs_diag) / derivative_scale
+    ))
 
-    # Check the exact bookkeeping split: V_act = U + V_min. The moving
-    # minimum contributes V_min'(Phi)*Phi_dot to the Phi-side transfer.
     m2_diag = np.array([meff_sq_psi(x, params) for x in phi_d])
+    dm2_diag = -2.0 * params.alpha * params.m_psi**2 * phi_d / params.E_th**2
+    veff_diag = np.array([veff_phi(x, params) for x in phi_d])
+    dveff_diag = np.array([dveff_dphi(x, params) for x in phi_d])
+    rho_diag = (0.5*phi_dot_d**2 + 0.5*psi_dot_d**2 + veff_diag
+                + 0.5*m2_diag*psi_d**2 + 0.25*params.lambda_psi*psi_d**4)
+    if np.any(~np.isfinite(rho_diag)) or np.any(rho_diag <= 0.0):
+        raise ValueError("Non-physical dense-output Friedmann trajectory")
+    h_diag = np.sqrt(rho_diag / (3.0*M_PL**2))
+
+    # Exact action-derived total continuity residual along the numerical path.
+    phi_ddot_d, psi_ddot_d = rhs_diag[1], rhs_diag[3]
+    rho_dot_total = (
+        phi_dot_d*phi_ddot_d + psi_dot_d*psi_ddot_d
+        + dveff_diag*phi_dot_d + 0.5*dm2_diag*phi_dot_d*psi_d**2
+        + m2_diag*psi_d*psi_dot_d + params.lambda_psi*psi_d**3*psi_dot_d
+    )
+    continuity = rho_dot_total + 3.0*h_diag*(phi_dot_d**2+psi_dot_d**2)
+    continuity_scale = np.maximum.reduce([
+        np.abs(rho_dot_total),
+        np.abs(3.0*h_diag*(phi_dot_d**2+psi_dot_d**2)),
+        np.abs(h_diag*rho_diag),
+        np.full_like(t_diag, np.finfo(float).tiny)
+    ])
+    max_relative_continuity_residual = float(np.max(np.abs(continuity)/continuity_scale))
+
+    # Exact moving-minimum split: V_act = U + V_min. The V_min' term
+    # changes only the sector bookkeeping transfer, never the field EOM.
     vmin_diag = np.array([minimum_value_psi(x, params) for x in phi_d])
     u_diag = np.array([shifted_potential_psi(phi_d[i], psi_d[i], params)
                        for i in range(n_diag)])
-    rho_phi_split = 0.5*phi_dot_d**2 + np.array([veff_phi(x, params) for x in phi_d]) + vmin_diag
-    p_phi_split = 0.5*phi_dot_d**2 - np.array([veff_phi(x, params) for x in phi_d]) - vmin_diag
+    rho_phi_split = 0.5*phi_dot_d**2 + veff_diag + vmin_diag
+    p_phi_split = 0.5*phi_dot_d**2 - veff_diag - vmin_diag
     rho_psi_exc_diag = 0.5*psi_dot_d**2 + u_diag
     p_psi_exc_diag = 0.5*psi_dot_d**2 - u_diag
     vmin_prime_diag = np.array([dminimum_value_psi_dphi(x, params) for x in phi_d])
-    transfer_phi_split = (
-        params.alpha*params.m_psi**2/params.E_th**2
-        * phi_d*psi_d**2*phi_dot_d + vmin_prime_diag*phi_dot_d
+    cphi_diag = params.alpha*params.m_psi**2/params.E_th**2 * phi_d
+    transfer_phi_split = (cphi_diag*psi_d**2+vmin_prime_diag)*phi_dot_d
+    rho_phi_split_dot = (
+        phi_dot_d*phi_ddot_d + dveff_diag*phi_dot_d
+        + vmin_prime_diag*phi_dot_d
     )
-    rho_phi_dot = _uniform_time_derivative(rho_phi_split, t_diag)
-    rho_psi_exc_dot = _uniform_time_derivative(rho_psi_exc_diag, t_diag)
-    residual_phi_split = rho_phi_dot + 3*h_diag*(rho_phi_split+p_phi_split) - transfer_phi_split
-    residual_psi_split = rho_psi_exc_dot + 3*h_diag*(rho_psi_exc_diag+p_psi_exc_diag) + transfer_phi_split
+    u_phi_diag = -cphi_diag*psi_d**2-vmin_prime_diag
+    rho_psi_exc_dot = (
+        psi_dot_d*psi_ddot_d
+        + (m2_diag*psi_d+params.lambda_psi*psi_d**3)*psi_dot_d
+        + u_phi_diag*phi_dot_d
+    )
+    residual_phi_split = (
+        rho_phi_split_dot + 3.0*h_diag*(rho_phi_split+p_phi_split)
+        - transfer_phi_split
+    )
+    residual_psi_split = (
+        rho_psi_exc_dot + 3.0*h_diag*(rho_psi_exc_diag+p_psi_exc_diag)
+        + transfer_phi_split
+    )
     split_scale = np.maximum.reduce([
-        np.abs(rho_phi_dot), np.abs(rho_psi_exc_dot),
-        np.abs(transfer_phi_split), np.abs(3*h_diag*(rho_phi_split+p_phi_split)),
-        np.abs(3*h_diag*(rho_psi_exc_diag+p_psi_exc_diag)),
+        np.abs(rho_phi_split_dot), np.abs(rho_psi_exc_dot),
+        np.abs(transfer_phi_split),
+        3.0*h_diag*(phi_dot_d**2+psi_dot_d**2),
         np.full_like(t_diag, np.finfo(float).tiny)
     ])
     max_relative_split_continuity_residual = float(np.max(
