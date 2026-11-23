@@ -1,74 +1,53 @@
-# PTUM Claim Boundary v1.2 CLEAN (updated with Task 1 numerical findings)
+# PTUM Claim Boundary, updated 2026-11-24
 
-## Safe core claim
+## Verified scope of the current public code
 
-PTUM is an effective phenomenological cosmological framework in which a threshold-triggered discharge event can generate a dark-matter candidate sector, a residual near-Lambda dark-energy-like sector, and a proxy-fluid dark-radiation component.
+The current `main` branch implements and tests a **homogeneous, classical, two-field truncation** for the coupled fuel field `Phi` and activation/proxy field `psi`. The implementation uses the Planck-normalized fuel potential, the field-dependent activation mass, the Friedmann equation sourced by the unshifted Hilbert energy, and an exact split of the activation energy into excitation energy plus its moving minimum.
 
-The sharp observational discriminator is the difference between fluid-like dark radiation and free-streaming relativistic species. In the effective linear proxy-fluid closure, the pfd component has
+For the current convention,
+`m_eff^2(Phi) = m_psi^2 [1 - alpha Phi^2/E_th^2]`.
+Thus the tachyonic region is `|Phi| > Phi_c`, not `|Phi| < Phi_c`. The merged numerical study explicitly finds that a downhill fuel trajectory exits this tachyonic region. This is a model-level trigger-direction problem: the current homogeneous trajectory does not demonstrate a post-inflationary transition *into* the tachyonic phase.
 
-```text
-w = 1/3, c_s^2 = 1/3, sigma = 0
-```
+## Latest reproducible numerical checkpoint
 
-and therefore does not produce the neutrino-like CMB acoustic phase shift associated with free-streaming radiation.
+Canonical source commit: `1136c4e589be44f6dbe201c59d0d6decb1ae0141` (2026-11-23).
 
-## Current-data status
+GitHub Actions workflow `PTUM Phi-Psi Validation`, run `45257091704`, completed successfully. It compiled the simulation module, ran the 11 mathematical regression tests, and reran the complete declared 18-point coupled Phi-Psi scan.
 
-The benchmark analysis gives
+The merged PR #30 records:
+- 18/18 integrations succeeded;
+- 2 zero-seed trajectories remained on the exact invariant `psi = 0` solution;
+- the other 16 trajectories were classified as quadratic after leaving the tachyonic phase;
+- 0/18 trajectories satisfied the joint quartic-fluid classifier;
+- maximum relative total-continuity residual: `6.26e-17`;
+- maximum relative moving-minimum split-continuity residual: `2.53e-14`;
+- maximum relative dense state-derivative residual: `2.67e-4`.
 
-```text
-Delta chi^2 = -0.26
-Delta AIC = +2.26
-Delta N_fluid < 0.31 at 95% credibility
-```
+These results validate the stated finite homogeneous benchmark and its numerical identities. They do **not** demonstrate a quartic-dominated radiation-like phase.
 
-This should be framed as follows:
+## What may be claimed
 
-```text
-Current data show a weak preference for LambdaCDM while leaving PTUM viable as a falsifiable effective extension.
-```
+- The implemented homogeneous Phi-Psi equations are dimensionally consistent with the declared potential and effective mass.
+- The interaction is included once in the total Hilbert/Friedmann source.
+- The total energy continuity identity and the exact moving-minimum sector split pass the stated numerical regression and scan gates.
+- The declared 18-point homogeneous scan completed without integration failures.
+- The quartic-fluid classification is conditional and was not reached by any trajectory in that scan.
 
-It should not be framed as positive evidence that current data prefer PTUM.
+## What must not be claimed as demonstrated
 
-## Critical numerical finding (Task 1)
+- That the current downhill background dynamically triggers entry into the tachyonic phase.
+- That the current benchmark realizes a sustained quartic-fluid phase or a microscopic radiation-like proxy fluid.
+- That the homogeneous calculation establishes inhomogeneous quantum-seeded waterfall dynamics, backreaction, rescattering, fragmentation, defect evolution, thermalization, reheating temperature, or a relic abundance.
+- That the current repository independently reproduces a full CLASS/Cobaya Bayesian pipeline, production MCMC chains, or lattice results.
+- That PTUM is UV complete, solves the cosmological-constant problem, or is observationally preferred to LambdaCDM.
 
-**The quartic-dominated regime (w=1/3) is NOT achieved with the benchmark parameters stated in the paper.**
+## Required next scientific gates
 
-Numerical integration of the coupled background equations with:
-- $V_0 \sim 10^{64}\,\mathrm{GeV}^4$ ($H_* \sim 10^{13}\,\mathrm{GeV}$)
-- $m_\psi \sim 10^{13}\,\mathrm{GeV}$, $\lambda_\psi \sim 0.1$
-- $\psi(t_c)=0$, $\dot{\psi}(t_c)=0$ (field at top of barrier)
+1. Resolve the trigger-direction issue from the covariant action and intended cosmological history. Do not flip the mass sign merely to obtain a desired outcome.
+2. Derive and implement the post-inflationary background and threshold crossing with physically justified initial conditions.
+3. Re-run solver, tolerance, output-grid, and parameter-space convergence on that corrected physical trajectory.
+4. Build a spatially inhomogeneous quantum-seeded simulation with controlled UV/IR treatment, backreaction, energy accounting, volume and lattice-spacing convergence.
+5. Derive the proxy-fluid, reheating, and dark-matter abundance from those dynamics, or retain them explicitly as phenomenological conditional sectors.
+6. Publish the complete observational pipeline, exact software versions, configurations, chains, and checksums before claiming end-to-end Bayesian reproducibility.
 
-Shows the system is **overdamped**: $3H/(2\mu) \approx 25 \gg 1$. The field remains at $\psi=0$ with $w_\psi=0$. The quartic regime is never reached.
-
-Achieving the quartic regime requires:
-1. $V_0 \lesssim 10^{58}\,\mathrm{GeV}^4$ ($H_* \lesssim 10^{10}\,\mathrm{GeV}$) for underdamped oscillations
-2. Sufficient initial kinetic energy in $\psi$ to cross the barrier
-3. Continuing energy input from rolling $\Phi$ field or rescattering
-
-The proxy-fluid closure $w=1/3$, $c_s^2=1/3$, $\sigma=0$ is therefore a **phenomenological ansatz conditional on parameters not realized in the stated benchmark**. The observational discriminator applies *if* the quartic regime is realized; it is not a prediction of the benchmark parameters alone. The Bayesian constraints on $\Delta N_{\rm fluid}$ should be interpreted as constraints on the *phenomenological proxy-fluid model*, not as constraints on the microscopic PTUM discharge dynamics with the stated benchmark parameters.
-
-## Claims intentionally not made
-
-PTUM does not claim to be:
-
-- a UV-complete derivation of the pre-discharge background,
-- a solution of the cosmological-constant problem,
-- a unique microscopic theory of the dark sector,
-- a replacement for LambdaCDM already favored by current data,
-- a proof of any external cross-project mechanism.
-
-## v1.1 cleanup
-
-All external cross-project terminology has been removed from the PTUM manuscript. The paper now stands as a self-contained effective cosmology model.
-
-
-## v1.2 corrected code-availability update
-
-The exact public repository is:
-
-```text
-https://github.com/ErdemEsa/ptum-cosmology.git
-```
-
-The repository contains the public PTUM `CLASS v3.2.0` patch. This supports a code-availability claim for the core Boltzmann-code implementation. It does not by itself complete the full public Bayesian pipeline, because production Cobaya YAML files and full MCMC chains remain pending or external-archive items.
+**Disposition:** the coupled homogeneous numerical work package is validated for its declared scope. The physical trigger and downstream microscopic cosmology remain open. PTUM is not 10/10 and the absence of a quartic trajectory is a result, not a software failure.
