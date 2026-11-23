@@ -91,7 +91,7 @@ class PTUMParameters:
 
 @dataclass
 class InitialConditions:
-    """Initial conditions at threshold crossing t = t_c."""
+    """Initial data on the tachyonic-phase initial-value surface."""
     Phi: float           # Φ(t_c) = Φ_c (at threshold)
     Phi_dot: float       # Φ̇(t_c) from slow-roll
     psi: float           # ψ(t_c) - homogeneous mode
@@ -448,13 +448,13 @@ def create_initial_conditions(params: PTUMParameters,
                               phi_offset: float = 0.0,
                               phi_dot_init: Optional[float] = None) -> InitialConditions:
     """
-    Create initial conditions at threshold crossing.
+    Create initial data at a chosen offset from the tachyonic threshold.
     
     Args:
         params: PTUM parameters
         psi_init: Initial ψ(t_c) [default 0 = top of barrier]
         psi_dot_init: Initial ψ̇(t_c) [default 0]
-        phi_offset: Offset from Φ_c (positive = already past threshold)
+        phi_offset: Offset from Φ_c (positive = initially tachyonic; negative = dormant)
     
     Returns:
         InitialConditions object
@@ -466,7 +466,7 @@ def create_initial_conditions(params: PTUMParameters,
     # ε_V = ½(V'/V)²
     V = veff_phi(Phi, params)
     V_prime = dveff_dphi(Phi, params)
-    epsilon_V = 0.5 * (V_prime / V)**2 if V > 0 else 0.01
+    epsilon_V = 0.5 * (M_PL * V_prime / V)**2 if V > 0 else 0.01
     H = params.H_star
     slow_roll_phi_dot = -np.sqrt(2 * epsilon_V) * H * M_PL
     Phi_dot = slow_roll_phi_dot if phi_dot_init is None else float(phi_dot_init)
@@ -501,7 +501,7 @@ def create_initial_conditions_underdamped(params: PTUMParameters,
     # Slow-roll Φ̇ from the same Planck-normalized potential used in the EOM.
     V = veff_phi(Phi, params)
     V_prime = dveff_dphi(Phi, params)
-    epsilon_V = 0.5 * (V_prime / V)**2 if V > 0 else 0.01
+    epsilon_V = 0.5 * (M_PL * V_prime / V)**2 if V > 0 else 0.01
     H = params.H_star
     Phi_dot = -np.sqrt(2 * epsilon_V) * H * M_PL
     
