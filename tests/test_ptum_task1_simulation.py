@@ -205,3 +205,26 @@ def test_underdamped_initializer_uses_dimensionless_slow_roll_and_override():
     assert np.isclose(default_ic.Phi_dot, expected, rtol=2e-14)
     assert default_ic.Phi_dot < 0.0
 
+
+def test_moving_minimum_split_is_exact_in_dormant_phase():
+    p = sim.PTUMParameters()
+    phi = 0.5 * p.Phi_c
+    phi_dot = -0.2e27
+    psi = 0.7 * p.psi_0
+    psi_dot = 0.3 * p.mu * p.psi_0
+    m2 = sim.meff_sq_psi(phi, p)
+    assert m2 > 0.0
+
+    expected_excitation_potential = 0.5*m2*psi**2 + 0.25*p.lambda_psi*psi**4
+    actual = sim.shifted_potential_psi(phi, psi, p)
+    assert np.isclose(actual, expected_excitation_potential, rtol=2e-14)
+
+    rho_phi_split = 0.5*phi_dot**2 + sim.veff_phi(phi, p)
+    p_phi_split = 0.5*phi_dot**2 - sim.veff_phi(phi, p)
+    rho_psi_exc = 0.5*psi_dot**2 + actual
+    p_psi_exc = 0.5*psi_dot**2 - actual
+    rho_total = sim.rho_phi(phi, phi_dot, psi, p) + sim.rho_psi(phi, psi, psi_dot, p)
+    p_total = 0.5*phi_dot**2 - sim.veff_phi(phi, p) + sim.pressure_psi(phi, psi, psi_dot, p)
+    assert np.isclose(rho_phi_split + rho_psi_exc, rho_total, rtol=2e-14)
+    assert np.isclose(p_phi_split + p_psi_exc, p_total, rtol=2e-14)
+
