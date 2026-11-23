@@ -153,7 +153,14 @@ def hubble_rate(Phi: float, Phi_dot: float, psi: float, psi_dot: float,
     """Hubble rate H = sqrt(ρ_total/3M_Pl²)"""
     # The interaction term ½ m_eff²(Φ) ψ² is included only in rho_psi.
     rho_tot = rho_phi(Phi, Phi_dot, psi, params) + rho_psi(Phi, psi, psi_dot, params) + rho_other
-    return np.sqrt(max(rho_tot, 0) / (3 * M_PL**2))
+    if not np.isfinite(rho_tot):
+        raise FloatingPointError("Non-finite total energy density in Friedmann equation")
+    if rho_tot <= 0.0:
+        raise ValueError(
+            f"Non-positive total energy density ({rho_tot:.6e} GeV^4); "
+            "the background is outside the physical Friedmann branch"
+        )
+    return np.sqrt(rho_tot / (3 * M_PL**2))
 
 
 def background_equations(t: float, y: np.ndarray, params: PTUMParameters) -> np.ndarray:
@@ -475,7 +482,9 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
             continue
         q_seg = Q[start:end]
         v_seg = virial[start:end]
-        q_seg = q_seg[np.isfinite(q_seg)]
+        # +inf is a valid limiting value when the quadratic contribution
+        # vanishes; only NaNs denote an undefined diagnostic.
+        q_seg = q_seg[~np.isnan(q_seg)]
         v_seg = v_seg[np.isfinite(v_seg)]
         if len(q_seg) and len(v_seg):
             q_cycle.append(float(np.mean(q_seg)))
