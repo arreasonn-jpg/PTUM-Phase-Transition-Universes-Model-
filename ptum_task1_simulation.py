@@ -755,6 +755,7 @@ def save_results(results: List[Dict], filepath: str):
                 'max_relative_continuity_residual': float(r['max_relative_continuity_residual']),
                 'max_relative_split_continuity_residual': float(r['max_relative_split_continuity_residual']),
                 'max_relative_state_derivative_residual': float(r['max_relative_state_derivative_residual']),
+                'state_derivative_residual_by_component': r['state_derivative_residual_by_component'],
                 'min_meff_sq': float(r['min_meff_sq']),
                 'tachyonic_duration': float(r['tachyonic_duration']),
                 'tachyonic_fraction': float(r['tachyonic_fraction']),
