@@ -503,7 +503,8 @@ def create_initial_conditions_underdamped(params: PTUMParameters,
     V_prime = dveff_dphi(Phi, params)
     epsilon_V = 0.5 * (M_PL * V_prime / V)**2 if V > 0 else 0.01
     H = params.H_star
-    Phi_dot = -np.sqrt(2 * epsilon_V) * H * M_PL
+    slow_roll_phi_dot = -np.sqrt(2 * epsilon_V) * H * M_PL
+    Phi_dot = slow_roll_phi_dot if phi_dot_init is None else float(phi_dot_init)
     
     return InitialConditions(
         Phi=Phi,
