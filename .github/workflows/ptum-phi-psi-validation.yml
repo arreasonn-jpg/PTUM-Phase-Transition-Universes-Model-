@@ -16,7 +16,7 @@ permissions:
 jobs:
   regression:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
         run: python -m py_compile ptum_task1_simulation.py
       - name: Run mathematical regression tests
         run: pytest -q tests/test_ptum_task1_simulation.py
-      - name: Re-run the 18-point tachyonic-branch scan
+      - name: Re-run the complete 18-point coupled Phi-Psi scan
         run: |
           python - <<'PY'
           from ptum_task1_simulation import (
@@ -45,8 +45,8 @@ jobs:
               psi_init_range=[0.0, 0.01*p.psi_0, 0.1*p.psi_0],
               psi_dot_init_range=[0.0, 0.1*p.mu*p.psi_0, p.mu*p.psi_0],
               phi_offset_range=[0.01*p.Phi_c, 0.1*p.Phi_c],
-              t_max=3000.0,
-              n_points=30000
+              t_max=4000.0,
+              n_points=40000
           )
           save_results(results, "ptum_task1_18point_scan.json")
           succeeded = sum(bool(r.get("success")) for r in results)
@@ -67,6 +67,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ptum-task1-18point-scan
+          name: ptum-phi-psi-18point-scan
           path: ptum_task1_18point_scan.json
           if-no-files-found: warn
