@@ -4015,3 +4015,107 @@ def test_reheating_width_derivations_and_phase_boundaries_are_in_manuscript():
     assert "Coherent amplitudes to the same final state must be summed before squaring" in normalized
     assert "not a condensate-depletion rate" in normalized
     assert "ptum\\_reheating.py" in normalized
+
+
+def test_continuous_reheating_zero_width_preserves_fluid_redshifting_and_comoving_entropy():
+    from ptum_reheating_history import integrate_perturbative_reheating_history
+
+    result = integrate_perturbative_reheating_history(
+        1.0e40,
+        0.0,
+        initial_radiation_density=2.0e39,
+        condensate_equation_of_state=1.0 / 3.0,
+        max_efolds=2.0,
+        n_output_points=301,
+        rtol=1.0e-10,
+        atol=1.0e-13,
+    )
+    history = result["history"]
+    efolds = np.asarray(history["N"])
+    rho_c = np.asarray(history["rho_condensate_GeV4"])
+    rho_r = np.asarray(history["rho_radiation_GeV4"])
+    entropy = np.asarray(history["comoving_entropy_GeV3"])
+    assert np.allclose(rho_c / rho_c[0], np.exp(-4.0 * efolds), rtol=2.0e-8, atol=1.0e-12)
+    assert np.allclose(rho_r / rho_r[0], np.exp(-4.0 * efolds), rtol=2.0e-8, atol=1.0e-12)
+    assert np.max(np.abs(entropy / entropy[0] - 1.0)) < 2.0e-8
+    assert result["energy_budget"]["max_abs_residual_normalized_to_initial_total"] < 1.0e-9
+    assert result["energy_budget"]["cumulative_condensate_to_radiation_transfer_fraction"] == 0.0
+    assert result["reheating_diagnostics"]["sudden_decay_temperature_GeV"] is None
+    assert result["events"]["H_equals_Gamma"] is None
+    assert result["reheating_diagnostics"]["bbn_proxy_at_H_equals_Gamma_passes"] is None
+
+
+def test_continuous_reheating_closes_energy_budget_and_matches_H_equals_Gamma_temperature_identity():
+    import json
+    from ptum_reheating_history import integrate_perturbative_reheating_history
+
+    result = integrate_perturbative_reheating_history(
+        1.0e40,
+        5.0e-2,
+        condensate_equation_of_state=0.0,
+        max_efolds=20.0,
+        n_output_points=1201,
+        rtol=1.0e-10,
+        atol=1.0e-13,
+    )
+    budget = result["energy_budget"]
+    diagnostics = result["reheating_diagnostics"]
+    events = result["events"]
+    entropy = result["entropy"]
+    assert budget["max_abs_residual_normalized_to_initial_total"] < 1.0e-8
+    assert budget["cumulative_condensate_to_radiation_transfer_fraction"] > 0.0
+    assert events["H_equals_Gamma"] is not None
+    assert events["radiation_domination"] is not None
+    assert result["integration"]["condensate_decay_completion_reached"] is True
+    omega_r = events["H_equals_Gamma"]["radiation_fraction"]
+    observed_ratio = diagnostics["continuous_to_sudden_temperature_ratio_at_H_equals_Gamma"]
+    assert 0.0 < omega_r < 1.0
+    assert observed_ratio == pytest.approx(omega_r**0.25, rel=2.0e-10, abs=1.0e-12)
+    assert observed_ratio < 1.0
+    assert diagnostics["continuous_temperature_at_H_equals_Gamma_GeV"] < diagnostics["sudden_decay_temperature_GeV"]
+    assert diagnostics["maximum_temperature_sampled_GeV"] >= diagnostics["continuous_temperature_at_H_equals_Gamma_GeV"]
+    assert entropy["comoving_entropy_non_decreasing_within_tolerance"] is True
+    assert entropy["final_comoving_entropy_GeV3"] > entropy["initial_comoving_entropy_GeV3"]
+    assert result["assumptions"]["physical_PTUM_benchmark_prediction"] is False
+    json.dumps(result, allow_nan=False)
+
+
+def test_continuous_reheating_initial_radiation_domination_and_width_dominance_are_reported():
+    from ptum_reheating_history import integrate_perturbative_reheating_history
+
+    result = integrate_perturbative_reheating_history(
+        1.0e30,
+        1.0e3,
+        initial_radiation_density=2.0e30,
+        max_efolds=1.0,
+        n_output_points=101,
+    )
+    assert result["events"]["radiation_domination"]["N"] == 0.0
+    assert result["events"]["H_equals_Gamma"] is None
+    assert result["events"]["initial_H_below_Gamma"] is True
+    assert result["reheating_diagnostics"]["continuous_temperature_at_H_equals_Gamma_GeV"] is None
+
+
+def test_continuous_reheating_rejects_unphysical_or_ambiguous_inputs():
+    from ptum_reheating_history import integrate_perturbative_reheating_history
+
+    with pytest.raises(ValueError, match="equation_of_state"):
+        integrate_perturbative_reheating_history(1.0e40, 1.0, condensate_equation_of_state=-0.5)
+    with pytest.raises(ValueError, match="finite real"):
+        integrate_perturbative_reheating_history(1.0e40, True)
+    with pytest.raises(ValueError, match="must not exceed 100"):
+        integrate_perturbative_reheating_history(1.0e40, 1.0, max_efolds=101.0)
+    with pytest.raises(ValueError, match="rtol must be"):
+        integrate_perturbative_reheating_history(1.0e40, 1.0, rtol=1.0e-14)
+
+
+def test_continuous_reheating_equations_and_entropy_definition_are_in_manuscript():
+    from pathlib import Path
+
+    source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
+    assert r"\label{eq:ptum_continuous_reheating_boltzmann}" in source
+    assert r"\label{eq:ptum_continuous_reheating_entropy}" in source
+    assert r"\frac{d\rho_c}{dN}" in source
+    assert r"\frac{d\rho_r}{dN}" in source
+    assert r"\Omega_r^{1/4}" in source
+    assert "ptum_reheating_history.py" in source

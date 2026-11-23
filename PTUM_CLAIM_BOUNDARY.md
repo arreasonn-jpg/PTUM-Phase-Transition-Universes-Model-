@@ -1104,8 +1104,8 @@ claimed.
 
 - A numerical PTUM benchmark width, branching ratio, reheating temperature or BBN verdict: Wilson matrices, cutoff, quasiparticle mass history and actual channel multiplicities are not fixed.
 - Applying the broken-phase two-body formula above electroweak symmetry restoration, or applying the unbroken-phase massless three-body formula below the crossover without matching the thermal phase.
-- Treating the sudden-decay estimate as a solution of the coupled condensate/radiation Boltzmann system.
-- Claiming thermalization, entropy conservation after reheating, the final radiation fraction, or the absence of late entropy injection.
+- Treating either the sudden-decay estimate or the new constant-w_c, constant-Gamma fluid integrator as a PTUM-derived condensate/SM Boltzmann solution.
+- Claiming microscopic thermalization, a complete PTUM entropy history, a final radiation fraction, or the absence of late entropy injection. The continuous-fluid helper assumes prompt thermalization and constant g_star; its comoving entropy is conditional on those assumptions.
 - Omitting thermal masses, Pauli blocking, Bose enhancement, Higgs-portal pair production, nonperturbative preheating or rescattering while describing the result as a complete reheating history.
 
 The new module is a tree-level rate calculator with explicit assumptions, not a completion of Gate 8. Its exact-head tests and manuscript-source regression await CI after the latest commits.
@@ -1114,3 +1114,21 @@ The new module is a tree-level rate calculator with explicit assumptions, not a 
 ## 2026-11-22 verification status for reheating helpers
 
 The conditional width implementation and its numerical regressions passed in PR workflow 45009882010 (173 tests). This verifies the coded vacuum formulas and report bookkeeping only. It does not supply physical Wilson coefficients, a PTUM quasiparticle spectrum, thermal rates or a reheating history. The manuscript's three overfull equation displays were reflowed in commit 32f94f3; the new exact-head LaTeX result is pending. Gate 8 remains PARTIAL and Gate 10 remains PARTIAL.
+
+
+## 2026-11-23 continuous reheating-fluid boundary
+
+### Supported conditional statements
+
+- Given an initial condensate density, initial radiation density, constant effective w_c, constant positive perturbative width Gamma, constant g_star, and prompt thermalization, ptum_reheating_history.py integrates the two-fluid expanding-FRW equations.
+- The helper includes radiation in H, separately accumulates condensate expansion work, radiation expansion work and transferred energy, and reports integrated energy-budget residuals.
+- It computes the conditional temperature and comoving entropy histories, radiation-domination event, H=Gamma event, and sampled maximum temperature.
+- At H=Gamma, the continuous temperature obeys T_cont/T_sudden=Omega_r^(1/4). This follows from the radiation fraction at that event and is an internal consistency identity, not an independent physical prediction.
+
+### Not supported
+
+- A PTUM benchmark reheating history, decay width, radiation fraction, T_RH, BBN verdict or final entropy: the Wilson matrices, cutoff, time-dependent quasiparticle spectrum, w_c(t), Gamma(T), and scalar-to-SM energy partition are not fixed.
+- A complete thermal history: g_*(T), g_*s(T), electroweak/QCD thresholds, thermal masses, Pauli blocking, Bose enhancement, inverse decays, scattering and thermalization delay are omitted.
+- Treating the constant-fluid result as a substitute for the coupled inhomogeneous waterfall, Higgs-portal pair production, nonperturbative preheating or rescattering.
+
+The five new continuous-history regressions and manuscript equations require fresh exact-head CI. Gate 8 remains PARTIAL.

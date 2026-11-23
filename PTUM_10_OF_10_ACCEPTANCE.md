@@ -13,9 +13,9 @@ This file defines the evidence required before PTUM can be called scientifically
 | 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and a defect-topology analysis (including the Z2 domain-wall risk of a real waterfall scalar) | **NOT MET**. The branch has a periodic 3-D nonlinear classical lattice prototype, homogeneous-Phi backreaction, a bare first-order WKB Gaussian initializer, a finite-grid wall estimator and a fixed-box/fixed-spacing UV audit. Exact-head workflow 44898158765 on be5fb4fbcb051039bb916e382a669f9351471bc3 passed the extended N=4,...,64 audit: at fixed L=8 mu^-1 the unsubtracted psi stress grows by 16664.2325, the N=32-to-64 log slope is 3.8822733, and the fixed-spacing volume spread is 2.38067e-13. The bare-total Hubble mismatch grows to 3.54730e-3. This is evidence of the expected UV zero-point divergence and finite-volume stability at fixed spacing only. The zero-point energy is retained; no adiabatic subtraction, counterterms, renormalized continuum limit, or self-consistent initial Friedmann solution exists. The subsequent lattice evolution is classical and UV-cutoff dependent; Phi perturbations, full SM fields, converged wall-network evolution and renormalized bias are absent. No physical quantum-seeded waterfall or defect-network prediction is claimed. |
 | 6. Resonance and relic abundance | Expanding-background mode equations; converged monodromy/Floquet growth; momentum integration; backreaction; thermalization and entropy dilution; independently reproduced relic abundance | **NOT MET**. A linear mode integrator now evolves supplied expanding-FRW histories with an adiabatic-vacuum check and Wronskian monitor, and a finite-band trapezoidal momentum integral is implemented. The background is not generated self-consistently, the momentum tails and grid are not converged, and no backreaction or entropy dilution is available |
 | 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The closure remains phenomenological; no microscopic realization is established |
-| 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. Added conditional tree-level vacuum widths for broken-phase scalar/pseudoscalar two-body Dirac decays and electroweak-symmetric massless chiral three-body decays from the gauge-invariant dimension-five operator. The report builder sums explicitly supplied orthogonal channel multiplicities, branching fractions and the sudden-decay T_rh estimate, and flags BBN (5 MeV), electroweak-phase and EFT-cutoff consistency. No benchmark width follows because Wilson matrices, cutoff and the time-dependent quasiparticle mass are unspecified. Thermal corrections, Higgs-portal pair production, nonperturbative preheating, condensate Boltzmann evolution, coupled energy partition and comoving entropy production remain absent. |
+| 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. Added conditional broken-phase scalar/pseudoscalar two-body and electroweak-symmetric chiral three-body vacuum widths, plus a continuous constant-\(w_c\), constant-\(\Gamma\), constant-\(g_*\) condensate/radiation FRW integrator. The latter includes radiation in \(H\), independent cumulative condensate/radiation/total energy-budget residuals, \(T(N)\), sampled \(T_{\max}\), \(H=\Gamma\) and radiation-domination events, and \(S_{\rm com}(N)\). Tests check zero-width redshifting/entropy conservation, source cancellation, and \(T_{\rm cont}/T_{\rm sudden}=\Omega_r^{1/4}\) at \(H=\Gamma\). No benchmark follows because Wilson matrices, cutoff, quasiparticle mass history and coupled energy partition are unspecified. Prompt thermalization, constant \(w_c,\Gamma,g_*\), and the absence of thermal thresholds, blocking/enhancement, portal pair production and nonperturbative preheating are explicit approximations; full thermal history and PTUM-derived entropy production remain absent. |
 | 9. Observational reproducibility | Public exact CLASS patch; pinned version/commit; complete configs, likelihoods, data, chains and commands; independent rerun reproduces posteriors and model comparison | **NOT MET**. Reported numbers are author-reported; patch availability and chains remain unverified |
-| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Exact-head PR workflow 45009882010 on 5c4c1756271063542bffd3d7ac5a4539313fd171 passed 173 Python tests, the four-trajectory/two-scale smoke scan (4/4, zero failed integrations), the extended 11-grid bare WKB UV/volume audit and a 45-page LaTeX build. The full 100-row and paired convergence jobs were skipped on this non-[FULL-SCAN] run. The second LaTeX pass had 76 Underfull and 3 Overfull hbox warnings, with no unresolved reference/citation warnings. The three Overfull locations (former lines 2035, 2617 and 2627) were reflowed into aligned equations in commit 32f94f30504b2db0771c45aed97d4b9e20cb840c; that exact head is awaiting CI. Full-scan evidence remains the earlier successful homogeneous-domain workflow 44498664018; it is not evidence for inhomogeneous quantum waterfall dynamics. |
+| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Exact-head PR workflow 45010256204 on 50c72c7dc58f4db192af17b698975d671958fb69 passed 173 Python tests, the four-trajectory/two-scale smoke scan (4/4, zero failed integrations), the extended 11-grid bare WKB UV/volume audit, and a 45-page LaTeX build. The final LaTeX pass had 77 Underfull hbox warnings, zero Overfull hboxes, and zero unresolved references/citations. The full 100-row and paired convergence jobs were skipped by design on this non-[FULL-SCAN] run. The continuous reheating fluid model and its five new tests are newer than this CI result and require fresh exact-head verification. |
 
 ## Current implementation evidence
 
@@ -1793,3 +1793,36 @@ PR workflow 45009882010 on head 5c4c1756271063542bffd3d7ac5a4539313fd171 complet
 - The 45-page LaTeX build completed. The second pass had no unresolved references/citations but retained 76 Underfull and 3 Overfull hbox warnings.
 
 The Overfull warnings were localized to the long broken-phase Wilson-matching display and the two new unbroken-phase three-body displays. Commit 32f94f30504b2db0771c45aed97d4b9e20cb840c rewrites these as aligned multi-line equations without changing the formulas. Exact-head CI for 32f94 is pending. Gate 10 remains PARTIAL until the new build and all remaining warnings are audited.
+
+
+## 2026-11-23 conditional continuous reheating-fluid implementation
+
+A new ptum_reheating_history.py module integrates a homogeneous
+constant-w_c, constant-Gamma, constant-g_star condensate/radiation
+system in e-fold time. Radiation contributes to the Friedmann rate.
+The code integrates three cumulative ledgers independently:
+condensate expansion work, radiation expansion work, and energy
+transferred from condensate to radiation. Their residuals test the
+separate sector budgets and the total continuity equation.
+
+The module reports the radiation-domination and H=Gamma events,
+the sampled temperature maximum, the continuous bath temperature at
+H=Gamma, and the comoving entropy history under prompt thermalization
+and constant relativistic degrees of freedom. At H=Gamma, the identity
+T_cont/T_sudden=Omega_r^(1/4) is checked; the sudden-decay expression
+is recovered only if radiation already dominates at that event.
+
+Five new regression tests cover the zero-width redshifting limit,
+comoving-entropy conservation without a source, separate energy-budget
+closure with decay, the continuous/sudden temperature identity,
+initial radiation/width edge cases, input-domain checks, and the
+manuscript equations. These tests are pending a fresh exact-head CI run.
+
+Gate 8 remains PARTIAL. This is not a PTUM-derived reheating prediction:
+w_c(t), Gamma(T), Wilson matrices, the cutoff, the evolving
+quasiparticle spectrum and the scalar-to-SM energy partition are not
+specified. Prompt thermalization, constant g_*, and the absence of
+thermal thresholds, inverse processes, thermal blocking/enhancement,
+Higgs-portal pair production, nonperturbative preheating and rescattering
+are explicit limitations. Gate 10 remains PARTIAL until the new exact
+head passes CI and the remaining manuscript warnings are resolved.

@@ -2690,6 +2690,60 @@ coefficients $C_f$, cutoff $\Lambda$, Higgs-portal coupling
 $g_{\psi H}$, condensate history, and competing non-perturbative
 channels are not fixed, so no PTUM benchmark value is assigned.
 
+\paragraph{Continuous perturbative-fluid benchmark.}
+As a separate conditional calculation, the repository now integrates
+a homogeneous condensate/radiation two-fluid system with a constant
+effective condensate equation of state $w_c$ and a constant perturbative
+width $\Gamma$. With $N=\ln(a/a_i)$, the equations are
+\begin{equation}
+\begin{aligned}
+\frac{d\rho_c}{dN}
+&=-3(1+w_c)\rho_c-\frac{\Gamma}{H}\rho_c,\\
+\frac{d\rho_r}{dN}
+&=-4\rho_r+\frac{\Gamma}{H}\rho_c,\\
+H^2&=\frac{\rho_c+\rho_r}{3\bar M_{\rm Pl}^2}.
+\end{aligned}
+\label{eq:ptum_continuous_reheating_boltzmann}
+\end{equation}
+The radiation bath is assumed to thermalize immediately and to have
+constant $g_*$. Its temperature and comoving entropy are then
+\begin{equation}
+\begin{aligned}
+T(N)&=\left(\frac{30\rho_r(N)}{\pi^2g_*}\right)^{1/4},\\
+S_{\rm com}(N)&=a^3\frac{2\pi^2}{45}g_*T^3.
+\end{aligned}
+\label{eq:ptum_continuous_reheating_entropy}
+\end{equation}
+The source terms cancel in the total continuity equation,
+$d(\rho_c+\rho_r)/dN=-3(1+w_c)\rho_c-4\rho_r$.
+The numerical implementation also integrates the condensate work,
+radiation work and transferred energy as separate cumulative variables,
+so the condensate, radiation and total energy budgets can be checked
+independently. It reports the first radiation-domination event and the
+$H=\Gamma$ event, the sampled maximum temperature, and the comoving
+entropy history. At $H=\Gamma$, writing
+$\Omega_r=\rho_r/(\rho_c+\rho_r)$ gives
+\begin{equation}
+\frac{T_{\rm continuous}(H=\Gamma)}
+{T_{\rm sudden}(H=\Gamma)}
+=\Omega_r^{1/4},
+\end{equation}
+because the sudden-decay expression assumes $\Omega_r=1$ at that
+instant. This provides a direct internal consistency check on the
+continuous solution.
+
+The implementation is
+\texttt{ptum\_reheating\_history.py}. It is a constant-$w_c$,
+constant-$\Gamma$, constant-$g_*$ fluid benchmark, not a derivation
+of $w_c(t)$ or $\Gamma(T)$ from the PTUM action. It assumes prompt
+thermalization and omits temperature-dependent electroweak/QCD
+thresholds, changes in relativistic degrees of freedom, thermal
+blocking/enhancement, inverse processes, Higgs-portal pair production,
+non-perturbative preheating, rescattering, and the microscopic
+condensate energy partition. Since the Wilson matrices, cutoff and
+time-dependent quasiparticle spectrum remain unspecified, it does
+not produce a PTUM benchmark reheating history or BBN prediction.
+
 The energy density at the exact single-field endpoint is not
 $V_0$. For $\Phi_c=\Phi_{\rm end}^{(H)}
 \simeq0.986228M_{\rm Pl}$ and $\lambda_\Phi=0.02$, the potential

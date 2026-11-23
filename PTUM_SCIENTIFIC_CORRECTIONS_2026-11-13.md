@@ -2076,3 +2076,40 @@ Regression coverage checks the three-body phase-space integral, M^3/Lambda^2/|C|
 PR workflow 45009882010 on head 5c4c1756271063542bffd3d7ac5a4539313fd171 passed 173 pytest cases, the 4/4 two-scale smoke scan and the extended 11-grid bare WKB UV/volume audit. The 45-page manuscript built successfully. The second LaTeX pass had no unresolved references or citations but reported 76 Underfull and three Overfull hboxes. The three overflows were localized to the broken-phase complex Wilson matching display and the two new three-body phase-space/width displays.
 
 Commit 32f94f30504b2db0771c45aed97d4b9e20cb840c rewrites those three displays using aligned multi-line equations. The equations and normalization are unchanged. This formatting correction requires a fresh exact-head LaTeX run; no claim of warning-free output is made yet.
+
+
+## 2026-11-23 continuous perturbative reheating-fluid benchmark
+
+Added ptum_reheating_history.py, a conditional two-fluid FRW integrator
+for a condensate with constant effective w_c and constant perturbative
+width Gamma, plus instantly thermalized radiation with constant g_*.
+In N=ln(a/a_i), it evolves
+d rho_c/dN=-3(1+w_c)rho_c-(Gamma/H)rho_c,
+d rho_r/dN=-4rho_r+(Gamma/H)rho_c, and
+H^2=(rho_c+rho_r)/(3 Mbar_Pl^2).
+
+The numerical state also accumulates condensate expansion work,
+radiation expansion work and transferred energy. Separate integrated
+budget residuals verify that the source cancels from the total continuity
+equation. The report includes radiation domination, H=Gamma,
+T(N), a sampled maximum temperature and S_com(N). At H=Gamma,
+the continuous/sudden temperature ratio equals Omega_r^(1/4),
+which is tested directly.
+
+Five tests were added for the zero-width limit, redshifting, entropy
+conservation without injection, energy-budget closure, the
+continuous/sudden identity, edge cases and manuscript equations.
+The previous exact-head PR workflow 45010256204 on 50c72c7 passed
+173 tests, the 4/4 smoke scan and the extended bare WKB UV/volume
+audit; its 45-page LaTeX build had zero Overfull hboxes and zero
+unresolved references/citations but 77 Underfull hbox warnings.
+That run predates this new module and its tests. A fresh exact-head
+workflow is required before the five tests or new manuscript text
+are reported as verified.
+
+This calculation is only a constant-fluid phenomenological benchmark.
+It does not derive w_c(t) or Gamma(T) from the PTUM action,
+does not include a changing thermal equation of state or g_*(T),
+and assumes prompt thermalization. It does not establish a PTUM
+benchmark reheating temperature, BBN result, full energy partition,
+or microscopic entropy history. Gate 8 remains PARTIAL.
