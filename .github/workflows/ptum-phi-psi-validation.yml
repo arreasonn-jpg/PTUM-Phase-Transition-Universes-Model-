@@ -45,8 +45,8 @@ jobs:
               psi_init_range=[0.0, 0.01*p.psi_0, 0.1*p.psi_0],
               psi_dot_init_range=[0.0, 0.1*p.mu*p.psi_0, p.mu*p.psi_0],
               phi_offset_range=[0.01*p.Phi_c, 0.1*p.Phi_c],
-              t_max=200.0,
-              n_points=2000
+              t_max=3000.0,
+              n_points=30000
           )
           save_results(results, "ptum_task1_18point_scan.json")
           succeeded = sum(bool(r.get("success")) for r in results)
