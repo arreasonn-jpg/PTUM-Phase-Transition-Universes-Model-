@@ -620,6 +620,9 @@ def save_results(results: List[Dict], filepath: str):
                 'min_meff_sq': float(r['min_meff_sq']),
                 'tachyonic_duration': float(r['tachyonic_duration']),
                 'tachyonic_fraction': float(r['tachyonic_fraction']),
+                'threshold_crossings': r['threshold_crossings'],
+                'initially_tachyonic': bool(r['initially_tachyonic']),
+                'finally_tachyonic': bool(r['finally_tachyonic']),
                 'seedless_invariant': bool(r['seedless_invariant']),
                 'max_abs_psi': float(r['max_abs_psi']),
                 'max_abs_Phi_over_Phi_c': float(r['max_abs_Phi_over_Phi_c'])
@@ -631,8 +634,22 @@ def save_results(results: List[Dict], filepath: str):
                 'ic_params': r['ic_params']
             })
     
-    with open(filepath, 'w') as f:
-        json.dump(summary, f, indent=2)
+    def json_safe(value):
+        if isinstance(value, np.ndarray):
+            return [json_safe(x) for x in value.tolist()]
+        if isinstance(value, np.generic):
+            return json_safe(value.item())
+        if isinstance(value, float) and not np.isfinite(value):
+            return None
+        if isinstance(value, dict):
+            return {str(k): json_safe(v) for k, v in value.items()}
+        if isinstance(value, (list, tuple)):
+            return [json_safe(v) for v in value]
+        return value
+
+    summary = json_safe(summary)
+    with open(filepath, 'w', encoding='utf-8') as f:
+        json.dump(summary, f, indent=2, allow_nan=False)
 
 
 # ============================================================
