@@ -4271,14 +4271,23 @@ $\Phi_{\rm res}$ in an expanding FRW background:
 \ddot\Phi_{\rm res} + 3H\dot\Phi_{\rm res} - \frac{\nabla^2}{a^2}\Phi_{\rm res} + \frac{\partial V}{\partial\Phi_{\rm res}} &= 0,
 \end{align}
 
-with the potential
+with the reduced scalar-sector potential
 \begin{equation}
 \begin{split}
-V &= V_0(1-e^{-\lambda\Phi^2}) + \frac{1}{2}m_\psi^2\psi^2
-+ \frac{\lambda_\psi}{4}\psi^4 + \frac{1}{2}m_\chi^2\chi^2 \\
-&\quad + g_{\rm DM}\chi^2\Phi_{\rm res}^2 + W(\Phi_{\rm res}).
+V_{\rm lat} &= V_{\rm eff}(\Phi)
++ \frac{1}{2}m^2\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi^2
++ \frac{\lambda_\psi}{4}\psi^4 \\
+&\quad + \frac{1}{2}m_\chi^2\chi^2
++ g_{\rm DM}\chi^2\Phi_{\rm res}^2 + W(\Phi_{\rm res}).
 \end{split}
 \end{equation}
+This is the four-field truncation only. The Higgs-like field and Dirac
+fermions in the full matter action are not evolved by these four field
+equations; consequently this truncation cannot by itself predict
+Yukawa reheating, SM thermalization, or the final radiation entropy.
+The $\Phi$-dependent activation mass is retained explicitly. Any
+simulation using a constant $m_\psi^2$ in its place would solve a
+different model.
 
 The appendix's reported lattice parameters are (note that the main-text
 simulation description specifies $512^3$ points, whereas this appendix
@@ -4300,36 +4309,40 @@ specification of the evidence needed, not files currently included in
 the public repository:
 
 \begin{enumerate}
-\item \textbf{Energy density evolution:} $\rho_\Phi(t)$, $\rho_\psi(t)$,
-      $\rho_\chi(t)$, $\rho_{\rm res}(t)$, $\rho_{\rm rad}(t)$ showing
-      the discharge energy transfer from $\Phi$ to $\psi$, $\chi$, and
-      radiation. The total energy is conserved to $<0.1\%$.
+\item \textbf{Energy density evolution:} report $\rho_\Phi(t)$,
+      $\rho_\psi(t)$, $\rho_\chi(t)$, and $\rho_{\rm res}(t)$, together
+      with the total stress-energy conservation residual. A radiation
+      component and a $<0.1\%$ conservation target require an explicitly
+      coupled radiation/bath sector and a demonstrated convergence test;
+      they are not outputs of the four-field truncation as written.
 
-\item \textbf{Field power spectra:} $P_\Phi(k,t)$, $P_\psi(k,t)$,
-      $P_\chi(k,t)$ at multiple time slices showing the growth of
-      $\chi$ modes in the parametric resonance band. The resonance
-      peak at $k_{\rm res} \approx \omega_{\rm res}/2$ is clearly
-      resolved.
+\item \textbf{Field power spectra:} report $P_\Phi(k,t)$,
+      $P_\psi(k,t)$, and $P_\chi(k,t)$ at specified time slices, and
+      test whether a resonance band and a peak near
+      $k_{\rm res}\approx\omega_{\rm res}/2$ are actually resolved.
 
-\item \textbf{Occupation numbers:} $n_k(t)$ for $\chi$ field modes,
-      confirming exponential growth with Floquet exponent
-      $\mu_{\rm max} \approx 0.2\,\omega_{\rm res}$ in the broad
-      resonance regime ($q \gg 1$).
+\item \textbf{Occupation numbers:} define and report $n_k(t)$ for
+      $\chi$ modes, then measure the Floquet exponent and resonance
+      regime from the numerical evolution rather than fixing
+      $\mu_{\rm max}\approx0.2\,\omega_{\rm res}$ as an expected output.
 
-\item \textbf{Equation of state:} $w_\psi(t)$, $w_\chi(t)$,
-      $w_{\rm res}(t)$ showing the transition from oscillatory
-      ($w \approx 0$) to radiation-like ($w \approx 1/3$) for the
-      proxy fluid, and the approach to $w \approx -1$ for the
-      residual field.
+\item \textbf{Equation of state:} compute $w_\psi(t)$,
+      $w_\chi(t)$, and $w_{\rm res}(t)$ directly from the simulated
+      fields. In particular, test rather than assume whether $w_\psi$
+      evolves from a transient/overdamped phase to a sustained
+      radiation-like regime.
 
 \item \textbf{Topological defect detection:} Winding number
       analysis for $\Phi_{\rm res}$ field configurations, showing
       defect formation probability $<10^{-3}$ per Hubble volume for
       benchmark parameters.
 
-\item \textbf{Entropy production:} Entropy $S(t)$ from the lattice
-      energy-momentum tensor, confirming
-      $S_{\rm obs} \sim 10^{88}$ (total observable-universe entropy).
+\item \textbf{Entropy production:} determine entropy only after
+      specifying a coarse-graining or kinetic description and an
+      explicit radiation/bath sector. Entropy is not obtained directly
+      from the classical scalar energy-momentum tensor alone, and the
+      present four-field truncation cannot establish
+      $S_{\rm obs}\sim10^{88}$.
 \end{enumerate}
 
 \subsection{Planned reproduction workflow (not yet executable)}
