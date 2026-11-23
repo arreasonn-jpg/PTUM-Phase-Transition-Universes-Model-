@@ -528,7 +528,7 @@ Euler--Lagrange equations in a curved FRW background. The extended
 Standard Model reheating-sector equations are stated separately in
 Section~\ref{sec:microscopic_transfer}. The dark-sector action is
 \begin{equation}
-S = \int d^4x\,\sqrt{-g}\,\mathcal{L}_{\rm PTUM},
+S = \int d^4x\,\sqrt{-g}\,\mathcal{L}_{\rm PTUM}^{\rm dark},
 \end{equation}
 with $\sqrt{-g} = a^3(t)$ in FRW.
 For a scalar field \(\phi\) with Lagrangian
@@ -779,14 +779,53 @@ w_\psi&=\frac{\dot\psi^2/2-U}{\dot\psi^2/2+U}.
 \end{align}
 When expansion and interactions are negligible, this energy is conserved.
 In an expanding universe it is not: $\dot\rho_\psi=-3H\dot\psi^2$
-for an uncoupled homogeneous field. Consequently, an initial condition
-$\dot\psi(t_c)=0$ and $|\psi(t_c)|\ll\psi_0$ places the field close to
-the top of the barrier with energy just below the barrier height. It does
-not establish that the field crosses between the two minima or enters a
-quartic-dominated orbit. The actual orbit depends on the initial velocity,
-the time dependence of $m_{\rm eff}$, Hubble damping, and energy transfer
+for an uncoupled homogeneous field with fixed $\mu$. The barrier height
+measured from either minimum is
+\begin{equation}
+U(0)=\frac{\mu^4}{4\lambda_\psi}
+=\frac{\lambda_\psi\psi_0^4}{4}.
+\label{eq:psi_barrier_energy}
+\end{equation}
+For a trajectory to reach a turning amplitude $A>\psi_0$, its energy
+above the minimum must at least satisfy
+\begin{equation}
+\rho_\psi\geq U(A)
+=\frac{\lambda_\psi}{4}(A^2-\psi_0^2)^2.
+\label{eq:psi_amplitude_energy}
+\end{equation}
+In particular, a quartic-dominated orbit with $A\gg\psi_0$ requires
+$\rho_\psi\gg U(0)$, not merely enough energy to roll away from the
+unstable origin. For initial data $(\psi_i,\dot\psi_i)$ at fixed
+$\mu$, the available energy is
+$\rho_{\psi,i}=\dot\psi_i^2/2+U(\psi_i)$; Hubble friction and
+couplings reduce or redistribute it during the evolution. A useful
+necessary energy test is therefore
+\begin{equation}
+\frac{\dot\psi_i^2}{2}+U(\psi_i)
+-\int_{t_i}^{t_A}3H\dot\psi^2\,dt
++\int_{t_i}^{t_A}Q_\psi^{\rm ext}\,dt
+\;\geq\; U(A),
+\label{eq:psi_energy_budget_test}
+\end{equation}
+where $Q_\psi^{\rm ext}$ denotes net energy input into the proxy
+sector from explicitly modelled other degrees of freedom, with the
+sign convention $\dot\rho_\psi+3H\dot\psi^2=Q_\psi^{\rm ext}$.
+For time-dependent $m_{\rm eff}$, the work done by the changing
+potential must also be included by evolving the full coupled equations;
+the fixed-$\mu$ expression above is then not a conserved-energy
+shortcut.
+
+The rapid-oscillation requirement can be expressed using the quartic
+oscillation frequency, which is of order
+$\omega_4\simeq0.85\sqrt{\lambda_\psi}A$ for
+$U\simeq\lambda_\psi\psi^4/4$. Thus a candidate orbit must satisfy
+both $A/\psi_0\gg1$ and $\omega_4/H\gg1$ over the averaging
+interval. An initial condition $\dot\psi(t_c)=0$ and
+$|\psi(t_c)|\ll\psi_0$ does not establish either condition. The
+actual orbit depends on the seed fluctuations, initial velocity, the
+time dependence of $m_{\rm eff}$, Hubble damping, and energy transfer
 to other sectors. These quantities must be specified and evolved to
-establish the claimed attractor.
+establish the claimed regime.
 
 Accordingly, the PTUM radiation-like proxy-fluid component is treated below
 as a phenomenological late-time closure conditional on the quartic-dominance
@@ -854,23 +893,28 @@ post-transition epoch and cannot be inferred from these order-of-magnitude
 values alone.
 
 The physically justified sequence is therefore: (i) threshold crossing
-changes the sign of $m_{\rm eff}^2$; (ii) tachyonic modes grow; (iii) the
-field rolls toward one of the non-zero minima unless its energy permits
-barrier crossing; (iv) small oscillations about a minimum are matter-like;
-(v) a radiation-like quartic phase is possible only if the stronger
-quartic-dominance and averaging conditions are independently established.
+changes the sign of $m_{\rm eff}^2$; (ii) nonzero seed modes in the
+unstable band are tachyonically amplified; (iii) the field evolves toward
+a minimum, with its subsequent trajectory determined by the initial
+energy, Hubble losses, and continued work by coupled fields; (iv) small
+oscillations about a minimum are matter-like; (v) a radiation-like quartic
+phase is possible only if the energy-budget, quartic-dominance, and
+rapid-averaging conditions are independently established.
 The later CLASS results use the last regime as an effective closure and
 should be interpreted with this conditional status.
 
 \paragraph{Critical numerical finding:}
-Numerical integration of the coupled background equations
-(Eqs.~\ref{eq:Phi_eom}--\ref{eq:psi_eom_full}) with the benchmark
-parameters of this paper ($V_0\sim10^{64}\,\mathrm{GeV}^4$,
+The manuscript-reported homogeneous integration of the coupled
+background equations (Eqs.~\ref{eq:Phi_eom}--\ref{eq:psi_eom_full})
+for the benchmark parameters ($V_0\sim10^{64}\,\mathrm{GeV}^4$,
 $H_*\sim10^{13}\,\mathrm{GeV}$, $m_\psi\sim10^{13}\,\mathrm{GeV}$,
-$\lambda_\psi\sim0.1$) shows that the system is \textbf{overdamped}:
-$3H/(2\mu)\approx 25\gg1$. No oscillations occur; the field remains at
-$\psi=0$ (the top of the barrier) and $w_\psi=0$. The quartic-dominated
-regime with $w_\psi=1/3$ is \textbf{not achieved} with these parameters.
+$\lambda_\psi\sim0.1$) is classified as \textbf{overdamped}, with
+$3H/(2\mu)\approx25\gg1$. An exactly vanishing homogeneous initial
+condition $\psi=\dot\psi=0$ remains an exact solution even after the
+mass becomes tachyonic; physical growth requires nonzero fluctuations
+or another seed. The reported benchmark calculation does not establish
+a transition to sustained oscillations, and hence does not demonstrate
+the quartic-dominated regime with $w_\psi=1/3}.
 Achieving the quartic regime requires $V_0\lesssim10^{58}\,\mathrm{GeV}^4$
 ($H_*\lesssim10^{10}\,\mathrm{GeV}$) \emph{and} sufficient initial kinetic
 energy in $\psi$ to cross the barrier, \emph{and} continuing energy input
