@@ -76,8 +76,20 @@ def main():
         })
 
     summary_path = output.with_name(output.stem + "_summary.json")
+    def json_safe(value):
+        if isinstance(value, (np.floating, float)):
+            number = float(value)
+            return number if np.isfinite(number) else None
+        if isinstance(value, np.generic):
+            return json_safe(value.item())
+        if isinstance(value, dict):
+            return {str(key): json_safe(item) for key, item in value.items()}
+        if isinstance(value, (list, tuple)):
+            return [json_safe(item) for item in value]
+        return value
+
     summary_path.write_text(
-        json.dumps(summary, indent=2, allow_nan=False), encoding="utf-8"
+        json.dumps(json_safe(summary), indent=2, allow_nan=False), encoding="utf-8"
     )
     successful = sum(bool(item["success"]) for item in summary)
     quartic = sum(
