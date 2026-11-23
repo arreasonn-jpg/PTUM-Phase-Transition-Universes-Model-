@@ -1,0 +1,48 @@
+name: PTUM Phi-Psi Validation
+
+on:
+  push:
+    branches:
+      - main
+      - theory-corrections/energy-momentum-v1
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install numerical dependencies
+        run: python -m pip install --upgrade pip numpy scipy pytest
+      - name: Compile simulation module
+        run: python -m py_compile ptum_task1_simulation.py run_ptum_phi_psi_benchmark.py
+      - name: Run mathematical regression tests
+        run: pytest -q tests/test_ptum_task1_simulation.py
+      - name: Re-run the full 18-point coupled Phi-Psi scan
+        run: |
+          python run_ptum_phi_psi_benchmark.py \
+            --t-max-mu 3500 \
+            --n-points 8000 \
+            --output ptum_phi_psi_18_point_results.json
+      - name: Upload scan report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ptum-phi-psi-18point-scan
+          path: |
+            ptum_phi_psi_18_point_results.json
+            ptum_phi_psi_18_point_results_summary.json
+          if-no-files-found: warn
