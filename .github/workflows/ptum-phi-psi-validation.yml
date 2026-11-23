@@ -54,12 +54,14 @@ jobs:
           quartic = sum(bool(r.get("classification", {}).get("quartic_achieved")) for r in results)
           max_total = max(r.get("max_relative_continuity_residual", float("inf")) for r in results)
           max_split = max(r.get("max_relative_split_continuity_residual", float("inf")) for r in results)
+          max_dydt = max(r.get("max_relative_state_derivative_residual", float("inf")) for r in results)
           print(f"trajectories={len(results)} success={succeeded} failed={failed} quartic={quartic}")
-          print(f"max_total_continuity={max_total:.3e} max_split_continuity={max_split:.3e}")
+          print(f"max_total_continuity={max_total:.3e} max_split_continuity={max_split:.3e} max_dydt={max_dydt:.3e}")
           assert len(results) == 18
           assert succeeded == 18
           assert max_total < 1e-5
           assert max_split < 1e-4
+          assert max_dydt < 1e-3
           PY
       - name: Upload scan report
         if: always()
