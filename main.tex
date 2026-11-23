@@ -1253,24 +1253,27 @@ rigorous derivation; a full embedding into a specific string
 compactification is left for future work.
 
 \noindent\textbf{Swampland considerations.}
-The fuel potential $V(\Phi) = V_0(1 - e^{-\lambda\Phi^2/M_{\rm Pl}^2})$ has
+For the dimensionally normalized plateau
+$V(\Phi)=V_0(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2})$, the exact gradient is
 \begin{equation}
-\frac{|V'|}{V} = \frac{2\lambda\frac{\Phi}{M_{\rm Pl}^2}e^{-\lambda\Phi^2/M_{\rm Pl}^2}}{1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}}.
+M_{\rm Pl}\frac{|V'|}{V}
+=\frac{2\lambda|\Phi|/M_{\rm Pl}\;e^{-\lambda\Phi^2/M_{\rm Pl}^2}}
+{1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}}.
 \end{equation}
-In the large-field asymptotic regime ($\lambda\Phi^2 \gg 1$),
-$|V'|/V \to 2\lambda\Phi \gtrsim \mathcal{O}(1)$ for $\Phi \gtrsim
-M_{\rm Pl}$, satisfying the de Sitter Swampland Conjecture
-\cite{Obied2018,Ooguri2019}. In the inflationary slow-roll regime,
-the field is at intermediate values $\lambda\Phi^2/M_{\rm Pl}^2 \sim \mathcal{O}(1)$
-where the exponential is not yet saturated; here $|V'|/V \ll 1$ is
-maintained for the required $N_e \sim 50$--$60$ e-folds. The refined
-de Sitter conjecture, which allows $\min(\nabla_i \nabla_j V) \leq
--c'\,V/M_{\rm Pl}^2$, is satisfied throughout the slow-roll phase
-for $c' \sim \mathcal{O}(\eta)$. There is no contradiction: the
-swampland bound applies asymptotically at very large $\Phi$, while
-slow-roll occurs at intermediate field values where the potential is
-plateau-like. A systematic analysis of the full PTUM potential
-landscape against swampland criteria is deferred to future work.
+It tends to zero, not to a growing large-field value, as
+$|\Phi|/M_{\rm Pl}\to\infty$. Thus this plateau does not satisfy a
+positive-gradient de Sitter bound in that asymptotic regime. Its
+dimensionless curvature is
+\begin{equation}
+M_{\rm Pl}^2\frac{V''}{V}
+=2\lambda\frac{e^{-x}(1-2x)}{1-e^{-x}},
+\qquad x=\lambda\Phi^2/M_{\rm Pl}^2,
+\end{equation}
+which also tends to zero from below at large $x$. A fixed positive
+refined-conjecture constant therefore cannot be claimed from this
+asymptotic limit. Any refined de Sitter assessment must specify the
+field interval and constants being tested; no general satisfaction
+claim is made here.
 
 \noindent\textbf{Field excursions and shift symmetry.}
 For small values of the coupling $\lambda \lesssim 0.05$, the fuel
@@ -1318,8 +1321,8 @@ inflationary phase, $\Phi$ rolls down the plateau potential
 $V(\Phi) = V_0(1 - e^{-\lambda\Phi^2/M_{\rm Pl}^2})$. The slow-roll parameters
 are
 \begin{align}
-\epsilon_V &= \frac{1}{2}\left(\frac{V_{,\Phi}}{V}\right)^2
-= 2\lambda^2 \frac{\Phi^2 e^{-2\lambda\Phi^2}}{(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2})^2}, \notag\\
+\epsilon_V &= \frac{M_{\rm Pl}^2}{2}\left(\frac{V_{,\Phi}}{V}\right)^2
+= 2\lambda^2 \frac{(\Phi^2/M_{\rm Pl}^2)e^{-2\lambda\Phi^2/M_{\rm Pl}^2}}{(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2})^2}, \notag\\
 \eta_V &= M_{\rm Pl}^2\frac{V_{,\Phi\Phi}}{V}
 = 2\lambda \frac{e^{-\lambda\Phi^2/M_{\rm Pl}^2}(1-2\lambda\Phi^2/M_{\rm Pl}^2)}{1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}}.
 \end{align}
@@ -4099,7 +4102,7 @@ Equation & Quantity & Dimensions \\
 & \(\lambda\) & dimensionless \\
 & \(\Phi\) & \([{\rm GeV}]\) \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
-\(\epsilon_V = \frac{1}{2}(V_{,\Phi}/V)^2\) & \(\epsilon_V\) & dimensionless \\
+\(\epsilon_V = \frac{M_{\rm Pl}^2}{2}(V_{,\Phi}/V)^2\) & \(\epsilon_V\) & dimensionless \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
 \(A_s = \frac{V_*}{24\pi^2 M_{\rm Pl}^4 \epsilon_*}\) & \(A_s\) & dimensionless \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
