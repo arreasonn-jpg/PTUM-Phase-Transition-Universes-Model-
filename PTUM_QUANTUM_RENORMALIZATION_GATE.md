@@ -42,7 +42,7 @@ A consistent counterterm basis must be derived from the same action and must inc
 
 1. Waterfall-sector mass and quartic renormalization, (delta m_\psi^2) and (delta\lambda_\psi).
 2. The mixed (Phi^2\psi^2) coupling and the induced (Phi)-potential terms. Since (m_{\rm eff}^2(\Phi)) is field dependent, the one-loop determinant generates terms proportional to (m_{\rm eff}^4(\Phi)), which contain constant, (Phi^2), and (Phi^4) pieces.
-3. Curvature couplings for both scalar fields, \`R\psi^2\` and \`R\Phi^2\`, with renormalized \(\xi_\psi(\mu_R)\) and \(\xi_\Phi(\mu_R)\). The one-loop divergence proportional to \(M_\psi^2(\Phi)R\) contains an \(R\Phi^2\) term because the waterfall mass depends on \(\Phi\). Minimal classical values can be imposed as renormalization conditions at a specified scale; they must not be silently assumed to remain zero under quantum renormalization.
+3. Curvature couplings for both scalar fields, `R\psi^2` and `R\Phi^2`, with renormalized \(\xi_\psi(\mu_R)\) and \(\xi_\Phi(\mu_R)\). The one-loop divergence proportional to \(M_\psi^2(\Phi)R\) contains an \(R\Phi^2\) term because the waterfall mass depends on \(\Phi\). Minimal classical values can be imposed as renormalization conditions at a specified scale; they must not be silently assumed to remain zero under quantum renormalization.
 4. Gravitational counterterms for the cosmological constant, the Einstein term, and curvature-squared operators such as (R^2) and (R_{\mu\nu}R^{\mu\nu}).
 5. The derivative operators required by the chosen EFT truncation when the background-dependent mass varies in spacetime.
 
