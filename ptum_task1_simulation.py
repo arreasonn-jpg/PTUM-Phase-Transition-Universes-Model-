@@ -280,7 +280,7 @@ def run_simulation(params: PTUMParameters,
     p_phi_arr = 0.5 * Phi_dot**2 - np.array([veff_phi(x, params) for x in Phi])
     rho_total_arr = rho_phi_arr + rho_psi_arr
     p_total_arr = p_phi_arr + p_psi_arr
-    n_diag = max(len(t), 16000)
+    n_diag = max(len(t), 120000)
     t_diag = np.linspace(float(t[0]), float(t[-1]), n_diag)
     y_diag = sol.sol(t_diag)
     phi_d, phi_dot_d, psi_d, psi_dot_d = y_diag
@@ -675,7 +675,7 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     elif len(cycles) and abs(wf) < 0.1 and qf < 1.0:
         regime = 'quadratic'
     elif len(cycles) and wf > 0.5:
-        regime = 'barrier_crossing'
+        regime = 'kinetic_dominated'
     else:
         regime = 'transitional'
     return {'regime': regime, 'quartic_achieved': bool(quartic),
