@@ -133,8 +133,23 @@ def pressure_psi(Phi: float, psi: float, psi_dot: float, params: PTUMParameters)
     return 0.5 * psi_dot**2 - 0.5 * m_eff_sq * psi**2 - 0.25 * params.lambda_psi * psi**4
 
 
+def minimum_value_psi(Phi: float, params: PTUMParameters) -> float:
+    """Instantaneous minimum of the activation potential, zero in the dormant phase."""
+    mu_sq = max(-meff_sq_psi(Phi, params), 0.0)
+    return -mu_sq**2 / (4.0 * params.lambda_psi)
+
+
+def dminimum_value_psi_dphi(Phi: float, params: PTUMParameters) -> float:
+    """Derivative of the moving minimum with respect to the fuel field."""
+    m2 = meff_sq_psi(Phi, params)
+    if m2 >= 0.0:
+        return 0.0
+    dm2 = -2.0 * params.alpha * params.m_psi**2 * Phi / params.E_th**2
+    return -(m2 * dm2) / (2.0 * params.lambda_psi)
+
+
 def shifted_potential_psi(Phi: float, psi: float, params: PTUMParameters) -> float:
-    """Instantaneous ψ potential shifted by its minimum at the current Φ."""
+    """Instantaneous excitation potential above the moving minimum."""
     m_eff_sq = meff_sq_psi(Phi, params)
     mu_sq = max(-m_eff_sq, 0.0)
     psi0_sq = mu_sq / params.lambda_psi
@@ -231,9 +246,22 @@ def run_simulation(params: PTUMParameters,
     p_psi_arr = np.array([pressure_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
     w_psi_arr = np.array([w_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
     
-    # Shifted potential and virial diagnostics
+    # Split the exact activation energy into excitation energy plus the
+    # moving minimum. The complementary V_min term is assigned to Phi so
+    # that the sum remains exactly the unshifted Hilbert/Friedmann source.
     U_psi = np.array([shifted_potential_psi(Phi[i], psi[i], params) for i in range(len(t))])
-    
+    Vmin_psi = np.array([minimum_value_psi(x, params) for x in Phi])
+    rho_psi_exc_arr = 0.5 * psi_dot**2 + U_psi
+    p_psi_exc_arr = 0.5 * psi_dot**2 - U_psi
+    w_psi_exc_arr = np.divide(
+        p_psi_exc_arr, rho_psi_exc_arr,
+        out=np.full_like(rho_psi_exc_arr, np.nan),
+        where=np.abs(rho_psi_exc_arr) > 32*np.finfo(float).eps*np.maximum(
+            np.maximum(np.abs(p_psi_exc_arr), np.abs(rho_psi_exc_arr)),
+            np.finfo(float).tiny
+        )
+    )
+
     # Quartic dominance is measured as <V4>/<|V2|>, with the instantaneous
     # field-dependent mass, rather than a fixed mass sampled at 1.01 Phi_c.
     Q_arr = compute_quartic_dominance(t, Phi, psi, psi_dot, params)
@@ -241,7 +269,7 @@ def run_simulation(params: PTUMParameters,
     
     # Cycle-averaged equation of state is <p>/<rho>, not <p/rho>.
     # The latter is biased near turning points and when rho varies strongly.
-    w_avg, t_avg = compute_time_averaged_w(t, rho_psi_arr, p_psi_arr, psi_dot)
+    w_avg, t_avg = compute_time_averaged_w(t, rho_psi_exc_arr, p_psi_exc_arr, psi_dot)
     
     # Dense-output continuity diagnostic, independent of the requested output grid.
     p_phi_arr = 0.5 * Phi_dot**2 - np.array([veff_phi(x, params) for x in Phi])
@@ -266,6 +294,36 @@ def run_simulation(params: PTUMParameters,
         np.abs(h_diag * rho_diag), np.full_like(t_diag, np.finfo(float).tiny)
     ])
     max_relative_continuity_residual = float(np.max(np.abs(continuity) / continuity_scale))
+
+    # Check the exact bookkeeping split: V_act = U + V_min. The moving
+    # minimum contributes V_min'(Phi)*Phi_dot to the Phi-side transfer.
+    m2_diag = np.array([meff_sq_psi(x, params) for x in phi_d])
+    vmin_diag = np.array([minimum_value_psi(x, params) for x in phi_d])
+    u_diag = np.array([shifted_potential_psi(phi_d[i], psi_d[i], params)
+                       for i in range(n_diag)])
+    rho_phi_split = 0.5*phi_dot_d**2 + np.array([veff_phi(x, params) for x in phi_d]) + vmin_diag
+    p_phi_split = 0.5*phi_dot_d**2 - np.array([veff_phi(x, params) for x in phi_d]) - vmin_diag
+    rho_psi_exc_diag = 0.5*psi_dot_d**2 + u_diag
+    p_psi_exc_diag = 0.5*psi_dot_d**2 - u_diag
+    vmin_prime_diag = np.array([dminimum_value_psi_dphi(x, params) for x in phi_d])
+    transfer_phi_split = (
+        params.alpha*params.m_psi**2/params.E_th**2
+        * phi_d*psi_d**2*phi_dot_d + vmin_prime_diag*phi_dot_d
+    )
+    rho_phi_dot = np.gradient(rho_phi_split, t_diag, edge_order=2)
+    rho_psi_exc_dot = np.gradient(rho_psi_exc_diag, t_diag, edge_order=2)
+    residual_phi_split = rho_phi_dot + 3*h_diag*(rho_phi_split+p_phi_split) - transfer_phi_split
+    residual_psi_split = rho_psi_exc_dot + 3*h_diag*(rho_psi_exc_diag+p_psi_exc_diag) + transfer_phi_split
+    split_scale = np.maximum.reduce([
+        np.abs(rho_phi_dot), np.abs(rho_psi_exc_dot),
+        np.abs(transfer_phi_split), np.abs(3*h_diag*(rho_phi_split+p_phi_split)),
+        np.abs(3*h_diag*(rho_psi_exc_diag+p_psi_exc_diag)),
+        np.full_like(t_diag, np.finfo(float).tiny)
+    ])
+    max_relative_split_continuity_residual = float(np.max(
+        np.maximum(np.abs(residual_phi_split), np.abs(residual_psi_split))/split_scale
+    ))
+
     meff_sq_arr = np.array([meff_sq_psi(x, params) for x in Phi])
     tachyonic_duration, tachyonic_fraction, threshold_crossings = \
         _tachyonic_trajectory_diagnostics(t_diag, phi_d, params)
@@ -274,6 +332,7 @@ def run_simulation(params: PTUMParameters,
     return {
         'success': True,
         'max_relative_continuity_residual': max_relative_continuity_residual,
+        'max_relative_split_continuity_residual': max_relative_split_continuity_residual,
         'meff_sq': meff_sq_arr,
         'min_meff_sq': float(np.min(meff_sq_arr)),
         'tachyonic_duration': tachyonic_duration,
@@ -296,6 +355,10 @@ def run_simulation(params: PTUMParameters,
         'rho_psi': rho_psi_arr,
         'p_psi': p_psi_arr,
         'w_psi': w_psi_arr,
+        'rho_psi_exc': rho_psi_exc_arr,
+        'p_psi_exc': p_psi_exc_arr,
+        'w_psi_exc': w_psi_exc_arr,
+        'Vmin_psi': Vmin_psi,
         'w_psi_avg': w_avg,
         't_avg': t_avg,
         'U_psi': U_psi,
@@ -571,7 +634,7 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
                 'n_full_cycles': 0}
     cycles = compute_full_cycle_diagnostics(
         result['t'], result['Phi'], result['psi'], result['psi_dot'],
-        result['rho_psi'], result['p_psi'], result['H'], params)
+        result['rho_psi_exc'], result['p_psi_exc'], result['H'], params)
     last = cycles[-3:]
     if last:
         wv = np.asarray([c['w'] for c in last])
@@ -620,6 +683,7 @@ def save_results(results: List[Dict], filepath: str):
                 'final_psi_amplitude': float(np.max(np.abs(r['psi']))),
                 'final_Phi': float(r['Phi'][-1]),
                 'max_relative_continuity_residual': float(r['max_relative_continuity_residual']),
+                'max_relative_split_continuity_residual': float(r['max_relative_split_continuity_residual']),
                 'min_meff_sq': float(r['min_meff_sq']),
                 'tachyonic_duration': float(r['tachyonic_duration']),
                 'tachyonic_fraction': float(r['tachyonic_fraction']),
