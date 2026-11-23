@@ -317,7 +317,7 @@ M_{\rm Pl}=(8\pi G)^{-1/2}\simeq 2.435\times10^{18}\,\mathrm{GeV},
 with the energy-momentum tensor defined by
 \(T_{\mu\nu}=-\frac{2}{\sqrt{-g}}\frac{\delta(\sqrt{-g}\mathcal{L}_{\rm m})}
 {\delta g^{\mu\nu}}\), so that a canonical scalar
-\(\mathcal{L}=\tfrac12(\partial\phi)^2-V\) gives
+\(\mathcal{L}=-\tfrac12g^{\mu\nu}\partial_\mu\phi\partial_\nu\phi-V\) gives
 \(\rho=\tfrac12\dot\phi^2+V\), \(p=\tfrac12\dot\phi^2-V\).
 Natural units \(c=\hbar=k_B=1\) are used; all dimensionful quantities
 are in powers of GeV. The Riemann tensor convention is
@@ -1536,8 +1536,9 @@ total energy-momentum tensor is conserved,
 \qquad
 T^{\mu\nu}_{\rm total} = \sum_i T^{\mu\nu}_i,
 \end{equation}
-where the sum runs over the four sectors: SM radiation (r), dark
-matter (c), pfd \(\psi\), and residual dark energy (de).  At the
+where the sum runs over the interacting sectors, including the
+fuel field, proxy field, dark matter, residual field, SM scalar, and
+fermions whenever their interactions are active.  At the
 background level, this implies
 \begin{equation}
 \dot\rho_i + 3H(\rho_i + p_i) = Q_i,
@@ -1591,8 +1592,8 @@ Q_{\rm DE}^\nu &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\partial^\nu\Phi_{\rm res}.
 \end{align}
 At the background level in FRW, the energy transfer rates are
 \begin{align}
-Q_{\rm DM} &= -2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res}, \\
-Q_{\rm DE} &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res},
+Q_{\rm DM} &= +2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res}, \\
+Q_{\rm DE} &= -2g_{\rm DM}\chi^2\Phi_{\rm res}\dot\Phi_{\rm res},
 \end{align}
 and \(Q_{\rm DM}+Q_{\rm DE}=0\) exactly (GÖSTERİLDİ; each interaction
 assigned once with opposite signs to the two exchanging sectors, as
@@ -1606,13 +1607,16 @@ transfer vector, the time-averaged energy transfer rate over one
 oscillation period is
 \begin{equation}
 \langle Q_{\rm DM} \rangle
-= -2g_{\rm DM}\chi^2\Phi_{\rm res}\langle\dot\Phi_{\rm res}\rangle
-\sim g_{\rm DM}\Phi_{\rm res}^2 m_\chi \chi^2
-\sim g_{\rm DM}\Phi_{\rm res}^2 \rho_{\rm DM},
+=2g_{\rm DM}
+\left\langle\chi^2\Phi_{\rm res}\dot\Phi_{\rm res}\right\rangle .
 \end{equation}
-where the last estimate uses \(\langle\dot\Phi_{\rm res}\rangle\sim
-m_{\rm res}\Phi_{\rm res}\) for an oscillating residual field and
-\(\rho_{\rm DM}\simeq m_\chi\chi^2\). For the benchmark parameters
+The average must be evaluated from the correlated fields along the
+coupled solution. For a strictly periodic residual field,
+$\langle\dot\Phi_{\rm res}\rangle=0$; it is therefore not valid to
+replace the correlated average by a nonzero signed average of
+$\dot\Phi_{\rm res}$ alone. In a non-relativistic harmonic regime,
+$\rho_{\rm DM}\simeq m_\chi^2\langle\chi^2\rangle$ up to the
+oscillation-average convention and corrections from interactions. For the benchmark parameters
 \(g_{\rm DM} \lesssim 10^{-3}\), \(\Phi_{\rm res} \sim M_{\rm Pl}\),
 and \(m_\chi \sim 10^9\)--\(10^{13}\) GeV, the ratio of the
 interaction rate to the Hubble rate is
