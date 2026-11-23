@@ -103,3 +103,47 @@ def test_full_cycle_integral_diagnostics_recover_quartic_virial_limit():
         "rho_psi": rho, "p_psi": pressure, "H": h
     }, p)
     assert classification["quartic_achieved"]
+
+
+def test_moving_minimum_split_reproduces_full_hilbert_source_and_transfer():
+    p = sim.PTUMParameters(V0=1e56, m_psi=1e13, lambda_psi=0.1)
+    phi = 1.01 * p.Phi_c
+    phi_dot = -1.0e27
+    psi = 0.4 * p.psi_0
+    psi_dot = 0.2 * p.mu * p.psi_0
+    m2 = sim.meff_sq_psi(phi, p)
+    u = sim.shifted_potential_psi(phi, psi, p)
+    vmin = sim.minimum_value_psi(phi, p)
+    rho_phi_split = 0.5*phi_dot**2 + sim.veff_phi(phi, p) + vmin
+    p_phi_split = 0.5*phi_dot**2 - sim.veff_phi(phi, p) - vmin
+    rho_psi_exc = 0.5*psi_dot**2 + u
+    p_psi_exc = 0.5*psi_dot**2 - u
+    rho_total = sim.rho_phi(phi, phi_dot, psi, p) + sim.rho_psi(phi, psi, psi_dot, p)
+    p_total = (0.5*phi_dot**2 - sim.veff_phi(phi, p)
+               + sim.pressure_psi(phi, psi, psi_dot, p))
+    assert np.isclose(rho_phi_split + rho_psi_exc, rho_total, rtol=2e-14)
+    assert np.isclose(p_phi_split + p_psi_exc, p_total, rtol=2e-14)
+
+    ydot = sim.background_equations(0.0, np.array([phi, phi_dot, psi, psi_dot]), p)
+    _, phi_ddot, _, psi_ddot = ydot
+    h = sim.hubble_rate(phi, phi_dot, psi, psi_dot, p)
+    vmin_prime = sim.dminimum_value_psi_dphi(phi, p)
+    cphi = p.alpha * p.m_psi**2 * phi / p.E_th**2
+    q_split = (cphi * psi**2 + vmin_prime) * phi_dot
+    rho_phi_split_dot = (
+        phi_dot*phi_ddot + sim.dveff_dphi(phi, p)*phi_dot
+        + vmin_prime*phi_dot
+    )
+    assert np.isclose(
+        rho_phi_split_dot + 3*h*(rho_phi_split+p_phi_split),
+        q_split, rtol=3e-12, atol=1e-8*abs(q_split)
+    )
+    u_phi = -cphi*psi**2 - vmin_prime
+    rho_psi_exc_dot = (
+        psi_dot*psi_ddot + (m2*psi+p.lambda_psi*psi**3)*psi_dot
+        + u_phi*phi_dot
+    )
+    assert np.isclose(
+        rho_psi_exc_dot + 3*h*(rho_psi_exc+p_psi_exc),
+        -q_split, rtol=3e-12, atol=1e-8*abs(q_split)
+    )
