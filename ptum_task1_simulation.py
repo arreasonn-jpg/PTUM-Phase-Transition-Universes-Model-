@@ -465,27 +465,43 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     Q = result['Q']
     virial = result['virial_ratio']
     
+    # Reduce each diagnostic over the same turning-point intervals.
+    # This avoids treating many samples from one final half-cycle as
+    # independent evidence for a sustained regime.
+    turning_points = _turning_point_intervals(result['psi_dot'])
+    q_cycle, virial_cycle = [], []
+    for start, end in zip(turning_points[:-1], turning_points[1:]):
+        if end - start < 2:
+            continue
+        q_seg = Q[start:end]
+        v_seg = virial[start:end]
+        q_seg = q_seg[np.isfinite(q_seg)]
+        v_seg = v_seg[np.isfinite(v_seg)]
+        if len(q_seg) and len(v_seg):
+            q_cycle.append(float(np.mean(q_seg)))
+            virial_cycle.append(float(np.mean(v_seg)))
+
     # Require several resolved half-cycles; a single transient crossing is
     # not evidence for a sustained oscillatory equation of state.
-    if len(w_avg) >= 6:
+    if len(w_avg) >= 6 and len(q_cycle) >= 6 and len(virial_cycle) >= 6:
         w_last = np.asarray(w_avg[-3:], dtype=float)
+        q_last = np.asarray(q_cycle[-3:], dtype=float)
+        virial_last = np.asarray(virial_cycle[-3:], dtype=float)
         w_final = float(np.mean(w_last))
+        Q_final = float(np.mean(q_last))
+        virial_final = float(np.mean(virial_last))
     else:
         w_last = np.asarray([], dtype=float)
-        w_final = float(np.mean(w_avg)) if len(w_avg) else 0.0
-
-    valid_q = Q[np.isfinite(Q)]
-    valid_virial = virial[np.isfinite(virial)]
-    Q_final = float(np.mean(valid_q[-3:])) if len(valid_q) else 0.0
-    virial_final = float(np.mean(valid_virial[-3:])) if len(valid_virial) else np.nan
+        w_final = float(np.mean(w_avg[-3:])) if len(w_avg) else 0.0
+        Q_final = float(np.mean(q_cycle[-3:])) if q_cycle else 0.0
+        virial_final = float(np.mean(virial_cycle[-3:])) if virial_cycle else np.nan
 
     # Q is the quartic-to-quadratic potential-energy ratio. Require at least
-    # six half-cycles and a stable final-three-cycle average near radiation.
+    # six half-cycles and all final-three averages near the quartic limits.
     quartic_achieved = (len(w_last) == 3 and
                         np.all(np.abs(w_last - 1/3) < 0.05) and
-                        Q_final > 5 and
-                        np.isfinite(virial_final) and
-                        abs(virial_final - 1.0) < 0.2)
+                        np.all(np.asarray(q_cycle[-3:]) > 5) and
+                        np.all(np.abs(np.asarray(virial_cycle[-3:]) - 1.0) < 0.2))
     
     if quartic_achieved:
         regime = 'quartic'
