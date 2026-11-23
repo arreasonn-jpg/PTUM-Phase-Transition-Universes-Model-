@@ -238,8 +238,9 @@ def run_simulation(params: PTUMParameters,
     Q_arr = compute_quartic_dominance(t, Phi, psi, psi_dot, params)
     virial_ratio = compute_quartic_virial_ratio(t, psi, psi_dot, params)
     
-    # Time-averaged w_psi over oscillation periods
-    w_avg, t_avg = compute_time_averaged_w(t, w_psi_arr, psi_dot)
+    # Cycle-averaged equation of state is <p>/<rho>, not <p/rho>.
+    # The latter is biased near turning points and when rho varies strongly.
+    w_avg, t_avg = compute_time_averaged_w(t, rho_psi_arr, p_psi_arr, psi_dot)
     
     # Total scalar pressure and continuity-equation residual. In an expanding
     # FRW background total rho is not constant: rho_dot + 3H(rho+p)=0.
@@ -255,9 +256,23 @@ def run_simulation(params: PTUMParameters,
     ])
     max_relative_continuity_residual = float(np.max(np.abs(continuity) / continuity_scale))
 
+    # Threshold diagnostics are evaluated on the actual coupled trajectory.
+    meff_sq_arr = np.array([meff_sq_psi(x, params) for x in Phi])
+    tachyonic_mask = meff_sq_arr < 0.0
+    tachyonic_duration = float(np.trapz(tachyonic_mask.astype(float), t))
+    tachyonic_fraction = tachyonic_duration / float(t[-1] - t[0]) if t[-1] > t[0] else 0.0
+    seedless_invariant = (ic.psi == 0.0 and ic.psi_dot == 0.0)
+
     return {
         'success': True,
         'max_relative_continuity_residual': max_relative_continuity_residual,
+        'meff_sq': meff_sq_arr,
+        'min_meff_sq': float(np.min(meff_sq_arr)),
+        'tachyonic_duration': tachyonic_duration,
+        'tachyonic_fraction': tachyonic_fraction,
+        'seedless_invariant': seedless_invariant,
+        'max_abs_psi': float(np.max(np.abs(psi))),
+        'max_abs_Phi_over_Phi_c': float(np.max(np.abs(Phi)) / params.Phi_c),
         'rho_total': rho_total_arr,
         'p_total': p_total_arr,
         't': t,
@@ -285,6 +300,14 @@ def _turning_point_intervals(psi_dot: np.ndarray) -> np.ndarray:
     return np.where(np.diff(np.sign(psi_dot)))[0]
 
 
+def _time_average(t_seg: np.ndarray, values: np.ndarray) -> float:
+    """Trapezoidal time average, valid for uniform or adaptive solver grids."""
+    duration = float(t_seg[-1] - t_seg[0])
+    if duration <= 0.0:
+        return float('nan')
+    return float(np.trapz(values, t_seg) / duration)
+
+
 def compute_quartic_dominance(t: np.ndarray, Phi: np.ndarray, psi: np.ndarray,
                               psi_dot: np.ndarray, params: PTUMParameters) -> np.ndarray:
     """Compute <V4>/<|V2|> on each half-cycle using the instantaneous m_eff(Φ)."""
@@ -295,8 +318,8 @@ def compute_quartic_dominance(t: np.ndarray, Phi: np.ndarray, psi: np.ndarray,
             continue
         phi_seg, psi_seg = Phi[start:end], psi[start:end]
         mass_sq = np.abs(np.array([meff_sq_psi(x, params) for x in phi_seg]))
-        v4_avg = 0.25 * params.lambda_psi * np.mean(psi_seg**4)
-        v2_avg = 0.5 * np.mean(mass_sq * psi_seg**2)
+        v4_avg = _time_average(t[start:end], 0.25 * params.lambda_psi * psi_seg**4)
+        v2_avg = _time_average(t[start:end], 0.5 * mass_sq * psi_seg**2)
         Q[start:end] = v4_avg / v2_avg if v2_avg > 0 else np.inf
     return Q
 
@@ -309,31 +332,31 @@ def compute_quartic_virial_ratio(t: np.ndarray, psi: np.ndarray, psi_dot: np.nda
     for start, end in zip(turning_points[:-1], turning_points[1:]):
         if end - start < 2:
             continue
-        v4_avg = 0.25 * params.lambda_psi * np.mean(psi[start:end]**4)
-        ratio[start:end] = np.mean(psi_dot[start:end]**2) / (4.0 * v4_avg) if v4_avg > 0 else np.nan
+        v4_avg = _time_average(t[start:end], 0.25 * params.lambda_psi * psi[start:end]**4)
+        kinetic_numerator = _time_average(t[start:end], psi_dot[start:end]**2)
+        ratio[start:end] = kinetic_numerator / (4.0 * v4_avg) if v4_avg > 0 else np.nan
     return ratio
 
 
-def compute_time_averaged_w(t: np.ndarray, w: np.ndarray, 
+def compute_time_averaged_w(t: np.ndarray, rho: np.ndarray, p: np.ndarray,
                             psi_dot: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-    """Compute time-averaged w_ψ over oscillation periods."""
-    zero_crossings = np.where(np.diff(np.sign(psi_dot)))[0]
-    
-    if len(zero_crossings) < 2:
+    """Compute cycle-averaged equation of state as integral(p dt)/integral(rho dt)."""
+    turning_points = _turning_point_intervals(psi_dot)
+    if len(turning_points) < 2:
         return np.array([]), np.array([])
-    
-    w_avg = []
-    t_avg = []
-    
-    for i in range(len(zero_crossings) - 1):
-        start = zero_crossings[i]
-        end = zero_crossings[i + 1]
+
+    w_avg, t_avg = [], []
+    for start, end in zip(turning_points[:-1], turning_points[1:]):
         if end - start < 2:
             continue
-        w_avg.append(np.mean(w[start:end]))
+        rho_int = float(np.trapz(rho[start:end + 1], t[start:end + 1]))
+        p_int = float(np.trapz(p[start:end + 1], t[start:end + 1]))
+        scale = float(np.trapz(np.abs(rho[start:end + 1]), t[start:end + 1]))
+        if not np.isfinite(rho_int) or abs(rho_int) <= np.finfo(float).eps * max(scale, 1.0):
+            continue
+        w_avg.append(p_int / rho_int)
         t_avg.append(0.5 * (t[start] + t[end]))
-    
-    return np.array(w_avg), np.array(t_avg)
+    return np.asarray(w_avg, dtype=float), np.asarray(t_avg, dtype=float)
 
 
 def create_initial_conditions(params: PTUMParameters,
@@ -467,6 +490,15 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     """
     if not result['success']:
         return {'regime': 'failed', 'quartic_achieved': False}
+    if result.get('seedless_invariant', False):
+        return {
+            'regime': 'unseeded_invariant',
+            'quartic_achieved': False,
+            'w_final': 0.0,
+            'Q_final': 0.0,
+            'virial_final': float('nan'),
+            'n_oscillations': 0
+        }
     
     w_avg = result['w_psi_avg']
     Q = result['Q']
@@ -551,7 +583,13 @@ def save_results(results: List[Dict], filepath: str):
                 'ic_params': r['ic_params'],
                 'final_psi_amplitude': float(np.max(np.abs(r['psi']))),
                 'final_Phi': float(r['Phi'][-1]),
-                'max_relative_continuity_residual': float(r['max_relative_continuity_residual'])
+                'max_relative_continuity_residual': float(r['max_relative_continuity_residual']),
+                'min_meff_sq': float(r['min_meff_sq']),
+                'tachyonic_duration': float(r['tachyonic_duration']),
+                'tachyonic_fraction': float(r['tachyonic_fraction']),
+                'seedless_invariant': bool(r['seedless_invariant']),
+                'max_abs_psi': float(r['max_abs_psi']),
+                'max_abs_Phi_over_Phi_c': float(r['max_abs_Phi_over_Phi_c'])
             })
         else:
             summary.append({
