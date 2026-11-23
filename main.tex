@@ -534,6 +534,76 @@ The field equations in a flat FRW universe,
 \label{eq:frw4}
 \end{align}
 
+\subsubsection{Closed $\Phi$--$\psi$ background and field-level system}
+\label{subsec:closed_phi_psi_system}
+
+For the two-field truncation evolved in Task~1, the common potential is
+\begin{equation}
+V_{\Phi\psi}(\Phi,\psi)
+=V_{\rm eff}(\Phi)
++\frac12m^2\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi^2
++\frac{\lambda_\psi}{4}\psi^4 .
+\end{equation}
+The corresponding homogeneous energy density and pressure are
+\begin{align}
+\rho_{\Phi\psi}
+&=\frac12\dot\Phi^2+\frac12\dot\psi^2+V_{\Phi\psi},\\
+p_{\Phi\psi}
+&=\frac12\dot\Phi^2+\frac12\dot\psi^2-V_{\Phi\psi}.
+\end{align}
+When this two-field system is the only source in the background,
+\begin{equation}
+3M_{\rm Pl}^2H^2=\rho_{\Phi\psi},\qquad
+\dot H=-\frac{\dot\Phi^2+\dot\psi^2}{2M_{\rm Pl}^2}.
+\label{eq:phi_psi_friedmann_closed}
+\end{equation}
+Additional sectors, if active, must be added to the right-hand side of
+the Friedmann constraint and to the total pressure; they are set to zero
+in the Task~1 two-field truncation.
+
+The field-dependent interaction energy is assigned once, to the
+$\psi$ sector:
+\begin{align}
+\rho_\Phi&=\frac12\dot\Phi^2+V_{\rm eff}(\Phi),\\
+\rho_\psi&=\frac12\dot\psi^2
++\frac12m_{\rm eff}^2(\Phi)\psi^2
++\frac{\lambda_\psi}{4}\psi^4.
+\end{align}
+The two sector continuity equations are
+\begin{align}
+\dot\rho_\Phi+3H\dot\Phi^2&=Q_{\Phi\to\psi},\\
+\dot\rho_\psi+3H\dot\psi^2&=-Q_{\Phi\to\psi},\\
+Q_{\Phi\to\psi}
+&=\frac{\alpha m^2}{E_{\rm th}^2}\Phi\psi^2\dot\Phi .
+\end{align}
+Thus the transfer cancels in the sum and the exact two-field identity is
+\begin{equation}
+\boxed{\dot\rho_{\Phi\psi}
++3H(\rho_{\Phi\psi}+p_{\Phi\psi})=0.}
+\label{eq:phi_psi_total_continuity}
+\end{equation}
+This identity follows from the coupled equations of motion; it does not
+mean that $\rho_{\Phi\psi}$ is constant during expansion.
+
+For spatially inhomogeneous classical fields, the same action gives
+\begin{align}
+\ddot\Phi+3H\dot\Phi-a^{-2}\nabla^2\Phi
++V_{\rm eff}'(\Phi)
+-\frac{\alpha m^2}{E_{\rm th}^2}\Phi\psi^2&=0,\\
+\ddot\psi+3H\dot\psi-a^{-2}\nabla^2\psi
++m_{\rm eff}^2(\Phi)\psi+\lambda_\psi\psi^3&=0.
+\label{eq:phi_psi_pde}
+\end{align}
+Equations~(\ref{eq:frw1})--(\ref{eq:frw2}) are their homogeneous
+limit, obtained by setting spatial gradients to zero. The Task~1
+ODE solver therefore validates the homogeneous background only. It
+does not resolve the tachyonic band $k/a<|m_{\rm eff}|$, nonlinear
+mode growth, rescattering, or defect formation. Those phenomena require
+a spatial lattice evolution with specified initial fluctuation spectra,
+lattice-spacing and volume convergence, and a renormalized energy
+accounting. The homogeneous result must not be presented as a substitute
+for that field-level calculation.
+
 \subsubsection{Euler--Lagrange derivation and consistency check}
 \label{sec:eom_consistency}
 
