@@ -1,0 +1,224 @@
+name: PTUM scientific regression tests
+
+on:
+  push:
+    branches:
+      - main
+      - 'ptum/full-scan-*'
+      - 'ptum/scientific-consistency-fixes-2026-11-13'
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/ptum/full-scan-') || (github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[FULL-SCAN]') || startsWith(github.event.pull_request.head.ref, 'ptum/full-scan-'))) || (github.event_name == 'push' && github.ref == 'refs/heads/ptum/scientific-consistency-fixes-2026-11-13' && contains(github.event.head_commit.message, '[FULL-SCAN]'))) && format('ptum-full-scan-{0}', github.event.pull_request.number || github.ref) || format('ptum-scientific-{0}', github.event.pull_request.number || github.ref) }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/heads/ptum/full-scan-') && !(github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[FULL-SCAN]') || startsWith(github.event.pull_request.head.ref, 'ptum/full-scan-'))) && !(github.event_name == 'push' && github.ref == 'refs/heads/ptum/scientific-consistency-fixes-2026-11-13' && contains(github.event.head_commit.message, '[FULL-SCAN]')) }}
+
+permissions:
+  contents: read
+
+jobs:
+  python-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+          python -m pip freeze
+      - name: Run PTUM regression tests
+        run: python -m pytest -q tests/test_ptum_consistency.py
+      - name: Run four-trajectory two-scale CI smoke scan
+        if: github.event_name != 'workflow_dispatch' && !(github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-'))
+        run: python ptum_task1_scan.py --profile ci --output task1_parameter_scan_ci.json
+      - name: Upload two-scale CI smoke summary
+        if: always() && github.event_name != 'workflow_dispatch' && !(github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-'))
+        uses: actions/upload-artifact@v7
+        with:
+          name: ptum-two-scale-ci-smoke
+          path: task1_parameter_scan_ci.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+  lattice-uv-cutoff-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      - name: Install audit dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+      - name: Run fixed-box bare WKB UV-cutoff audit
+        run: >-
+          python ptum_lattice_uv_audit.py
+          --grid-sizes 4 6 8 10 12 16 20 24 32 48 64
+          --box-size-over-mu 8
+          --volume-grid-sizes 8 12 16 24 32 48 64
+          --fixed-dx-over-mu-inverse 1
+          --seed 20261121
+          --output ptum_lattice_uv_cutoff_audit.json
+      - name: Upload bare WKB UV-cutoff audit
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ptum-lattice-bare-wkb-uv-cutoff-audit
+          path: ptum_lattice_uv_cutoff_audit.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+  full-waterfall-scan:
+    # Full scan runs only by explicit PR #2 title opt-in or on an isolated
+    # ptum/full-scan-* branch PR. The latter keeps long scans out of PR #2's
+    # concurrency group and prevents them from cancelling regular regression CI.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/heads/ptum/full-scan-')) ||
+      (github.event_name == 'push' &&
+       github.ref == 'refs/heads/ptum/scientific-consistency-fixes-2026-11-13' &&
+       contains(github.event.head_commit.message, '[FULL-SCAN]')) ||
+      (github.event_name == 'pull_request' &&
+       ((github.event.pull_request.head.ref == 'ptum/scientific-consistency-fixes-2026-11-13' &&
+         contains(github.event.pull_request.title, '[FULL-SCAN]')) ||
+        startsWith(github.event.pull_request.head.ref, 'ptum/full-scan-')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      - name: Install scan dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+      # DOP853 is an independent explicit high-order cross-check against
+      # the archived Radau and BDF runs; tolerances, grid and RHS guard are unchanged.
+      - name: Run complete 100-trajectory high-resolution waterfall scan
+        run: >-
+          python ptum_task1_scan.py --profile full
+          --output task1_parameter_scan_results.json
+          --checkpoint task1_parameter_scan_checkpoint.json
+          --max-rhs-evaluations 1000000 --rtol 1e-9 --atol 1e-12 --solver-method DOP853
+      - name: Upload full and incremental two-field scan summaries
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ptum-two-field-full-scan
+          path: |
+            task1_parameter_scan_results.json
+            task1_parameter_scan_checkpoint.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+  scan-convergence:
+    # Targeted probes run on isolated convergence PRs and on PR #2 when
+    # its [FULL-SCAN] opt-in requests a fresh scientific verification pass.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' &&
+       github.ref == 'refs/heads/ptum/scientific-consistency-fixes-2026-11-13' &&
+       contains(github.event.head_commit.message, '[FULL-SCAN]')) ||
+      (github.event_name == 'pull_request' &&
+       (
+         startsWith(github.event.pull_request.head.ref, 'ptum/convergence-') ||
+         (github.event.pull_request.head.ref == 'ptum/scientific-consistency-fixes-2026-11-13' &&
+          contains(github.event.pull_request.title, '[FULL-SCAN]'))
+       ))
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      - name: Install convergence dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+      - name: Run targeted DOP853 tolerance and output-grid convergence
+        run: python ptum_scan_convergence.py --output ptum_scan_convergence_results.json
+      - name: Upload targeted convergence diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ptum-targeted-scan-convergence
+          path: ptum_scan_convergence_results.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+  scan-full-grid-convergence:
+    # Paired 4,001/256,001 output-grid and four-tolerance study on the same
+    # 100 initial conditions; this remains homogeneous post-threshold physics.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' &&
+       github.ref == 'refs/heads/ptum/scientific-consistency-fixes-2026-11-13' &&
+       contains(github.event.head_commit.message, '[FULL-SCAN]')) ||
+      (github.event_name == 'pull_request' &&
+       (
+         startsWith(github.event.pull_request.head.ref, 'ptum/full-grid-convergence-') ||
+         (github.event.pull_request.head.ref == 'ptum/scientific-consistency-fixes-2026-11-13' &&
+          contains(github.event.pull_request.title, '[FULL-SCAN]'))
+       ))
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      - name: Install refined-grid dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+      - name: Run paired 100-row DOP853 output-grid and solver-tolerance study
+        run: >-
+          python ptum_full_grid_convergence_study.py
+          --output ptum_full_grid_convergence_study.json
+          --checkpoint ptum_full_grid_convergence_study_checkpoint.json
+      - name: Upload paired full-grid convergence diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ptum-full-grid-convergence-study
+          path: |
+            ptum_full_grid_convergence_study.json
+            ptum_full_grid_convergence_study_checkpoint.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+  latex-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install LaTeX toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-publishers
+      - name: Compile manuscript
+        run: latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error main.tex
+      - name: Upload compiled manuscript
+        uses: actions/upload-artifact@v7
+        with:
+          name: ptum-manuscript-pdf
+          path: main.pdf
+          if-no-files-found: error
+          retention-days: 30
