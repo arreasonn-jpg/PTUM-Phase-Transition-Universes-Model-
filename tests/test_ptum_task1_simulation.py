@@ -100,7 +100,8 @@ def test_full_cycle_integral_diagnostics_recover_quartic_virial_limit():
     classification = sim.classify_outcome({
         "success": True, "seedless_invariant": False,
         "t": t_eval, "Phi": zeros, "psi": psi, "psi_dot": psi_dot,
-        "rho_psi": rho, "p_psi": pressure, "H": h
+        "rho_psi": rho, "p_psi": pressure,
+        "rho_psi_exc": rho, "p_psi_exc": pressure, "H": h
     }, p)
     assert classification["quartic_achieved"]
 
