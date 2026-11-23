@@ -382,7 +382,7 @@ with
 \begin{equation}
 \begin{split}
 V_{\rm eff}(\Phi)
-&=V_0\!\left(1-e^{-\lambda\Phi^2}\right) \\
+&=V_0\!\left(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}\right) \\
 &\quad +\frac{1}{64\pi^2}
 \sum_i n_i\,m_{{\rm eff},i}^4(\Phi)
 \left[\ln\frac{m_{{\rm eff},i}^2(\Phi)}{\mu_R^2}
@@ -461,13 +461,13 @@ This inequality is the instantaneous sign criterion separating the dormant
 ($m_{\rm eff}^2>0$) and tachyonic ($m_{\rm eff}^2<0$) regions. It does not,
 by itself, determine the direction or cause of a threshold crossing. In
 particular, for the specified fuel potential
-$V_{\rm eff}(\Phi)=V_0(1-e^{-\lambda\Phi^2})$ one has
-$V_{\rm eff}'(\Phi)=2\lambda V_0\Phi e^{-\lambda\Phi^2}$, so the homogeneous
+$V_{\rm eff}(\Phi)=V_0(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2})$ one has
+$V_{\rm eff}'(\Phi)=\frac{2\lambda V_0\Phi}{M_{\rm Pl}^2}e^{-\lambda\Phi^2/M_{\rm Pl}^2}$, so the homogeneous
 force $-V_{\rm eff}'$ points toward $\Phi=0$. With Hubble friction and no
 additional driving source, slow-roll motion therefore carries a field
 initially at $|\Phi|>\Phi_c$ toward the dormant region; it does not naturally
 drive a field from $|\Phi|<\Phi_c$ outward into the tachyonic region. At the
-very large values $\lambda\Phi^2\gg1$ relevant to the nominal threshold,
+nominal threshold, where $\lambda\Phi^2/M_{\rm Pl}^2=1$ by the adopted definition of $\Phi_c$,
 the exponential force is also extremely suppressed, so the field can be
 nearly frozen. A dormant-to-tachyonic crossing consequently requires an
 explicitly specified uphill initial velocity, an additional force/source,
@@ -1163,9 +1163,9 @@ rigorous derivation; a full embedding into a specific string
 compactification is left for future work.
 
 \noindent\textbf{Swampland considerations.}
-The fuel potential $V(\Phi) = V_0(1 - e^{-\lambda\Phi^2})$ has
+The fuel potential $V(\Phi) = V_0(1 - e^{-\lambda\Phi^2/M_{\rm Pl}^2})$ has
 \begin{equation}
-\frac{|V'|}{V} = \frac{2\lambda\Phi e^{-\lambda\Phi^2}}{1-e^{-\lambda\Phi^2}}.
+\frac{|V'|}{V} = \frac{2\lambda\Phi e^{-\lambda\Phi^2/M_{\rm Pl}^2}}{1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}}.
 \end{equation}
 In the large-field asymptotic regime ($\lambda\Phi^2 \gg 1$),
 $|V'|/V \to 2\lambda\Phi \gtrsim \mathcal{O}(1)$ for $\Phi \gtrsim
@@ -1225,13 +1225,13 @@ affect the observational predictions derived in this work.
 The end of inflation and the onset of the discharge are dynamically
 connected through the fuel field $\Phi$. During the slow-roll
 inflationary phase, $\Phi$ rolls down the plateau potential
-$V(\Phi) = V_0(1 - e^{-\lambda\Phi^2})$. The slow-roll parameters
+$V(\Phi) = V_0(1 - e^{-\lambda\Phi^2/M_{\rm Pl}^2})$. The slow-roll parameters
 are
 \begin{align}
 \epsilon_V &= \frac{1}{2}\left(\frac{V_{,\Phi}}{V}\right)^2
-= 2\lambda^2 \frac{\Phi^2 e^{-2\lambda\Phi^2}}{(1-e^{-\lambda\Phi^2})^2}, \notag\\
+= 2\lambda^2 \frac{\Phi^2 e^{-2\lambda\Phi^2}}{(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2})^2}, \notag\\
 \eta_V &= \frac{V_{,\Phi\Phi}}{V}
-= 2\lambda \frac{e^{-\lambda\Phi^2}(1-2\lambda\Phi^2)}{1-e^{-\lambda\Phi^2}}.
+= 2\lambda \frac{e^{-\lambda\Phi^2/M_{\rm Pl}^2}(1-2\lambda\Phi^2)}{1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}}.
 \end{align}
 Inflation ends when $\epsilon_V \approx 1$ or $|\eta_V| \approx 1$.
 For $\lambda \sim 0.02$, this occurs at $\Phi_{\rm end} \sim
@@ -1309,7 +1309,7 @@ Planck/BICEP-allowed region.
 
 At tree level, the fuel potential is
 \begin{equation}
-V(\Phi)=V_0\!\left(1-e^{-\lambda\Phi^2}\right).
+V(\Phi)=V_0\!\left(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}\right).
 \label{eq:fuelpot}
 \end{equation}
 This is a plateau-type potential: approximately quadratic at small
@@ -1469,7 +1469,7 @@ where primes denote derivatives with respect to conformal time
 \end{equation}
 with the Hubble-flow parameters \(\epsilon_1 = -\dot H/H^2\),
 \(\epsilon_{n+1} = d\ln|\epsilon_n|/dN\). For the PTUM fuel potential
-\(V(\Phi) = V_0(1 - e^{-\lambda\Phi^2})\), these parameters are
+\(V(\Phi) = V_0(1 - e^{-\lambda\Phi^2/M_{\rm Pl}^2})\), these parameters are
 computed exactly along the background trajectory.
 
 The authors report integrating the mode equation from deep inside the
@@ -3546,7 +3546,7 @@ not independently verified from released code or run artifacts:
 \item Initial conditions: $\Phi = \Phi_c - \delta\Phi$ (just below
       threshold), $\psi = \psi_{\rm vac} + \delta\psi$ with quantum
       fluctuations $\delta\psi_k \sim H_*/2\pi$.
-\item Potential: $V(\Phi,\psi) = V_0(1-e^{-\lambda\Phi^2}) +
+\item Potential: $V(\Phi,\psi) = V_0(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}) +
       \frac{1}{2}m^2(1-\alpha\Phi^2/E_{\rm th}^2)\psi^2 +
       \frac{1}{4}\lambda_\psi\psi^4$.
 \item Lattice: $N=512^3$ points, comoving box size $L \sim 10/H_*$,
@@ -4005,7 +4005,7 @@ equations are dimensionally consistent in natural units.}
 \hline\noalign{\smallskip}
 Equation & Quantity & Dimensions \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
-\(V(\Phi) = V_0(1-e^{-\lambda\Phi^2})\) & \(V_0\) & \([{\rm GeV}]^4\) \\
+\(V(\Phi) = V_0(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2})\) & \(V_0\) & \([{\rm GeV}]^4\) \\
 & \(\lambda\) & \([{\rm GeV}]^{-2}\) \\
 & \(\Phi\) & \([{\rm GeV}]\) \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
