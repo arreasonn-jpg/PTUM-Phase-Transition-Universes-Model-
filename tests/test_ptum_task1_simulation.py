@@ -99,3 +99,66 @@ def test_full_cycle_integral_diagnostics_recover_quartic_virial_limit():
         "rho_psi": rho, "p_psi": pressure, "H": h
     }, p)
     assert classification["quartic_achieved"]
+
+
+def test_fuel_potential_uses_dimensionless_planck_normalized_field():
+    p = sim.PTUMParameters()
+    phi = p.Phi_c
+    expected_v = p.V0 * (1.0 - np.exp(-1.0))
+    expected_dv = (
+        p.V0 * 2.0 * p.lambda_phi * phi / sim.M_PL**2 * np.exp(-1.0)
+    )
+    assert np.isclose(sim.veff_phi(phi, p), expected_v, rtol=1e-13)
+    assert np.isclose(sim.dveff_dphi(phi, p), expected_dv, rtol=1e-13)
+
+
+def test_slow_roll_initial_velocity_has_correct_planck_factor_and_direction():
+    p = sim.PTUMParameters()
+    ic = sim.create_initial_conditions(
+        p, psi_init=0.01 * p.psi_0, phi_offset=0.01 * p.Phi_c
+    )
+    v = sim.veff_phi(ic.Phi, p)
+    dv = sim.dveff_dphi(ic.Phi, p)
+    epsilon = 0.5 * (sim.M_PL * dv / v)**2
+    expected = -np.sqrt(2.0 * epsilon) * p.H_star * sim.M_PL
+    assert ic.Phi_dot < 0.0
+    assert np.isclose(ic.Phi_dot, expected, rtol=1e-13)
+    assert abs(ic.Phi_dot) > 1e20
+
+
+def test_underdamped_initializer_honors_explicit_fuel_velocity():
+    p = sim.PTUMParameters()
+    chosen_velocity = 2.5e27
+    ic = sim.create_initial_conditions_underdamped(
+        p, psi_init=0.01 * p.psi_0, phi_ratio=1.01,
+        phi_dot_init=chosen_velocity
+    )
+    assert ic.Phi_dot == chosen_velocity
+
+
+def test_run_result_contains_all_threshold_fields_required_by_json_export(tmp_path):
+    p = sim.PTUMParameters()
+    ic = sim.InitialConditions(
+        Phi=0.5 * p.Phi_c, Phi_dot=0.0, psi=0.0, psi_dot=0.0
+    )
+    result = sim.run_simulation(
+        p, ic, (0.0, 0.2 / p.m_psi),
+        np.linspace(0.0, 0.2 / p.m_psi, 64)
+    )
+    result["classification"] = sim.classify_outcome(result, p)
+    result["ic_params"] = {
+        "psi_init": 0.0, "psi_dot_init": 0.0, "phi_offset": -0.5 * p.Phi_c
+    }
+    required = {
+        "threshold_crossings", "initially_tachyonic", "finally_tachyonic",
+        "tachyonic_duration", "tachyonic_fraction"
+    }
+    assert required.issubset(result)
+    output = tmp_path / "trajectory.json"
+    sim.save_results([result], str(output))
+    import json
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    assert len(payload) == 1
+    assert payload[0]["initially_tachyonic"] is False
+    assert payload[0]["finally_tachyonic"] is False
+
