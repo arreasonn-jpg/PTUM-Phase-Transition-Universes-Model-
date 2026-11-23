@@ -1,29 +1,31 @@
 #!/usr/bin/env python3
 """
-PTUM Task 1: Tachyonic-to-Quartic Transition Numerical Simulation
+PTUM Task 1: Coupled homogeneous Phi-Psi background evolution.
 
-This module implements the coupled background evolution equations for the
-PTUM discharge dynamics to determine whether and under what conditions
-the proxy field ψ transitions to a quartic-dominated oscillatory regime
-with radiation-like equation of state (w = 1/3).
+The module integrates the two-field truncation with the Planck-normalized
+tree-level fuel potential. It does not evolve spatial Fourier modes and
+does not include the Coleman-Weinberg loop term in the tachyonic regime.
 
-Equations (from main.tex Sec 3.5.6, Eqs 3.18-3.21):
-  Φ̈ + 3HΦ̇ + ∂V_eff/∂Φ - (αm²/E_th²)Φψ² = 0
-  ψ̈ + 3Hψ̇ + m²(1 - αΦ²/E_th²)ψ + λ_ψψ³ = 0
-  H² = (1/3M_Pl²)(ρ_Φ + ρ_ψ + ρ_χ + ρ_res + ρ_rad)
+The homogeneous equations are
+  Phi_ddot + 3H Phi_dot + V_eff'(Phi) - (alpha*m^2/E_th^2)*Phi*psi^2 = 0
+  psi_ddot + 3H psi_dot + m_eff^2(Phi)*psi + lambda_psi*psi^3 = 0
+  3 M_Pl^2 H^2 = rho_Phi + rho_psi
 
-Energy densities (interaction allocated exactly once to the ψ sector):
-  ρ_Φ = ½Φ̇² + V_eff(Φ)
-  ρ_ψ = ½ψ̇² + ½m_eff²(Φ)ψ² + ¼λ_ψψ⁴
+The exact Friedmann source uses the unshifted Hilbert potential:
+  rho_Phi = 1/2 Phi_dot^2 + V_eff(Phi)
+  rho_psi = 1/2 psi_dot^2 + 1/2 m_eff^2(Phi)*psi^2 + lambda_psi*psi^4/4
 
-Shifted potential for ψ (energy measured from minimum):
-  U(ψ) = ¼λ_ψ(ψ² - ψ₀²)²,  ψ₀² = μ²/λ_ψ,  μ² = |m_eff²|
+For excitation diagnostics, V_act = U + V_min is split consistently:
+  rho_psi_exc = 1/2 psi_dot^2 + U
+  rho_Phi_split = 1/2 Phi_dot^2 + V_eff + V_min
+The moving-minimum contribution changes the sector transfer by
+V_min'(Phi)*Phi_dot but does not change the field equations or total H.
 
-Diagnostics:
-  w_ψ = p_ψ/ρ_ψ from the unshifted field-dependent potential
-  Q = ⟨V₄⟩/⟨|V₂|⟩, evaluated with m_eff²(Φ) on each half-cycle
-  Virial ratio = ⟨ψ̇²⟩/(4⟨V₄⟩), which tends to 1 in a quartic regime
-  Total energy is tested with ρ̇ + 3H(ρ+p)=0, not by assuming ρ is constant
+Full-period diagnostics use integral ratios for w_exc, Q4, and the virial
+identity, and require omega/H > 10 for a quartic classification.
+The continuity residual is evaluated from dense solver output.
+The default scan is an underdamped diagnostic parameter set, not the
+primordial-normalized cosmological benchmark.
 """
 
 import numpy as np
