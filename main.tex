@@ -45,7 +45,7 @@ with a Unified Dark Sector}
 \date{}
 
 \abstract{%
-The dark sector of the standard cosmological model comprises dark matter, dark energy, and possible dark radiation, whose common origin remains unexplained. We present the Phase Transition Universes Model (PTUM), a discharge-based cosmological creation scenario where a scalar quantum fuel field $\Phi$ accumulates, reaches a critical threshold, and undergoes a tachyonic transition. Within this effective description, the discharge event leaves behind a dark-matter candidate sector ($\chi$), a residual dark-energy sector ($\Phi_{\rm res}$), and a relativistic proxy-fluid dark radiation component (pfd, $\psi$). A falsifiable prediction of PTUM is that, \emph{within the effective linear proxy-fluid description}, the pfd component carries $w=1/3$, $c_s^2=1/3$, and zero anisotropic stress ($\sigma=0$). This produces no neutrino-induced CMB acoustic peak phase shift, distinguishing it from free-streaming dark radiation---a signature that may be tested at high significance by next-generation CMB experiments such as CMB-S4, depending on the realized pfd abundance. The authors report implementing the effective phenomenological system in \texttt{CLASS} at background and perturbation levels \emph{(modified code not yet public)}. The creation sector supports a plateau-type slow-roll phase compatible with current CMB constraints, fixing the discharge scale to $V_0^{1/4}\sim 10^{15}$--$10^{16}\,\mathrm{GeV}$. The dark-energy sector admits a broad near-$\Lambda$ viable region with $w_{\rm DE}\approx -1$. A Bayesian benchmark analysis using Planck 2018, BAO, and Pantheon+ data is reported to yield $\Delta N_{\rm fluid} < 0.31$ at $95\%$ credibility \emph{(author-reported; chains not yet public)}. Model comparison is reported to give $\Delta\chi^2 = +0.26$ and $\Delta\mathrm{AIC}=2.26$; current data therefore show a weak preference for $\Lambda$CDM while leaving PTUM viable as a falsifiable effective extension. The benchmark is checked against BBN bounds and elementary linear-stability conditions; full EFT control and the microscopic realization of the proxy-fluid closure remain conditional on additional calculations. \textbf{Critical caveat:} Numerical integration of the coupled background equations with the benchmark parameters ($V_0\sim10^{64}\,\mathrm{GeV}^4$, $H_*\sim10^{13}\,\mathrm{GeV}$) shows the system is overdamped ($3H/(2\mu)\approx 25$); the quartic-dominated regime with $w_\psi=1/3$ is \emph{not achieved} with these parameters. The proxy-fluid closure is therefore a phenomenological ansatz conditional on parameters not realized in the stated benchmark. The formulation should be read as an effective phenomenological framework rather than as a first-principles derivation of the pre-discharge background, a solution of the cosmological-constant hierarchy, or a UV completion.%
+The dark sector of the standard cosmological model comprises dark matter, dark energy, and possible dark radiation, whose common origin remains unexplained. We present the Phase Transition Universes Model (PTUM), a discharge-based cosmological creation scenario proposing a scalar quantum fuel field $\Phi$ and an effective tachyonic threshold prescription. The required dormant-to-tachyonic crossing is not yet dynamically derived from the specified fuel potential and effective-mass function. Within this effective description, the discharge event leaves behind a dark-matter candidate sector ($\chi$), a residual dark-energy sector ($\Phi_{\rm res}$), and a relativistic proxy-fluid dark radiation component (pfd, $\psi$). A falsifiable prediction of PTUM is that, \emph{within the effective linear proxy-fluid description}, the pfd component carries $w=1/3$, $c_s^2=1/3$, and zero anisotropic stress ($\sigma=0$). This produces no neutrino-induced CMB acoustic peak phase shift, distinguishing it from free-streaming dark radiation---a signature that may be tested at high significance by next-generation CMB experiments such as CMB-S4, depending on the realized pfd abundance. The authors report implementing the effective phenomenological system in \texttt{CLASS} at background and perturbation levels \emph{(modified code not yet public)}. The creation sector supports a plateau-type slow-roll phase compatible with current CMB constraints, fixing the discharge scale to $V_0^{1/4}\sim 10^{15}$--$10^{16}\,\mathrm{GeV}$. The dark-energy sector admits a broad near-$\Lambda$ viable region with $w_{\rm DE}\approx -1$. A Bayesian benchmark analysis using Planck 2018, BAO, and Pantheon+ data is reported to yield $\Delta N_{\rm fluid} < 0.31$ at $95\%$ credibility \emph{(author-reported; chains not yet public)}. Model comparison is reported to give $\Delta\chi^2 = +0.26$ and $\Delta\mathrm{AIC}=2.26$; current data therefore show a weak preference for $\Lambda$CDM while leaving PTUM viable as a falsifiable effective extension. The benchmark is checked against BBN bounds and elementary linear-stability conditions; full EFT control and the microscopic realization of the proxy-fluid closure remain conditional on additional calculations. \textbf{Critical caveat:} Numerical integration of the coupled background equations with the benchmark parameters ($V_0\sim10^{64}\,\mathrm{GeV}^4$, $H_*\sim10^{13}\,\mathrm{GeV}$) shows the system is overdamped ($3H/(2\mu)\approx 25$); the quartic-dominated regime with $w_\psi=1/3$ is \emph{not achieved} with these parameters. The proxy-fluid closure is therefore a phenomenological ansatz conditional on parameters not realized in the stated benchmark. The formulation should be read as an effective phenomenological framework rather than as a first-principles derivation of the pre-discharge background, a solution of the cosmological-constant hierarchy, or a UV completion.%
 } % abstract'ın kapanış parantezi
 \PACS{
       {98.80.Cq}{Particle-theory and field-theory models of the early Universe} \and
@@ -260,11 +260,13 @@ Section~\ref{sec:conclusion}.
 %============================================================
 
 PTUM begins with a multiverse-like background containing a scalar
-quantum fuel field \(\Phi\). The central idea is that local
-accumulation of this field drives a threshold-triggered discharge
-process. Once a critical configuration is reached, the effective
-mass of a proxy activation mode becomes negative, generating a
-tachyonic transition that activates string-like degrees of freedom.
+quantum fuel field \(\Phi\). The proposed mechanism is that local accumulation of this field drives a
+threshold-triggered discharge process. Once a critical configuration is
+reached, the effective mass of a proxy activation mode becomes negative,
+generating a tachyonic transition that activates string-like degrees of
+freedom. This sequence is a phenomenological hypothesis: the specified
+fuel potential and effective-mass function do not yet dynamically realize
+a dormant-to-tachyonic crossing, as shown in the background analysis below.
 
 The basic sequence is:
 
@@ -382,7 +384,7 @@ with
 \begin{equation}
 \begin{split}
 V_{\rm eff}(\Phi)
-&=V_0\!\left(1-e^{-\lambda\Phi^2}\right) \\
+&=V_0\!\left(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}\right) \\
 &\quad +\frac{1}{64\pi^2}
 \sum_i n_i\,m_{{\rm eff},i}^4(\Phi)
 \left[\ln\frac{m_{{\rm eff},i}^2(\Phi)}{\mu_R^2}
@@ -457,10 +459,28 @@ Equivalently, the effective discharge trigger can be written as
 }
 \label{eq:ptum_threshold_box}
 \end{equation}
-This condition defines the transition from the dormant proxy phase to the
-activated proxy phase. It should be interpreted as an effective threshold
-criterion, not as a microscopic derivation of the pre-discharge background.
-Here, $E_{\rm th}$ is the dimensionful discharge threshold scale (naturally related to the creation energy $V_0^{1/4}$), and $\alpha$ is a dimensionless coupling constant. The tachyonic instability is triggered when the fuel field crosses the critical threshold $\Phi = E_{\rm th}/\sqrt{\alpha}$. The transition timescale is assumed to be much shorter than the local Hubble time ($H^{-1}$), allowing the discharge to be treated as a nearly instantaneous phase transition at the background level that partitions the available energy into the residual dark sector and standard radiation. For \(m_{\rm eff}^2>0\) the proxy mode is dormant; for \(m_{\rm eff}^2<0\) it is activated by the tachyonic instability.
+This inequality is the instantaneous sign criterion separating the dormant
+($m_{\rm eff}^2>0$) and tachyonic ($m_{\rm eff}^2<0$) regions. It does not,
+by itself, determine the direction or cause of a threshold crossing. In
+particular, for the specified fuel potential
+$V_{\rm eff}(\Phi)=V_0(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2})$ one has
+$V_{\rm eff}'(\Phi)=2\lambda V_0\frac{\Phi}{M_{\rm Pl}^2}e^{-\lambda\Phi^2/M_{\rm Pl}^2}$, so the homogeneous
+force $-V_{\rm eff}'$ points toward $\Phi=0$. With Hubble friction and no
+additional driving source, slow-roll motion therefore carries a field
+initially at $|\Phi|>\Phi_c$ toward the dormant region; it does not naturally
+drive a field from $|\Phi|<\Phi_c$ outward into the tachyonic region. At the
+very large values $\lambda\Phi^2/M_{\rm Pl}^2\gg1$ relevant to the nominal threshold,
+the exponential force is also extremely suppressed, so the field can be
+nearly frozen. A dormant-to-tachyonic crossing consequently requires an
+explicitly specified uphill initial velocity, an additional force/source,
+or a modified fuel potential. Such an input must be included in the
+initial-value problem and its energy budget; it cannot be inferred from the
+threshold inequality. The threshold is therefore an effective activation
+criterion, not yet a dynamical derivation of the pre-discharge transition.
+Here $E_{\rm th}$ is the dimensionful discharge scale and $\alpha$ is
+dimensionless. The assumed rapid partition of the available energy into
+residual dark energy and standard radiation remains a phenomenological
+prescription until the crossing dynamics and transfer process are derived.
 
 The dark-matter sector is
 \begin{equation}
@@ -516,6 +536,119 @@ The field equations in a flat FRW universe,
 \label{eq:frw4}
 \end{align}
 
+\subsubsection{Closed $\Phi$--$\psi$ background and field-level system}
+\label{subsec:closed_phi_psi_system}
+
+For the two-field truncation evolved in Task~1, the common potential is
+\begin{equation}
+V_{\Phi\psi}(\Phi,\psi)
+=V_{\rm eff}(\Phi)
++\frac12m^2\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi^2
++\frac{\lambda_\psi}{4}\psi^4 .
+\end{equation}
+The corresponding homogeneous energy density and pressure are
+\begin{align}
+\rho_{\Phi\psi}
+&=\frac12\dot\Phi^2+\frac12\dot\psi^2+V_{\Phi\psi},\\
+p_{\Phi\psi}
+&=\frac12\dot\Phi^2+\frac12\dot\psi^2-V_{\Phi\psi}.
+\end{align}
+When this two-field system is the only source in the background,
+\begin{equation}
+3M_{\rm Pl}^2H^2=\rho_{\Phi\psi},\qquad
+\dot H=-\frac{\dot\Phi^2+\dot\psi^2}{2M_{\rm Pl}^2}.
+\label{eq:phi_psi_friedmann_closed}
+\end{equation}
+Additional sectors, if active, must be added to the right-hand side of
+the Friedmann constraint and to the total pressure; they are set to zero
+in the Task~1 two-field truncation.
+
+The field-dependent interaction energy is assigned once, to the
+$\psi$ sector:
+\begin{align}
+\rho_\Phi&=\frac12\dot\Phi^2+V_{\rm eff}(\Phi),\\
+\rho_\psi&=\frac12\dot\psi^2
++\frac12m_{\rm eff}^2(\Phi)\psi^2
++\frac{\lambda_\psi}{4}\psi^4.
+\end{align}
+The two sector continuity equations are
+\begin{align}
+\dot\rho_\Phi+3H\dot\Phi^2&=Q_{\Phi\to\psi},\\
+\dot\rho_\psi+3H\dot\psi^2&=-Q_{\Phi\to\psi},\\
+Q_{\Phi\to\psi}
+&=\frac{\alpha m^2}{E_{\rm th}^2}\Phi\psi^2\dot\Phi .
+\end{align}
+Thus the transfer cancels in the sum and the exact two-field identity is
+\begin{equation}
+\boxed{\dot\rho_{\Phi\psi}
++3H(\rho_{\Phi\psi}+p_{\Phi\psi})=0.}
+\label{eq:phi_psi_total_continuity}
+\end{equation}
+This identity follows from the coupled equations of motion; it does not
+mean that $\rho_{\Phi\psi}$ is constant during expansion.
+
+For spatially inhomogeneous classical fields, the same action gives
+\begin{align}
+\ddot\Phi+3H\dot\Phi-a^{-2}\nabla^2\Phi
++V_{\rm eff}'(\Phi)
+-\frac{\alpha m^2}{E_{\rm th}^2}\Phi\psi^2&=0,\\
+\ddot\psi+3H\dot\psi-a^{-2}\nabla^2\psi
++m_{\rm eff}^2(\Phi)\psi+\lambda_\psi\psi^3&=0.
+\label{eq:phi_psi_pde}
+\end{align}
+Equations~(\ref{eq:frw1})--(\ref{eq:frw2}) are their homogeneous
+limit, obtained by setting spatial gradients to zero. The reproducibility workflow uses the explicit diagnostic parameter set
+$V_0=10^{56}\,{\rm GeV}^4$ ($V_0^{1/4}=10^{14}\,{\rm GeV}$),
+$\lambda=0.02$, $m=10^{13}\,{\rm GeV}$,
+$\lambda_\psi=0.1$, and $E_{\rm th}=10^{16}\,{\rm GeV}$.
+It gives $\Phi_c=1.722\times10^{19}\,{\rm GeV}$,
+$\alpha=3.373\times10^{-7}$, $H_*=2.371\times10^9\,{\rm GeV}$,
+and $\mu=1.418\times10^{12}\,{\rm GeV}$, so
+$H_*/\mu=1.67\times10^{-3}$. This is an intentionally underdamped
+diagnostic set, not the primordial-normalized benchmark with
+$V_0^{1/4}\sim10^{15}$--$10^{16}\,{\rm GeV}$.
+The 18-point scan starts at
+$\Phi=(1.01,1.10)\Phi_c$, hence every trajectory begins on the
+tachyonic side; it tests the post-threshold evolution and possible
+tachyonic-to-dormant exit, not the onset of a dormant-to-tachyonic
+transition. The proxy seeds and initial velocities are scanned
+independently over the values listed in the validation workflow.
+
+The in-repository Task~1 solver evolves only the homogeneous
+two-field truncation and uses the tree-level plateau part of
+$V_{\rm eff}$; it does not include the Coleman--Weinberg loop term.
+This omission is deliberate in the tachyonic branch, where the naive
+one-loop logarithm becomes complex for negative field-dependent
+mass-squared values and cannot be inserted as a real potential by
+replacing $m^2$ with $|m^2|$. A real-time non-equilibrium effective
+action or a renormalized lattice treatment is needed before that
+correction can be included consistently.
+
+For periodic spatial boundary conditions, the spatially averaged
+energy density and isotropic pressure of the inhomogeneous two-field
+system are
+\begin{align}
+\langle\rho_{\Phi\psi}\rangle
+&=\left\langle
+\frac12\dot\Phi^2+\frac12\dot\psi^2
++\frac{|\nabla\Phi|^2+|\nabla\psi|^2}{2a^2}
++V_{\Phi\psi}\right\rangle,\\
+\langle p_{\Phi\psi}\rangle
+&=\left\langle
+\frac12\dot\Phi^2+\frac12\dot\psi^2
+-\frac{|\nabla\Phi|^2+|\nabla\psi|^2}{6a^2}
+-V_{\Phi\psi}\right\rangle.
+\end{align}
+The averaged Friedmann and continuity equations use these spatially
+averaged sources. The Task~1 ODE solver therefore validates the
+homogeneous background only. It
+does not resolve the tachyonic band $k/a<|m_{\rm eff}|$, nonlinear
+mode growth, rescattering, or defect formation. Those phenomena require
+a spatial lattice evolution with specified initial fluctuation spectra,
+lattice-spacing and volume convergence, and a renormalized energy
+accounting. The homogeneous result must not be presented as a substitute
+for that field-level calculation.
+
 \subsubsection{Euler--Lagrange derivation and consistency check}
 \label{sec:eom_consistency}
 
@@ -528,7 +661,7 @@ Euler--Lagrange equations in a curved FRW background. The extended
 Standard Model reheating-sector equations are stated separately in
 Section~\ref{sec:microscopic_transfer}. The dark-sector action is
 \begin{equation}
-S = \int d^4x\,\sqrt{-g}\,\mathcal{L}_{\rm PTUM},
+S = \int d^4x\,\sqrt{-g}\,\mathcal{L}_{\rm PTUM}^{\rm dark},
 \end{equation}
 with $\sqrt{-g} = a^3(t)$ in FRW.
 For a scalar field \(\phi\) with Lagrangian
@@ -709,14 +842,17 @@ $\psi=0$ and $\psi=\pm\psi_0$, where
 V_{\rm min}=-\frac{\mu^4}{4\lambda_\psi}.
 \end{equation}
 The origin is a local maximum and the two non-zero stationary points are
-minima. A constant shift of the potential is dynamically irrelevant to the
-field equation; when discussing the excitation energy of the activated
-sector, it is useful to set the minima to zero:
+minima. At fixed $\Phi$, it is useful to define the instantaneous
+minimum-subtracted diagnostic potential
 \begin{equation}
-U(\psi)\equiv V_{\rm act}(\psi)-V_{\rm min}
-=\frac{\lambda_\psi}{4}(\psi^2-\psi_0^2)^2\geq0.
+U(\psi;\Phi)\equiv V_{\rm act}(\psi;\Phi)-V_{\rm min}(\Phi)
+=\frac{\lambda_\psi}{4}(\psi^2-\psi_0^2(\Phi))^2\geq0.
 \label{eq:U_double_well_corrected}
 \end{equation}
+Because $V_{\rm min}$ depends on the evolving field $\Phi$, this is not a
+constant shift of the coupled action. It is an instantaneous diagnostic
+only; the unshifted $V_{\rm act}$ must remain in the field equations,
+Hilbert stress tensor, and Friedmann source.
 
 For a homogeneous field in an expanding FRW spacetime,
 \begin{equation}
@@ -745,7 +881,7 @@ m_{\rm osc}^2=U''(\pm\psi_0)=2\mu^2.
 \end{equation}
 Thus sufficiently small oscillations about a selected minimum are
 approximately quadratic and have the averaged equation of state
-$\langle w_\psi\rangle\simeq0$, not $1/3$. The quartic term in the
+$\langle w_{\psi,\mathrm{exc}}\rangle\simeq0$, not $1/3$. The quartic term in the
 expansion around the minimum does not make these small oscillations a
 quartic oscillator.
 
@@ -765,28 +901,104 @@ virial relation is then
 \begin{equation}
 \langle\dot\psi^2\rangle=4\langle U\rangle,
 \end{equation}
-which gives $\langle p_\psi\rangle=\langle\rho_\psi\rangle/3$ and
-$\langle\rho_\psi\rangle\propto a^{-4}$. This result applies to the
+which gives $\langle p_{\psi,\mathrm{exc}}\rangle=\langle\rho_{\psi,\mathrm{exc}}\rangle/3$ and
+$\langle\rho_{\psi,\mathrm{exc}}\rangle\propto a^{-4}$. This result applies to the
 quartic-dominated oscillatory regime, not generically to the transition
 trajectory or to oscillations about $\pm\psi_0$.
 
 The energy measured from the minimum is
 \begin{align}
-\rho_\psi&=\frac12\dot\psi^2+U(\psi),\qquad
-p_\psi=\frac12\dot\psi^2-U(\psi), \notag\\
-w_\psi&=\frac{\dot\psi^2/2-U}{\dot\psi^2/2+U}.
+\rho_{\psi,\mathrm{exc}}&=\frac12\dot\psi^2+U(\psi;\Phi),\qquad
+p_{\psi,\mathrm{exc}}=\frac12\dot\psi^2-U(\psi;\Phi).
 \label{eq:w_psi_energy}
 \end{align}
-When expansion and interactions are negligible, this energy is conserved.
-In an expanding universe it is not: $\dot\rho_\psi=-3H\dot\psi^2$
-for an uncoupled homogeneous field. Consequently, an initial condition
-$\dot\psi(t_c)=0$ and $|\psi(t_c)|\ll\psi_0$ places the field close to
-the top of the barrier with energy just below the barrier height. It does
-not establish that the field crosses between the two minima or enters a
-quartic-dominated orbit. The actual orbit depends on the initial velocity,
-the time dependence of $m_{\rm eff}$, Hubble damping, and energy transfer
+A crucial qualification is needed for the coupled system: because
+$m_{\rm eff}^2=m_{\rm eff}^2(\Phi)$, the minimum and
+$V_{\rm min}(\Phi)=-[m_{\rm eff}^2(\Phi)]^2/(4\lambda_\psi)$ vary as
+$\Phi$ evolves. Consequently, $U=V_{\rm act}-V_{\rm min}(\Phi)$ is not
+obtained by adding a constant to the full two-field action. The compensating
+term $-V_{\rm min}(\Phi)$ is field dependent and its $\Phi$ derivative
+would change the $\Phi$ equation of motion. The exact Hilbert stress tensor
+and Friedmann source must therefore be computed from the unshifted potential
+$V_{\rm act}(\psi;\Phi)$ appearing in the stated action:
+\begin{align}
+\rho_{\psi,\mathrm{act}}&=\frac12\dot\psi^2+V_{\rm act}(\psi;\Phi),\notag\\
+p_{\psi,\mathrm{act}}&=\frac12\dot\psi^2-V_{\rm act}(\psi;\Phi).
+\end{align}
+The shifted potential can be used in an exact bookkeeping split without
+changing the action or its equations of motion, provided the moving
+minimum is assigned to the complementary $\Phi$ sector. Define
+\begin{align}
+\rho_{\psi,\mathrm{exc}}&=\frac12\dot\psi^2+U(\psi;\Phi),&
+p_{\psi,\mathrm{exc}}&=\frac12\dot\psi^2-U(\psi;\Phi),\\
+\rho_{\Phi,\mathrm{split}}&=\frac12\dot\Phi^2+V_{\rm eff}(\Phi)
++V_{\rm min}(\Phi),&
+p_{\Phi,\mathrm{split}}&=\frac12\dot\Phi^2-V_{\rm eff}(\Phi)
+-V_{\rm min}(\Phi).
+\end{align}
+Then $\rho_{\psi,\mathrm{exc}}+\rho_{\Phi,\mathrm{split}}$ and
+$p_{\psi,\mathrm{exc}}+p_{\Phi,\mathrm{split}}$ reproduce exactly the
+unshifted two-field Hilbert energy density and pressure. The transfer
+terms in this bookkeeping convention are
+\begin{equation}
+Q_{\Phi,\mathrm{split}}
+=Q_\Phi+V_{\rm min}'(\Phi)\dot\Phi,\qquad
+Q_{\psi,\mathrm{exc}}=-Q_{\Phi,\mathrm{split}},
+\end{equation}
+so the total Friedmann source and total conservation law are unchanged.
+The term $V_{\rm min}'$ is a transfer-bookkeeping contribution only; it
+must not be added to the $\Phi$ equation of motion. This decomposition
+gives a meaningful equation of state for oscillatory excitation above
+the moving minimum. In the quartic-dominated limit $|\psi|\gg\psi_0$,
+the minimum offset is subleading and the averaged result
+$w_{\psi,\mathrm{exc}}\to1/3$ is unchanged. For fixed $\mu$, the
+excitation energy is conserved only in the absence of expansion and
+external transfer. The barrier height measured from either minimum is
+\begin{equation}
+U(0)=\frac{\mu^4}{4\lambda_\psi}
+=\frac{\lambda_\psi\psi_0^4}{4}.
+\label{eq:psi_barrier_energy}
+\end{equation}
+For a trajectory to reach a turning amplitude $A>\psi_0$, its energy
+above the minimum must at least satisfy
+\begin{equation}
+\rho_\psi\geq U(A)
+=\frac{\lambda_\psi}{4}(A^2-\psi_0^2)^2.
+\label{eq:psi_amplitude_energy}
+\end{equation}
+In particular, a quartic-dominated orbit with $A\gg\psi_0$ requires
+$\rho_\psi\gg U(0)$, not merely enough energy to roll away from the
+unstable origin. For initial data $(\psi_i,\dot\psi_i)$ at fixed
+$\mu$, the available energy is
+$\rho_{\psi,i}=\dot\psi_i^2/2+U(\psi_i)$; Hubble friction and
+couplings reduce or redistribute it during the evolution. A useful
+necessary energy test is therefore
+\begin{equation}
+\frac{\dot\psi_i^2}{2}+U(\psi_i)
+-\int_{t_i}^{t_A}3H\dot\psi^2\,dt
++\int_{t_i}^{t_A}Q_\psi^{\rm ext}\,dt
+\;\geq\; U(A),
+\label{eq:psi_energy_budget_test}
+\end{equation}
+where $Q_\psi^{\rm ext}$ denotes net energy input into the proxy
+sector from explicitly modelled other degrees of freedom, with the
+sign convention $\dot\rho_\psi+3H\dot\psi^2=Q_\psi^{\rm ext}$.
+For time-dependent $m_{\rm eff}$, the work done by the changing
+potential must also be included by evolving the full coupled equations;
+the fixed-$\mu$ expression above is then not a conserved-energy
+shortcut.
+
+The rapid-oscillation requirement can be expressed using the quartic
+oscillation frequency, which is of order
+$\omega_4\simeq0.85\sqrt{\lambda_\psi}A$ for
+$U\simeq\lambda_\psi\psi^4/4$. Thus a candidate orbit must satisfy
+both $A/\psi_0\gg1$ and $\omega_4/H\gg1$ over the averaging
+interval. An initial condition $\dot\psi(t_c)=0$ and
+$|\psi(t_c)|\ll\psi_0$ does not establish either condition. The
+actual orbit depends on the seed fluctuations, initial velocity, the
+time dependence of $m_{\rm eff}$, Hubble damping, and energy transfer
 to other sectors. These quantities must be specified and evolved to
-establish the claimed attractor.
+establish the claimed regime.
 
 Accordingly, the PTUM radiation-like proxy-fluid component is treated below
 as a phenomenological late-time closure conditional on the quartic-dominance
@@ -854,27 +1066,37 @@ post-transition epoch and cannot be inferred from these order-of-magnitude
 values alone.
 
 The physically justified sequence is therefore: (i) threshold crossing
-changes the sign of $m_{\rm eff}^2$; (ii) tachyonic modes grow; (iii) the
-field rolls toward one of the non-zero minima unless its energy permits
-barrier crossing; (iv) small oscillations about a minimum are matter-like;
-(v) a radiation-like quartic phase is possible only if the stronger
-quartic-dominance and averaging conditions are independently established.
+changes the sign of $m_{\rm eff}^2$; (ii) nonzero seed modes in the
+unstable band are tachyonically amplified; (iii) the field evolves toward
+a minimum, with its subsequent trajectory determined by the initial
+energy, Hubble losses, and continued work by coupled fields; (iv) small
+oscillations about a minimum are matter-like; (v) a radiation-like quartic
+phase is possible only if the energy-budget, quartic-dominance, and
+rapid-averaging conditions are independently established.
 The later CLASS results use the last regime as an effective closure and
 should be interpreted with this conditional status.
 
 \paragraph{Critical numerical finding:}
-Numerical integration of the coupled background equations
-(Eqs.~\ref{eq:Phi_eom}--\ref{eq:psi_eom_full}) with the benchmark
-parameters of this paper ($V_0\sim10^{64}\,\mathrm{GeV}^4$,
+The manuscript-reported homogeneous integration of the coupled
+background equations (Eqs.~\ref{eq:Phi_eom}--\ref{eq:psi_eom_full})
+for the benchmark parameters ($V_0\sim10^{64}\,\mathrm{GeV}^4$,
 $H_*\sim10^{13}\,\mathrm{GeV}$, $m_\psi\sim10^{13}\,\mathrm{GeV}$,
-$\lambda_\psi\sim0.1$) shows that the system is \textbf{overdamped}:
-$3H/(2\mu)\approx 25\gg1$. No oscillations occur; the field remains at
-$\psi=0$ (the top of the barrier) and $w_\psi=0$. The quartic-dominated
-regime with $w_\psi=1/3$ is \textbf{not achieved} with these parameters.
-Achieving the quartic regime requires $V_0\lesssim10^{58}\,\mathrm{GeV}^4$
-($H_*\lesssim10^{10}\,\mathrm{GeV}$) \emph{and} sufficient initial kinetic
-energy in $\psi$ to cross the barrier, \emph{and} continuing energy input
-from the rolling $\Phi$ field or rescattering. The proxy-fluid closure
+$\lambda_\psi\sim0.1$) is classified as \textbf{overdamped}, with
+$3H/(2\mu)\approx25\gg1$. An exactly vanishing homogeneous initial
+condition $\psi=\dot\psi=0$ remains an exact solution even after the
+mass becomes tachyonic; physical growth requires nonzero fluctuations
+or another seed. The reported benchmark calculation does not establish
+a transition to sustained oscillations, and hence does not demonstrate
+the quartic-dominated regime with $w_\psi=1/3$.
+Achieving the quartic regime at the level of the stated order-of-magnitude
+estimate requires a sufficiently low Hubble scale
+($V_0\lesssim10^{58}\,\mathrm{GeV}^4$,
+$H_*\lesssim10^{10}\,\mathrm{GeV}$) together with enough energy above
+the double-well barrier to reach amplitudes $A\gg\psi_0$, and
+$\omega_4/H\gg1$. Such energy may come from specified initial
+conditions or continued transfer from the rolling $\Phi$ field and
+rescattering; it must be quantified using
+Eq.~\eqref{eq:psi_energy_budget_test}, not assumed. The proxy-fluid closure
 $w_\psi=1/3$, $c_{s,\psi}^2=1/3$, $\sigma_\psi=0$ is therefore a
 phenomenological ansatz conditional on parameters not realized in the
 stated benchmark. A full numerical background solution followed by
@@ -908,12 +1130,14 @@ integration; no such run exists in the public script.
 \item \emph{Sustained energy injection:} rescattering of the rolling
 $\Phi$ field into $\psi$ (the $\alpha m^2\Phi^2\psi^2/E_{\rm th}^2$
 interaction) could maintain oscillations after barrier crossing even
-when the bare damping is large. The public scan
-(\texttt{ptum\_task1\_simulation.py}, 18 initial-condition points)
-finds \texttt{quartic\_achieved = False} in every scanned point, so
-this route is \textbf{not} realized by the scanned initial conditions
-(SAYISAL OLARAK DOĞRULANDI for the scanned set; not excluded in
-general).
+when the bare damping is large. The earlier 18-point scan in
+\texttt{ptum\_task1\_simulation.py} is not accepted as decisive
+evidence: source review found duplicated interaction-energy accounting
+and inconsistent quartic-virial diagnostics in that implementation.
+Those diagnostics have now been corrected in the development branch,
+but the scan must be rerun before any conclusion about the 18 points is
+retained. The route is therefore \textbf{unresolved}, not numerically
+excluded.
 \item \emph{Reframed benchmark:} accept $w_\psi=0$ (overdamped, field
 pinned at the barrier top) at the CMB-normalized benchmark and treat
 the $w=1/3$ proxy-fluid as a separate, lower-$V_0$ phenomenological
@@ -931,11 +1155,14 @@ and is left for future work.
 \subsection{Operational stability and observable closure of the discharge sector}
 \label{subsec:ptum_operational_stability}
 
-The preceding subsections define PTUM as a threshold-triggered discharge
-mechanism: the fuel field $\Phi$ accumulates, the proxy field $\psi$ becomes
-tachyonically active when its effective mass squared changes sign, and the
-post-discharge energy is partitioned into dark matter, residual dark energy,
-and proxy-fluid dark radiation.  The present subsection records the minimal
+The preceding subsections define PTUM's effective threshold-discharge
+ansatz: the fuel field $\Phi$ is postulated to reach a critical
+configuration, the proxy field $\psi$ becomes tachyonically active when
+its effective mass squared changes sign, and the postulated discharge
+energy is partitioned into dark matter, residual dark energy, and
+proxy-fluid dark radiation. The dynamical realization of the required
+crossing remains unresolved for the present choice of $V_{\rm eff}$ and
+$m_{\rm eff}^2(\Phi)$.  The present subsection records the minimal
 internal stability conditions required for this effective description to be
 well defined.  No additional field, sector, or cross-model structure is
 introduced here.
@@ -999,7 +1226,7 @@ w_\psi=\frac{1}{3},
 \label{eq:PTUM_quartic_fluid_operational}
 \end{equation}
 \emph{provided the quartic-dominated oscillatory regime is actually
-reached}; as shown in Section~\ref{subsec:ptum_operational_stability}
+reached}; as shown in Section~\ref{sec:tachyonic_to_quartic}
 (and the abstract), the benchmark parameters are overdamped and do not
 realize this regime, so the $w_\psi=1/3$ closure is conditional.
 In the effective linear closure used in the Boltzmann implementation, the
@@ -1059,9 +1286,8 @@ Boltzmann-implementation level even if no particular string-theoretic,
 swampland, or higher-dimensional embedding is adopted.
 
 \noindent\textbf{Tachyonic transition and string theory.}
-The activation mechanism through which the fuel field $\Phi$ triggers
-the proxy mode $\psi$ via a tachyonic mass term bears a close
-structural resemblance to the open-string tachyon condensation that
+The proposed tachyonic activation of the proxy mode $\psi$ by the fuel
+field $\Phi$ bears a structural resemblance to the open-string tachyon condensation that
 arises in D-brane--anti-D-brane systems
 \cite{Sen2002,Dvali1999,KKLMMT2003}. In the Dvali--Tye scenario, the
 inter-brane separation plays the role of an inflaton, and brane
@@ -1074,24 +1300,27 @@ rigorous derivation; a full embedding into a specific string
 compactification is left for future work.
 
 \noindent\textbf{Swampland considerations.}
-The fuel potential $V(\Phi) = V_0(1 - e^{-\lambda\Phi^2})$ has
+For the dimensionally normalized plateau
+$V(\Phi)=V_0(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2})$, the exact gradient is
 \begin{equation}
-\frac{|V'|}{V} = \frac{2\lambda\Phi e^{-\lambda\Phi^2}}{1-e^{-\lambda\Phi^2}}.
+M_{\rm Pl}\frac{|V'|}{V}
+=\frac{2\lambda|\Phi|/M_{\rm Pl}\;e^{-\lambda\Phi^2/M_{\rm Pl}^2}}
+{1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}}.
 \end{equation}
-In the large-field asymptotic regime ($\lambda\Phi^2 \gg 1$),
-$|V'|/V \to 2\lambda\Phi \gtrsim \mathcal{O}(1)$ for $\Phi \gtrsim
-M_{\rm Pl}$, satisfying the de Sitter Swampland Conjecture
-\cite{Obied2018,Ooguri2019}. In the inflationary slow-roll regime,
-the field is at intermediate values $\lambda\Phi^2 \sim \mathcal{O}(1)$
-where the exponential is not yet saturated; here $|V'|/V \ll 1$ is
-maintained for the required $N_e \sim 50$--$60$ e-folds. The refined
-de Sitter conjecture, which allows $\min(\nabla_i \nabla_j V) \leq
--c'\,V/M_{\rm Pl}^2$, is satisfied throughout the slow-roll phase
-for $c' \sim \mathcal{O}(\eta)$. There is no contradiction: the
-swampland bound applies asymptotically at very large $\Phi$, while
-slow-roll occurs at intermediate field values where the potential is
-plateau-like. A systematic analysis of the full PTUM potential
-landscape against swampland criteria is deferred to future work.
+It tends to zero, not to a growing large-field value, as
+$|\Phi|/M_{\rm Pl}\to\infty$. Thus this plateau does not satisfy a
+positive-gradient de Sitter bound in that asymptotic regime. Its
+dimensionless curvature is
+\begin{equation}
+M_{\rm Pl}^2\frac{V''}{V}
+=2\lambda\frac{e^{-x}(1-2x)}{1-e^{-x}},
+\qquad x=\lambda\Phi^2/M_{\rm Pl}^2,
+\end{equation}
+which also tends to zero from below at large $x$. A fixed positive
+refined-conjecture constant therefore cannot be claimed from this
+asymptotic limit. Any refined de Sitter assessment must specify the
+field interval and constants being tested; no general satisfaction
+claim is made here.
 
 \noindent\textbf{Field excursions and shift symmetry.}
 For small values of the coupling $\lambda \lesssim 0.05$, the fuel
@@ -1133,76 +1362,99 @@ affect the observational predictions derived in this work.
 \subsubsection{Inflation-discharge connection}
 \label{sec:inflation_discharge}
 
-The end of inflation and the onset of the discharge are dynamically
-connected through the fuel field $\Phi$. During the slow-roll
-inflationary phase, $\Phi$ rolls down the plateau potential
-$V(\Phi) = V_0(1 - e^{-\lambda\Phi^2})$. The slow-roll parameters
+The fuel field evolves down the plateau potential
+$V(\Phi)=V_0(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2})$ during slow roll.
+Because the tachyonic condition is $|\Phi|>\Phi_c$, this downhill
+motion decreases $|\Phi|$ and, if it crosses $\Phi_c$, takes the system
+from the tachyonic region into the dormant region. It therefore does
+not by itself provide a dormant-to-tachyonic discharge trigger at the
+end of inflation. The slow-roll parameters
 are
 \begin{align}
-\epsilon_V &= \frac{1}{2}\left(\frac{V_{,\Phi}}{V}\right)^2
-= 2\lambda^2 \frac{\Phi^2 e^{-2\lambda\Phi^2}}{(1-e^{-\lambda\Phi^2})^2}, \notag\\
-\eta_V &= \frac{V_{,\Phi\Phi}}{V}
-= 2\lambda \frac{e^{-\lambda\Phi^2}(1-2\lambda\Phi^2)}{1-e^{-\lambda\Phi^2}}.
+\epsilon_V &= \frac{M_{\rm Pl}^2}{2}\left(\frac{V_{,\Phi}}{V}\right)^2
+= 2\lambda^2 \frac{(\Phi^2/M_{\rm Pl}^2)e^{-2\lambda\Phi^2/M_{\rm Pl}^2}}{(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2})^2}, \notag\\
+\eta_V &= M_{\rm Pl}^2\frac{V_{,\Phi\Phi}}{V}
+= 2\lambda \frac{e^{-\lambda\Phi^2/M_{\rm Pl}^2}(1-2\lambda\Phi^2/M_{\rm Pl}^2)}{1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}}.
 \end{align}
 Inflation ends when $\epsilon_V \approx 1$ or $|\eta_V| \approx 1$.
-For $\lambda \sim 0.02$, this occurs at $\Phi_{\rm end} \sim
-M_{\rm Pl}/\sqrt{\lambda} \sim 7 M_{\rm Pl}$.
-
-The discharge threshold is at $\Phi_c = E_{\rm th}/\sqrt{\alpha}$.
-For the discharge to be triggered naturally at the end of inflation,
-we require $\Phi_{\rm end} \approx \Phi_c$. This gives a relation
-between the threshold scale and the inflationary parameters:
+Writing $x=\lambda\Phi^2/M_{\rm Pl}^2$, for $\lambda=0.02$ the
+condition $|\eta_V|=1$ is reached first at $x\simeq0.03642$
+($\epsilon_V=1$ at $x\simeq0.03849$). Thus
 \begin{equation}
-E_{\rm th} \approx \sqrt{\alpha}\,\Phi_{\rm end}
-\sim \sqrt{\alpha}\,\frac{M_{\rm Pl}}{\sqrt{\lambda}}.
+\Phi_{\rm end}\simeq1.349\,M_{\rm Pl},
 \end{equation}
-Since $E_{\rm th} \sim V_0^{1/4}$ and $V_0^{1/4} \sim 10^{15}$--$10^{16}$
-GeV from the primordial normalization, while $\Phi_{\rm end} \sim
-M_{\rm Pl}/\sqrt{\lambda} \sim 7 M_{\rm Pl} \sim 1.7 \times 10^{19}$ GeV
-for $\lambda \sim 0.02$, the relation $E_{\rm th} \approx \sqrt{\alpha}\,\Phi_{\rm end}$
-requires $\sqrt{\alpha} \sim 10^{15\text{--}16} / 10^{19} \sim 10^{-4}\text{--}10^{-3}$,
-i.e. $\alpha \sim 10^{-8}\text{--}10^{-6}$. This small value of $\alpha$
-is technically natural (protected by the approximate shift symmetry
-of the fuel field during inflation) and lies within the expected
-range for a dimensionless coupling generated by higher-dimensional
-operators. The parameter $\lambda \sim 0.02$--$0.1$ remains in its
+not $M_{\rm Pl}/\sqrt{\lambda}\simeq7.07M_{\rm Pl}$; the latter
+corresponds to $x=1$ and is still on the slow-roll plateau.
+
+The discharge threshold is $\Phi_c=E_{\rm th}/\sqrt{\alpha}$.
+For $E_{\rm th}=10^{16}\,{\rm GeV}$, placing it at the calculated
+end-of-inflation field would require
+\begin{equation}
+\alpha=\left(\frac{E_{\rm th}}{\Phi_{\rm end}}\right)^2
+\simeq9.3\times10^{-6}.
+\end{equation}
+This scale matching still does not provide a dynamical trigger:
+with $m_{\rm eff}^2<0$ for $|\Phi|>\Phi_c$, downhill slow-roll motion
+crosses from tachyonic to dormant. A dormant-to-tachyonic discharge
+requires an additional driving mechanism, a specified uphill initial
+state, or a revised effective-mass dependence.
+For $\Phi_{\rm end}\simeq1.349M_{\rm Pl}\simeq3.29\times10^{18}$
+GeV, the range $E_{\rm th}\sim10^{15}$--$10^{16}$ GeV implies
+$\sqrt{\alpha}\sim3.0\times10^{-4}$--$3.0\times10^{-3}$, or
+$\alpha\sim9.3\times10^{-8}$--$9.3\times10^{-6}$. The upper end
+therefore differs from the earlier $10^{-8}$--$10^{-6}$ estimate;
+for $E_{\rm th}=10^{16}$ GeV the required value is
+$\alpha\simeq9.3\times10^{-6}$. This estimate is a threshold-location
+condition only and does not solve the direction-of-crossing problem. The parameter $\lambda \sim 0.02$--$0.1$ remains in its
 natural range for the PTUM creation sector.
 
-After inflation ends, the fuel field $\Phi$ continues to roll
-toward the minimum of its potential. The transition from the
-slow-roll regime to the fast-roll regime occurs when the field
-reaches $\Phi_c$. At this point, the effective mass of the proxy
-field $\psi$ changes sign, triggering the tachyonic instability.
-The timescale for the field to roll from $\Phi_{\rm end}$ to
-$\Phi_c$ is
-\begin{equation}
-\Delta t_{\rm roll} \sim \int_{\Phi_c}^{\Phi_{\rm end}}
-\frac{d\Phi}{\dot\Phi} \sim \frac{\Phi_{\rm end} - \Phi_c}{\sqrt{2\epsilon_V} H M_{\rm Pl}}.
-\end{equation}
-For $\Phi_{\rm end} \approx \Phi_c$, this timescale is short
-compared to the Hubble time, $\Delta t_{\rm roll} \ll H^{-1}$,
-ensuring that the discharge follows inflation without a prolonged
-intermediate phase.
+There is a further consistency condition with the primordial trajectory.
+For the tabulated $\lambda=0.02$ example, the reported initial value is
+$\Phi_i\simeq10.722M_{\rm Pl}$. The Task~1 threshold
+$\Phi_c=M_{\rm Pl}/\sqrt{\lambda}\simeq7.071M_{\rm Pl}$ therefore places
+that initial point in the tachyonic region already:
+$m_{\rm eff}^2(\Phi_i)<0$. Choosing instead $\Phi_c>\Phi_i$ to keep the
+proxy dormant throughout inflation makes the subsequent downhill
+trajectory move farther into the dormant region, not into the
+tachyonic one. Thus the present sign choice cannot simultaneously
+realize a dormant inflationary phase and a later downhill
+dormant-to-tachyonic discharge. This is a structural mismatch, not a
+numerical-resolution issue.
 
-The energy released in the discharge is the potential energy
-difference between the inflationary plateau and the post-discharge
-vacuum:
-\begin{equation}
-\Delta V = V(\Phi_c) - V_{\rm res} \approx V_0 - V_{\rm res}
-\sim V_0,
-\end{equation}
-since $V_{\rm res}/V_0 \sim 10^{-108}$ is negligible. This energy
-is partitioned into the proxy-fluid dark radiation, dark matter,
-and residual dark energy as described in Section~\ref{sec:energy_momentum_conservation}.
+The proposed post-inflation sequence does not follow from the
+specified homogeneous equations. Since $V_{\rm eff}'(\Phi)$ has the
+same sign as $\Phi$, Hubble-damped motion drives $|\Phi|$ downward.
+With $m_{\rm eff}^2=m^2(1-\Phi^2/\Phi_c^2)$, a downward crossing of
+$\Phi_c$ changes the proxy mass from negative to positive: it exits
+the tachyonic region rather than entering it. For the tabulated
+$\Phi_i\simeq10.722M_{\rm Pl}$ and the Task~1 threshold
+$\Phi_c\simeq7.071M_{\rm Pl}$, this exit occurs during the inflationary
+trajectory, before the calculated $\Phi_{\rm end}\simeq1.349M_{\rm Pl}$.
+If instead $\Phi_c>\Phi_i$ is chosen to keep the proxy dormant during
+inflation, the subsequent downhill motion cannot activate it.
 
-The connection between inflation and discharge is therefore not an
-additional assumption but a consequence of the fuel field dynamics.
-The same field $\Phi$ that drives inflation also controls the
-discharge trigger, and the parameters that normalize the
-primordial spectrum ($V_0$, $\lambda$) also determine the discharge
-scale ($E_{\rm th}$, $\alpha$). This provides a unified description
-of the creation event from inflation through discharge to the hot
-Big Bang.
+A roll-time integral can quantify the exit from an initially
+tachyonic state,
+\begin{equation}
+\Delta t_{\rm exit}
+=\int_{\Phi_c}^{\Phi_i}\frac{d\Phi}{|\dot\Phi|},
+\qquad \Phi_i>\Phi_c,
+\end{equation}
+but it is not a discharge-onset timescale. Likewise, the potential
+difference $V(\Phi_c)-V_{\rm res}$ is only a possible energy budget;
+the present dynamics does not establish that this energy is released
+or partitioned into the proxy radiation, dark matter, and residual
+dark energy at that crossing.
+
+Consequently, the statement that the inflation-to-discharge connection
+is a consequence of the present fuel-field dynamics is withdrawn.
+A dormant-inflation followed by tachyonic activation requires a
+revised sign or functional dependence of $m_{\rm eff}^2(\Phi)$, a
+different fuel potential with the required trajectory, or an explicit
+driving sector and its energy-momentum transfer. Until one of these
+mechanisms is specified and validated, the discharge partition remains
+a phenomenological postulate rather than a derived consequence of
+the inflationary solution.
 
 %============================================================
 \section{Primordial consistency of the creation sector}
@@ -1220,7 +1472,7 @@ Planck/BICEP-allowed region.
 
 At tree level, the fuel potential is
 \begin{equation}
-V(\Phi)=V_0\!\left(1-e^{-\lambda\Phi^2}\right).
+V(\Phi)=V_0\!\left(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}\right).
 \label{eq:fuelpot}
 \end{equation}
 This is a plateau-type potential: approximately quadratic at small
@@ -1229,8 +1481,8 @@ plateau structures are strongly favored by CMB data~\cite{BICEPKeck2021}.
 
 We define the potential slow-roll parameters
 \begin{equation}
-\epsilon_V=\tfrac{1}{2}\!\left(\frac{V_{,\Phi}}{V}\right)^2,\qquad
-\eta_V=\frac{V_{,\Phi\Phi}}{V},
+\epsilon_V=\frac{M_{\rm Pl}^2}{2}\!\left(\frac{V_{,\Phi}}{V}\right)^2,\qquad
+\eta_V=M_{\rm Pl}^2\frac{V_{,\Phi\Phi}}{V},
 \end{equation}
 and the standard approximate observables
 \begin{equation}
@@ -1380,7 +1632,7 @@ where primes denote derivatives with respect to conformal time
 \end{equation}
 with the Hubble-flow parameters \(\epsilon_1 = -\dot H/H^2\),
 \(\epsilon_{n+1} = d\ln|\epsilon_n|/dN\). For the PTUM fuel potential
-\(V(\Phi) = V_0(1 - e^{-\lambda\Phi^2})\), these parameters are
+\(V(\Phi) = V_0(1 - e^{-\lambda\Phi^2/M_{\rm Pl}^2})\), these parameters are
 computed exactly along the background trajectory.
 
 The authors report integrating the mode equation from deep inside the
@@ -3446,16 +3698,18 @@ The linear perturbation treatment of the tachyonic growth phase
 (Section~\ref{sec:tachyonic_to_quartic}) assumes that the field
 fluctuations remain small compared to the homogeneous background.
 To validate this assumption and capture non-linear effects such as
-bubble nucleation, defect formation, and mode-mode coupling, we
-performed non-linear lattice simulations of the tachyonic transition
-using the \texttt{LATTICEEASY} framework~\cite{Felder2000}.
+bubble nucleation, defect formation, and mode-mode coupling, the manuscript reports non-linear lattice simulations of the tachyonic
+transition using a modified \texttt{LATTICEEASY} framework~\cite{Felder2000}.
+The implementation, run logs, and raw outputs are not present in the
+public source archive, so the execution claim cannot presently be audited.
 
-The simulation setup follows the PTUM discharge dynamics:
+The manuscript-reported simulation setup is summarized below; it is
+not independently verified from released code or run artifacts:
 \begin{itemize}
 \item Initial conditions: $\Phi = \Phi_c - \delta\Phi$ (just below
       threshold), $\psi = \psi_{\rm vac} + \delta\psi$ with quantum
       fluctuations $\delta\psi_k \sim H_*/2\pi$.
-\item Potential: $V(\Phi,\psi) = V_0(1-e^{-\lambda\Phi^2}) +
+\item Potential: $V(\Phi,\psi) = V_0(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}) +
       \frac{1}{2}m^2(1-\alpha\Phi^2/E_{\rm th}^2)\psi^2 +
       \frac{1}{4}\lambda_\psi\psi^4$.
 \item Lattice: $N=512^3$ points, comoving box size $L \sim 10/H_*$,
@@ -3469,8 +3723,10 @@ The manuscript reports that the simulations confirm the linear perturbation resu
 \item The tachyonic growth rate matches the linear prediction
       $\Gamma_k \approx \sqrt{|m_{\rm eff}^2| - k^2/a^2}$ for
       $k \lesssim a|m_{\rm eff}|$.
-\item The transition to quartic oscillations occurs at $\psi \sim
-      \psi_0 \equiv \sqrt{m^2/\lambda_\psi}$ as predicted.
+\item A quartic-dominated orbit requires $|\psi|\gg\psi_0$;
+      the crossover near $|\psi|\sim\psi_0$ is not itself a quartic
+      regime. The reported lattice claim is not independently
+      reproducible from the released source archive.
 \item Non-linear effects (mode coupling, bubble formation) become
       significant only after $\psi$ reaches $\mathcal{O}(\psi_0)$,
       i.e., at the end of the linear growth phase.
@@ -3914,11 +4170,11 @@ equations are dimensionally consistent in natural units.}
 \hline\noalign{\smallskip}
 Equation & Quantity & Dimensions \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
-\(V(\Phi) = V_0(1-e^{-\lambda\Phi^2})\) & \(V_0\) & \([{\rm GeV}]^4\) \\
-& \(\lambda\) & \([{\rm GeV}]^{-2}\) \\
+\(V(\Phi) = V_0(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2})\) & \(V_0\) & \([{\rm GeV}]^4\) \\
+& \(\lambda\) & dimensionless \\
 & \(\Phi\) & \([{\rm GeV}]\) \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
-\(\epsilon_V = \frac{1}{2}(V_{,\Phi}/V)^2\) & \(\epsilon_V\) & dimensionless \\
+\(\epsilon_V = \frac{M_{\rm Pl}^2}{2}(V_{,\Phi}/V)^2\) & \(\epsilon_V\) & dimensionless \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
 \(A_s = \frac{V_*}{24\pi^2 M_{\rm Pl}^4 \epsilon_*}\) & \(A_s\) & dimensionless \\
 \noalign{\smallskip}\hline\noalign{\smallskip}
@@ -4220,16 +4476,29 @@ $\Phi_{\rm res}$ in an expanding FRW background:
 \ddot\Phi_{\rm res} + 3H\dot\Phi_{\rm res} - \frac{\nabla^2}{a^2}\Phi_{\rm res} + \frac{\partial V}{\partial\Phi_{\rm res}} &= 0,
 \end{align}
 
-with the potential
+with the reduced scalar-sector potential
 \begin{equation}
 \begin{split}
-V &= V_0(1-e^{-\lambda\Phi^2}) + \frac{1}{2}m_\psi^2\psi^2
-+ \frac{\lambda_\psi}{4}\psi^4 + \frac{1}{2}m_\chi^2\chi^2 \\
-&\quad + g_{\rm DM}\chi^2\Phi_{\rm res}^2 + W(\Phi_{\rm res}).
+V_{\rm lat} &= V_{\rm eff}(\Phi)
++ \frac{1}{2}m^2\left(1-\frac{\alpha\Phi^2}{E_{\rm th}^2}\right)\psi^2
++ \frac{\lambda_\psi}{4}\psi^4 \\
+&\quad + \frac{1}{2}m_\chi^2\chi^2
++ g_{\rm DM}\chi^2\Phi_{\rm res}^2 + W(\Phi_{\rm res}).
 \end{split}
 \end{equation}
+This is the four-field truncation only. The Higgs-like field and Dirac
+fermions in the full matter action are not evolved by these four field
+equations; consequently this truncation cannot by itself predict
+Yukawa reheating, SM thermalization, or the final radiation entropy.
+The $\Phi$-dependent activation mass is retained explicitly. Any
+simulation using a constant $m_\psi^2$ in its place would solve a
+different model.
 
-The lattice parameters are:
+The appendix's reported lattice parameters are (note that the main-text
+simulation description specifies $512^3$ points, whereas this appendix
+specifies $256^3$ with convergence allegedly tested at $512^3$; the
+relationship between these descriptions requires the original run
+configuration and logs):
 \begin{itemize}
 \item \textbf{Grid size:} $N^3 = 256^3$ (convergence tested up to $512^3$)
 \item \textbf{Box size:} $L = 10/H_*$ (comoving)
@@ -4237,47 +4506,57 @@ The lattice parameters are:
 \item \textbf{Initial conditions:} Quantum fluctuations on top of homogeneous background at $t=0$ (discharge trigger)
 \end{itemize}
 
-\subsection{Key outputs}
+\subsection{Required outputs for a future reproducibility release}
 
-The following lattice outputs are included in the reproducibility
-release (\texttt{output/lattice/}):
+The following diagnostics are required for a future reproducibility
+release (for example under \texttt{output/lattice/}). They are a
+specification of the evidence needed, not files currently included in
+the public repository:
 
 \begin{enumerate}
-\item \textbf{Energy density evolution:} $\rho_\Phi(t)$, $\rho_\psi(t)$,
-      $\rho_\chi(t)$, $\rho_{\rm res}(t)$, $\rho_{\rm rad}(t)$ showing
-      the discharge energy transfer from $\Phi$ to $\psi$, $\chi$, and
-      radiation. The total energy is conserved to $<0.1\%$.
+\item \textbf{Energy density evolution:} report $\rho_\Phi(t)$,
+      $\rho_\psi(t)$, $\rho_\chi(t)$, and $\rho_{\rm res}(t)$, together
+      with the total stress-energy conservation residual. A radiation
+      component and a $<0.1\%$ conservation target require an explicitly
+      coupled radiation/bath sector and a demonstrated convergence test;
+      they are not outputs of the four-field truncation as written.
 
-\item \textbf{Field power spectra:} $P_\Phi(k,t)$, $P_\psi(k,t)$,
-      $P_\chi(k,t)$ at multiple time slices showing the growth of
-      $\chi$ modes in the parametric resonance band. The resonance
-      peak at $k_{\rm res} \approx \omega_{\rm res}/2$ is clearly
-      resolved.
+\item \textbf{Field power spectra:} report $P_\Phi(k,t)$,
+      $P_\psi(k,t)$, and $P_\chi(k,t)$ at specified time slices, and
+      test whether a resonance band and a peak near
+      $k_{\rm res}\approx\omega_{\rm res}/2$ are actually resolved.
 
-\item \textbf{Occupation numbers:} $n_k(t)$ for $\chi$ field modes,
-      confirming exponential growth with Floquet exponent
-      $\mu_{\rm max} \approx 0.2\,\omega_{\rm res}$ in the broad
-      resonance regime ($q \gg 1$).
+\item \textbf{Occupation numbers:} define and report $n_k(t)$ for
+      $\chi$ modes, then measure the Floquet exponent and resonance
+      regime from the numerical evolution rather than fixing
+      $\mu_{\rm max}\approx0.2\,\omega_{\rm res}$ as an expected output.
 
-\item \textbf{Equation of state:} $w_\psi(t)$, $w_\chi(t)$,
-      $w_{\rm res}(t)$ showing the transition from oscillatory
-      ($w \approx 0$) to radiation-like ($w \approx 1/3$) for the
-      proxy fluid, and the approach to $w \approx -1$ for the
-      residual field.
+\item \textbf{Equation of state:} compute $w_\psi(t)$,
+      $w_\chi(t)$, and $w_{\rm res}(t)$ directly from the simulated
+      fields. In particular, test rather than assume whether $w_\psi$
+      evolves from a transient/overdamped phase to a sustained
+      radiation-like regime.
 
 \item \textbf{Topological defect detection:} Winding number
       analysis for $\Phi_{\rm res}$ field configurations, showing
       defect formation probability $<10^{-3}$ per Hubble volume for
       benchmark parameters.
 
-\item \textbf{Entropy production:} Entropy $S(t)$ from the lattice
-      energy-momentum tensor, confirming
-      $S_{\rm obs} \sim 10^{88}$ (total observable-universe entropy).
+\item \textbf{Entropy production:} determine entropy only after
+      specifying a coarse-graining or kinetic description and an
+      explicit radiation/bath sector. Entropy is not obtained directly
+      from the classical scalar energy-momentum tensor alone, and the
+      present four-field truncation cannot establish
+      $S_{\rm obs}\sim10^{88}$.
 \end{enumerate}
 
-\subsection{Reproduction instructions}
+\subsection{Planned reproduction workflow (not yet executable)}
 
-The lattice simulations can be reproduced using the Docker image:
+The following command is an intended interface for a future released
+implementation. The Docker image, scripts, configuration files, and
+simulation data have not been verified as present in the public
+repository; this is therefore a workflow specification, not a current
+reproduction instruction:
 
 \begin{verbatim}
 docker run -v $(pwd)/output:/output \
@@ -4286,18 +4565,21 @@ docker run -v $(pwd)/output:/output \
     --grid 256 --box 10
 \end{verbatim}
 
-The script \texttt{\detokenize{scripts/run_lattice.py}} generates all
-outputs listed above and saves them to \texttt{output/lattice/}. The
-simulation takes approximately 2 hours on a modern CPU (8 cores).
-Convergence tests with $512^3$ grid are included in
-\texttt{\detokenize{scripts/convergence_test.py}}.
+The script paths and runtime above are planned targets only. No claim is
+made here that \texttt{scripts/run_lattice.py},
+\texttt{scripts/convergence_test.py}, the Docker image, or the stated
+runtime currently exist or have been independently tested. A future
+release must include the source, exact configuration, random seeds,
+software versions, raw outputs, and convergence logs before these
+instructions can be described as reproducible.
 
 \subsection{Validation against analytic results}
 
-The authors report that the lattice outputs have been validated against
-the analytic predictions in Sections~\ref{sec:dm_relic} and
-\ref{sec:entropy_budget} \emph{(author-reported; lattice code not yet
-public)}:
+The manuscript previously reported the following lattice comparisons
+against the analytic predictions in Sections~\ref{sec:dm_relic} and
+\ref{sec:entropy_budget}. Because the lattice implementation and raw
+data are not available in the public release, these values remain
+unverified author-reported claims and are not independent validation:
 
 \begin{itemize}
 \item \textbf{Parametric resonance:} The lattice Floquet exponent
@@ -4317,10 +4599,12 @@ public)}:
       10^{14}$--$10^{15}$ GeV from the analytic estimate.
 \end{itemize}
 
-These lattice results are reported to provide non-perturbative
-confirmation of the analytic discharge dynamics and parametric
-resonance calculations used in the main text \emph{(author-reported;
-not independently reproduced)}.
+These numerical values must not be cited as established non-perturbative
+confirmation. Until the implementation, raw data, and analysis scripts
+are released and independently reproduced, they are provisional
+manuscript-reported values only. In particular, they cannot resolve the
+separately documented overdamping and quartic-regime tension at the
+CMB-normalized benchmark.
 
 %============================================================
 % REFERENCES

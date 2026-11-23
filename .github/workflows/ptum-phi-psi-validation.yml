@@ -1,0 +1,72 @@
+name: PTUM Phi-Psi Validation
+
+on:
+  push:
+    branches:
+      - main
+      - theory-corrections/energy-momentum-v1
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install numerical dependencies
+        run: python -m pip install --upgrade pip numpy scipy pytest
+      - name: Compile simulation module
+        run: python -m py_compile ptum_task1_simulation.py
+      - name: Run mathematical regression tests
+        run: pytest -q tests/test_ptum_task1_simulation.py
+      - name: Re-run the 18-point tachyonic-branch scan
+        run: |
+          python - <<'PY'
+          from ptum_task1_simulation import (
+              PTUMParameters, run_parameter_scan, save_results
+          )
+          p = PTUMParameters(
+              V0=1e56, lambda_phi=0.02, m_psi=1e13,
+              lambda_psi=0.1, E_th=1e16
+          )
+          results = run_parameter_scan(
+              p,
+              psi_init_range=[0.0, 0.01*p.psi_0, 0.1*p.psi_0],
+              psi_dot_init_range=[0.0, 0.1*p.mu*p.psi_0, p.mu*p.psi_0],
+              phi_offset_range=[0.01*p.Phi_c, 0.1*p.Phi_c],
+              t_max=3000.0,
+              n_points=30000
+          )
+          save_results(results, "ptum_task1_18point_scan.json")
+          succeeded = sum(bool(r.get("success")) for r in results)
+          failed = len(results) - succeeded
+          quartic = sum(bool(r.get("classification", {}).get("quartic_achieved")) for r in results)
+          max_total = max(r.get("max_relative_continuity_residual", float("inf")) for r in results)
+          max_split = max(r.get("max_relative_split_continuity_residual", float("inf")) for r in results)
+          max_dydt = max(r.get("max_relative_state_derivative_residual", float("inf")) for r in results)
+          print(f"trajectories={len(results)} success={succeeded} failed={failed} quartic={quartic}")
+          print(f"max_total_continuity={max_total:.3e} max_split_continuity={max_split:.3e} max_dydt={max_dydt:.3e}")
+          assert len(results) == 18
+          assert succeeded == 18
+          assert max_total < 1e-5
+          assert max_split < 1e-4
+          assert max_dydt < 1e-3
+          PY
+      - name: Upload scan report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ptum-task1-18point-scan
+          path: ptum_task1_18point_scan.json
+          if-no-files-found: warn
