@@ -94,9 +94,9 @@ class PTUMParameters:
 
 @dataclass
 class InitialConditions:
-    """Initial conditions at threshold crossing t = t_c."""
-    Phi: float           # Φ(t_c) = Φ_c (at threshold)
-    Phi_dot: float       # Φ̇(t_c) from slow-roll
+    """Homogeneous initial data at the chosen initial time t_i."""
+    Phi: float           # Chosen fuel-field value, relative to Phi_c
+    Phi_dot: float       # Slow-roll estimate unless explicitly overridden
     psi: float           # ψ(t_c) - homogeneous mode
     psi_dot: float       # ψ̇(t_c)
     # Quantum fluctuation seeds for ensemble runs
