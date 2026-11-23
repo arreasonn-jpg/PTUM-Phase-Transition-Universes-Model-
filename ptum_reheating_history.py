@@ -166,7 +166,7 @@ def integrate_perturbative_reheating_history(
         rhs,
         (0.0, n_max),
         initial_state,
-        method="DOP853",
+        method="BDF",
         dense_output=True,
         events=events,
         rtol=rel_tol,
@@ -219,7 +219,7 @@ def integrate_perturbative_reheating_history(
         float(np.min(np.diff(comoving_entropy)) / entropy_scale)
         if n_points > 1 else 0.0
     )
-    entropy_monotonic_tolerance = 1.0e-4
+    entropy_monotonic_tolerance = 1.0e-5
     entropy_monotonic = minimum_entropy_step >= -entropy_monotonic_tolerance
     late_index = int(0.9 * (n_points - 1))
     late_entropy_change = (
@@ -304,7 +304,7 @@ def integrate_perturbative_reheating_history(
         },
         "integration": {
             "success": True,
-            "solver": "DOP853",
+            "solver": "BDF",
             "rtol": rel_tol,
             "atol": abs_tol,
             "max_efolds_requested": n_max,

@@ -4067,6 +4067,7 @@ def test_continuous_reheating_closes_energy_budget_and_matches_H_equals_Gamma_te
     assert events["H_equals_Gamma"] is not None
     assert events["radiation_domination"] is not None
     assert result["integration"]["condensate_decay_completion_reached"] is True
+    assert result["integration"]["solver"] == "BDF"
     omega_r = events["H_equals_Gamma"]["radiation_fraction"]
     observed_ratio = diagnostics["continuous_to_sudden_temperature_ratio_at_H_equals_Gamma"]
     assert 0.0 < omega_r < 1.0
@@ -4118,4 +4119,4 @@ def test_continuous_reheating_equations_and_entropy_definition_are_in_manuscript
     assert r"\frac{d\rho_c}{dN}" in source
     assert r"\frac{d\rho_r}{dN}" in source
     assert r"\Omega_r^{1/4}" in source
-    assert "ptum_reheating_history.py" in source
+    assert r"ptum\_reheating\_history.py" in source

@@ -2113,3 +2113,23 @@ does not include a changing thermal equation of state or g_*(T),
 and assumes prompt thermalization. It does not establish a PTUM
 benchmark reheating temperature, BBN result, full energy partition,
 or microscopic entropy history. Gate 8 remains PARTIAL.
+
+
+## 2026-11-23 continuous reheating solver correction
+
+The first exact-head run for the new continuous two-fluid helper,
+workflow 45152225396 on 01dc0b5, reported 176 passes and two failures.
+The first exposed a genuine numerical issue: DOP853's dense interpolant
+near the terminal, stiff decay tail produced an artificial decrease in
+sampled comoving entropy and small late-time density wiggles. The same
+equations were independently integrated with BDF at the test settings;
+the integrated condensate, radiation and total budget residuals were
+below 5e-15 and the sampled entropy was non-decreasing to numerical
+precision. The production solver is therefore changed to BDF. The
+entropy monotonicity diagnostic tolerance is tightened to 1e-5.
+
+The second failure was only a manuscript-source assertion that searched
+for an unescaped filename; main.tex correctly writes the underscores
+as TeX escapes. The test now checks the actual TeX spelling. No physical
+equation, decay width, or scientific acceptance criterion was weakened.
+Fresh exact-head CI is required.

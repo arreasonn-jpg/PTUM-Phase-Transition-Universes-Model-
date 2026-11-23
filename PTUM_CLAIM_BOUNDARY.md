@@ -1132,3 +1132,18 @@ The conditional width implementation and its numerical regressions passed in PR 
 - Treating the constant-fluid result as a substitute for the coupled inhomogeneous waterfall, Higgs-portal pair production, nonperturbative preheating or rescattering.
 
 The five new continuous-history regressions and manuscript equations require fresh exact-head CI. Gate 8 remains PARTIAL.
+
+
+## 2026-11-23 continuous reheating solver verification boundary
+
+The first exact-head run of the new fluid helper found that DOP853's
+dense interpolation near the stiff terminal decay tail could produce
+a small artificial non-monotonicity in sampled comoving entropy.
+The solver was changed to BDF, which is appropriate for the increasing
+Gamma/H stiffness as the condensate decays. An independent numerical
+solve of the same equations showed integrated sector/total budget
+residuals below 5e-15 and no sampled entropy decrease at the regression
+resolution. The diagnostic tolerance was tightened to 1e-5. The
+manuscript filename assertion was also corrected to account for TeX
+escaping. These corrections await fresh exact-head CI and do not
+change the conditional, non-PTUM-prediction scope of Gate 8.

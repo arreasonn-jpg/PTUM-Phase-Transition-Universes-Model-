@@ -15,7 +15,7 @@ This file defines the evidence required before PTUM can be called scientifically
 | 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The closure remains phenomenological; no microscopic realization is established |
 | 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. Added conditional broken-phase scalar/pseudoscalar two-body and electroweak-symmetric chiral three-body vacuum widths, plus a continuous constant-\(w_c\), constant-\(\Gamma\), constant-\(g_*\) condensate/radiation FRW integrator. The latter includes radiation in \(H\), independent cumulative condensate/radiation/total energy-budget residuals, \(T(N)\), sampled \(T_{\max}\), \(H=\Gamma\) and radiation-domination events, and \(S_{\rm com}(N)\). Tests check zero-width redshifting/entropy conservation, source cancellation, and \(T_{\rm cont}/T_{\rm sudden}=\Omega_r^{1/4}\) at \(H=\Gamma\). No benchmark follows because Wilson matrices, cutoff, quasiparticle mass history and coupled energy partition are unspecified. Prompt thermalization, constant \(w_c,\Gamma,g_*\), and the absence of thermal thresholds, blocking/enhancement, portal pair production and nonperturbative preheating are explicit approximations; full thermal history and PTUM-derived entropy production remain absent. |
 | 9. Observational reproducibility | Public exact CLASS patch; pinned version/commit; complete configs, likelihoods, data, chains and commands; independent rerun reproduces posteriors and model comparison | **NOT MET**. Reported numbers are author-reported; patch availability and chains remain unverified |
-| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Exact-head PR workflow 45010256204 on 50c72c7dc58f4db192af17b698975d671958fb69 passed 173 Python tests, the four-trajectory/two-scale smoke scan (4/4, zero failed integrations), the extended 11-grid bare WKB UV/volume audit, and a 45-page LaTeX build. The final LaTeX pass had 77 Underfull hbox warnings, zero Overfull hboxes, and zero unresolved references/citations. The full 100-row and paired convergence jobs were skipped by design on this non-[FULL-SCAN] run. The continuous reheating fluid model and its five new tests are newer than this CI result and require fresh exact-head verification. |
+| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. The prior exact-head PR workflow 45010256204 on 50c72c7 passed 173 Python tests, the 4/4 smoke scan and the extended bare WKB UV/volume audit; its 45-page LaTeX build had zero Overfull hboxes and zero unresolved references/citations, but 77 Underfull hbox warnings. The new continuous-reheating head 01dc0b5 produced 176 passes and two failures: (i) DOP853 dense-output interpolation near the stiff late-decay endpoint caused a sampled comoving-entropy monotonicity diagnostic to fail, and (ii) a manuscript source test did not account for TeX-escaped underscores. The integrator is changed to the stiff BDF method, the numerical monotonicity threshold is tightened to \(10^{-5}\), and the source assertion now matches the escaped filename. Fresh exact-head CI is pending. |
 
 ## Current implementation evidence
 
@@ -1826,3 +1826,22 @@ thermal thresholds, inverse processes, thermal blocking/enhancement,
 Higgs-portal pair production, nonperturbative preheating and rescattering
 are explicit limitations. Gate 10 remains PARTIAL until the new exact
 head passes CI and the remaining manuscript warnings are resolved.
+
+
+### 2026-11-23 exact-head regression correction
+
+PR push workflow 45152225396 on 01dc0b5 completed the Python job with
+176 passed and two failed. One failure was numerical: the non-stiff
+DOP853 dense interpolant developed a non-monotone late-time entropy
+sample while the decay source made the equations stiff. A local
+independent solve of the same normalized equations with BDF reduced
+the maximum integrated energy-budget residual below \(5\\times10^{-15}\)
+and removed the observed entropy decrease. The production integrator
+now uses BDF, and the sampled entropy monotonicity diagnostic tolerance
+is tightened from \(10^{-4}\) to \(10^{-5}\), not relaxed.
+
+The second failure was a source-test mismatch: main.tex correctly
+escapes underscores in the filename as TeX, while the assertion searched
+for the unescaped Python filename. The assertion now checks the escaped
+source spelling. The BDF solver change and source-test correction are
+awaiting a fresh exact-head CI run. Gate 8 remains PARTIAL.
