@@ -154,10 +154,16 @@ def dminimum_value_psi_dphi(Phi: float, params: PTUMParameters) -> float:
 
 
 def shifted_potential_psi(Phi: float, psi: float, params: PTUMParameters) -> float:
-    """Instantaneous excitation potential above the moving minimum."""
+    """Exact activation potential measured above its instantaneous minimum."""
     m_eff_sq = meff_sq_psi(Phi, params)
-    mu_sq = max(-m_eff_sq, 0.0)
-    psi0_sq = mu_sq / params.lambda_psi
+    quartic = 0.25 * params.lambda_psi * psi**4
+    if m_eff_sq >= 0.0:
+        # In the dormant phase the minimum is at psi=0, so the positive
+        # quadratic mass term remains part of the excitation potential.
+        return 0.5 * m_eff_sq * psi**2 + quartic
+    # In the tachyonic phase subtract V_min=-m_eff^4/(4 lambda):
+    # V_act - V_min = lambda/4 * (psi^2 - psi_0^2)^2.
+    psi0_sq = -m_eff_sq / params.lambda_psi
     return 0.25 * params.lambda_psi * (psi**2 - psi0_sq)**2
 
 
