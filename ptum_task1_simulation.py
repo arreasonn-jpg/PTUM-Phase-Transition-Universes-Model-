@@ -116,9 +116,8 @@ def meff_sq_psi(Phi: float, params: PTUMParameters) -> float:
 
 
 def rho_phi(Phi: float, Phi_dot: float, psi: float, params: PTUMParameters) -> float:
-    """Energy density of fuel field Φ"""
-    m_eff_sq = meff_sq_psi(Phi, params)
-    return 0.5 * Phi_dot**2 + veff_phi(Phi, params) + 0.5 * m_eff_sq * psi**2
+    """Fuel-sector energy density; the Φ-dependent ψ interaction is allocated to ψ."""
+    return 0.5 * Phi_dot**2 + veff_phi(Phi, params)
 
 
 def rho_psi(Phi: float, psi: float, psi_dot: float, params: PTUMParameters) -> float:
@@ -133,10 +132,12 @@ def pressure_psi(Phi: float, psi: float, psi_dot: float, params: PTUMParameters)
     return 0.5 * psi_dot**2 - 0.5 * m_eff_sq * psi**2 - 0.25 * params.lambda_psi * psi**4
 
 
-def shifted_potential_psi(psi: float, params: PTUMParameters) -> float:
-    """U(ψ) = ¼λ_ψ(ψ² - ψ₀²)² - energy measured from minimum"""
-    psi_0 = params.psi_0
-    return 0.25 * params.lambda_psi * (psi**2 - psi_0**2)**2
+def shifted_potential_psi(Phi: float, psi: float, params: PTUMParameters) -> float:
+    """Instantaneous ψ potential shifted by its minimum at the current Φ."""
+    m_eff_sq = meff_sq_psi(Phi, params)
+    mu_sq = max(-m_eff_sq, 0.0)
+    psi0_sq = mu_sq / params.lambda_psi
+    return 0.25 * params.lambda_psi * (psi**2 - psi0_sq)**2
 
 
 def w_psi(Phi: float, psi: float, psi_dot: float, params: PTUMParameters) -> float:
@@ -149,6 +150,7 @@ def w_psi(Phi: float, psi: float, psi_dot: float, params: PTUMParameters) -> flo
 def hubble_rate(Phi: float, Phi_dot: float, psi: float, psi_dot: float, 
                 params: PTUMParameters, rho_other: float = 0.0) -> float:
     """Hubble rate H = sqrt(ρ_total/3M_Pl²)"""
+    # The interaction term ½ m_eff²(Φ) ψ² is included only in rho_psi.
     rho_tot = rho_phi(Phi, Phi_dot, psi, params) + rho_psi(Phi, psi, psi_dot, params) + rho_other
     return np.sqrt(max(rho_tot, 0) / (3 * M_PL**2))
 
@@ -221,18 +223,35 @@ def run_simulation(params: PTUMParameters,
     w_psi_arr = np.array([w_psi(Phi[i], psi[i], psi_dot[i], params) for i in range(len(t))])
     
     # Shifted potential and virial diagnostics
-    U_psi = np.array([shifted_potential_psi(psi[i], params) for i in range(len(t))])
-    virial_ratio = np.where(U_psi > 0, 0.5 * psi_dot**2 / U_psi, 0)
+    U_psi = np.array([shifted_potential_psi(Phi[i], psi[i], params) for i in range(len(t))])
     
-    # Quartic dominance parameter Q = λ⟨ψ⁴⟩ / μ²⟨ψ²⟩
-    # Compute over oscillation periods (using zero crossings of psi_dot)
-    Q_arr = compute_quartic_dominance(t, psi, psi_dot, params)
+    # Quartic dominance is measured as <V4>/<|V2|>, with the instantaneous
+    # field-dependent mass, rather than a fixed mass sampled at 1.01 Phi_c.
+    Q_arr = compute_quartic_dominance(t, Phi, psi, psi_dot, params)
+    virial_ratio = compute_quartic_virial_ratio(t, psi, psi_dot, params)
     
     # Time-averaged w_psi over oscillation periods
     w_avg, t_avg = compute_time_averaged_w(t, w_psi_arr, psi_dot)
     
+    # Total scalar pressure and continuity-equation residual. In an expanding
+    # FRW background total rho is not constant: rho_dot + 3H(rho+p)=0.
+    p_phi_arr = 0.5 * Phi_dot**2 - np.array([veff_phi(x, params) for x in Phi])
+    rho_total_arr = rho_phi_arr + rho_psi_arr
+    p_total_arr = p_phi_arr + p_psi_arr
+    continuity = np.gradient(rho_total_arr, t, edge_order=2) + 3.0 * H * (rho_total_arr + p_total_arr)
+    continuity_scale = np.maximum.reduce([
+        np.abs(np.gradient(rho_total_arr, t, edge_order=2)),
+        np.abs(3.0 * H * (rho_total_arr + p_total_arr)),
+        np.abs(H * rho_total_arr),
+        np.full_like(t, np.finfo(float).tiny)
+    ])
+    max_relative_continuity_residual = float(np.max(np.abs(continuity) / continuity_scale))
+
     return {
         'success': True,
+        'max_relative_continuity_residual': max_relative_continuity_residual,
+        'rho_total': rho_total_arr,
+        'p_total': p_total_arr,
         't': t,
         'Phi': Phi,
         'Phi_dot': Phi_dot,
@@ -253,36 +272,38 @@ def run_simulation(params: PTUMParameters,
     }
 
 
-def compute_quartic_dominance(t: np.ndarray, psi: np.ndarray, 
+def _turning_point_intervals(psi_dot: np.ndarray) -> np.ndarray:
+    """Indices of successive turning points (zeros of ψ̇), defining half-cycles."""
+    return np.where(np.diff(np.sign(psi_dot)))[0]
+
+
+def compute_quartic_dominance(t: np.ndarray, Phi: np.ndarray, psi: np.ndarray,
                               psi_dot: np.ndarray, params: PTUMParameters) -> np.ndarray:
-    """Compute quartic dominance parameter Q = λ⟨ψ⁴⟩/μ²⟨ψ²⟩ over oscillation periods."""
-    Q = np.zeros_like(t)
-    mu_sq = abs(params.mu_sq)
-    
-    # Find zero crossings of psi_dot (oscillation boundaries)
-    zero_crossings = np.where(np.diff(np.sign(psi_dot)))[0]
-    
-    if len(zero_crossings) < 2:
-        return Q
-    
-    for i in range(len(zero_crossings) - 1):
-        start = zero_crossings[i]
-        end = zero_crossings[i + 1]
+    """Compute <V4>/<|V2|> on each half-cycle using the instantaneous m_eff(Φ)."""
+    Q = np.full_like(t, np.nan, dtype=float)
+    turning_points = _turning_point_intervals(psi_dot)
+    for start, end in zip(turning_points[:-1], turning_points[1:]):
         if end - start < 2:
             continue
-        psi_seg = psi[start:end]
-        psi4_avg = np.mean(psi_seg**4)
-        psi2_avg = np.mean(psi_seg**2)
-        if psi2_avg > 0:
-            Q_val = params.lambda_psi * psi4_avg / (mu_sq * psi2_avg)
-            Q[start:end] = Q_val
-    
-    # Fill remaining with last value
-    if len(zero_crossings) > 0:
-        last_idx = zero_crossings[-1]
-        Q[last_idx:] = Q[last_idx]
-    
+        phi_seg, psi_seg = Phi[start:end], psi[start:end]
+        mass_sq = np.abs(np.array([meff_sq_psi(x, params) for x in phi_seg]))
+        v4_avg = 0.25 * params.lambda_psi * np.mean(psi_seg**4)
+        v2_avg = 0.5 * np.mean(mass_sq * psi_seg**2)
+        Q[start:end] = v4_avg / v2_avg if v2_avg > 0 else np.inf
     return Q
+
+
+def compute_quartic_virial_ratio(t: np.ndarray, psi: np.ndarray, psi_dot: np.ndarray,
+                                 params: PTUMParameters) -> np.ndarray:
+    """Return <ψ̇²>/(4<V4>) per half-cycle; this tends to one for a quartic oscillator."""
+    ratio = np.full_like(t, np.nan, dtype=float)
+    turning_points = _turning_point_intervals(psi_dot)
+    for start, end in zip(turning_points[:-1], turning_points[1:]):
+        if end - start < 2:
+            continue
+        v4_avg = 0.25 * params.lambda_psi * np.mean(psi[start:end]**4)
+        ratio[start:end] = np.mean(psi_dot[start:end]**2) / (4.0 * v4_avg) if v4_avg > 0 else np.nan
+    return ratio
 
 
 def compute_time_averaged_w(t: np.ndarray, w: np.ndarray, 
@@ -445,18 +466,21 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     
     # Use last few oscillation averages
     if len(w_avg) >= 3:
-        w_final = np.mean(w_avg[-3:])
-        Q_final = np.mean(Q[-len(w_avg)*10:]) if len(Q) > 0 else 0
-        virial_final = np.mean(virial[-len(w_avg)*10:]) if len(virial) > 0 else 0
+        w_final = float(np.mean(w_avg[-3:]))
     else:
-        w_final = w_avg[-1] if len(w_avg) > 0 else 0
-        Q_final = Q[-1] if len(Q) > 0 else 0
-        virial_final = virial[-1] if len(virial) > 0 else 0
-    
-    # Classification criteria
-    quartic_achieved = (Q_final > 5 and 
-                        abs(w_final - 1/3) < 0.05 and 
-                        abs(virial_final - 1) < 0.2)
+        w_final = float(w_avg[-1]) if len(w_avg) else 0.0
+
+    valid_q = Q[np.isfinite(Q)]
+    valid_virial = virial[np.isfinite(virial)]
+    Q_final = float(np.mean(valid_q[-3:])) if len(valid_q) else 0.0
+    virial_final = float(np.mean(valid_virial[-3:])) if len(valid_virial) else np.nan
+
+    # Q is the quartic-to-quadratic potential-energy ratio. A sustained
+    # quartic regime requires Q >> 1, the quartic virial identity, and <w>≈1/3.
+    quartic_achieved = (Q_final > 5 and
+                        abs(w_final - 1/3) < 0.05 and
+                        np.isfinite(virial_final) and
+                        abs(virial_final - 1.0) < 0.2)
     
     if quartic_achieved:
         regime = 'quartic'
@@ -497,9 +521,7 @@ def save_results(results: List[Dict], filepath: str):
                 'ic_params': r['ic_params'],
                 'final_psi_amplitude': float(np.max(np.abs(r['psi']))),
                 'final_Phi': float(r['Phi'][-1]),
-                'energy_conservation': float(np.max(np.abs(
-                    r['rho_phi'] + r['rho_psi'] - r['rho_phi'][0] - r['rho_psi'][0]
-                )))
+                'max_relative_continuity_residual': float(r['max_relative_continuity_residual'])
             })
         else:
             summary.append({
