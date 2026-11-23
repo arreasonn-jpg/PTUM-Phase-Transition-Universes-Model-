@@ -366,6 +366,9 @@ def run_simulation(params: PTUMParameters,
         np.maximum(np.abs(residual_phi_split), np.abs(residual_psi_split))/split_scale
     ))
 
+    p_phi_arr = 0.5*Phi_dot**2 - np.array([veff_phi(x, params) for x in Phi])
+    rho_total_arr = rho_phi_arr + rho_psi_arr
+    p_total_arr = p_phi_arr + p_psi_arr
     meff_sq_arr = np.array([meff_sq_psi(x, params) for x in Phi])
     tachyonic_duration, tachyonic_fraction, threshold_crossings = \
         _tachyonic_trajectory_diagnostics(t_diag, phi_d, params)
