@@ -45,7 +45,7 @@ with a Unified Dark Sector}
 \date{}
 
 \abstract{%
-The dark sector of the standard cosmological model comprises dark matter, dark energy, and possible dark radiation, whose common origin remains unexplained. We present the Phase Transition Universes Model (PTUM), a discharge-based cosmological creation scenario where a scalar quantum fuel field $\Phi$ accumulates, reaches a critical threshold, and undergoes a tachyonic transition. Within this effective description, the discharge event leaves behind a dark-matter candidate sector ($\chi$), a residual dark-energy sector ($\Phi_{\rm res}$), and a relativistic proxy-fluid dark radiation component (pfd, $\psi$). A falsifiable prediction of PTUM is that, \emph{within the effective linear proxy-fluid description}, the pfd component carries $w=1/3$, $c_s^2=1/3$, and zero anisotropic stress ($\sigma=0$). This produces no neutrino-induced CMB acoustic peak phase shift, distinguishing it from free-streaming dark radiation---a signature that may be tested at high significance by next-generation CMB experiments such as CMB-S4, depending on the realized pfd abundance. The authors report implementing the effective phenomenological system in \texttt{CLASS} at background and perturbation levels \emph{(modified code not yet public)}. The creation sector supports a plateau-type slow-roll phase compatible with current CMB constraints, fixing the discharge scale to $V_0^{1/4}\sim 10^{15}$--$10^{16}\,\mathrm{GeV}$. The dark-energy sector admits a broad near-$\Lambda$ viable region with $w_{\rm DE}\approx -1$. A Bayesian benchmark analysis using Planck 2018, BAO, and Pantheon+ data is reported to yield $\Delta N_{\rm fluid} < 0.31$ at $95\%$ credibility \emph{(author-reported; chains not yet public)}. Model comparison is reported to give $\Delta\chi^2 = +0.26$ and $\Delta\mathrm{AIC}=2.26$; current data therefore show a weak preference for $\Lambda$CDM while leaving PTUM viable as a falsifiable effective extension. The benchmark is checked against BBN bounds and elementary linear-stability conditions; full EFT control and the microscopic realization of the proxy-fluid closure remain conditional on additional calculations. \textbf{Critical caveat:} Numerical integration of the coupled background equations with the benchmark parameters ($V_0\sim10^{64}\,\mathrm{GeV}^4$, $H_*\sim10^{13}\,\mathrm{GeV}$) shows the system is overdamped ($3H/(2\mu)\approx 25$); the quartic-dominated regime with $w_\psi=1/3$ is \emph{not achieved} with these parameters. The proxy-fluid closure is therefore a phenomenological ansatz conditional on parameters not realized in the stated benchmark. The formulation should be read as an effective phenomenological framework rather than as a first-principles derivation of the pre-discharge background, a solution of the cosmological-constant hierarchy, or a UV completion.%
+The dark sector of the standard cosmological model comprises dark matter, dark energy, and possible dark radiation, whose common origin remains unexplained. We present the Phase Transition Universes Model (PTUM), a discharge-based cosmological creation scenario proposing a scalar quantum fuel field $\Phi$ and an effective tachyonic threshold prescription. The required dormant-to-tachyonic crossing is not yet dynamically derived from the specified fuel potential and effective-mass function. Within this effective description, the discharge event leaves behind a dark-matter candidate sector ($\chi$), a residual dark-energy sector ($\Phi_{\rm res}$), and a relativistic proxy-fluid dark radiation component (pfd, $\psi$). A falsifiable prediction of PTUM is that, \emph{within the effective linear proxy-fluid description}, the pfd component carries $w=1/3$, $c_s^2=1/3$, and zero anisotropic stress ($\sigma=0$). This produces no neutrino-induced CMB acoustic peak phase shift, distinguishing it from free-streaming dark radiation---a signature that may be tested at high significance by next-generation CMB experiments such as CMB-S4, depending on the realized pfd abundance. The authors report implementing the effective phenomenological system in \texttt{CLASS} at background and perturbation levels \emph{(modified code not yet public)}. The creation sector supports a plateau-type slow-roll phase compatible with current CMB constraints, fixing the discharge scale to $V_0^{1/4}\sim 10^{15}$--$10^{16}\,\mathrm{GeV}$. The dark-energy sector admits a broad near-$\Lambda$ viable region with $w_{\rm DE}\approx -1$. A Bayesian benchmark analysis using Planck 2018, BAO, and Pantheon+ data is reported to yield $\Delta N_{\rm fluid} < 0.31$ at $95\%$ credibility \emph{(author-reported; chains not yet public)}. Model comparison is reported to give $\Delta\chi^2 = +0.26$ and $\Delta\mathrm{AIC}=2.26$; current data therefore show a weak preference for $\Lambda$CDM while leaving PTUM viable as a falsifiable effective extension. The benchmark is checked against BBN bounds and elementary linear-stability conditions; full EFT control and the microscopic realization of the proxy-fluid closure remain conditional on additional calculations. \textbf{Critical caveat:} Numerical integration of the coupled background equations with the benchmark parameters ($V_0\sim10^{64}\,\mathrm{GeV}^4$, $H_*\sim10^{13}\,\mathrm{GeV}$) shows the system is overdamped ($3H/(2\mu)\approx 25$); the quartic-dominated regime with $w_\psi=1/3$ is \emph{not achieved} with these parameters. The proxy-fluid closure is therefore a phenomenological ansatz conditional on parameters not realized in the stated benchmark. The formulation should be read as an effective phenomenological framework rather than as a first-principles derivation of the pre-discharge background, a solution of the cosmological-constant hierarchy, or a UV completion.%
 } % abstract'ın kapanış parantezi
 \PACS{
       {98.80.Cq}{Particle-theory and field-theory models of the early Universe} \and
@@ -1155,11 +1155,14 @@ and is left for future work.
 \subsection{Operational stability and observable closure of the discharge sector}
 \label{subsec:ptum_operational_stability}
 
-The preceding subsections define PTUM as a threshold-triggered discharge
-mechanism: the fuel field $\Phi$ accumulates, the proxy field $\psi$ becomes
-tachyonically active when its effective mass squared changes sign, and the
-post-discharge energy is partitioned into dark matter, residual dark energy,
-and proxy-fluid dark radiation.  The present subsection records the minimal
+The preceding subsections define PTUM's effective threshold-discharge
+ansatz: the fuel field $\Phi$ is postulated to reach a critical
+configuration, the proxy field $\psi$ becomes tachyonically active when
+its effective mass squared changes sign, and the postulated discharge
+energy is partitioned into dark matter, residual dark energy, and
+proxy-fluid dark radiation. The dynamical realization of the required
+crossing remains unresolved for the present choice of $V_{\rm eff}$ and
+$m_{\rm eff}^2(\Phi)$.  The present subsection records the minimal
 internal stability conditions required for this effective description to be
 well defined.  No additional field, sector, or cross-model structure is
 introduced here.
@@ -1283,9 +1286,8 @@ Boltzmann-implementation level even if no particular string-theoretic,
 swampland, or higher-dimensional embedding is adopted.
 
 \noindent\textbf{Tachyonic transition and string theory.}
-The activation mechanism through which the fuel field $\Phi$ triggers
-the proxy mode $\psi$ via a tachyonic mass term bears a close
-structural resemblance to the open-string tachyon condensation that
+The proposed tachyonic activation of the proxy mode $\psi$ by the fuel
+field $\Phi$ bears a structural resemblance to the open-string tachyon condensation that
 arises in D-brane--anti-D-brane systems
 \cite{Sen2002,Dvali1999,KKLMMT2003}. In the Dvali--Tye scenario, the
 inter-brane separation plays the role of an inflaton, and brane
