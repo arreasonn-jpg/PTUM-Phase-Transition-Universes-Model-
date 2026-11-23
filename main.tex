@@ -772,14 +772,31 @@ trajectory or to oscillations about $\pm\psi_0$.
 
 The energy measured from the minimum is
 \begin{align}
-\rho_\psi&=\frac12\dot\psi^2+U(\psi),\qquad
-p_\psi=\frac12\dot\psi^2-U(\psi), \notag\\
-w_\psi&=\frac{\dot\psi^2/2-U}{\dot\psi^2/2+U}.
+\rho_{\psi,\mathrm{exc}}&=\frac12\dot\psi^2+U(\psi;\Phi),\qquad
+p_{\psi,\mathrm{exc}}=\frac12\dot\psi^2-U(\psi;\Phi).
 \label{eq:w_psi_energy}
 \end{align}
-When expansion and interactions are negligible, this energy is conserved.
-In an expanding universe it is not: $\dot\rho_\psi=-3H\dot\psi^2$
-for an uncoupled homogeneous field with fixed $\mu$. The barrier height
+A crucial qualification is needed for the coupled system: because
+$m_{\rm eff}^2=m_{\rm eff}^2(\Phi)$, the minimum and
+$V_{\rm min}(\Phi)=-[m_{\rm eff}^2(\Phi)]^2/(4\lambda_\psi)$ vary as
+$\Phi$ evolves. Consequently, $U=V_{\rm act}-V_{\rm min}(\Phi)$ is not
+obtained by adding a constant to the full two-field action. The compensating
+term $-V_{\rm min}(\Phi)$ is field dependent and its $\Phi$ derivative
+would change the $\Phi$ equation of motion. The exact Hilbert stress tensor
+and Friedmann source must therefore be computed from the unshifted potential
+$V_{\rm act}(\psi;\Phi)$ appearing in the stated action:
+\begin{align}
+\rho_{\psi,\mathrm{act}}&=\frac12\dot\psi^2+V_{\rm act}(\psi;\Phi),\notag\\
+p_{\psi,\mathrm{act}}&=\frac12\dot\psi^2-V_{\rm act}(\psi;\Phi).
+\end{align}
+The shifted quantities above may be used to diagnose energy above the moving
+minimum, but their evolution includes work associated with the changing
+$V_{\rm min}(\Phi)$ and they must not be substituted into the Friedmann
+constraint without modifying the full action consistently. In the quartic
+dominated limit $|\psi|\gg\psi_0$, the distinction becomes subleading and
+the averaged result $w_\psi\to1/3$ is unchanged. For fixed $\mu$, when
+expansion and interactions are negligible, the excitation energy is
+conserved; in an expanding universe it is not. The barrier height
 measured from either minimum is
 \begin{equation}
 U(0)=\frac{\mu^4}{4\lambda_\psi}
@@ -1050,7 +1067,7 @@ w_\psi=\frac{1}{3},
 \label{eq:PTUM_quartic_fluid_operational}
 \end{equation}
 \emph{provided the quartic-dominated oscillatory regime is actually
-reached}; as shown in Section~\ref{subsec:ptum_operational_stability}
+reached}; as shown in Section~\ref{sec:tachyonic_to_quartic}
 (and the abstract), the benchmark parameters are overdamped and do not
 realize this regime, so the $w_\psi=1/3$ closure is conditional.
 In the effective linear closure used in the Boltzmann implementation, the
