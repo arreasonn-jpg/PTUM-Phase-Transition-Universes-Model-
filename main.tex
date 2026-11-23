@@ -595,8 +595,7 @@ For spatially inhomogeneous classical fields, the same action gives
 \label{eq:phi_psi_pde}
 \end{align}
 Equations~(\ref{eq:frw1})--(\ref{eq:frw2}) are their homogeneous
-limit, obtained by setting spatial gradients to zero. The Task~1
-The reproducibility workflow uses the explicit diagnostic parameter set
+limit, obtained by setting spatial gradients to zero. The reproducibility workflow uses the explicit diagnostic parameter set
 $V_0=10^{56}\,{\rm GeV}^4$ ($V_0^{1/4}=10^{14}\,{\rm GeV}$),
 $\lambda=0.02$, $m=10^{13}\,{\rm GeV}$,
 $\lambda_\psi=0.1$, and $E_{\rm th}=10^{16}\,{\rm GeV}$.
@@ -623,7 +622,24 @@ replacing $m^2$ with $|m^2|$. A real-time non-equilibrium effective
 action or a renormalized lattice treatment is needed before that
 correction can be included consistently.
 
-ODE solver therefore validates the homogeneous background only. It
+For periodic spatial boundary conditions, the spatially averaged
+energy density and isotropic pressure of the inhomogeneous two-field
+system are
+\begin{align}
+\langle\rho_{\Phi\psi}\rangle
+&=\left\langle
+\frac12\dot\Phi^2+\frac12\dot\psi^2
++\frac{|\nabla\Phi|^2+|\nabla\psi|^2}{2a^2}
++V_{\Phi\psi}\right\rangle,\\
+\langle p_{\Phi\psi}\rangle
+&=\left\langle
+\frac12\dot\Phi^2+\frac12\dot\psi^2
+-\frac{|\nabla\Phi|^2+|\nabla\psi|^2}{6a^2}
+-V_{\Phi\psi}\right\rangle.
+\end{align}
+The averaged Friedmann and continuity equations use these spatially
+averaged sources. The Task~1 ODE solver therefore validates the
+homogeneous background only. It
 does not resolve the tachyonic band $k/a<|m_{\rm eff}|$, nonlinear
 mode growth, rescattering, or defect formation. Those phenomena require
 a spatial lattice evolution with specified initial fluctuation spectra,
