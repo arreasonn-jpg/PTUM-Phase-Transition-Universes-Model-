@@ -102,13 +102,15 @@ class InitialConditions:
 
 
 def veff_phi(Phi: float, params: PTUMParameters) -> float:
-    """Effective potential for fuel field: V_eff(Φ) = V0(1 - exp(-λΦ²))"""
-    return params.V0 * (1 - np.exp(-params.lambda_phi * Phi**2))
+    """Tree-level fuel potential with a dimensionless Planck-normalized exponent."""
+    x2 = params.lambda_phi * (Phi / M_PL)**2
+    return params.V0 * (1 - np.exp(-x2))
 
 
 def dveff_dphi(Phi: float, params: PTUMParameters) -> float:
-    """Derivative of V_eff wrt Φ"""
-    return params.V0 * 2 * params.lambda_phi * Phi * np.exp(-params.lambda_phi * Phi**2)
+    """Derivative of the Planck-normalized tree-level fuel potential."""
+    x2 = params.lambda_phi * (Phi / M_PL)**2
+    return params.V0 * (2 * params.lambda_phi * Phi / M_PL**2) * np.exp(-x2)
 
 
 def meff_sq_psi(Phi: float, params: PTUMParameters) -> float:
@@ -267,8 +269,11 @@ def run_simulation(params: PTUMParameters,
     ])
     max_relative_continuity_residual = float(np.max(np.abs(continuity) / continuity_scale))
     meff_sq_arr = np.array([meff_sq_psi(x, params) for x in Phi])
-    tachyonic_duration, tachyonic_fraction, threshold_crossings = \
-        _tachyonic_trajectory_diagnostics(t_diag, phi_d, params)
+    tachyonic_duration, tachyonic_fraction, threshold_crossings = _tachyonic_trajectory_diagnostics(
+        t_diag, phi_d, params
+    )
+    initially_tachyonic = bool(abs(Phi[0]) > params.Phi_c)
+    finally_tachyonic = bool(abs(Phi[-1]) > params.Phi_c)
     seedless_invariant = (ic.psi == 0.0 and ic.psi_dot == 0.0)
 
     return {
@@ -278,6 +283,9 @@ def run_simulation(params: PTUMParameters,
         'min_meff_sq': float(np.min(meff_sq_arr)),
         'tachyonic_duration': tachyonic_duration,
         'tachyonic_fraction': tachyonic_fraction,
+        'threshold_crossings': threshold_crossings,
+        'initially_tachyonic': initially_tachyonic,
+        'finally_tachyonic': finally_tachyonic,
         'seedless_invariant': seedless_invariant,
         'max_abs_psi': float(np.max(np.abs(psi))),
         'max_abs_Phi_over_Phi_c': float(np.max(np.abs(Phi)) / params.Phi_c),
@@ -454,7 +462,7 @@ def create_initial_conditions(params: PTUMParameters,
     Phi_c = params.Phi_c
     Phi = Phi_c + phi_offset
     
-    # Slow-roll Φ̇ at threshold: Φ̇ ≈ -√(2ε_V) H M_Pl
+    # Slow-roll Φ̇ at threshold: Φ̇ ≈ -√(2ε_V) H M_Pl; Φ is stored in GeV
     # ε_V = ½(V'/V)²
     V = veff_phi(Phi, params)
     V_prime = dveff_dphi(Phi, params)
@@ -490,7 +498,7 @@ def create_initial_conditions_underdamped(params: PTUMParameters,
     """
     Phi = phi_ratio * params.Phi_c
     
-    # Slow-roll Φ̇
+    # Slow-roll Φ̇ from the same Planck-normalized potential used in the EOM.
     V = veff_phi(Phi, params)
     V_prime = dveff_dphi(Phi, params)
     epsilon_V = 0.5 * (V_prime / V)**2 if V > 0 else 0.01
@@ -662,7 +670,7 @@ def run_baseline_tests():
     print("PTUM Task 1: Tachyonic-to-Quartic Transition Simulation")
     print("=" * 60)
     
-    # Paper benchmark parameters - UNDAMPED regime (V0=1e56)
+    # Paper benchmark parameters. This background run uses the real tree-level fuel potential; the naive tachyonic CW logarithm is not inserted as a real local term.
     params = PTUMParameters(
         V0=1e56,
         lambda_phi=0.02,
