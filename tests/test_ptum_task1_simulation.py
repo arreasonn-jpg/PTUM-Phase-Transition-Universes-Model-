@@ -147,3 +147,19 @@ def test_moving_minimum_split_reproduces_full_hilbert_source_and_transfer():
         rho_psi_exc_dot + 3*h*(rho_psi_exc+p_psi_exc),
         -q_split, rtol=3e-12, atol=1e-8*abs(q_split)
     )
+
+
+def test_fuel_potential_uses_planck_normalized_dimensionless_exponent():
+    p = sim.PTUMParameters()
+    phi = 0.7 * sim.M_PL
+    x = p.lambda_phi * (phi / sim.M_PL)**2
+    expected = p.V0 * (1.0 - np.exp(-x))
+    assert np.isclose(sim.veff_phi(phi, p), expected, rtol=2e-15)
+    h = 1.0e-5 * sim.M_PL
+    finite_difference = (
+        sim.veff_phi(phi + h, p) - sim.veff_phi(phi - h, p)
+    ) / (2.0 * h)
+    assert np.isclose(sim.dveff_dphi(phi, p), finite_difference, rtol=2e-8)
+    ic = sim.create_initial_conditions(p, phi_offset=0.01*p.Phi_c)
+    assert np.isfinite(ic.Phi_dot)
+    assert ic.Phi_dot < 0.0
