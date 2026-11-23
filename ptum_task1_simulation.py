@@ -12,17 +12,18 @@ Equations (from main.tex Sec 3.5.6, Eqs 3.18-3.21):
   ψ̈ + 3Hψ̇ + m²(1 - αΦ²/E_th²)ψ + λ_ψψ³ = 0
   H² = (1/3M_Pl²)(ρ_Φ + ρ_ψ + ρ_χ + ρ_res + ρ_rad)
 
-Energy densities:
-  ρ_Φ = ½Φ̇² + V_eff(Φ) + ½m²(1 - αΦ²/E_th²)ψ²
-  ρ_ψ = ½ψ̇² + ½m²(1 - αΦ²/E_th²)ψ² + ¼λ_ψψ⁴
+Energy densities (interaction allocated exactly once to the ψ sector):
+  ρ_Φ = ½Φ̇² + V_eff(Φ)
+  ρ_ψ = ½ψ̇² + ½m_eff²(Φ)ψ² + ¼λ_ψψ⁴
 
 Shifted potential for ψ (energy measured from minimum):
   U(ψ) = ¼λ_ψ(ψ² - ψ₀²)²,  ψ₀² = μ²/λ_ψ,  μ² = |m_eff²|
 
 Diagnostics:
-  w_ψ = (½ψ̇² - U) / (½ψ̇² + U)
-  Q = λ_ψ⟨ψ⁴⟩ / μ²⟨ψ²⟩  (quartic dominance parameter)
-  Virial ratio V = ⟨ψ̇²⟩ / (4⟨U⟩)
+  w_ψ = p_ψ/ρ_ψ from the unshifted field-dependent potential
+  Q = ⟨V₄⟩/⟨|V₂|⟩, evaluated with m_eff²(Φ) on each half-cycle
+  Virial ratio = ⟨ψ̇²⟩/(4⟨V₄⟩), which tends to 1 in a quartic regime
+  Total energy is tested with ρ̇ + 3H(ρ+p)=0, not by assuming ρ is constant
 """
 
 import numpy as np
@@ -464,21 +465,25 @@ def classify_outcome(result: Dict, params: PTUMParameters) -> Dict:
     Q = result['Q']
     virial = result['virial_ratio']
     
-    # Use last few oscillation averages
-    if len(w_avg) >= 3:
-        w_final = float(np.mean(w_avg[-3:]))
+    # Require several resolved half-cycles; a single transient crossing is
+    # not evidence for a sustained oscillatory equation of state.
+    if len(w_avg) >= 6:
+        w_last = np.asarray(w_avg[-3:], dtype=float)
+        w_final = float(np.mean(w_last))
     else:
-        w_final = float(w_avg[-1]) if len(w_avg) else 0.0
+        w_last = np.asarray([], dtype=float)
+        w_final = float(np.mean(w_avg)) if len(w_avg) else 0.0
 
     valid_q = Q[np.isfinite(Q)]
     valid_virial = virial[np.isfinite(virial)]
     Q_final = float(np.mean(valid_q[-3:])) if len(valid_q) else 0.0
     virial_final = float(np.mean(valid_virial[-3:])) if len(valid_virial) else np.nan
 
-    # Q is the quartic-to-quadratic potential-energy ratio. A sustained
-    # quartic regime requires Q >> 1, the quartic virial identity, and <w>≈1/3.
-    quartic_achieved = (Q_final > 5 and
-                        abs(w_final - 1/3) < 0.05 and
+    # Q is the quartic-to-quadratic potential-energy ratio. Require at least
+    # six half-cycles and a stable final-three-cycle average near radiation.
+    quartic_achieved = (len(w_last) == 3 and
+                        np.all(np.abs(w_last - 1/3) < 0.05) and
+                        Q_final > 5 and
                         np.isfinite(virial_final) and
                         abs(virial_final - 1.0) < 0.2)
     
