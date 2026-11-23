@@ -957,12 +957,14 @@ integration; no such run exists in the public script.
 \item \emph{Sustained energy injection:} rescattering of the rolling
 $\Phi$ field into $\psi$ (the $\alpha m^2\Phi^2\psi^2/E_{\rm th}^2$
 interaction) could maintain oscillations after barrier crossing even
-when the bare damping is large. The public scan
-(\texttt{ptum\_task1\_simulation.py}, 18 initial-condition points)
-finds \texttt{quartic\_achieved = False} in every scanned point, so
-this route is \textbf{not} realized by the scanned initial conditions
-(SAYISAL OLARAK DOĞRULANDI for the scanned set; not excluded in
-general).
+when the bare damping is large. The earlier 18-point scan in
+\texttt{ptum\_task1\_simulation.py} is not accepted as decisive
+evidence: source review found duplicated interaction-energy accounting
+and inconsistent quartic-virial diagnostics in that implementation.
+Those diagnostics have now been corrected in the development branch,
+but the scan must be rerun before any conclusion about the 18 points is
+retained. The route is therefore \textbf{unresolved}, not numerically
+excluded.
 \item \emph{Reframed benchmark:} accept $w_\psi=0$ (overdamped, field
 pinned at the barrier top) at the CMB-normalized benchmark and treat
 the $w=1/3$ proxy-fluid as a separate, lower-$V_0$ phenomenological
