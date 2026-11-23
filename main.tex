@@ -596,6 +596,23 @@ For spatially inhomogeneous classical fields, the same action gives
 \end{align}
 Equations~(\ref{eq:frw1})--(\ref{eq:frw2}) are their homogeneous
 limit, obtained by setting spatial gradients to zero. The Task~1
+The reproducibility workflow uses the explicit diagnostic parameter set
+$V_0=10^{56}\,{\rm GeV}^4$ ($V_0^{1/4}=10^{14}\,{\rm GeV}$),
+$\lambda=0.02$, $m=10^{13}\,{\rm GeV}$,
+$\lambda_\psi=0.1$, and $E_{\rm th}=10^{16}\,{\rm GeV}$.
+It gives $\Phi_c=1.722\times10^{19}\,{\rm GeV}$,
+$\alpha=3.373\times10^{-7}$, $H_*=2.371\times10^9\,{\rm GeV}$,
+and $\mu=1.418\times10^{12}\,{\rm GeV}$, so
+$H_*/\mu=1.67\times10^{-3}$. This is an intentionally underdamped
+diagnostic set, not the primordial-normalized benchmark with
+$V_0^{1/4}\sim10^{15}$--$10^{16}\,{\rm GeV}$.
+The 18-point scan starts at
+$\Phi=(1.01,1.10)\Phi_c$, hence every trajectory begins on the
+tachyonic side; it tests the post-threshold evolution and possible
+tachyonic-to-dormant exit, not the onset of a dormant-to-tachyonic
+transition. The proxy seeds and initial velocities are scanned
+independently over the values listed in the validation workflow.
+
 The in-repository Task~1 solver evolves only the homogeneous
 two-field truncation and uses the tree-level plateau part of
 $V_{\rm eff}$; it does not include the Coleman--Weinberg loop term.
