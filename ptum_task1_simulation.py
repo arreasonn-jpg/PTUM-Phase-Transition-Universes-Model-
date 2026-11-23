@@ -286,7 +286,9 @@ def run_simulation(params: PTUMParameters,
     # finite-difference derivative of the interpolant measures solver
     # consistency; the action-derived energy derivatives test the exact
     # total and moving-minimum sector identities separately.
-    n_diag = max(len(t), 30000)
+    # Oversample the solver output grid by at least 3x for a converged
+    # fourth-order dense-output derivative audit of the fastest psi modes.
+    n_diag = max(len(t) * 3, 120000)
     t_diag = np.linspace(float(t[0]), float(t[-1]), n_diag)
     y_diag = sol.sol(t_diag)
     phi_d, phi_dot_d, psi_d, psi_dot_d = y_diag
