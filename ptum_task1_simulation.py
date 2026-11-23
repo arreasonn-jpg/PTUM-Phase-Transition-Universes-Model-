@@ -291,17 +291,25 @@ def run_simulation(params: PTUMParameters,
     dense_dydt = np.vstack([
         _uniform_time_derivative(y_diag[i], t_diag) for i in range(4)
     ])
-    derivative_scale = np.maximum.reduce([
-        np.abs(rhs_diag), np.abs(dense_dydt),
-        np.abs(y_diag) / max(float(t_diag[-1]-t_diag[0]), np.finfo(float).tiny) * 1e-8,
-        np.full_like(rhs_diag, np.finfo(float).tiny)
-    ])
+    span_diag = max(float(t_diag[-1]-t_diag[0]), np.finfo(float).tiny)
+    # Normalize each field equation by its trajectory-wide derivative scale.
+    # A pointwise denominator would spuriously approach zero at turning
+    # points and inflate an otherwise small absolute interpolation error.
+    derivative_scale = np.maximum(
+        np.max(np.abs(rhs_diag), axis=1),
+        np.max(np.abs(dense_dydt), axis=1)
+    )
+    derivative_scale = np.maximum(
+        derivative_scale,
+        np.max(np.abs(y_diag), axis=1) / span_diag * 1e-8
+    )
+    derivative_scale = np.maximum(derivative_scale, np.finfo(float).tiny)
     # Exclude the two one-sided finite-difference edge stencils; the
     # interior uses the fourth-order centered derivative exclusively.
     interior = slice(2, -2)
     state_derivative_residual = (
         np.abs(dense_dydt[:, interior]-rhs_diag[:, interior])
-        / derivative_scale[:, interior]
+        / derivative_scale[:, None]
     )
     max_relative_state_derivative_residual = float(np.max(state_derivative_residual))
     state_derivative_residual_by_component = np.max(state_derivative_residual, axis=1)
