@@ -50,7 +50,8 @@ class PTUMParameters:
     lambda_psi: float = 0.1   # Quartic coupling
     E_th: float = 1e16        # GeV, threshold scale
     
-    # Derived: alpha from Phi_c = M_Pl/sqrt(lambda_phi) ~ 1.7e19 GeV
+    # Derived: alpha from Phi_c = M_Pl/sqrt(lambda_phi) ~ 1.7e19 GeV.
+    # lambda_phi is dimensionless; V_eff uses (Phi/M_Pl)^2 in its exponent.
     @property
     def Phi_c(self) -> float:
         """Critical threshold Φ_c = M_Pl / sqrt(lambda_phi)"""
@@ -102,13 +103,15 @@ class InitialConditions:
 
 
 def veff_phi(Phi: float, params: PTUMParameters) -> float:
-    """Effective potential for fuel field: V_eff(Φ) = V0(1 - exp(-λΦ²))"""
-    return params.V0 * (1 - np.exp(-params.lambda_phi * Phi**2))
+    """V_eff(Φ)=V0[1-exp(-lambda_phi*Φ²/M_Pl²)] with dimensionless lambda_phi."""
+    x = params.lambda_phi * (Phi / M_PL)**2
+    return params.V0 * (1.0 - np.exp(-x))
 
 
 def dveff_dphi(Phi: float, params: PTUMParameters) -> float:
-    """Derivative of V_eff wrt Φ"""
-    return params.V0 * 2 * params.lambda_phi * Phi * np.exp(-params.lambda_phi * Phi**2)
+    """Dimensionally consistent derivative of the fuel potential."""
+    x = params.lambda_phi * (Phi / M_PL)**2
+    return params.V0 * (2.0 * params.lambda_phi * Phi / M_PL**2) * np.exp(-x)
 
 
 def meff_sq_psi(Phi: float, params: PTUMParameters) -> float:
@@ -524,7 +527,7 @@ def create_initial_conditions(params: PTUMParameters,
     # ε_V = ½(V'/V)²
     V = veff_phi(Phi, params)
     V_prime = dveff_dphi(Phi, params)
-    epsilon_V = 0.5 * (V_prime / V)**2 if V > 0 else 0.01
+    epsilon_V = 0.5 * M_PL**2 * (V_prime / V)**2 if V > 0 else 0.01
     H = params.H_star
     slow_roll_phi_dot = -np.sqrt(2 * epsilon_V) * H * M_PL
     Phi_dot = slow_roll_phi_dot if phi_dot_init is None else float(phi_dot_init)
