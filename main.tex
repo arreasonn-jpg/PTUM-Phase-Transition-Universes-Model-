@@ -358,14 +358,19 @@ $\Delta N_{\rm fluid}$ & pfd abundance & maps proxy radiation to CMB/BBN observa
 
 \subsection{PTUM Lagrangian}
 
-The total effective Lagrangian is
+The four-sector dark-sector effective Lagrangian is
 \begin{equation}
-\mathcal{L}_{\rm PTUM}
+\mathcal{L}_{\rm PTUM}^{\rm dark}
 =\mathcal{L}_{\rm fuel}
 +\mathcal{L}_{\rm activation}
 +\mathcal{L}_{\rm DM}
 +\mathcal{L}_{\rm DE}.
 \end{equation}
+This definition contains the four scalar sectors $(\Phi,\psi,\chi,
+\Phi_{\rm res})$ only. The Standard Model scalar and fermion fields
+used in the reheating interaction are added in the extended matter
+action of Section~\ref{sec:microscopic_transfer}; they are not
+implicitly included in $\mathcal{L}_{\rm PTUM}^{\rm dark}$.
 
 The fuel sector is
 \begin{equation}
@@ -416,22 +421,30 @@ field $\Phi$ to the other sectors:
       field-dependent mass from the potential $W(\Phi_{\rm res})$.
 \end{itemize}
 
-The sum in Eq.~\eqref{eq:veff} runs over all fields that couple to
-$\Phi$ and acquire $\Phi$-dependent masses. The renormalization scale
-$\mu_R$ is chosen to be of order the symmetry-breaking scale
-$E_{\rm th}$, which minimizes large logarithms in the effective
-potential. The constant $c_i = 3/2$ corresponds to the
-$\overline{\rm MS}$ renormalization scheme.
+Only fields with genuinely $\Phi$-dependent fluctuation
+eigenmasses belong in the one-loop sum defining
+$V_{\rm CW}(\Phi)$. In the present tree-level model, the explicitly
+specified contribution is the proxy mode with
+$m_\psi^2(\Phi)=m^2(1-\alpha\Phi^2/E_{\rm th}^2)$.
+The displayed $\chi$ mass depends on $\Phi_{\rm res}$, not on
+$\Phi$, and the residual-field mass follows $W(\Phi_{\rm res})$;
+neither is a $\Phi$-dependent contribution to this one-field
+effective potential unless additional cross-couplings and the
+corresponding fluctuation spectrum are supplied. Constant,
+field-independent terms may be absorbed into the renormalized
+vacuum energy.
 
-The Coleman--Weinberg corrections are subdominant during the
-inflationary plateau ($V_0 \gg V_{\rm CW}$) but become relevant near
-the transition where they can modify the shape of the potential and
-the precise value of the critical threshold. A full numerical
-evaluation of the one-loop potential including all sectors is
-deferred to future work; the current analysis uses the tree-level
-potential for the inflationary dynamics and treats the
-Coleman--Weinberg term as a perturbative correction to the threshold
-condition.
+For $m_\psi^2(\Phi)>0$, the usual real one-loop expression may be
+used after specifying the renormalization conditions and counterterms.
+For $m_\psi^2(\Phi)<0$, the logarithm develops an imaginary part.
+That imaginary part signals an unstable background and cannot be
+silently discarded or replaced by $\ln|m_\psi^2|$ to define a
+controlled real effective potential. The tachyonic regime requires
+a real-time non-equilibrium treatment (for example, an in-in or
+2PI calculation) or a separately justified coarse-grained effective
+description. Accordingly, the present background calculation uses
+the tree-level potential; no quantitatively evaluated one-loop
+threshold correction is claimed.
 
 The activation sector is
 \begin{equation}
@@ -517,12 +530,14 @@ The field equations in a flat FRW universe,
 \subsubsection{Euler--Lagrange derivation and consistency check}
 \label{sec:eom_consistency}
 
-For completeness and internal consistency, we re-derive all
-equations of motion from the total Lagrangian
-\(\mathcal{L}_{\rm PTUM} = \mathcal{L}_{\rm fuel} +
-\mathcal{L}_{\rm activation} + \mathcal{L}_{\rm DM} +
-\mathcal{L}_{\rm DE}\) using the Euler--Lagrange equations in a
-curved FRW background. The action is
+For completeness and internal consistency, we re-derive the four
+dark-sector equations of motion from
+\(\mathcal{L}_{\rm PTUM}^{\rm dark} =
+\mathcal{L}_{\rm fuel} + \mathcal{L}_{\rm activation}
++ \mathcal{L}_{\rm DM} + \mathcal{L}_{\rm DE}\) using the
+Euler--Lagrange equations in a curved FRW background. The extended
+Standard Model reheating-sector equations are stated separately in
+Section~\ref{sec:microscopic_transfer}. The dark-sector action is
 \begin{equation}
 S = \int d^4x\,\sqrt{-g}\,\mathcal{L}_{\rm PTUM},
 \end{equation}
@@ -1741,6 +1756,20 @@ Q_h^\nu
 Q_f^\nu
 &=-y_\psi\bar f f\nabla^\nu\psi .
 \end{align}
+The corresponding additional matter-field equations are
+\begin{align}
+\Box h-U'(h)-g_\psi\psi^2h&=0,\\
+\left[i\gamma^\mu D_\mu-m_f-y_\psi\psi\right]f&=0,
+\end{align}
+where the first equation follows from the canonical scalar action
+$-\tfrac12(\nabla h)^2-U(h)-\tfrac12g_\psi\psi^2h^2$,
+and the second from the Dirac action with
+$\mathcal L_Y=-y_\psi\psi\bar f f$. For a homogeneous $h$ in
+FRW, the scalar equation is
+$\ddot h+3H\dot h+U'(h)+g_\psi\psi^2h=0$.
+The fermion equation is covariant and is not a homogeneous-fluid
+equation unless a specified fermion state or fluid closure is supplied.
+
 Here $T_f^{\mu\nu}$ is the on-shell Hilbert tensor obtained from
 the complete Dirac action, including the Yukawa term. It must not
 be combined with a second, separately added Yukawa interaction
@@ -3324,10 +3353,17 @@ freedom. The Lagrangian includes a term
 \mathcal{L}_{\rm rh} = -y_\psi \psi \bar{f} f - \frac{1}{2} g_\psi \psi^2 \phi_{\rm SM}^2,
 \end{equation}
 where $f$ represents SM fermions and $\phi_{\rm SM}$ represents SM
-scalars. During the quartic oscillation phase, $\psi$ decays
-perturbatively with a total decay width
+scalars. The displayed perturbative width includes only kinematically
+open Yukawa decay channels. The quartic interaction
+$-\tfrac12g_\psi\psi^2\phi_{\rm SM}^2$ mediates pair-annihilation
+and non-perturbative production, not a one-particle decay about
+$\langle\psi\rangle=0$; these contributions require a separate
+collision or field-production calculation. During the quartic
+oscillation phase, the perturbative fermionic width is
 \begin{equation}
-\Gamma_\psi \sim \frac{y_\psi^2}{8\pi} m_\psi + \frac{g_\psi^2}{8\pi} m_\psi,
+\Gamma_\psi^{\rm pert}
+\simeq\sum_f\frac{y_{\psi,f}^2}{8\pi}m_\psi
+\left(1-\frac{4m_f^2}{m_\psi^2}\right)^{3/2},
 \end{equation}
 where $m_\psi \sim \sqrt{\lambda_\psi}\psi_0$ is the effective mass
 during oscillations. Reheating completes when $\Gamma_\psi \sim H$,
