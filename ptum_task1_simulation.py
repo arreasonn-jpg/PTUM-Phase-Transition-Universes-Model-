@@ -296,9 +296,15 @@ def run_simulation(params: PTUMParameters,
         np.abs(y_diag) / max(float(t_diag[-1]-t_diag[0]), np.finfo(float).tiny) * 1e-8,
         np.full_like(rhs_diag, np.finfo(float).tiny)
     ])
-    max_relative_state_derivative_residual = float(np.max(
-        np.abs(dense_dydt-rhs_diag) / derivative_scale
-    ))
+    # Exclude the two one-sided finite-difference edge stencils; the
+    # interior uses the fourth-order centered derivative exclusively.
+    interior = slice(2, -2)
+    state_derivative_residual = (
+        np.abs(dense_dydt[:, interior]-rhs_diag[:, interior])
+        / derivative_scale[:, interior]
+    )
+    max_relative_state_derivative_residual = float(np.max(state_derivative_residual))
+    state_derivative_residual_by_component = np.max(state_derivative_residual, axis=1)
 
     m2_diag = np.array([meff_sq_psi(x, params) for x in phi_d])
     dm2_diag = -2.0 * params.alpha * params.m_psi**2 * phi_d / params.E_th**2
@@ -379,6 +385,7 @@ def run_simulation(params: PTUMParameters,
         'max_relative_continuity_residual': max_relative_continuity_residual,
         'max_relative_split_continuity_residual': max_relative_split_continuity_residual,
         'max_relative_state_derivative_residual': max_relative_state_derivative_residual,
+        'state_derivative_residual_by_component': state_derivative_residual_by_component,
         'meff_sq': meff_sq_arr,
         'min_meff_sq': float(np.min(meff_sq_arr)),
         'tachyonic_duration': tachyonic_duration,
