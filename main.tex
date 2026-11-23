@@ -4286,10 +4286,12 @@ The lattice parameters are:
 \item \textbf{Initial conditions:} Quantum fluctuations on top of homogeneous background at $t=0$ (discharge trigger)
 \end{itemize}
 
-\subsection{Key outputs}
+\subsection{Required outputs for a future reproducibility release}
 
-The following lattice outputs are included in the reproducibility
-release (\texttt{output/lattice/}):
+The following diagnostics are required for a future reproducibility
+release (for example under \texttt{output/lattice/}). They are a
+specification of the evidence needed, not files currently included in
+the public repository:
 
 \begin{enumerate}
 \item \textbf{Energy density evolution:} $\rho_\Phi(t)$, $\rho_\psi(t)$,
@@ -4324,9 +4326,13 @@ release (\texttt{output/lattice/}):
       $S_{\rm obs} \sim 10^{88}$ (total observable-universe entropy).
 \end{enumerate}
 
-\subsection{Reproduction instructions}
+\subsection{Planned reproduction workflow (not yet executable)}
 
-The lattice simulations can be reproduced using the Docker image:
+The following command is an intended interface for a future released
+implementation. The Docker image, scripts, configuration files, and
+simulation data have not been verified as present in the public
+repository; this is therefore a workflow specification, not a current
+reproduction instruction:
 
 \begin{verbatim}
 docker run -v $(pwd)/output:/output \
@@ -4335,18 +4341,21 @@ docker run -v $(pwd)/output:/output \
     --grid 256 --box 10
 \end{verbatim}
 
-The script \texttt{\detokenize{scripts/run_lattice.py}} generates all
-outputs listed above and saves them to \texttt{output/lattice/}. The
-simulation takes approximately 2 hours on a modern CPU (8 cores).
-Convergence tests with $512^3$ grid are included in
-\texttt{\detokenize{scripts/convergence_test.py}}.
+The script paths and runtime above are planned targets only. No claim is
+made here that \texttt{scripts/run_lattice.py},
+\texttt{scripts/convergence_test.py}, the Docker image, or the stated
+runtime currently exist or have been independently tested. A future
+release must include the source, exact configuration, random seeds,
+software versions, raw outputs, and convergence logs before these
+instructions can be described as reproducible.
 
 \subsection{Validation against analytic results}
 
-The authors report that the lattice outputs have been validated against
-the analytic predictions in Sections~\ref{sec:dm_relic} and
-\ref{sec:entropy_budget} \emph{(author-reported; lattice code not yet
-public)}:
+The manuscript previously reported the following lattice comparisons
+against the analytic predictions in Sections~\ref{sec:dm_relic} and
+\ref{sec:entropy_budget}. Because the lattice implementation and raw
+data are not available in the public release, these values remain
+unverified author-reported claims and are not independent validation:
 
 \begin{itemize}
 \item \textbf{Parametric resonance:} The lattice Floquet exponent
@@ -4366,10 +4375,12 @@ public)}:
       10^{14}$--$10^{15}$ GeV from the analytic estimate.
 \end{itemize}
 
-These lattice results are reported to provide non-perturbative
-confirmation of the analytic discharge dynamics and parametric
-resonance calculations used in the main text \emph{(author-reported;
-not independently reproduced)}.
+These numerical values must not be cited as established non-perturbative
+confirmation. Until the implementation, raw data, and analysis scripts
+are released and independently reproduced, they are provisional
+manuscript-reported values only. In particular, they cannot resolve the
+separately documented overdamping and quartic-regime tension at the
+CMB-normalized benchmark.
 
 %============================================================
 % REFERENCES
