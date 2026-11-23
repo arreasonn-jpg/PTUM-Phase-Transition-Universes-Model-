@@ -468,8 +468,9 @@ additional driving source, slow-roll motion therefore carries a field
 initially at $|\Phi|>\Phi_c$ toward the dormant region; it does not naturally
 drive a field from $|\Phi|<\Phi_c$ outward into the tachyonic region. At the
 nominal threshold, where $\lambda\Phi^2/M_{\rm Pl}^2=1$ by the adopted definition of $\Phi_c$,
-the exponential force is also extremely suppressed, so the field can be
-nearly frozen. A dormant-to-tachyonic crossing consequently requires an
+the exponential factor is $e^{-1}$, not an asymptotically
+small quantity; the slow-roll velocity must be computed with the correctly
+dimensionless potential slope. A dormant-to-tachyonic crossing consequently requires an
 explicitly specified uphill initial velocity, an additional force/source,
 or a modified fuel potential. Such an input must be included in the
 initial-value problem and its energy budget; it cannot be inferred from the
@@ -1165,7 +1166,7 @@ compactification is left for future work.
 \noindent\textbf{Swampland considerations.}
 The fuel potential $V(\Phi) = V_0(1 - e^{-\lambda\Phi^2/M_{\rm Pl}^2})$ has
 \begin{equation}
-\frac{|V'|}{V} = \frac{2\lambda\Phi e^{-\lambda\Phi^2/M_{\rm Pl}^2}}{1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}}.
+\frac{|V'|}{V} = \frac{2\lambda\Phi}{M_{\rm Pl}^2}\frac{e^{-\lambda\Phi^2/M_{\rm Pl}^2}}{1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}}.
 \end{equation}
 In the large-field asymptotic regime ($\lambda\Phi^2 \gg 1$),
 $|V'|/V \to 2\lambda\Phi \gtrsim \mathcal{O}(1)$ for $\Phi \gtrsim
@@ -1228,14 +1229,17 @@ inflationary phase, $\Phi$ rolls down the plateau potential
 $V(\Phi) = V_0(1 - e^{-\lambda\Phi^2/M_{\rm Pl}^2})$. The slow-roll parameters
 are
 \begin{align}
-\epsilon_V &= \frac{1}{2}\left(\frac{V_{,\Phi}}{V}\right)^2
-= 2\lambda^2 \frac{\Phi^2 e^{-2\lambda\Phi^2}}{(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2})^2}, \notag\\
-\eta_V &= \frac{V_{,\Phi\Phi}}{V}
-= 2\lambda \frac{e^{-\lambda\Phi^2/M_{\rm Pl}^2}(1-2\lambda\Phi^2)}{1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}}.
+\epsilon_V &= \frac{M_{\rm Pl}^2}{2}\left(\frac{V_{,\Phi}}{V}\right)^2
+= 2\lambda^2 \frac{\Phi^2}{M_{\rm Pl}^2}\frac{e^{-2\lambda\Phi^2/M_{\rm Pl}^2}}{(1-e^{-\lambda\Phi^2/M_{\rm Pl}^2})^2}, \notag\\
+\eta_V &= \frac{M_{\rm Pl}^2 V_{,\Phi\Phi}}{V}
+= 2\lambda \frac{e^{-\lambda\Phi^2/M_{\rm Pl}^2}(1-2\lambda\Phi^2/M_{\rm Pl}^2)}{1-e^{-\lambda\Phi^2/M_{\rm Pl}^2}}.
 \end{align}
 Inflation ends when $\epsilon_V \approx 1$ or $|\eta_V| \approx 1$.
-For $\lambda \sim 0.02$, this occurs at $\Phi_{\rm end} \sim
-M_{\rm Pl}/\sqrt{\lambda} \sim 7 M_{\rm Pl}$.
+For $\lambda=0.02$, solving the dimensionally normalized
+condition $\epsilon_V=1$ gives $\Phi_{\rm end}\simeq1.39M_{\rm Pl}$.
+The scale $M_{\rm Pl}/\sqrt{\lambda}\simeq7.07M_{\rm Pl}$ is instead
+the chosen threshold scale in the current benchmark, not the end-of-inflation
+field value.
 
 The discharge threshold is at $\Phi_c = E_{\rm th}/\sqrt{\alpha}$.
 For the discharge to be triggered naturally at the end of inflation,
@@ -1318,8 +1322,8 @@ plateau structures are strongly favored by CMB data~\cite{BICEPKeck2021}.
 
 We define the potential slow-roll parameters
 \begin{equation}
-\epsilon_V=\tfrac{1}{2}\!\left(\frac{V_{,\Phi}}{V}\right)^2,\qquad
-\eta_V=\frac{V_{,\Phi\Phi}}{V},
+\epsilon_V=\tfrac{M_{\rm Pl}^2}{2}\!\left(\frac{V_{,\Phi}}{V}\right)^2,\qquad
+\eta_V=\frac{M_{\rm Pl}^2 V_{,\Phi\Phi}}{V},
 \end{equation}
 and the standard approximate observables
 \begin{equation}
