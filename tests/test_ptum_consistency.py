@@ -4172,7 +4172,7 @@ def test_scalar_heat_kernel_a2_conformal_maximally_symmetric_limit():
         np.zeros((2, 2)), (1.0 / 6.0, 1.0 / 6.0),
         ricci_scalar_gev2=12.0,
         riemann_squared_gev4=24.0,
-        ricci_tensor_squared_squared_gev4=36.0,
+        ricci_tensor_squared_gev4=36.0,
     )
     assert result["a2_mass_curvature_GeV4"] == 0.0
     assert result["a2_geometry_GeV4"] == pytest.approx(-2.0 / 15.0)
@@ -4272,4 +4272,4 @@ def test_ptum_scalar_heat_kernel_derivation_and_claim_boundary_are_in_manuscript
     assert r"\label{eq:ptum_scalar_heat_kernel_a2}" in source
     assert r"\operatorname{tr}" in source
     assert r"ptum\_renormalization.py" in source
-    assert "not a renormalized quantum initial state" in source
+    assert "not a renormalized quantum-seeded waterfall" in source
