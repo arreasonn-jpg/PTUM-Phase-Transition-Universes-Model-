@@ -4327,3 +4327,43 @@ def test_ptum_scalar_heat_kernel_expansion_reduces_cleanly_at_psi_zero():
     assert components["quartic_psi4_GeV4"] == 0.0
     assert components["curvature_psi2_GeV4"] == 0.0
     assert np.isfinite(result["a2_bulk_GeV4"])
+
+
+# Dimensional-regularization pole normalization for the scalar bulk a_2.
+def test_scalar_one_loop_euclidean_pole_matches_single_real_scalar_constant_mass():
+    from ptum_renormalization import scalar_one_loop_pole_coefficients
+
+    mass_squared_gev2 = 7.0
+    a2_gev4 = 0.5 * mass_squared_gev2**2
+    result = scalar_one_loop_pole_coefficients(a2_gev4)
+    expected = mass_squared_gev2**2 / (32.0 * np.pi**2)
+    assert result["gamma1_divergent_density_coefficient_GeV4"] == pytest.approx(
+        -expected, rel=2.0e-15
+    )
+    assert result["euclidean_counterterm_density_coefficient_GeV4"] == pytest.approx(
+        expected, rel=2.0e-15
+    )
+    assert result["pole_cancellation_residual_GeV4"] == 0.0
+    assert result["dimensional_regularization"] == "d=4-epsilon, epsilon=4-d"
+    assert result["assumptions"]["finite_renormalization_conditions_fixed"] is False
+    assert result["assumptions"]["physical_prediction"] is False
+
+
+def test_scalar_one_loop_pole_rejects_nonfinite_and_boolean_coefficients():
+    from ptum_renormalization import scalar_one_loop_pole_coefficients
+
+    with pytest.raises(ValueError, match="finite real scalar"):
+        scalar_one_loop_pole_coefficients(float("nan"))
+    with pytest.raises(ValueError, match="finite real scalar"):
+        scalar_one_loop_pole_coefficients(True)
+
+
+def test_scalar_one_loop_pole_normalization_and_sign_are_displayed_in_manuscript():
+    from pathlib import Path
+
+    source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
+    assert r"\label{eq:ptum_scalar_one_loop_pole}" in source
+    assert r"\Gamma_E^{(1)}=+\tfrac12\operatorname{Tr}\ln\mathcal D_E" in source
+    assert r"-\frac{a_2^{\rm bulk}}{16\pi^2\epsilon}" in source
+    assert r"+\frac{a_2^{\rm bulk}}{16\pi^2\epsilon}" in source
+    assert "not a finite in-in effective action" in source

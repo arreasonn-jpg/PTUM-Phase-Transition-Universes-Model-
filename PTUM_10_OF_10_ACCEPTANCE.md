@@ -1946,3 +1946,26 @@ The R0 code now includes both the matrix-trace a_2 coefficient and an
 expanded operator-basis identity check. This does not select an EFT
 truncation, cutoff, renormalization scale or finite matching conditions.
 Gate 5 remains NOT MET.
+
+
+## 2026-11-24 Euclidean scalar pole normalization (R0 extension)
+
+The two-scalar bulk \(a_2\) result now has an explicit dimensional-
+regularization convention. For
+\(\Gamma_E^{(1)}=+\tfrac12\operatorname{Tr}\ln\mathcal D_E\),
+\(d=4-\epsilon\), and \(\epsilon=4-d\), the local pole is
+\(-a_2^{\rm bulk}/(16\pi^2\epsilon)\), cancelled by the Euclidean
+counterterm coefficient \(+a_2^{\rm bulk}/(16\pi^2\epsilon)\).
+The implementation returns the coefficients of \(1/\epsilon\), and
+regressions check the single-real-scalar flat constant-mass limit,
+explicit cancellation sign, finite-input validation, and manuscript
+normalization.
+
+This fixes a convention-dependent local scalar bulk pole only. It does
+not supply the renormalization scale, finite \(\overline{\rm MS}\)
+constant, EFT matching conditions, boundary/initial-state terms,
+SM/gauge/fermion/graviton loops, real-time CTP finite parts, a
+renormalized stress tensor/\(\Phi\) force, or lattice counterterm
+implementation. No initial condition or Friedmann source was changed.
+Gate 5 remains NOT MET. The new exact-head regression and manuscript
+build are pending CI.

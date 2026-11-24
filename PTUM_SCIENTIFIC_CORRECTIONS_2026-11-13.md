@@ -2185,3 +2185,26 @@ bare-WKB UV/volume audit. The 46-page PDF built; the final pass retained
 79 Underfull hbox warnings, zero Overfull hboxes and zero unresolved
 references/citations. Long full scans were skipped by design. The
 bare UV audit remains unsubtracted and renormalized=false.
+
+
+## 2026-11-24 Euclidean scalar one-loop pole normalization
+
+The local two-field bulk heat-kernel coefficient now has an explicit
+simple-pole normalization for the declared convention
+\(\Gamma_E^{(1)}=+\tfrac12\operatorname{Tr}\ln\mathcal D_E\) and
+\(d=4-\epsilon\), \(\epsilon=4-d\):
+\[
+\frac{\Gamma_{E,\mathrm{div}}^{(1)}}{\int d^4x\sqrt{g_E}}
+=-\frac{a_2^{\rm bulk}}{16\pi^2\epsilon},\qquad
+\mathcal L_{E,\mathrm{ct}}^{(1)}
+=+\frac{a_2^{\rm bulk}}{16\pi^2\epsilon}.
+\]
+The code returns the coefficients multiplying \(1/\epsilon\) and checks
+the cancellation sign. The single-real-scalar flat constant-mass limit
+recovers \(\Gamma_{E,\mathrm{div}}^{(1)}/V_4=-m^4/(32\pi^2\epsilon)\).
+This fixes only the local scalar bulk pole convention. It does not insert
+\(\mu_R\), an \(\overline{\rm MS}\) finite constant, finite matching
+conditions, boundary/initial-surface terms, SM/gauge/fermion/graviton
+loops, CTP finite parts, or a renormalized stress tensor. The nonlinear
+lattice and its initial Friedmann source are unchanged. Gate 5 remains
+NOT MET.

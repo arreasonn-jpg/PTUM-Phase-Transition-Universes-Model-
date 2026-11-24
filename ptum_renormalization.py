@@ -281,3 +281,48 @@ def ptum_scalar_heat_kernel_a2_decomposition(
         ],
         "assumptions": matrix_result["assumptions"],
     }
+
+
+def scalar_one_loop_pole_coefficients(a2_bulk_gev4: float) -> dict[str, object]:
+    """Return scalar-sector Euclidean one-loop simple-pole coefficients.
+
+    Convention: Gamma_E^(1) = +1/2 Tr ln(D_E), dimensional
+    regularization d = 4 - epsilon with epsilon = 4-d. For the local
+    bulk heat-kernel coefficient defined above,
+
+        Gamma_E,div^(1) / integral(sqrt(g_E)) =
+            - a2_bulk / (16 pi^2 epsilon),
+
+    so the cancelling Euclidean local counterterm density has the
+    opposite coefficient. This returns the coefficients multiplying
+    1/epsilon; it does not insert a renormalization scale, choose an
+    MS-bar finite constant, or define finite renormalization conditions.
+    Boundary/initial-surface and real-time CTP terms are outside this
+    bulk Euclidean result.
+    """
+    a2 = _finite_real_scalar("a2_bulk_gev4", a2_bulk_gev4)
+    pole_coefficient = a2 / (16.0 * np.pi**2)
+    gamma_divergence = -pole_coefficient
+    counterterm = pole_coefficient
+    return {
+        "a2_bulk_GeV4": a2,
+        "dimensional_regularization": "d=4-epsilon, epsilon=4-d",
+        "one_loop_effective_action_convention": "Gamma_E^(1)=+1/2 Tr ln(D_E)",
+        "pole_factor": "1/epsilon",
+        "gamma1_divergent_density_coefficient_GeV4": gamma_divergence,
+        "euclidean_counterterm_density_coefficient_GeV4": counterterm,
+        "pole_cancellation_residual_GeV4": gamma_divergence + counterterm,
+        "assumptions": {
+            "scalar_bulk_heat_kernel_only": True,
+            "covariant_total_derivatives_omitted": True,
+            "boundary_and_initial_surface_terms_included": False,
+            "renormalization_scale_inserted": False,
+            "msbar_finite_constant_inserted": False,
+            "finite_renormalization_conditions_fixed": False,
+            "finite_effective_action_computed": False,
+            "renormalized_stress_tensor_computed": False,
+            "real_time_CTP_finite_part_computed": False,
+            "SM_gauge_fermion_and_graviton_loops_included": False,
+            "physical_prediction": False,
+        },
+    }

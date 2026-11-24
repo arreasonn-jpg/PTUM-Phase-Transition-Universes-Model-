@@ -1185,3 +1185,29 @@ Overfull or unresolved reference/citation warnings. This is software
 verification of the stated algebraic coefficient, not verification of
 a renormalized quantum state, finite stress tensor, or cutoff-independent
 lattice.
+
+
+## 2026-11-24 scalar bulk pole normalization boundary
+
+### Supported
+- For the declared Euclidean operator and
+  \(\Gamma_E^{(1)}=+\tfrac12\operatorname{Tr}\ln\mathcal D_E\),
+  dimensional regularization \(d=4-\epsilon\), the local scalar bulk
+  pole coefficient is \(-a_2^{\rm bulk}/(16\pi^2\epsilon)\).
+- The cancelling Euclidean local counterterm has coefficient
+  \(+a_2^{\rm bulk}/(16\pi^2\epsilon)\). The one-real-scalar flat
+  constant-mass limit is tested against \(-m^4/(32\pi^2\epsilon)\).
+
+### Not supported
+- A finite or renormalized effective action, a selected renormalization
+  scale or finite \(\overline{\rm MS}\) constant, or fixed physical
+  matching conditions.
+- A renormalized stress tensor, renormalized \(\Phi\) force, boundary
+  or initial-state subtraction, real-time CTP finite part, or a
+  cutoff-independent lattice evolution.
+- A complete one-loop PTUM EFT renormalization: only the coupled
+  canonical two-scalar bulk determinant is represented. SM/gauge/
+  fermion/graviton loops and the full EFT operator matching remain open.
+
+The new pole-normalization tests and manuscript equation require fresh
+exact-head CI. Gate 5 remains NOT MET.
