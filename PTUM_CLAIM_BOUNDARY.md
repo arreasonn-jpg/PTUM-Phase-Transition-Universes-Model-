@@ -1147,3 +1147,29 @@ resolution. The diagnostic tolerance was tightened to 1e-5. The
 manuscript filename assertion was also corrected to account for TeX
 escaping. These corrections await fresh exact-head CI and do not
 change the conditional, non-PTUM-prediction scope of Gate 8.
+
+
+## 2026-11-24 scalar heat-kernel UV coefficient boundary
+
+### Supported
+- The coupled canonical \((\Phi,\psi)\) tree-level potential Hessian is
+  evaluated analytically, including the off-diagonal mixed fluctuation
+  entry.
+- Given explicit \(\xi_\Phi,\xi_\psi\) and Euclidean curvature invariants,
+  ptum_renormalization.py returns the local bulk \(a_2\) coefficient
+  modulo covariant total derivatives.
+- The coefficient is polynomial in the Hessian and remains real for a
+  tachyonic eigenvalue; this does not mean the unstable static vacuum
+  determinant has a real finite part.
+
+### Not supported
+- Calling the coefficient a renormalized effective action, renormalized
+  stress tensor, or a quantum initial state.
+- Choosing or inferring \(\Lambda_{\rm EFT}\), \(\mu_R\), the finite
+  renormalization conditions, or the pole/counterterm normalization.
+- Ignoring boundary/initial-state terms, mixed scalar loops, SM/gauge/
+  fermion loops, graviton loops, or the real-time CTP finite part.
+- Subtracting this local coefficient from the lattice energy as a
+  numerical vacuum offset, or claiming that the existing lattice is
+  cutoff independent.
+- Claiming that R0, R1 or R2 has passed. Gate 5 remains NOT MET.

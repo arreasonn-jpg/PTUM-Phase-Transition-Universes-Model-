@@ -5129,6 +5129,102 @@ resolution, volume, timestep, and ensemble convergence studies. Raw
 field configurations, outputs, and checksums must accompany any quoted
 numerical result.
 
+
+
+\subsubsection{Local two-scalar one-loop heat-kernel UV coefficient}
+\label{sec:ptum_scalar_one_loop_uv}
+
+The bare WKB cutoff audit motivates deriving local ultraviolet counterterms
+from the same scalar action before attempting a nonlinear quantum
+initial-value problem. This subsection records only the Gaussian
+one-loop ultraviolet coefficient of the coupled real $(\Phi,\psi)$
+scalar Hessian. It is not a finite in-in effective action or a
+renormalized stress tensor.
+
+The common scalar potential and its Hessian are
+\begin{align}
+V(\Phi,\psi)
+&=V_{\rm eff}(\Phi)
++\frac12m_{\rm eff}^2(\Phi)\psi^2
++\frac{\lambda_\psi}{4}\psi^4,\\
+c_\psi&\equiv\frac{\alpha m_\psi^2}{E_{\rm th}^2},\\
+\mathcal H_{IJ}\equiv V_{,IJ}
+&=
+\begin{pmatrix}
+V_{\rm eff}''(\Phi)+c_\psi\psi^2
+&2c_\psi\Phi\psi\\
+2c_\psi\Phi\psi
+&m_{\rm eff}^2(\Phi)+3\lambda_\psi\psi^2
+\end{pmatrix}.
+\label{eq:ptum_scalar_hessian}
+\end{align}
+The off-diagonal entries are retained: the scalar determinant is not
+approximated as a product of independent $\Phi$ and $\psi$ operators.
+The plateau contribution is
+\begin{equation}
+V_{\rm eff}''(\Phi)=
+\frac{2V_0\lambda_\Phi}{M_{\rm Pl}^2}
+e^{-x}(1-2x),\qquad
+x=\frac{\lambda_\Phi\Phi^2}{M_{\rm Pl}^2}.
+\end{equation}
+
+For a Euclidean Laplace-type operator with canonical scalar field-space
+connection and explicit curvature couplings
+$\Xi=\operatorname{diag}(\xi_\Phi,\xi_\psi)$,
+\begin{equation}
+\mathcal D_E=-\nabla_E^2\mathbf 1+\mathcal H+\Xi R_E.
+\end{equation}
+The local four-dimensional bulk heat-kernel coefficient, modulo
+covariant total derivatives, is
+\begin{equation}
+\begin{aligned}
+a_2^{\rm bulk}
+&=\frac12\operatorname{tr}\!
+\left[
+\left(\mathcal H+
+\left(\Xi-\frac16\mathbf 1\right)R_E\right)^2
+\right]\\
+&\quad+\frac{2}{180}
+\left(
+R_{\mu\nu\rho\sigma}R^{\mu\nu\rho\sigma}
+-R_{\mu\nu}R^{\mu\nu}
+\right).
+\end{aligned}
+\label{eq:ptum_scalar_heat_kernel_a2}
+\end{equation}
+The coefficient has mass dimension four and fixes the local logarithmic
+one-loop UV pole once a regulator normalization and effective-action
+sign convention are chosen. The curvature inputs and $\xi_I$ must use
+the same Euclidean operator convention. Total derivatives, boundary
+and initial-surface terms are not included in Eq.~\eqref{eq:ptum_scalar_heat_kernel_a2}.
+
+At $\psi=0$, the $\psi$ contribution contains
+$m_{\rm eff}^4(\Phi)$ and
+$(\xi_\psi-\tfrac16)m_{\rm eff}^2(\Phi)R_E$. Since
+$m_{\rm eff}^2(\Phi)=m_\psi^2(\alpha\Phi^2/E_{\rm th}^2-1)$,
+these terms generate constant, $\Phi^2$, $\Phi^4$, $R_E$ and
+$R_E\Phi^2$ counterterm structures. The $\Phi$ eigenvalue additionally
+contains $[V_{\rm eff}''(\Phi)]^2$, so the non-polynomial plateau is
+not closed under a finite polynomial truncation of the effective
+potential. At nonzero $\psi$, the mixed Hessian and
+$3\lambda_\psi\psi^2$ generate the corresponding mixed and quartic
+scalar structures. The geometric term requires curvature-squared
+counterterms.
+
+The module \texttt{ptum\_renormalization.py} evaluates this local
+two-scalar $a_2$ coefficient and exposes the Hessian and curvature
+pieces separately. Regressions cover the flat constant-Hessian limit,
+off-diagonal mixing, the conformal maximally symmetric limit, explicit
+$\xi_I$ dependence, and the real polynomial coefficient in the
+tachyonic region. The implementation does not select
+$\Lambda_{\rm EFT}$ or $\mu_R$, fix finite renormalization conditions,
+apply a pole prefactor, include SM/gauge/fermion or graviton loops,
+compute CTP finite parts, or construct the renormalized force and stress
+tensor. It is therefore an R0 algebraic UV-coefficient check only,
+not a completed renormalization prescription
+\cite{Vassilevich2003,MarkkanenTranberg2013}.
+
+
 \paragraph{Scope of the calculations currently present.}
 The public Python implementation contains a homogeneous two-field
 $(\Phi,\psi)$ background solver, a linear $\chi_k$ mode solver on
@@ -5378,6 +5474,18 @@ arXiv:hep-ph/0011159.
 \bibitem{LZ2022}
 LZ Collaboration,
 Phys.\ Rev.\ Lett.\ \textbf{131}, 041002 (2023).
+
+
+% ---- Curved-spacetime one-loop renormalization / heat kernel ----
+\bibitem{Vassilevich2003}
+D.~V.~Vassilevich,
+Phys.\ Rept.\ \textbf{388}, 279--360 (2003),
+arXiv:hep-th/0306138.
+
+\bibitem{MarkkanenTranberg2013}
+T.~Markkanen and A.~Tranberg,
+\textit{A Simple Method for One-Loop Renormalization in Curved Space-Time},
+arXiv:1303.0180 [hep-ph] (2013).
 
 \end{thebibliography}
 

@@ -108,3 +108,42 @@ Until then:
 
 - T. Markkanen and A. Tranberg, “A Simple Method for One-Loop Renormalization in Curved Space-Time,” arXiv:1303.0180 (2013), [https://arxiv.org/abs/1303.0180](https://arxiv.org/abs/1303.0180).
 - A. Ferreiro, S. Monin and F. Torrenti, “Physical scale adiabatic regularization in cosmological spacetimes,” *Phys. Rev. D* **109**, 045015 (2024), [https://doi.org/10.1103/PhysRevD.109.045015](https://doi.org/10.1103/PhysRevD.109.045015).
+
+
+## 2026-11-24 scalar-sector heat-kernel UV coefficient (R0 partial)
+
+The branch now derives the coupled two-real-scalar Hessian of the common
+PTUM potential and evaluates its local four-dimensional Gaussian
+one-loop heat-kernel coefficient a_2 modulo covariant total derivatives:
+\[
+a_2^{\rm bulk}=
+\frac12\operatorname{tr}\left[
+\left(\mathcal H+(\Xi-\tfrac16\mathbf1)R\right)^2
+\right]
++\frac{2}{180}(R_{\mu\nu\rho\sigma}^2-R_{\mu\nu}^2).
+\]
+Here \(\mathcal H=V_{,IJ}\) includes the off-diagonal \(\Phi\)-\(\psi\)
+mixing from the same tree-level potential, and
+\(\Xi=\mathrm{diag}(\xi_\Phi,\xi_\psi)\) is explicit input. The code
+does not silently set the quantum-renormalized curvature couplings or
+their scale; tests use \(\xi_I=0\) only as the declared classical
+minimal-coupling control.
+
+ptum_renormalization.py reports the Hessian/curvature and geometric
+pieces separately. The regression controls cover the flat constant-
+Hessian limit, off-diagonal mixing, a conformal maximally symmetric
+limit, explicit curvature-coupling dependence, and a tachyonic Hessian.
+The coefficient remains real in the tachyonic region because the UV
+heat-kernel coefficient is polynomial in the operator; no unstable
+static logarithm or imaginary effective potential is evaluated.
+
+**This is not renormalization.** The implementation does not choose
+\(\Lambda_{\rm EFT}\), \(\mu_R\), finite matching conditions, the
+dimensional-regularization pole normalization, boundary/initial-state
+counterterms, SM/gauge/fermion or graviton loops, a CTP finite part,
+a renormalized stress tensor, or the renormalized force on \(\Phi\).
+The two-scalar Gaussian coefficient is an R0 algebraic check only.
+Gate 5 remains **NOT MET**. The next required step is to fix the EFT
+operator truncation and renormalization conditions, then derive and
+match the complete counterterm action before implementing the R1
+free-field oracle.

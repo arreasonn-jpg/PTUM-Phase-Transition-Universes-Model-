@@ -1897,3 +1897,31 @@ The full-grid artifact `14860754631` contains 500/500 successful integrations an
 The study's explicit acceptance logic therefore returns `full_study_pass=true` despite 397/400 strict pairwise comparisons passing: it requires complete coverage, no failed integrations, monotonic error envelopes, unchanged flags/availability, all output-grid rows passing, and all 100 rows passing the finest adjacent tolerance comparison. It does **not** claim that the first two tolerance refinements independently passed every strict pairwise threshold.
 
 This closes the current homogeneous background output-grid/tolerance convergence package. It does not close the quantum waterfall, inhomogeneous dynamics, renormalization, backreaction, rescattering, or defect-network gates.
+
+
+## 2026-11-24 two-scalar heat-kernel UV coefficient
+
+The R0 renormalization work now has an algebraic scalar-sector result:
+ptum_renormalization.py computes the local four-dimensional bulk
+\(a_2\) coefficient for the coupled canonical \((\Phi,\psi)\) Gaussian
+operator using the full \(2\times2\) potential Hessian, including its
+off-diagonal mixing. The curvature couplings \(\xi_\Phi,\xi_\psi\) are
+explicit inputs. The formula is checked against flat constant-Hessian,
+conformal maximally symmetric, curvature-coupling and tachyonic
+polynomial controls.
+
+This is **not** a renormalized result. The EFT cutoff, renormalization
+scale, finite matching conditions, pole normalization, boundary and
+initial-state terms, SM/gauge/fermion and graviton loops, CTP finite
+parts, renormalized stress tensor and force on \(\Phi\) remain absent.
+Gate 5 remains **NOT MET**; R0 is only partially advanced. No lattice
+initial condition or Friedmann source has been modified.
+
+Exact prior head f3c05f574356e52adc55f22bc4596601fe1e5a10 was verified by
+workflow 45264117068: 178 Python tests passed, the two-scale smoke scan
+completed 4/4 with zero failed integrations, and the 11-grid bare-WKB
+UV audit completed. The 45-page PDF was produced, but its final log
+still contains Underfull-box warnings and unresolved reference/citation
+warnings. This run did not opt into the long full-scan jobs; the
+historical 100-row/500-integration artifacts remain the separate
+homogeneous convergence evidence described above.

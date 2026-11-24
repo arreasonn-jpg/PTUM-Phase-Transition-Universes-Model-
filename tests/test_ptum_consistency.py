@@ -4120,3 +4120,156 @@ def test_continuous_reheating_equations_and_entropy_definition_are_in_manuscript
     assert r"\frac{d\rho_r}{dN}" in source
     assert r"\Omega_r^{1/4}" in source
     assert r"ptum\_reheating\_history.py" in source
+
+
+# Scalar-sector one-loop UV coefficient regressions. These verify the
+# local heat-kernel coefficient only; they do not assert renormalization.
+def test_ptum_scalar_hessian_contains_the_full_two_field_mixing_matrix():
+    from ptum_renormalization import ptum_scalar_hessian
+
+    params = PTUMParameters()
+    phi = 0.73 * params.Phi_c
+    psi = 0.41 * params.psi_0
+    x = params.lambda_phi * (phi / M_PL) ** 2
+    c_psi = params.alpha * params.m_psi**2 / params.E_th**2
+    expected_phi_phi = (
+        2.0 * params.V0 * params.lambda_phi / M_PL**2
+        * np.exp(-x) * (1.0 - 2.0 * x)
+        + c_psi * psi**2
+    )
+    expected_mixed = 2.0 * c_psi * phi * psi
+    expected_psi_psi = (
+        meff_sq_psi(phi, params) + 3.0 * params.lambda_psi * psi**2
+    )
+    hessian = ptum_scalar_hessian(phi, psi, params)
+    assert hessian.shape == (2, 2)
+    assert hessian[0, 0] == pytest.approx(expected_phi_phi, rel=2.0e-14)
+    assert hessian[0, 1] == pytest.approx(expected_mixed, rel=2.0e-14)
+    assert hessian[1, 0] == pytest.approx(expected_mixed, rel=2.0e-14)
+    assert hessian[1, 1] == pytest.approx(expected_psi_psi, rel=2.0e-14)
+
+
+def test_scalar_heat_kernel_a2_flat_two_field_limit_includes_mixing():
+    from ptum_renormalization import scalar_heat_kernel_a2
+
+    hessian = np.array([[2.0, 3.0], [3.0, 5.0]])
+    result = scalar_heat_kernel_a2(
+        hessian, (0.0, 0.0),
+        ricci_scalar_gev2=0.0,
+        riemann_squared_gev4=0.0,
+        ricci_tensor_squared_gev4=0.0,
+    )
+    # 1/2 tr(H^2) = 1/2 (2^2 + 5^2 + 2*3^2) = 23.5.
+    assert result["a2_mass_curvature_GeV4"] == pytest.approx(23.5)
+    assert result["a2_geometry_GeV4"] == 0.0
+    assert result["a2_bulk_GeV4"] == pytest.approx(23.5)
+
+
+def test_scalar_heat_kernel_a2_conformal_maximally_symmetric_limit():
+    from ptum_renormalization import scalar_heat_kernel_a2
+
+    result = scalar_heat_kernel_a2(
+        np.zeros((2, 2)), (1.0 / 6.0, 1.0 / 6.0),
+        ricci_scalar_gev2=12.0,
+        riemann_squared_gev4=24.0,
+        ricci_tensor_squared_squared_gev4=36.0,
+    )
+    assert result["a2_mass_curvature_GeV4"] == 0.0
+    assert result["a2_geometry_GeV4"] == pytest.approx(-2.0 / 15.0)
+    assert result["a2_bulk_GeV4"] == pytest.approx(-2.0 / 15.0)
+
+
+def test_ptum_scalar_heat_kernel_a2_remains_real_in_tachyonic_region():
+    from ptum_renormalization import ptum_scalar_heat_kernel_a2, ptum_scalar_hessian
+
+    params = PTUMParameters()
+    phi = 0.5 * params.Phi_c
+    hessian = ptum_scalar_hessian(phi, 0.0, params)
+    assert hessian[1, 1] < 0.0
+    result = ptum_scalar_heat_kernel_a2(
+        phi, 0.0, params,
+        xi_phi=0.0, xi_psi=0.0,
+        ricci_scalar_gev2=0.0,
+        riemann_squared_gev4=0.0,
+        ricci_tensor_squared_gev4=0.0,
+    )
+    assert np.isfinite(result["a2_bulk_GeV4"])
+    assert result["a2_mass_curvature_GeV4"] >= 0.0
+    assert result["assumptions"]["physical_prediction"] is False
+
+
+def test_ptum_scalar_heat_kernel_a2_uses_explicit_curvature_couplings():
+    from ptum_renormalization import ptum_scalar_heat_kernel_a2, ptum_scalar_hessian
+
+    params = PTUMParameters()
+    phi, psi, ricci = 0.8 * params.Phi_c, 0.0, 5.0
+    xi_phi, xi_psi = 0.0, 1.0 / 6.0
+    hessian = ptum_scalar_hessian(phi, psi, params)
+    expected = 0.5 * (
+        (hessian[0, 0] + (xi_phi - 1.0 / 6.0) * ricci) ** 2
+        + (hessian[1, 1] + (xi_psi - 1.0 / 6.0) * ricci) ** 2
+    )
+    result = ptum_scalar_heat_kernel_a2(
+        phi, psi, params,
+        xi_phi=xi_phi, xi_psi=xi_psi,
+        ricci_scalar_gev2=ricci,
+        riemann_squared_gev4=0.0,
+        ricci_tensor_squared_gev4=0.0,
+    )
+    assert result["a2_mass_curvature_GeV4"] == pytest.approx(expected, rel=2.0e-14)
+
+
+def test_scalar_heat_kernel_a2_rejects_invalid_matrix_and_curvature_inputs():
+    from ptum_renormalization import scalar_heat_kernel_a2
+
+    with pytest.raises(ValueError, match="symmetric"):
+        scalar_heat_kernel_a2(
+            np.array([[1.0, 2.0], [0.0, 1.0]]), (0.0, 0.0),
+            ricci_scalar_gev2=0.0,
+            riemann_squared_gev4=0.0,
+            ricci_tensor_squared_gev4=0.0,
+        )
+    with pytest.raises(ValueError, match="one value per scalar field"):
+        scalar_heat_kernel_a2(
+            np.eye(2), (0.0,),
+            ricci_scalar_gev2=0.0,
+            riemann_squared_gev4=0.0,
+            ricci_tensor_squared_gev4=0.0,
+        )
+    with pytest.raises(ValueError, match="finite real scalar"):
+        scalar_heat_kernel_a2(
+            np.eye(2), (0.0, 0.0),
+            ricci_scalar_gev2=float("nan"),
+            riemann_squared_gev4=0.0,
+            ricci_tensor_squared_gev4=0.0,
+        )
+
+
+def test_ptum_scalar_heat_kernel_a2_report_is_strict_json_and_not_renormalized():
+    import json
+    from ptum_renormalization import ptum_scalar_heat_kernel_a2
+
+    params = PTUMParameters()
+    result = ptum_scalar_heat_kernel_a2(
+        0.8 * params.Phi_c, 0.2 * params.psi_0, params,
+        xi_phi=0.0, xi_psi=0.0,
+        ricci_scalar_gev2=0.0,
+        riemann_squared_gev4=0.0,
+        ricci_tensor_squared_gev4=0.0,
+    )
+    json.dumps(result, allow_nan=False)
+    assert result["field_basis"] == ["Phi", "psi"]
+    assert result["assumptions"]["finite_renormalization_conditions_fixed"] is False
+    assert result["assumptions"]["renormalized_stress_tensor_computed"] is False
+    assert result["assumptions"]["real_time_CTP_finite_part_computed"] is False
+
+
+def test_ptum_scalar_heat_kernel_derivation_and_claim_boundary_are_in_manuscript():
+    from pathlib import Path
+
+    source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
+    assert r"\label{eq:ptum_scalar_hessian}" in source
+    assert r"\label{eq:ptum_scalar_heat_kernel_a2}" in source
+    assert r"\operatorname{tr}" in source
+    assert r"ptum\_renormalization.py" in source
+    assert "not a renormalized quantum initial state" in source

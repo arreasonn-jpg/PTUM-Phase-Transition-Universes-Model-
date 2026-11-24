@@ -2133,3 +2133,45 @@ for an unescaped filename; main.tex correctly writes the underscores
 as TeX escapes. The test now checks the actual TeX spelling. No physical
 equation, decay width, or scientific acceptance criterion was weakened.
 Fresh exact-head CI is required.
+
+
+## 2026-11-24: coupled two-scalar heat-kernel UV coefficient
+
+Derived the Gaussian scalar fluctuation Hessian directly from the common
+tree-level potential
+\(V=V_{\rm eff}(\Phi)+m_{\rm eff}^2(\Phi)\psi^2/2+
+\lambda_\psi\psi^4/4\):
+\[
+\mathcal H=
+\begin{pmatrix}
+V_{\rm eff}''+c_\psi\psi^2 & 2c_\psi\Phi\psi\\
+2c_\psi\Phi\psi & m_{\rm eff}^2+3\lambda_\psi\psi^2
+\end{pmatrix},
+\qquad c_\psi=\alpha m_\psi^2/E_{\rm th}^2.
+\]
+For the Euclidean Laplace-type operator
+\(\mathcal D_E=-\nabla_E^2\mathbf1+\mathcal H+\Xi R_E\),
+the bulk coefficient modulo covariant total derivatives is
+\[
+a_2^{\rm bulk}=
+\frac12\operatorname{tr}
+[(\mathcal H+(\Xi-\mathbf1/6)R_E)^2]
++\frac{2}{180}(R_{\mu\nu\rho\sigma}^2-R_{\mu\nu}^2).
+\]
+The off-diagonal \(\Phi\)-\(\psi\) fluctuation mixing is included.
+At \(\psi=0\), the field-dependent \(m_{\rm eff}^4(\Phi)\) term
+generates constant, \(\Phi^2\), and \(\Phi^4\) local structures;
+the curvature cross term generates \(R_E\) and \(R_E\Phi^2\);
+the geometric part requires curvature-squared counterterms. The
+non-polynomial \(V_{\rm eff}''(\Phi)^2\) contribution also confirms
+that a finite polynomial potential truncation is not closed.
+
+The new ptum_renormalization.py module computes this local coefficient
+and exposes its pieces. Regressions cover the flat constant-Hessian
+limit, mixed Hessian contribution, conformal maximally symmetric
+limit, explicit \(\xi_I\) dependence, and the tachyonic polynomial
+limit. It is an algebraic UV-coefficient oracle only. No cutoff,
+renormalization scale, finite conditions, pole prefactor, boundary
+terms, SM/gauge/fermion or graviton loops, CTP finite part,
+renormalized stress tensor or renormalized \(\Phi\) force is supplied.
+Gate 5 remains NOT MET; no physical quantum-waterfall claim follows.
