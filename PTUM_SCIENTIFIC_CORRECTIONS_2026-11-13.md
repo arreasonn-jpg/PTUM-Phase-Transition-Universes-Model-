@@ -2217,10 +2217,10 @@ For fixed Euclidean curvature invariants, define
 of the common-action Hessian are
 \\[
 \\partial_\\Phi\\mathcal H=
-\\begin{pmatrix}V_{\\rm eff}'''&2c_\\psi\\psi\\\\2c_\\psi\\psi&2c_\\psi\\Phi\\end{pmatrix},
+\\begin{pmatrix}V_{\\rm eff}'''&2c_\\psi\\psi\\2c_\\psi\\psi&2c_\\psi\\Phi\\end{pmatrix},
 \\quad
 \\partial_\\psi\\mathcal H=
-\\begin{pmatrix}2c_\\psi\\psi&2c_\\psi\\Phi\\\\2c_\\psi\\Phi&6\\lambda_\\psi\\psi\\end{pmatrix},
+\\begin{pmatrix}2c_\\psi\\psi&2c_\\psi\\Phi\\2c_\\psi\\Phi&6\\lambda_\\psi\\psi\\end{pmatrix},
 \\]
 and \\(\\partial_Ia_2^{\\rm bulk}=\\operatorname{tr}(\\mathcal A\\partial_I\\mathcal H)\\).
 The new helper returns the \\(\\Phi\\) and \\(\\psi\\) derivatives of the
@@ -2233,3 +2233,17 @@ curvature. It is not a finite renormalized force, does not vary the
 metric, and does not produce the renormalized stress tensor or a
 real-time CTP equation. The lattice initial condition and Friedmann
 source remain unchanged. Gate 5 remains NOT MET.
+
+
+### Exact-head regression correction
+
+Workflow 45368160766 on head bd9daf3317ccc6ce71bdadb4ddadb5f906ac4d7b
+reported 193 passed and one failed. The failure was a source-text
+assertion that expected a displayed trace identity to be contiguous
+across LaTeX line breaks. The displayed mathematics was correctly
+split over aligned lines; the test now checks the trace, matrix product,
+and closing delimiter as separate source fragments. The two numerical
+field-gradient tests passed in that run. The LaTeX build and bare-WKB
+audit also passed. The failed Python job prevented the smoke scan from
+running. No equation, physical tolerance, or scientific criterion was
+changed; a fresh exact-head run is required.

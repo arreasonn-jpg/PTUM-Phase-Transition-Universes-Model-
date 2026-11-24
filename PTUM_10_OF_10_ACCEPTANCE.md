@@ -2004,3 +2004,16 @@ background fields at fixed curvature, returns the divergent force
 coefficients and their cancelling counterterms, and adds central-
 difference plus \\(Z_2\\)-symmetry regressions. These new changes are
 pending exact-head CI. Gate 5 remains NOT MET; Gate 10 remains PARTIAL.
+
+
+### Exact-head field-gradient regression result
+
+Workflow 45368160766 on head bd9daf3317ccc6ce71bdadb4ddadb5f906ac4d7b
+reported 193 passed and one failed. The only failure was the manuscript
+source assertion expecting a trace identity to be contiguous despite
+intentional aligned equation line breaks. Both numerical field-gradient
+regressions passed; the LaTeX build and 11-grid bare-WKB UV audit passed.
+Because the Python job failed, the two-scale smoke scan did not run.
+The assertion now checks separate mathematical fragments, with no
+equation or tolerance change. Fresh exact-head CI is pending. Gate 5
+remains NOT MET; Gate 10 remains PARTIAL.

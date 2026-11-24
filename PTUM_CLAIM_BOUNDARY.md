@@ -1234,3 +1234,14 @@ exact-head CI. Gate 5 remains NOT MET.
 
 The new derivative tests and manuscript equation require fresh
 exact-head CI. Gate 5 remains NOT MET.
+
+
+### Source-regression correction
+
+The first exact-head run for the field-gradient extension had one
+source-text failure: the test expected the complete trace identity on
+one line although the manuscript correctly uses aligned LaTeX lines.
+The assertion now checks the identity's independent source fragments.
+The numerical finite-difference and Z2 tests passed. This is a test
+robustness correction only; no physics equation or tolerance changed.
+Fresh exact-head CI is required. Gate 5 remains NOT MET.

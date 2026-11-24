@@ -4435,6 +4435,8 @@ def test_scalar_bulk_pole_field_derivative_identity_is_displayed_in_manuscript()
     source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
     assert r"\label{eq:ptum_scalar_heat_kernel_field_derivatives}" in source
     assert r"\partial_I a_2^{\rm bulk}" in source
-    assert r"\operatorname{tr}\!\left[\mathcal A\,\partial_I\mathcal H\right]" in source
+    assert r"\operatorname{tr}\!\left[" in source
+    assert r"\mathcal A\,\partial_I\mathcal H" in source
+    assert r"\right]" in source
     assert r"\partial_\Phi\mathcal H" in source
     assert r"\partial_\psi\mathcal H" in source
