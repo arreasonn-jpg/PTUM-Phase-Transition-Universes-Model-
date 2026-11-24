@@ -4367,3 +4367,74 @@ def test_scalar_one_loop_pole_normalization_and_sign_are_displayed_in_manuscript
     assert r"-\frac{a_2^{\rm bulk}}{16\pi^2\epsilon}" in source
     assert r"+\frac{a_2^{\rm bulk}}{16\pi^2\epsilon}" in source
     assert "not a finite in-in effective action" in source
+
+
+def test_scalar_bulk_pole_field_gradients_match_independent_central_differences():
+    from ptum_renormalization import (
+        ptum_scalar_heat_kernel_a2,
+        ptum_scalar_one_loop_pole_field_gradients,
+    )
+
+    params = PTUMParameters()
+    phi = 0.91 * params.Phi_c
+    psi = 0.27 * params.psi_0
+    kwargs = dict(
+        xi_phi=0.03,
+        xi_psi=0.11,
+        ricci_scalar_gev2=0.31 * params.m_psi**2,
+        riemann_squared_gev4=0.73 * params.m_psi**4,
+        ricci_tensor_squared_gev4=0.42 * params.m_psi**4,
+    )
+    gradient = ptum_scalar_one_loop_pole_field_gradients(
+        phi, psi, params,
+        xi_phi=kwargs["xi_phi"],
+        xi_psi=kwargs["xi_psi"],
+        ricci_scalar_gev2=kwargs["ricci_scalar_gev2"],
+    )
+
+    def a2_at(phi_value, psi_value):
+        return ptum_scalar_heat_kernel_a2(
+            phi_value, psi_value, params, **kwargs
+        )["a2_bulk_GeV4"]
+
+    h_phi = 2.0e-5 * params.Phi_c
+    h_psi = 2.0e-5 * params.psi_0
+    fd_phi = (a2_at(phi + h_phi, psi) - a2_at(phi - h_phi, psi)) / (2.0 * h_phi)
+    fd_psi = (a2_at(phi, psi + h_psi) - a2_at(phi, psi - h_psi)) / (2.0 * h_psi)
+    assert gradient["a2_field_gradient_GeV3"]["Phi"] == pytest.approx(
+        fd_phi, rel=2.0e-5
+    )
+    assert gradient["a2_field_gradient_GeV3"]["psi"] == pytest.approx(
+        fd_psi, rel=2.0e-5
+    )
+    pole_phi = gradient["gamma1_divergent_density_field_gradient_coefficient_GeV3"]["Phi"]
+    ct_phi = gradient["euclidean_counterterm_density_field_gradient_coefficient_GeV3"]["Phi"]
+    assert pole_phi == pytest.approx(-ct_phi, rel=0.0, abs=0.0)
+    assert gradient["assumptions"]["renormalized_real_time_force_computed"] is False
+
+
+def test_scalar_bulk_pole_field_gradient_respects_real_psi_z2_symmetry():
+    from ptum_renormalization import ptum_scalar_one_loop_pole_field_gradients
+
+    params = PTUMParameters()
+    result = ptum_scalar_one_loop_pole_field_gradients(
+        0.83 * params.Phi_c,
+        0.0,
+        params,
+        xi_phi=0.0,
+        xi_psi=0.0,
+        ricci_scalar_gev2=0.2 * params.m_psi**2,
+    )
+    assert result["a2_field_gradient_GeV3"]["psi"] == 0.0
+    assert np.isfinite(result["a2_field_gradient_GeV3"]["Phi"])
+
+
+def test_scalar_bulk_pole_field_derivative_identity_is_displayed_in_manuscript():
+    from pathlib import Path
+
+    source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
+    assert r"\label{eq:ptum_scalar_heat_kernel_field_derivatives}" in source
+    assert r"\partial_I a_2^{\rm bulk}" in source
+    assert r"\operatorname{tr}\!\left[\mathcal A\,\partial_I\mathcal H\right]" in source
+    assert r"\partial_\Phi\mathcal H" in source
+    assert r"\partial_\psi\mathcal H" in source

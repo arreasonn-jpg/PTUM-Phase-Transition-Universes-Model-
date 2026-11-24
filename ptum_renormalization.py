@@ -326,3 +326,92 @@ def scalar_one_loop_pole_coefficients(a2_bulk_gev4: float) -> dict[str, object]:
             "physical_prediction": False,
         },
     }
+
+
+def ptum_scalar_one_loop_pole_field_gradients(
+    Phi: float,
+    psi: float,
+    params: PTUMParameters,
+    *,
+    xi_phi: float,
+    xi_psi: float,
+    ricci_scalar_gev2: float,
+) -> dict[str, object]:
+    """Return field derivatives of the scalar bulk a2 and its simple pole.
+
+    Curvature invariants are held fixed while differentiating with respect
+    to the two background fields. Since the geometric a2 term is
+    field-independent, d a2/dvarphi = tr[A dH/dvarphi], where
+    A = H + (Xi - I/6) R_E. This is the derivative of the local Euclidean
+    bulk pole only, not a finite or renormalized real-time force.
+    """
+    phi = _finite_real_scalar("Phi", Phi)
+    waterfall = _finite_real_scalar("psi", psi)
+    xi_phi_value = _finite_real_scalar("xi_phi", xi_phi)
+    xi_psi_value = _finite_real_scalar("xi_psi", xi_psi)
+    ricci = _finite_real_scalar("ricci_scalar_gev2", ricci_scalar_gev2)
+    alpha = _finite_real_scalar("alpha", params.alpha)
+
+    hessian = ptum_scalar_hessian(phi, waterfall, params)
+    c_psi = alpha * params.m_psi**2 / params.E_th**2
+    x = params.lambda_phi * (phi / M_PL)**2
+    v_eff_third = (
+        4.0 * params.V0 * params.lambda_phi**2 * phi / M_PL**4
+        * np.exp(-x) * (2.0 * x - 3.0)
+    )
+
+    hessian_phi = np.array(
+        [
+            [v_eff_third, 2.0 * c_psi * waterfall],
+            [2.0 * c_psi * waterfall, 2.0 * c_psi * phi],
+        ],
+        dtype=float,
+    )
+    hessian_psi = np.array(
+        [
+            [2.0 * c_psi * waterfall, 2.0 * c_psi * phi],
+            [2.0 * c_psi * phi, 6.0 * params.lambda_psi * waterfall],
+        ],
+        dtype=float,
+    )
+    shifted_hessian = hessian + np.diag(
+        np.array([xi_phi_value, xi_psi_value], dtype=float) - 1.0 / 6.0
+    ) * ricci
+    da2_dphi = float(np.trace(shifted_hessian @ hessian_phi))
+    da2_dpsi = float(np.trace(shifted_hessian @ hessian_psi))
+    derivatives = np.array([da2_dphi, da2_dpsi], dtype=float)
+    if not np.all(np.isfinite(derivatives)):
+        raise ValueError("scalar heat-kernel field gradient is non-finite")
+
+    loop_factor = 1.0 / (16.0 * np.pi**2)
+    gamma_gradient = -loop_factor * derivatives
+    counterterm_gradient = loop_factor * derivatives
+    return {
+        "field_basis": ["Phi", "psi"],
+        "a2_field_gradient_GeV3": {
+            "Phi": da2_dphi,
+            "psi": da2_dpsi,
+        },
+        "gamma1_divergent_density_field_gradient_coefficient_GeV3": {
+            "Phi": float(gamma_gradient[0]),
+            "psi": float(gamma_gradient[1]),
+        },
+        "euclidean_counterterm_density_field_gradient_coefficient_GeV3": {
+            "Phi": float(counterterm_gradient[0]),
+            "psi": float(counterterm_gradient[1]),
+        },
+        "pole_factor": "1/epsilon",
+        "hessian_field_derivatives_GeV": {
+            "Phi": hessian_phi.tolist(),
+            "psi": hessian_psi.tolist(),
+        },
+        "assumptions": {
+            "curvature_invariants_held_fixed_in_field_derivative": True,
+            "scalar_bulk_heat_kernel_only": True,
+            "boundary_and_initial_surface_terms_included": False,
+            "finite_effective_action_computed": False,
+            "renormalized_real_time_force_computed": False,
+            "renormalized_stress_tensor_computed": False,
+            "physical_prediction": False,
+        },
+    }

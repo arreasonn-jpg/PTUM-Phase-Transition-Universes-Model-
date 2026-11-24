@@ -5211,6 +5211,49 @@ the same Euclidean operator convention. Total derivatives, boundary
 and initial-surface terms are not included in Eq.~\eqref{eq:ptum_scalar_heat_kernel_a2}.
 
 
+The field derivative of this local pole is also available without
+choosing finite matching conditions. At fixed Euclidean curvature,
+define
+\begin{equation}
+\mathcal A\equiv\mathcal H+
+\left(\Xi-\frac16\mathbf1\right)R_E.
+\end{equation}
+The Hessian derivatives and the trace identity are
+\begin{align}
+\partial_\Phi\mathcal H
+&=
+\begin{pmatrix}
+V_{\rm eff}'''(\Phi)&2c_\psi\psi\\
+2c_\psi\psi&2c_\psi\Phi
+\end{pmatrix},
+&
+\partial_\psi\mathcal H
+&=
+\begin{pmatrix}
+2c_\psi\psi&2c_\psi\Phi\\
+2c_\psi\Phi&6\lambda_\psi\psi
+\end{pmatrix},
+\nonumber\\
+\partial_I a_2^{\rm bulk}
+&=\operatorname{tr}\!\left[
+\mathcal A\,\partial_I\mathcal H
+\right],
+&
+I&\in\{\Phi,\psi\},
+\label{eq:ptum_scalar_heat_kernel_field_derivatives}
+\end{align}
+where
+\begin{equation}
+V_{\rm eff}'''(\Phi)=
+\frac{4V_0\lambda_\Phi^2\Phi}{M_{\rm Pl}^4}
+e^{-x}(2x-3).
+\end{equation}
+Consequently, the field derivative of the Euclidean pole is
+$-\partial_I a_2^{\rm bulk}/(16\pi^2\epsilon)$ and the local
+counterterm derivative has the opposite sign. These are divergent
+bulk coefficients only; they are not a finite renormalized force,
+and no metric variation or renormalized stress tensor is implied.
+
 For an explicit local operator-basis audit, define
 $U(\Phi)=V_{\rm eff}''(\Phi)$,
 $M^2(\Phi)=m_{\rm eff}^2(\Phi)$,

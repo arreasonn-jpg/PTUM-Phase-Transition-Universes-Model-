@@ -2208,3 +2208,28 @@ conditions, boundary/initial-surface terms, SM/gauge/fermion/graviton
 loops, CTP finite parts, or a renormalized stress tensor. The nonlinear
 lattice and its initial Friedmann source are unchanged. Gate 5 remains
 NOT MET.
+
+
+## 2026-11-24 field derivatives of the scalar bulk UV pole
+
+For fixed Euclidean curvature invariants, define
+\\(\\mathcal A=\\mathcal H+(\\Xi-\\mathbf1/6)R_E\\). The field derivatives
+of the common-action Hessian are
+\\[
+\\partial_\\Phi\\mathcal H=
+\\begin{pmatrix}V_{\\rm eff}'''&2c_\\psi\\psi\\\\2c_\\psi\\psi&2c_\\psi\\Phi\\end{pmatrix},
+\\quad
+\\partial_\\psi\\mathcal H=
+\\begin{pmatrix}2c_\\psi\\psi&2c_\\psi\\Phi\\\\2c_\\psi\\Phi&6\\lambda_\\psi\\psi\\end{pmatrix},
+\\]
+and \\(\\partial_Ia_2^{\\rm bulk}=\\operatorname{tr}(\\mathcal A\\partial_I\\mathcal H)\\).
+The new helper returns the \\(\\Phi\\) and \\(\\psi\\) derivatives of the
+bulk pole and cancelling counterterm coefficients. Central-difference
+regressions independently check both derivatives, and the \\(\\psi=0\\)
+limit checks the real-field \\(Z_2\\) symmetry.
+
+This is still only a local Euclidean bulk pole derivative at fixed
+curvature. It is not a finite renormalized force, does not vary the
+metric, and does not produce the renormalized stress tensor or a
+real-time CTP equation. The lattice initial condition and Friedmann
+source remain unchanged. Gate 5 remains NOT MET.

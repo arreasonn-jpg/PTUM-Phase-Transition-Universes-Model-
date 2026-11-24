@@ -1969,3 +1969,38 @@ renormalized stress tensor/\(\Phi\) force, or lattice counterterm
 implementation. No initial condition or Friedmann source was changed.
 Gate 5 remains NOT MET. The new exact-head regression and manuscript
 build are pending CI.
+
+
+## 2026-11-24 exact-head pole verification and field-gradient extension
+
+The exact head dc6ba177e84b269cfd790de9c72a6bb7054d2904 was verified by
+workflow 45367381969:
+- 191 Python regression cases passed.
+- Two-scale smoke scan: 4/4 successful trajectories, zero failed
+  integrations.
+- The 11-grid bare-WKB UV audit produced strict JSON. Its ZIP SHA-256 is
+  2dcb72f48f623f6000f97f0ccc67e1ce2ae39de8415633cd12ab99b0c38191ba;
+  extracted JSON SHA-256 is
+  260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749.
+  The fixed-box bare-stress ratio remains 16664.2325, the N=32-to-64
+  cutoff slope is 3.8822733, the fixed-spacing volume spread is
+  2.38067e-13, and the artifact explicitly says zero-point energy is
+  retained, vacuum subtraction/counterterms are false, and no continuum
+  limit is claimed.
+- The 46-page PDF built. PDF SHA-256 is
+  aab465e7503caf43bb4e29e661d0ca67ce48752af0ee57e59c7ac02e8ac22c85;
+  artifact ZIP SHA-256 is
+  8ad74b011497f62c637e539485f3678ca04190e40e8eaca392a8bf2f6331f852.
+  The final LaTeX pass had 79 Underfull hboxes, zero Overfull hboxes,
+  and zero unresolved references/citations. The manuscript is not
+  warning-free.
+- Long homogeneous scans were skipped by design; no new 100-row scan
+  or paired convergence result is claimed from this workflow.
+
+The scalar bulk pole helper passed the flat single-real-scalar
+normalization and sign tests. The next extension analytically
+differentiates the same bulk coefficient with respect to both
+background fields at fixed curvature, returns the divergent force
+coefficients and their cancelling counterterms, and adds central-
+difference plus \\(Z_2\\)-symmetry regressions. These new changes are
+pending exact-head CI. Gate 5 remains NOT MET; Gate 10 remains PARTIAL.

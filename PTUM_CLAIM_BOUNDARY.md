@@ -1211,3 +1211,26 @@ lattice.
 
 The new pole-normalization tests and manuscript equation require fresh
 exact-head CI. Gate 5 remains NOT MET.
+
+
+## 2026-11-24 divergent scalar-force coefficient boundary
+
+### Supported
+- At fixed Euclidean curvature, the derivative of the local two-scalar
+  bulk coefficient obeys
+  \\(\\partial_Ia_2^{\\rm bulk}
+  =\\operatorname{tr}[(\\mathcal H+(\\Xi-\\mathbf1/6)R_E)
+  \\partial_I\\mathcal H]\\), for \\(I=\\Phi,\\psi\\).
+- The code returns the field derivatives of the one-loop Euclidean
+  simple-pole and cancelling counterterm coefficients. Central
+  differences check the analytic field derivatives, and the
+  \\(\\psi=0\\) result respects the real-scalar \\(Z_2\\) symmetry.
+
+### Not supported
+- A finite or renormalized scalar force, a Lorentzian in-in/CTP force,
+  a metric variation, or a renormalized stress tensor.
+- Boundary/initial-surface counterterms, finite matching conditions,
+  SM/gauge/fermion/graviton loops, or a cutoff-independent lattice.
+
+The new derivative tests and manuscript equation require fresh
+exact-head CI. Gate 5 remains NOT MET.
