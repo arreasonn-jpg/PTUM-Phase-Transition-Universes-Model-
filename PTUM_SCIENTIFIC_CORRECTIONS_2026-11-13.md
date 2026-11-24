@@ -2213,20 +2213,20 @@ NOT MET.
 ## 2026-11-24 field derivatives of the scalar bulk UV pole
 
 For fixed Euclidean curvature invariants, define
-\\(\\mathcal A=\\mathcal H+(\\Xi-\\mathbf1/6)R_E\\). The field derivatives
+\(\mathcal A=\mathcal H+(\Xi-\mathbf1/6)R_E\). The field derivatives
 of the common-action Hessian are
-\\[
-\\partial_\\Phi\\mathcal H=
-\\begin{pmatrix}V_{\\rm eff}'''&2c_\\psi\\psi\\2c_\\psi\\psi&2c_\\psi\\Phi\\end{pmatrix},
-\\quad
-\\partial_\\psi\\mathcal H=
-\\begin{pmatrix}2c_\\psi\\psi&2c_\\psi\\Phi\\2c_\\psi\\Phi&6\\lambda_\\psi\\psi\\end{pmatrix},
-\\]
-and \\(\\partial_Ia_2^{\\rm bulk}=\\operatorname{tr}(\\mathcal A\\partial_I\\mathcal H)\\).
-The new helper returns the \\(\\Phi\\) and \\(\\psi\\) derivatives of the
+\[
+\partial_\Phi\mathcal H=
+\begin{pmatrix}V_{\rm eff}'''&2c_\psi\psi\2c_\psi\psi&2c_\psi\Phi\end{pmatrix},
+\quad
+\partial_\psi\mathcal H=
+\begin{pmatrix}2c_\psi\psi&2c_\psi\Phi\2c_\psi\Phi&6\lambda_\psi\psi\end{pmatrix},
+\]
+and \(\partial_Ia_2^{\rm bulk}=\operatorname{tr}(\mathcal A\partial_I\mathcal H)\).
+The new helper returns the \(\Phi\) and \(\psi\) derivatives of the
 bulk pole and cancelling counterterm coefficients. Central-difference
-regressions independently check both derivatives, and the \\(\\psi=0\\)
-limit checks the real-field \\(Z_2\\) symmetry.
+regressions independently check both derivatives, and the \(\psi=0\)
+limit checks the real-field \(Z_2\) symmetry.
 
 This is still only a local Euclidean bulk pole derivative at fixed
 curvature. It is not a finite renormalized force, does not vary the
@@ -2247,3 +2247,33 @@ field-gradient tests passed in that run. The LaTeX build and bare-WKB
 audit also passed. The failed Python job prevented the smoke scan from
 running. No equation, physical tolerance, or scientific criterion was
 changed; a fresh exact-head run is required.
+
+
+## 2026-11-24 exact-head field-gradient verification
+
+Workflow 45368498672 on exact head d5649884cae49ede9c4cb83915a3f0a4670d83b2
+completed successfully:
+- Python regression: 194 passed.
+- Two-scale smoke scan: 4/4 successful trajectories, zero failed
+  integrations.
+- The 11-grid bare-WKB audit produced strict JSON. ZIP SHA-256:
+  e435e573863d9ea253646115d5ddf16e6bae614c24f14ac5684ee404931c097c.
+  JSON SHA-256:
+  260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749.
+  The fixed-box bare-stress ratio remains 16664.2325, the N=32-to-64
+  cutoff slope is 3.8822733, and the fixed-spacing volume spread is
+  2.38067e-13. The artifact confirms zero-point energy retained,
+  vacuum subtraction and counterterms false, and continuum limit false.
+- The 46-page PDF built. PDF SHA-256:
+  2c6887e02f8563ac37be89d4ed71f7f704729a9a59dc19926425aa983b392b8a.
+  Artifact ZIP SHA-256:
+  91ec44119e4b702064e5f7396f7a1618a62e0bc97e84bde1ccb88433ac7f6d66.
+  Final pass: 80 Underfull hboxes, zero Overfull hboxes, zero unresolved
+  references and zero unresolved citations.
+- The source-fragment assertion correction did not change the equations,
+  tolerances or scientific acceptance criteria.
+
+The two analytic field-gradient regressions passed against independent
+central differences and the real-psi Z2 control. This verifies the
+derivative of the local scalar bulk pole at fixed curvature only. Gate 5
+remains NOT MET; Gate 10 remains PARTIAL.

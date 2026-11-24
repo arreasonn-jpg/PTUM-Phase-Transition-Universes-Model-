@@ -1218,13 +1218,13 @@ exact-head CI. Gate 5 remains NOT MET.
 ### Supported
 - At fixed Euclidean curvature, the derivative of the local two-scalar
   bulk coefficient obeys
-  \\(\\partial_Ia_2^{\\rm bulk}
-  =\\operatorname{tr}[(\\mathcal H+(\\Xi-\\mathbf1/6)R_E)
-  \\partial_I\\mathcal H]\\), for \\(I=\\Phi,\\psi\\).
+  \(\partial_Ia_2^{\rm bulk}
+  =\operatorname{tr}[(\mathcal H+(\Xi-\mathbf1/6)R_E)
+  \partial_I\mathcal H]\), for \(I=\Phi,\psi\).
 - The code returns the field derivatives of the one-loop Euclidean
   simple-pole and cancelling counterterm coefficients. Central
   differences check the analytic field derivatives, and the
-  \\(\\psi=0\\) result respects the real-scalar \\(Z_2\\) symmetry.
+  \(\psi=0\) result respects the real-scalar \(Z_2\) symmetry.
 
 ### Not supported
 - A finite or renormalized scalar force, a Lorentzian in-in/CTP force,
@@ -1245,3 +1245,15 @@ The assertion now checks the identity's independent source fragments.
 The numerical finite-difference and Z2 tests passed. This is a test
 robustness correction only; no physics equation or tolerance changed.
 Fresh exact-head CI is required. Gate 5 remains NOT MET.
+
+
+### Exact-head verification
+
+Workflow 45368498672 on d5649884cae49ede9c4cb83915a3f0a4670d83b2
+passed 194 Python tests, the 4/4 two-scale smoke scan, the 11-grid
+bare-WKB audit and the 46-page manuscript build. The final LaTeX pass
+retained 80 Underfull hboxes but had zero Overfull hboxes and no
+unresolved references/citations. The analytic scalar-pole field
+derivatives passed central-difference checks and the psi=0 Z2 control.
+This does not turn the divergent coefficients into a finite force or
+renormalized stress tensor. Gate 5 remains NOT MET.

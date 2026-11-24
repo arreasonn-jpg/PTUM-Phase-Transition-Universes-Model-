@@ -2002,7 +2002,7 @@ normalization and sign tests. The next extension analytically
 differentiates the same bulk coefficient with respect to both
 background fields at fixed curvature, returns the divergent force
 coefficients and their cancelling counterterms, and adds central-
-difference plus \\(Z_2\\)-symmetry regressions. These new changes are
+difference plus \(Z_2\)-symmetry regressions. These new changes are
 pending exact-head CI. Gate 5 remains NOT MET; Gate 10 remains PARTIAL.
 
 
@@ -2017,3 +2017,28 @@ Because the Python job failed, the two-scale smoke scan did not run.
 The assertion now checks separate mathematical fragments, with no
 equation or tolerance change. Fresh exact-head CI is pending. Gate 5
 remains NOT MET; Gate 10 remains PARTIAL.
+
+
+## 2026-11-24 exact-head verification of the scalar pole derivatives
+
+Exact-head workflow 45368498672 on d5649884cae49ede9c4cb83915a3f0a4670d83b2
+completed successfully:
+- 194 Python regression cases passed, including the two independent
+  central-difference field-gradient checks, the real-psi Z2 control,
+  and the manuscript source regression.
+- Two-scale smoke scan: 4/4 successful, zero failed integrations.
+- The 11-grid bare-WKB UV audit passed. Its strict-JSON artifact confirms
+  the same cutoff-dependent bare stress: fixed-box ratio 16664.2325,
+  N=32-to-64 log slope 3.8822733, fixed-spacing volume spread
+  2.38067e-13. Zero-point energy is retained; vacuum subtraction and
+  counterterms are not applied; no continuum limit is claimed.
+- The 46-page manuscript PDF built. Final LaTeX pass: 80 Underfull
+  hboxes, zero Overfull hboxes, zero unresolved references and zero
+  unresolved citations. This is not a warning-free build.
+- Long 100-row and paired convergence jobs were skipped by design.
+  No new homogeneous full-scan result is claimed.
+
+The pole derivative implementation remains a local Euclidean bulk
+coefficient at fixed curvature. It is not a finite renormalized force,
+metric variation, renormalized stress tensor, or real-time CTP equation.
+Gate 5 remains NOT MET and Gate 10 remains PARTIAL.
