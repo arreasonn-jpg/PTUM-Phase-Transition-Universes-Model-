@@ -2217,10 +2217,10 @@ For fixed Euclidean curvature invariants, define
 of the common-action Hessian are
 \[
 \partial_\Phi\mathcal H=
-\begin{pmatrix}V_{\rm eff}'''&2c_\psi\psi\2c_\psi\psi&2c_\psi\Phi\end{pmatrix},
+\begin{pmatrix}V_{\rm eff}'''&2c_\psi\psi\\2c_\psi\psi&2c_\psi\Phi\end{pmatrix},
 \quad
 \partial_\psi\mathcal H=
-\begin{pmatrix}2c_\psi\psi&2c_\psi\Phi\2c_\psi\Phi&6\lambda_\psi\psi\end{pmatrix},
+\begin{pmatrix}2c_\psi\psi&2c_\psi\Phi\\2c_\psi\Phi&6\lambda_\psi\psi\end{pmatrix},
 \]
 and \(\partial_Ia_2^{\rm bulk}=\operatorname{tr}(\mathcal A\partial_I\mathcal H)\).
 The new helper returns the \(\Phi\) and \(\psi\) derivatives of the
@@ -2277,3 +2277,8 @@ The two analytic field-gradient regressions passed against independent
 central differences and the real-psi Z2 control. This verifies the
 derivative of the local scalar bulk pole at fixed curvature only. Gate 5
 remains NOT MET; Gate 10 remains PARTIAL.
+
+
+The matrix row-break escapes in this Markdown derivation were normalized
+after review; the Python implementation, manuscript equations and
+numerical results are unchanged.
