@@ -5198,6 +5198,54 @@ sign convention are chosen. The curvature inputs and $\xi_I$ must use
 the same Euclidean operator convention. Total derivatives, boundary
 and initial-surface terms are not included in Eq.~\eqref{eq:ptum_scalar_heat_kernel_a2}.
 
+
+
+For an explicit local operator-basis audit, define
+$U(\Phi)=V_{\rm eff}''(\Phi)$,
+$M^2(\Phi)=m_{\rm eff}^2(\Phi)$,
+$c=c_\psi$, and $\delta\xi_I=\xi_I-\tfrac16$. Expanding the same
+matrix trace in Eq.~\eqref{eq:ptum_scalar_heat_kernel_a2} gives
+\begin{align}
+a_2^{\rm bulk}
+&=\frac12U^2+\frac12M^4
++\psi^2\left(cU+3\lambda_\psi M^2+4c^2\Phi^2\right)
++\frac12\left(c^2+9\lambda_\psi^2\right)\psi^4
+\nonumber\\
+&\quad+R_E\left(\delta\xi_\Phi U+\delta\xi_\psi M^2\right)
++R_E\psi^2\left(\delta\xi_\Phi c
++3\delta\xi_\psi\lambda_\psi\right)
+\nonumber\\
+&\quad+\frac12R_E^2
+\left(\delta\xi_\Phi^2+\delta\xi_\psi^2\right)
++\frac{2}{180}
+\left(R_{\mu\nu\rho\sigma}^2-R_{\mu\nu}^2\right).
+\label{eq:ptum_scalar_heat_kernel_decomposition}
+\end{align}
+In particular,
+\begin{equation}
+\frac12M^4
+=\frac12m_\psi^4
+\left(
+\frac{\alpha^2\Phi^4}{E_{\rm th}^4}
+-\frac{2\alpha\Phi^2}{E_{\rm th}^2}+1
+\right),
+\end{equation}
+and
+\begin{equation}
+\delta\xi_\psi R_E M^2
+=\delta\xi_\psi m_\psi^2R_E
+\left(\frac{\alpha\Phi^2}{E_{\rm th}^2}-1\right).
+\end{equation}
+Thus the waterfall determinant requires the vacuum-energy, $\Phi^2$,
+$\Phi^4$, Einstein-term, and $R_E\Phi^2$ structures, while the
+$U(\Phi)^2$ and $R_EU(\Phi)$ terms retain the non-polynomial plateau
+dependence. The mixed $\psi^2$ and $\psi^4$ terms are displayed in
+Eq.~\eqref{eq:ptum_scalar_heat_kernel_decomposition}; they must not be
+discarded when the background is inhomogeneous or $\psi\ne0$.
+The code's expanded decomposition is checked against the independent
+matrix-trace implementation at nonzero $(\Phi,\psi)$ and at $\psi=0$.
+
+
 At $\psi=0$, the $\psi$ contribution contains
 $m_{\rm eff}^4(\Phi)$ and
 $(\xi_\psi-\tfrac16)m_{\rm eff}^2(\Phi)R_E$. Since

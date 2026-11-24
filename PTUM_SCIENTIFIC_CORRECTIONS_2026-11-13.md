@@ -2175,3 +2175,13 @@ renormalization scale, finite conditions, pole prefactor, boundary
 terms, SM/gauge/fermion or graviton loops, CTP finite part,
 renormalized stress tensor or renormalized \(\Phi\) force is supplied.
 Gate 5 remains NOT MET; no physical quantum-waterfall claim follows.
+
+
+## 2026-11-24 exact-head R0 verification
+
+Exact-head workflow 45364524478 on 5f190b87aa7f883ec721fd35e432f76b539c052f
+passed 186 Python tests, the 4/4 two-scale smoke scan, and the 11-grid
+bare-WKB UV/volume audit. The 46-page PDF built; the final pass retained
+79 Underfull hbox warnings, zero Overfull hboxes and zero unresolved
+references/citations. Long full scans were skipped by design. The
+bare UV audit remains unsubtracted and renormalized=false.

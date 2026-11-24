@@ -1925,3 +1925,24 @@ still contains Underfull-box warnings and unresolved reference/citation
 warnings. This run did not opt into the long full-scan jobs; the
 historical 100-row/500-integration artifacts remain the separate
 homogeneous convergence evidence described above.
+
+
+## 2026-11-24 exact-head R0 algebraic UV checks
+
+On exact head 5f190b87aa7f883ec721fd35e432f76b539c052f,
+workflow 45364524478 completed successfully:
+- 186 Python tests passed.
+- Two-scale smoke scan: 4/4 trajectories succeeded, zero failed integrations.
+- 11-grid bare-WKB UV/volume audit passed. The artifact still reports
+  renormalized=false; the fixed-box bare stress grows by 16664.232 and
+  the N=32-to-64 cutoff slope is 3.8822733.
+- 46-page LaTeX PDF built. Final pass: 79 Underfull hbox warnings,
+  zero Overfull hboxes, and zero unresolved references/citations.
+- Long homogeneous scans were skipped by design; the previously
+  accepted 100-row/500-integration convergence artifacts remain the
+  separate homogeneous-domain evidence.
+
+The R0 code now includes both the matrix-trace a_2 coefficient and an
+expanded operator-basis identity check. This does not select an EFT
+truncation, cutoff, renormalization scale or finite matching conditions.
+Gate 5 remains NOT MET.

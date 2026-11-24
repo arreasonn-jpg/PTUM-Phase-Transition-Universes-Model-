@@ -147,3 +147,37 @@ Gate 5 remains **NOT MET**. The next required step is to fix the EFT
 operator truncation and renormalization conditions, then derive and
 match the complete counterterm action before implementing the R1
 free-field oracle.
+
+
+### R0.1 exact scalar operator-basis expansion
+
+The two-field matrix coefficient is now expanded into independent local
+pieces. With \(U=V_{\rm eff}''\), \(M^2=m_{\rm eff}^2(\Phi)\),
+\(c=\alpha m_\psi^2/E_{\rm th}^2\), and
+\(\delta\xi_I=\xi_I-1/6\):
+\[
+\begin{aligned}
+a_2^{\rm bulk}
+&=\tfrac12U^2+\tfrac12M^4
++\psi^2(cU+3\lambda_\psi M^2+4c^2\Phi^2)
++\tfrac12(c^2+9\lambda_\psi^2)\psi^4\\
+&\quad+R(\delta\xi_\Phi U+\delta\xi_\psi M^2)
++R\psi^2(\delta\xi_\Phi c+3\delta\xi_\psi\lambda_\psi)\\
+&\quad+\tfrac12R^2(\delta\xi_\Phi^2+\delta\xi_\psi^2)
++\tfrac{2}{180}(R_{\mu\nu\rho\sigma}^2-R_{\mu\nu}^2).
+\end{aligned}
+\]
+The \(M^4\) term expands into \(1,\Phi^2,\Phi^4\), and
+\(R M^2\) into \(R,R\Phi^2\). The independent \(U^2\) and \(RU\)
+terms retain the non-polynomial plateau dependence. The new
+ptum_scalar_heat_kernel_a2_decomposition helper expands the same
+coefficient and checks it against the matrix trace; this is an
+algebraic identity check, not an independent loop calculation.
+
+The exact-head workflow 45364524478 on 5f190b87aa7f883ec721fd35e432f76b539c052f
+completed successfully: 186 Python tests passed; the two-scale smoke
+scan passed 4/4 with zero failed integrations; the 11-grid bare-WKB
+UV audit passed and retained renormalized=false; the 46-page PDF built.
+Its final LaTeX pass had 79 Underfull hbox warnings, zero Overfull
+hboxes, and zero unresolved reference/citation warnings. Long scans
+were skipped by design. Gate 5 remains NOT MET.

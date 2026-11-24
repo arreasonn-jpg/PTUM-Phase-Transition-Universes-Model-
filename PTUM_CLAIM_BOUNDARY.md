@@ -1173,3 +1173,15 @@ change the conditional, non-PTUM-prediction scope of Gate 8.
   numerical vacuum offset, or claiming that the existing lattice is
   cutoff independent.
 - Claiming that R0, R1 or R2 has passed. Gate 5 remains NOT MET.
+
+
+## 2026-11-24 exact-head verification boundary
+
+Workflow 45364524478 verifies the algebraic heat-kernel implementation
+on head 5f190b87aa7f883ec721fd35e432f76b539c052f: 186 tests, 4/4
+smoke trajectories, and the 11-grid bare UV audit passed. The PDF
+build completed with 79 final-pass Underfull hbox warnings and no
+Overfull or unresolved reference/citation warnings. This is software
+verification of the stated algebraic coefficient, not verification of
+a renormalized quantum state, finite stress tensor, or cutoff-independent
+lattice.

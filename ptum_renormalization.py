@@ -181,3 +181,103 @@ def ptum_scalar_heat_kernel_a2(
         "xi_psi": float(xi_psi),
     }
     return result
+
+
+def ptum_scalar_heat_kernel_a2_decomposition(
+    Phi: float,
+    psi: float,
+    params: PTUMParameters,
+    *,
+    xi_phi: float,
+    xi_psi: float,
+    ricci_scalar_gev2: float,
+    riemann_squared_gev4: float,
+    ricci_tensor_squared_gev4: float,
+) -> dict[str, object]:
+    """Expand the same two-field a_2 coefficient into local operator pieces.
+
+    This algebraic decomposition is useful for specifying an EFT
+    counterterm basis. It does not select which operators are retained or
+    assign finite renormalization conditions.
+    """
+    phi = _finite_real_scalar("Phi", Phi)
+    waterfall = _finite_real_scalar("psi", psi)
+    xi_phi_value = _finite_real_scalar("xi_phi", xi_phi)
+    xi_psi_value = _finite_real_scalar("xi_psi", xi_psi)
+    ricci = _finite_real_scalar("ricci_scalar_gev2", ricci_scalar_gev2)
+    riemann_sq = _finite_real_scalar("riemann_squared_gev4", riemann_squared_gev4)
+    ricci_tensor_sq = _finite_real_scalar(
+        "ricci_tensor_squared_gev4", ricci_tensor_squared_gev4
+    )
+
+    x = params.lambda_phi * (phi / M_PL) ** 2
+    u_phi = (
+        2.0 * params.V0 * params.lambda_phi / M_PL**2
+        * np.exp(-x) * (1.0 - 2.0 * x)
+    )
+    m2_psi = float(meff_sq_psi(phi, params))
+    c_psi = params.alpha * params.m_psi**2 / params.E_th**2
+    delta_xi_phi = xi_phi_value - 1.0 / 6.0
+    delta_xi_psi = xi_psi_value - 1.0 / 6.0
+    lam = params.lambda_psi
+
+    components = {
+        "phi_self_potential_GeV4": 0.5 * u_phi**2,
+        "waterfall_mass_potential_GeV4": 0.5 * m2_psi**2,
+        "mixed_quadratic_psi2_GeV4": (
+            u_phi * c_psi
+            + 3.0 * lam * m2_psi
+            + 4.0 * c_psi**2 * phi**2
+        ) * waterfall**2,
+        "quartic_psi4_GeV4": 0.5 * (c_psi**2 + 9.0 * lam**2) * waterfall**4,
+        "linear_curvature_GeV4": ricci * (
+            delta_xi_phi * u_phi + delta_xi_psi * m2_psi
+        ),
+        "curvature_psi2_GeV4": ricci * waterfall**2 * (
+            delta_xi_phi * c_psi + 3.0 * delta_xi_psi * lam
+        ),
+        "curvature_squared_GeV4": 0.5 * ricci**2 * (
+            delta_xi_phi**2 + delta_xi_psi**2
+        ),
+        "geometry_GeV4": (2.0 / 180.0) * (riemann_sq - ricci_tensor_sq),
+    }
+    total = float(sum(components.values()))
+    matrix_result = ptum_scalar_heat_kernel_a2(
+        phi,
+        waterfall,
+        params,
+        xi_phi=xi_phi_value,
+        xi_psi=xi_psi_value,
+        ricci_scalar_gev2=ricci,
+        riemann_squared_gev4=riemann_sq,
+        ricci_tensor_squared_gev4=ricci_tensor_sq,
+    )
+    residual = total - float(matrix_result["a2_bulk_GeV4"])
+    scale = max(1.0, sum(abs(value) for value in components.values()))
+    if abs(residual) > 5.0e-13 * scale:
+        raise ArithmeticError("expanded a_2 decomposition disagrees with matrix trace")
+
+    return {
+        "components_GeV4": components,
+        "a2_bulk_GeV4": total,
+        "matrix_identity_residual_GeV4": residual,
+        "operator_basis": [
+            "1",
+            "Phi^2",
+            "Phi^4",
+            "V_eff''(Phi)^2",
+            "R",
+            "R*Phi^2",
+            "R*V_eff''(Phi)",
+            "R^2",
+            "Riemann^2",
+            "RicciTensor^2",
+            "psi^2",
+            "psi^2*V_eff''(Phi)",
+            "psi^2*m_eff^2(Phi)",
+            "Phi^2*psi^2",
+            "psi^4",
+            "R*psi^2",
+        ],
+        "assumptions": matrix_result["assumptions"],
+    }

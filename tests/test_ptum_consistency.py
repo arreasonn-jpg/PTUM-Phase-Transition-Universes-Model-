@@ -4273,3 +4273,57 @@ def test_ptum_scalar_heat_kernel_derivation_and_claim_boundary_are_in_manuscript
     assert r"\operatorname{tr}" in source
     assert r"ptum\_renormalization.py" in source
     assert "not a renormalized quantum-seeded waterfall" in source
+
+
+def test_ptum_scalar_heat_kernel_expanded_operator_basis_matches_matrix_trace():
+    from ptum_renormalization import (
+        ptum_scalar_heat_kernel_a2,
+        ptum_scalar_heat_kernel_a2_decomposition,
+    )
+
+    params = PTUMParameters()
+    phi = 0.91 * params.Phi_c
+    psi = 0.27 * params.psi_0
+    ricci = 0.31 * params.m_psi**2
+    riemann_sq = 0.73 * params.m_psi**4
+    ricci_tensor_sq = 0.42 * params.m_psi**4
+    kwargs = dict(
+        xi_phi=0.03,
+        xi_psi=0.11,
+        ricci_scalar_gev2=ricci,
+        riemann_squared_gev4=riemann_sq,
+        ricci_tensor_squared_gev4=ricci_tensor_sq,
+    )
+    expanded = ptum_scalar_heat_kernel_a2_decomposition(
+        phi, psi, params, **kwargs
+    )
+    matrix = ptum_scalar_heat_kernel_a2(phi, psi, params, **kwargs)
+    assert expanded["a2_bulk_GeV4"] == pytest.approx(
+        matrix["a2_bulk_GeV4"], rel=5.0e-13, abs=1.0e-30
+    )
+    assert abs(expanded["matrix_identity_residual_GeV4"]) <= (
+        5.0e-13 * max(1.0, sum(abs(v) for v in expanded["components_GeV4"].values()))
+    )
+    assert "V_eff''(Phi)^2" in expanded["operator_basis"]
+    assert "R*Phi^2" in expanded["operator_basis"]
+    assert "psi^4" in expanded["operator_basis"]
+
+
+def test_ptum_scalar_heat_kernel_expansion_reduces_cleanly_at_psi_zero():
+    from ptum_renormalization import ptum_scalar_heat_kernel_a2_decomposition
+
+    params = PTUMParameters()
+    phi = 0.82 * params.Phi_c
+    result = ptum_scalar_heat_kernel_a2_decomposition(
+        phi, 0.0, params,
+        xi_phi=0.0,
+        xi_psi=0.0,
+        ricci_scalar_gev2=0.2 * params.m_psi**2,
+        riemann_squared_gev4=0.3 * params.m_psi**4,
+        ricci_tensor_squared_gev4=0.1 * params.m_psi**4,
+    )
+    components = result["components_GeV4"]
+    assert components["mixed_quadratic_psi2_GeV4"] == 0.0
+    assert components["quartic_psi4_GeV4"] == 0.0
+    assert components["curvature_psi2_GeV4"] == 0.0
+    assert np.isfinite(result["a2_bulk_GeV4"])
