@@ -4653,3 +4653,82 @@ def test_scalar_pole_metric_variation_derivation_is_displayed_in_manuscript():
     assert r"\frac{N}{60}" in source
     assert "four-dimensional Euler density" in source
     assert "not a renormalized stress tensor" in source
+
+
+
+def test_scalar_pole_metric_variation_matches_product_sphere_action_finite_difference():
+    from ptum_renormalization import (
+        ptum_scalar_heat_kernel_a2,
+        ptum_scalar_one_loop_pole_metric_variation,
+    )
+
+    params = PTUMParameters()
+    phi = 0.91 * params.Phi_c
+    psi = 0.24 * params.psi_0
+    xi_phi = 0.03
+    xi_psi = 0.12
+    metric = np.eye(4)
+    K1 = 0.17 * params.m_psi**2
+    K2 = 0.31 * params.m_psi**2
+    ricci = np.diag([K1, K1, K2, K2])
+    scalar = 2.0 * (K1 + K2)
+    riemann = np.zeros((4, 4, 4, 4), dtype=float)
+    for mu in range(4):
+        for alpha in range(4):
+            for nu in range(4):
+                for beta in range(4):
+                    if mu < 2 and alpha < 2 and nu < 2 and beta < 2:
+                        curvature = K1
+                    elif mu >= 2 and alpha >= 2 and nu >= 2 and beta >= 2:
+                        curvature = K2
+                    else:
+                        curvature = 0.0
+                    riemann[mu, alpha, nu, beta] = curvature * (
+                        metric[mu, nu] * metric[alpha, beta]
+                        - metric[mu, beta] * metric[alpha, nu]
+                    )
+
+    zero2 = np.zeros((4, 4))
+    result = ptum_scalar_one_loop_pole_metric_variation(
+        phi, psi, params,
+        xi_phi=xi_phi, xi_psi=xi_psi,
+        metric_euclidean=metric,
+        ricci_tensor_euclidean_gev2=ricci,
+        ricci_scalar_euclidean_gev2=scalar,
+        riemann_tensor_euclidean_gev2=riemann,
+        box_ricci_tensor_euclidean_gev4=zero2,
+        hessian_ricci_scalar_euclidean_gev4=zero2,
+        hessian_F_euclidean_gev4=zero2,
+    )
+    volume = 16.0 * np.pi**2 / (K1 * K2)
+    metric_euler = np.asarray(result["metric_euler_derivative_a2_GeV4"])
+
+    def integrated_a2_action(delta, block):
+        k1 = K1 / (1.0 + delta) if block == 0 else K1
+        k2 = K2 / (1.0 + delta) if block == 1 else K2
+        ricci_scalar = 2.0 * (k1 + k2)
+        ricci_squared = 2.0 * (k1**2 + k2**2)
+        riemann_squared = 4.0 * (k1**2 + k2**2)
+        a2 = ptum_scalar_heat_kernel_a2(
+            phi, psi, params,
+            xi_phi=xi_phi,
+            xi_psi=xi_psi,
+            ricci_scalar_gev2=ricci_scalar,
+            riemann_squared_gev4=riemann_squared,
+            ricci_tensor_squared_gev4=ricci_squared,
+        )["a2_bulk_GeV4"]
+        varied_volume = 16.0 * np.pi**2 / (k1 * k2)
+        return varied_volume * a2
+
+    step = 1.0e-5
+    for block, indices in ((0, (0, 1)), (1, (2, 3))):
+        finite_difference = (
+            integrated_a2_action(step, block)
+            - integrated_a2_action(-step, block)
+        ) / (2.0 * step)
+        predicted_variation = -volume * sum(
+            metric_euler[index, index] for index in indices
+        )
+        assert finite_difference == pytest.approx(
+            predicted_variation, rel=2.0e-8, abs=1.0e-18
+        )
