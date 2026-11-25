@@ -5524,6 +5524,49 @@ boundary values, finite matching conditions, SM/gauge/fermion loops,
 boundary terms or real-time CTP finite part are selected here.
 
 
+
+
+\paragraph{Exact conformal-scalar radiation-FRW benchmark.}
+A free, massless, conformally coupled real scalar provides an analytic
+curved-spacetime control independent of the interacting waterfall.
+For $v_k=a\varphi_k$ in a spatially flat FLRW geometry,
+\begin{equation}
+v_k''+k^2v_k=0,\qquad
+v_k(\eta)=\frac{e^{-ik\eta}}{\sqrt{2k}},\qquad
+v_kv_k^{*'}-v_k'v_k^*=i .
+\end{equation}
+In a radiation background, $a(t)\propto t^{1/2}$,
+$H=1/(2t)$, $\dot H=-2H^2$, and $R=0$. The conformal-scalar
+bulk heat-kernel coefficient, modulo $\Box R$, is
+\begin{equation}
+a_2^{\rm bulk}=\frac{1}{180}
+\left(R_{\mu\nu\rho\sigma}R^{\mu\nu\rho\sigma}
+-R_{\mu\nu}R^{\mu\nu}\right)
+=\frac{H^4}{15}.
+\end{equation}
+Thus the trace anomaly is
+\begin{equation}
+\langle T^\mu{}_\mu\rangle_{\rm ren}
+=\frac{a_2^{\rm bulk}}{16\pi^2}
+=\frac{H^4}{240\pi^2}.
+\end{equation}
+Homogeneous conservation and the trace identity determine the
+conformal-vacuum stress when the additional state-dependent
+$a^{-4}$ component is set to zero:
+\begin{equation}
+\rho_{\rm ren}=\frac{H^4}{960\pi^2},\qquad
+p_{\rm ren}=\frac{H^4}{576\pi^2}.
+\end{equation}
+The code checks the mode Wronskian, the heat-kernel invariant,
+$-\rho_{\rm ren}+3p_{\rm ren}=\langle T^\mu{}_\mu\rangle_{\rm ren}$,
+and $\dot\rho_{\rm ren}+3H(\rho_{\rm ren}+p_{\rm ren})=0$.
+Because $R=0$ on this background, the local $\Box R$ term and the
+finite $R^2$ ambiguity vanish. This is an exact analytic free-field
+benchmark only. It does not renormalize a massive or interacting
+waterfall field, implement a general FLRW adiabatic subtraction, or
+include PTUM backreaction.
+
+
 \paragraph{Scope of the calculations currently present.}
 The public Python implementation contains a homogeneous two-field
 $(\Phi,\psi)$ background solver, a linear $\chi_k$ mode solver on

@@ -4843,3 +4843,66 @@ def test_scalar_quartic_rg_betas_reject_unbounded_and_nonfinite_inputs():
         scalar_quartic_one_loop_rg_beta_functions(
             True, 1.0, 0.1, 0.2, 0.0, 0.0, 0.0
         )
+
+
+# Exact free conformal-scalar radiation-FRW renormalization benchmark.
+@pytest.mark.parametrize(
+    "k,eta",
+    [(0.01, -12.0), (0.7, 0.0), (3.5, 8.2)],
+)
+def test_conformal_massless_vacuum_mode_has_exact_equation_and_wronskian(k, eta):
+    from ptum_free_field_renormalization import conformal_massless_vacuum_mode
+
+    result = conformal_massless_vacuum_mode(k, eta)
+    assert result["mode_equation_residual"] == pytest.approx(0.0j, abs=1.0e-15)
+    assert result["wronskian"] == pytest.approx(1.0j, rel=2.0e-15, abs=2.0e-15)
+    assert result["occupation_number"] == 0.0
+    assert result["positive_frequency"] is True
+
+
+@pytest.mark.parametrize("hubble", [0.0, 1.0e-9, 2.5e-4, 3.0])
+def test_conformal_scalar_radiation_anomaly_stress_satisfies_trace_and_conservation(hubble):
+    from ptum_free_field_renormalization import (
+        conformal_scalar_radiation_flrw_anomaly_stress,
+    )
+
+    result = conformal_scalar_radiation_flrw_anomaly_stress(hubble)
+    h4 = hubble**4
+    assert result["curvature_invariants_GeV4"]["Riemann_squared"] == pytest.approx(
+        24.0 * h4, rel=2.0e-15, abs=1.0e-300
+    )
+    assert result["curvature_invariants_GeV4"]["Ricci_tensor_squared"] == pytest.approx(
+        12.0 * h4, rel=2.0e-15, abs=1.0e-300
+    )
+    assert result["heat_kernel_a2_bulk_GeV4"] == pytest.approx(
+        h4 / 15.0, rel=2.0e-15, abs=1.0e-300
+    )
+    assert result["trace_anomaly_GeV4"] == pytest.approx(
+        h4 / (240.0 * np.pi**2), rel=2.0e-15, abs=1.0e-300
+    )
+    assert result["rho_renormalized_GeV4"] == pytest.approx(
+        h4 / (960.0 * np.pi**2), rel=2.0e-15, abs=1.0e-300
+    )
+    assert result["pressure_renormalized_GeV4"] == pytest.approx(
+        h4 / (576.0 * np.pi**2), rel=2.0e-15, abs=1.0e-300
+    )
+    assert result["continuity_residual_GeV5"] == pytest.approx(0.0, abs=1.0e-300)
+    assert result["trace_identity_residual_GeV4"] == pytest.approx(0.0, abs=1.0e-300)
+    assert result["renormalization"]["physical_PTUM_prediction"] is False
+    json.dumps(result, allow_nan=False)
+
+
+def test_conformal_scalar_radiation_benchmark_rejects_invalid_inputs():
+    from ptum_free_field_renormalization import (
+        conformal_massless_vacuum_mode,
+        conformal_scalar_radiation_flrw_anomaly_stress,
+    )
+
+    with pytest.raises(ValueError, match="positive"):
+        conformal_massless_vacuum_mode(0.0, 0.0)
+    with pytest.raises(ValueError, match="finite real scalar"):
+        conformal_massless_vacuum_mode(True, 0.0)
+    with pytest.raises(ValueError, match="non-negative"):
+        conformal_scalar_radiation_flrw_anomaly_stress(-1.0)
+    with pytest.raises(ValueError, match="finite real scalar"):
+        conformal_scalar_radiation_flrw_anomaly_stress(float("nan"))

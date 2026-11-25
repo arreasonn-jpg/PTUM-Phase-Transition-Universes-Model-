@@ -2218,3 +2218,19 @@ no subtraction or counterterms are applied, and no continuum limit is
 claimed. The RG beta functions apply only to the polynomial control
 model, not the PTUM plateau. R0 remains partial, Gate 5 remains
 **NOT MET**, and Gate 10 remains **PARTIAL**.
+
+
+### 2026-11-25 analytic conformal radiation-FRW benchmark (pending exact-head CI)
+
+An exact free massless conformal-scalar benchmark has been added for
+radiation-dominated spatially flat FLRW. The code returns the conformal
+plane-wave modes and Wronskian, the heat-kernel trace anomaly, and the
+homogeneous conserved stress tensor after setting the independent
+state-dependent \(a^{-4}\) component to zero. Tests cover the trace,
+continuity, curvature-invariant and Minkowski limits.
+
+This advances R1 only as an analytic benchmark. It is not a general
+adiabatic subtraction or an independent numerical point-splitting
+comparison. Massive/interacting modes, numerical UV/volume/time-step
+convergence and PTUM backreaction remain absent. Gate 5 remains
+**NOT MET**; exact-head CI is pending.

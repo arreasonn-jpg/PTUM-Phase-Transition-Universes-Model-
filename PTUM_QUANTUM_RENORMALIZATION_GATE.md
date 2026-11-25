@@ -231,3 +231,26 @@ Workflow [45590315635](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Un
 - The 47-page LaTeX PDF built. The polynomial-control display was split after the preceding exact-head run showed an Overfull box. This run has zero Overfull boxes and no unresolved references/citations after the bibliography rerun. 80 Underfull hbox warnings remain.
 
 The exact-head RG-control regressions and the manuscript equations are therefore verified. The polynomial model remains a control theory only. R0 is still incomplete because the plateau functional counterterms, EFT cutoff, renormalized boundary data, finite matching conditions, full loop content and boundary/initial-state terms remain unresolved. Gate 5 remains **NOT MET**.
+
+
+### R1.1 exact conformal-scalar radiation-FRW benchmark
+
+The branch now includes an exact analytic free-field control for one
+massless real scalar with \(\xi=1/6\) on spatially flat radiation FLRW.
+The conformal mode \(v_k=a\varphi_k\) is an exact plane wave with
+Wronskian \(i\). The heat-kernel trace anomaly is obtained from
+\(a_2^{\rm bulk}=(R_{\mu\nu\rho\sigma}^2-R_{\mu\nu}^2)/180\).
+For \(a\propto t^{1/2}\), this gives
+\(\langle T^\mu{}_\mu\rangle=H^4/(240\pi^2)\).
+Homogeneous conservation and the trace identity, with the independent
+state-dependent \(a^{-4}\) component set to zero, give
+\(\rho=H^4/(960\pi^2)\) and \(p=H^4/(576\pi^2)\).
+
+Regression tests check the exact mode equation and Wronskian, the
+curvature invariants, the trace identity, continuity, the Minkowski
+limit and invalid-input rejection. This is an analytic R1 benchmark,
+not a general adiabatic-subtraction implementation and not a second
+numerical stress-tensor prescription. Massive/minimally coupled modes,
+independent point-splitting comparison, numerical UV/volume/time-step
+convergence and a renormalized PTUM waterfall remain open. Gate 5
+remains **NOT MET**.

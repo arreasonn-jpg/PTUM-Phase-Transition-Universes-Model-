@@ -2531,3 +2531,21 @@ The 47-page PDF built with zero Overfull boxes and no final-pass
 unresolved references/citations, but 80 Underfull hbox warnings remain.
 The polynomial RG control is verified; it is not the non-polynomial
 PTUM plateau beta function and does not complete R0 or Gate 5.
+
+
+## 2026-11-25 exact conformal radiation-FRW free-field benchmark
+
+A new analytic R1 control treats one free massless real scalar with
+\(\xi=1/6\) in spatially flat radiation FLRW. Its conformal modes are
+exact plane waves with Wronskian \(i\). The local heat-kernel trace
+anomaly gives \(T^\mu{}_\mu=H^4/(240\pi^2)\); conservation and the
+trace identity, with no additional state-dependent \(a^{-4}\) term,
+give \(\rho=H^4/(960\pi^2)\) and \(p=H^4/(576\pi^2)\). New tests
+check the exact mode equation, Wronskian, curvature invariants,
+trace and continuity identities, Minkowski limit and input validation.
+
+This is a free conformal analytic benchmark only. It does not provide
+a general adiabatic subtraction, a second independent numerical
+stress-tensor prescription, a massive/interacting waterfall
+renormalization, or PTUM backreaction. The new code, tests and
+manuscript equations require exact-head CI. Gate 5 remains NOT MET.

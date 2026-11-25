@@ -1394,3 +1394,16 @@ remain open. The UV audit still demonstrates the bare lattice's
 cutoff dependence. Gate 5 remains NOT MET; no quantum waterfall,
 renormalized stress tensor, relic abundance or continuum limit is
 claimed.
+
+
+## 2026-11-25 conformal radiation-FRW analytic benchmark boundary
+
+### Supported, pending exact-head CI
+- Exact positive-frequency conformal modes for a free massless real scalar with \(\xi=1/6\), including the canonical Wronskian.
+- The heat-kernel trace anomaly and the corresponding homogeneous conserved stress tensor in spatially flat radiation FLRW, with the state-dependent \(a^{-4}\) integration constant fixed to zero.
+- Analytic checks of the trace identity, continuity equation, curvature invariants and Minkowski limit.
+
+### Not supported
+- General massive or minimally coupled FLRW renormalization, fourth-order adiabatic subtraction, or an independent point-splitting stress-tensor comparison.
+- Interacting \(\lambda_\psi\psi^4\) renormalization, PTUM waterfall backreaction, lattice counterterms, or a quantum-seeded nonlinear calculation.
+- Closure of R1, R0 or Gate 5. No PTUM physical prediction is claimed.
