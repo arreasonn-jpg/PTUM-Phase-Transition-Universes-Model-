@@ -415,3 +415,258 @@ def ptum_scalar_one_loop_pole_field_gradients(
             "physical_prediction": False,
         },
     }
+
+
+
+def ptum_scalar_one_loop_pole_metric_variation(
+    Phi: float,
+    psi: float,
+    params: PTUMParameters,
+    *,
+    xi_phi: float,
+    xi_psi: float,
+    metric_euclidean: np.ndarray,
+    ricci_tensor_euclidean_gev2: np.ndarray,
+    ricci_scalar_euclidean_gev2: float,
+    riemann_tensor_euclidean_gev2: np.ndarray,
+    box_ricci_tensor_euclidean_gev4: np.ndarray,
+    hessian_ricci_scalar_euclidean_gev4: np.ndarray,
+    hessian_F_euclidean_gev4: np.ndarray,
+) -> dict[str, object]:
+    """Vary the local two-scalar bulk a2 pole with respect to g_E^{mu nu}.
+
+    Tensor slots of riemann_tensor_euclidean_gev2 are ordered
+    R_{mu alpha nu beta}.  The Euclidean metric is positive definite and
+    uses the analytic continuation of the manuscript's MTW Riemann
+    convention.  The supplied covariant derivative data are
+    Box(R_{mu nu}), nabla_mu nabla_nu R, and nabla_mu nabla_nu F,
+    respectively.  Their contractions are checked before use.
+
+    In exactly four dimensions, modulo the Euler density and boundary
+    terms, the local coefficient is
+        a2 = U + F R + A R^2 + B R_{mu nu} R^{mu nu},
+    where U=tr(H^2)/2, F=tr[(Xi-I/6)H],
+    A=tr[(Xi-I/6)^2]/2-N/180, and B=N/60.
+    The returned tensor is (1/sqrt(g_E)) delta int sqrt(g_E) a2 /
+    delta g_E^{mu nu}.  It is a metric Euler derivative of the divergent
+    local coefficient, not a renormalized stress tensor or a finite
+    in-in source.  The four-dimensional Euler term has zero bulk
+    variation; its boundary and dimensional-continuation finite pieces
+    are not represented.
+    """
+    phi = _finite_real_scalar("Phi", Phi)
+    waterfall = _finite_real_scalar("psi", psi)
+    xi_phi_value = _finite_real_scalar("xi_phi", xi_phi)
+    xi_psi_value = _finite_real_scalar("xi_psi", xi_psi)
+
+    def tensor(name: str, value: np.ndarray, shape: tuple[int, ...]) -> np.ndarray:
+        raw = np.asarray(value)
+        if raw.dtype.kind == "b":
+            raise ValueError(f"{name} must contain finite real tensor components")
+        try:
+            array = np.asarray(value, dtype=float)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError(
+                f"{name} must contain finite real tensor components"
+            ) from exc
+        if array.shape != shape or not np.all(np.isfinite(array)):
+            raise ValueError(
+                f"{name} must have shape {shape} and finite real components"
+            )
+        return array
+
+    metric = tensor("metric_euclidean", metric_euclidean, (4, 4))
+    metric_scale = max(1.0, float(np.max(np.abs(metric))))
+    if not np.allclose(
+        metric, metric.T, rtol=0.0, atol=1.0e-12 * metric_scale
+    ):
+        raise ValueError("metric_euclidean must be symmetric")
+    try:
+        np.linalg.cholesky(metric)
+        inverse_metric = np.linalg.inv(metric)
+    except np.linalg.LinAlgError as exc:
+        raise ValueError("metric_euclidean must be positive definite") from exc
+
+    ricci = tensor(
+        "ricci_tensor_euclidean_gev2", ricci_tensor_euclidean_gev2, (4, 4)
+    )
+    ricci_scale = max(1.0, float(np.max(np.abs(ricci))))
+    if not np.allclose(ricci, ricci.T, rtol=0.0, atol=1.0e-10 * ricci_scale):
+        raise ValueError("ricci_tensor_euclidean_gev2 must be symmetric")
+    scalar_ricci = _finite_real_scalar(
+        "ricci_scalar_euclidean_gev2", ricci_scalar_euclidean_gev2
+    )
+    riemann = tensor(
+        "riemann_tensor_euclidean_gev2",
+        riemann_tensor_euclidean_gev2,
+        (4, 4, 4, 4),
+    )
+    riemann_scale = max(1.0, float(np.max(np.abs(riemann))))
+    riemann_atol = 1.0e-9 * riemann_scale
+    if not np.allclose(
+        riemann, -riemann.swapaxes(0, 1), rtol=0.0, atol=riemann_atol
+    ):
+        raise ValueError("Riemann tensor must be antisymmetric in its first pair")
+    if not np.allclose(
+        riemann, -riemann.swapaxes(2, 3), rtol=0.0, atol=riemann_atol
+    ):
+        raise ValueError("Riemann tensor must be antisymmetric in its second pair")
+    if not np.allclose(
+        riemann, riemann.transpose(2, 3, 0, 1),
+        rtol=0.0, atol=riemann_atol,
+    ):
+        raise ValueError("Riemann tensor must have pair-exchange symmetry")
+
+    ricci_from_riemann = np.einsum(
+        "mn,manb->ab", inverse_metric, riemann
+    )
+    curvature_scale = max(
+        1.0,
+        float(np.max(np.abs(ricci))),
+        float(np.max(np.abs(ricci_from_riemann))),
+    )
+    if not np.allclose(
+        ricci_from_riemann, ricci,
+        rtol=1.0e-9, atol=1.0e-10 * curvature_scale,
+    ):
+        raise ValueError("Ricci tensor is inconsistent with the Riemann contraction")
+    scalar_from_ricci = float(np.einsum("mn,mn", inverse_metric, ricci))
+    if not np.isclose(
+        scalar_from_ricci, scalar_ricci,
+        rtol=1.0e-9, atol=1.0e-10 * max(1.0, abs(scalar_ricci)),
+    ):
+        raise ValueError("Ricci scalar is inconsistent with the Ricci tensor")
+
+    box_ricci = tensor(
+        "box_ricci_tensor_euclidean_gev4",
+        box_ricci_tensor_euclidean_gev4,
+        (4, 4),
+    )
+    if not np.allclose(
+        box_ricci, box_ricci.T, rtol=0.0,
+        atol=1.0e-10 * max(1.0, float(np.max(np.abs(box_ricci)))),
+    ):
+        raise ValueError("Box(Ricci tensor) must be symmetric")
+    hessian_ricci = tensor(
+        "hessian_ricci_scalar_euclidean_gev4",
+        hessian_ricci_scalar_euclidean_gev4,
+        (4, 4),
+    )
+    hessian_F = tensor(
+        "hessian_F_euclidean_gev4", hessian_F_euclidean_gev4, (4, 4)
+    )
+    for name, hessian in (
+        ("Hessian(R)", hessian_ricci),
+        ("Hessian(F)", hessian_F),
+    ):
+        if not np.allclose(
+            hessian, hessian.T, rtol=0.0,
+            atol=1.0e-10 * max(1.0, float(np.max(np.abs(hessian)))),
+        ):
+            raise ValueError(f"{name} must be symmetric")
+
+    box_R = float(np.einsum("mn,mn", inverse_metric, hessian_ricci))
+    box_R_from_ricci = float(np.einsum("mn,mn", inverse_metric, box_ricci))
+    if not np.isclose(
+        box_R_from_ricci, box_R,
+        rtol=1.0e-9, atol=1.0e-10 * max(1.0, abs(box_R)),
+    ):
+        raise ValueError("Box(R) must equal the metric trace of Box(Ricci tensor)")
+    box_F = float(np.einsum("mn,mn", inverse_metric, hessian_F))
+
+    hessian = ptum_scalar_hessian(phi, waterfall, params)
+    delta_xi = np.diag(
+        [xi_phi_value - 1.0 / 6.0, xi_psi_value - 1.0 / 6.0]
+    )
+    field_count = int(hessian.shape[0])
+    if field_count != 2:
+        raise ArithmeticError("PTUM scalar pole variation expects two real scalar fields")
+    U = 0.5 * float(np.trace(hessian @ hessian))
+    F = float(np.trace(delta_xi @ hessian))
+    A = 0.5 * float(np.trace(delta_xi @ delta_xi)) - field_count / 180.0
+    B = field_count / 60.0
+
+    ricci_up = inverse_metric @ ricci @ inverse_metric
+    ricci_squared = float(np.einsum("mn,mn", ricci, ricci_up))
+    riemann_squared = float(np.einsum(
+        "mr,as,nl,bk,manb,rslk",
+        inverse_metric, inverse_metric, inverse_metric, inverse_metric,
+        riemann, riemann,
+    ))
+    geometry = (field_count / 180.0) * (
+        riemann_squared - ricci_squared
+    )
+    a2_bulk = (
+        0.5 * float(np.trace(
+            (hessian + delta_xi * scalar_ricci)
+            @ (hessian + delta_xi * scalar_ricci)
+        ))
+        + geometry
+    )
+
+    einstein = ricci - 0.5 * metric * scalar_ricci
+    H1 = (
+        2.0 * scalar_ricci * ricci
+        - 0.5 * metric * scalar_ricci**2
+        - 2.0 * hessian_ricci
+        + 2.0 * metric * box_R
+    )
+    H2 = (
+        2.0 * np.einsum("manb,ab->mn", riemann, ricci_up)
+        - 0.5 * metric * ricci_squared
+        - hessian_ricci
+        + 0.5 * metric * box_R
+        + box_ricci
+    )
+    metric_euler = (
+        -0.5 * metric * U
+        + F * einstein
+        + metric * box_F
+        - hessian_F
+        + A * H1
+        + B * H2
+    )
+    if not np.all(np.isfinite(metric_euler)) or not np.isfinite(a2_bulk):
+        raise ValueError("scalar pole metric variation is non-finite")
+
+    loop_factor = 1.0 / (16.0 * np.pi**2)
+    return {
+        "field_basis": ["Phi", "psi"],
+        "a2_bulk_GeV4": float(a2_bulk),
+        "a2_operator_coefficients": {
+            "U_GeV4": U,
+            "F_GeV2": F,
+            "A_dimensionless": A,
+            "B_dimensionless": B,
+            "ricci_squared_GeV4": ricci_squared,
+            "riemann_squared_GeV4": riemann_squared,
+        },
+        "metric_euler_derivative_a2_GeV4": metric_euler.tolist(),
+        "metric_euler_derivative_trace_GeV4": float(
+            np.einsum("mn,mn", inverse_metric, metric_euler)
+        ),
+        "gamma1_divergent_metric_euler_derivative_coefficient_GeV4": (
+            -loop_factor * metric_euler
+        ).tolist(),
+        "euclidean_counterterm_metric_euler_derivative_coefficient_GeV4": (
+            loop_factor * metric_euler
+        ).tolist(),
+        "pole_factor": "1/epsilon",
+        "variation_variable": "inverse Euclidean metric g_E^{mu nu}",
+        "assumptions": {
+            "operator": "D_E=-nabla_E^2 I+Hessian(V)+Xi R_E",
+            "euclidean_metric_positive_definite": True,
+            "riemann_slots": "R_{mu alpha nu beta}",
+            "riemann_convention": "analytic continuation of the manuscript MTW convention",
+            "curvature_and_covariant_derivative_tensors_are_caller_supplied": True,
+            "four_dimensional_euler_density_dropped_from_bulk_variation": True,
+            "boundary_and_initial_surface_terms_included": False,
+            "dimensional_continuation_finite_terms_included": False,
+            "result_is_metric_euler_derivative_not_stress_tensor": True,
+            "finite_renormalization_conditions_fixed": False,
+            "renormalized_stress_tensor_computed": False,
+            "real_time_CTP_finite_part_computed": False,
+            "SM_gauge_fermion_and_graviton_loops_included": False,
+            "physical_prediction": False,
+        },
+    }
