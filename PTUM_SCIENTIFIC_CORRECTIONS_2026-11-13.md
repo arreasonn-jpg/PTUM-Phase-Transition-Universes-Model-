@@ -2487,3 +2487,13 @@ matched infinite-operator treatment. No \(\Lambda_{\rm EFT}\),
 \(\mu_R\) boundary values or finite matching conditions have been
 selected. Gate 5 remains NOT MET; no lattice subtraction, renormalized
 stress tensor or physical quantum prediction is claimed.
+
+
+### RG-control manuscript line-break correction
+
+The first exact-head build after adding the polynomial scalar RG control
+completed, but the new compact potential display produced one Overfull
+hbox on each LaTeX pass. The same equation has been split across two
+aligned rows. No formula, coefficient, test threshold or scientific
+claim was changed. A fresh exact-head build is required to verify the
+formatting correction.
