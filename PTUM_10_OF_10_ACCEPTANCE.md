@@ -2104,3 +2104,31 @@ rejected. The flat-limit test checks the component sum. This additional
 code and test revision is awaiting exact-head CI. The prior one-failure
 test-stimulus correction remains documented above; no production
 tolerance was altered.
+
+
+
+## 2026-11-25 exact-head metric-variation verification
+
+Workflow 45586718905 on exact head
+8bfbe348675470223477cdb8e45b5b7a7f233b8d completed successfully:
+- 199 Python tests passed, including the metric Euler-derivative limits,
+  curvature-jet validation, Bianchi rejection and tensor-component sum.
+- The two-scale smoke scan passed 4/4 with zero failed integrations.
+- The 11-grid bare-WKB UV audit passed.
+- The 47-page LaTeX build completed with zero unresolved references or
+  citations, but its final pass retained 66 Underfull and two Overfull
+  hbox warnings. The two Overfull warnings were traced to the newly
+  added metric-variation displays and have been split across aligned
+  lines in a later commit. That later exact-head build is pending.
+
+The smoke JSON (SHA-256
+105e3c4e1e560ba5d292da7ca476b50e0e308fe9088fa4641e2b48e21d4766f6)
+contains 4/4 successful rows, exact Phi_c/M_Pl=0.9862280831209068,
+and quantum_vacuum_seeded=false. The UV audit JSON (SHA-256
+260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749)
+shows the fixed-box bare-stress factor 16664.2325, high-cutoff slope
+3.8822733, fixed-spacing volume spread 2.38067e-13, and explicit
+zero-point retention with no subtraction/counterterms/continuum claim.
+
+The latest LaTeX formatting change is pending exact-head CI. Gate 5
+remains NOT MET and Gate 10 remains PARTIAL.
