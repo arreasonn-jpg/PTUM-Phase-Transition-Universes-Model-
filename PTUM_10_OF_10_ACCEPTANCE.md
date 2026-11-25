@@ -2132,3 +2132,18 @@ zero-point retention with no subtraction/counterterms/continuum claim.
 
 The latest LaTeX formatting change is pending exact-head CI. Gate 5
 remains NOT MET and Gate 10 remains PARTIAL.
+
+
+
+### 2026-11-25 independent metric-variation finite-difference regression
+
+A new regression constructs the compact Euclidean product
+\(S^2(K_1)\times S^2(K_2)\), evaluates the complete local \(a_2\)
+density and its integrated volume, and independently finite-differences
+the action under separate constant rescalings of each two-sphere metric.
+The numerical derivatives are compared with the corresponding block
+traces of the analytic metric Euler tensor. The test includes the full
+Euler-density term in the action, so it checks the expected topological
+cancellation as well as the non-topological curvature terms. This new
+regression is pending exact-head CI. It is a check of the divergent
+local Euclidean coefficient only; Gate 5 remains NOT MET.
