@@ -4649,6 +4649,7 @@ def test_scalar_pole_metric_variation_derivation_is_displayed_in_manuscript():
     assert r"\label{eq:ptum_scalar_metric_variation_h2}" in source
     assert r"\label{eq:ptum_scalar_pole_metric_variation}" in source
     assert r"\mathcal E_{\mu\nu}^{(a_2)}" in source
+    assert r"G_{\mu\nu}^{E}&\equiv R_{\mu\nu}-\frac12g_{\mu\nu}R_E" in source
     assert r"\frac{N}{60}" in source
     assert "four-dimensional Euler density" in source
     assert "not a renormalized stress tensor" in source
