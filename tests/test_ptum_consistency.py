@@ -4886,8 +4886,8 @@ def test_conformal_scalar_radiation_anomaly_stress_satisfies_trace_and_conservat
     assert result["pressure_renormalized_GeV4"] == pytest.approx(
         h4 / (576.0 * np.pi**2), rel=2.0e-15, abs=1.0e-300
     )
-    assert result["continuity_residual_GeV5"] == pytest.approx(0.0, abs=1.0e-300)
-    assert result["trace_identity_residual_GeV4"] == pytest.approx(0.0, abs=1.0e-300)
+    assert result["continuity_residual_normalized"] == pytest.approx(0.0, abs=5.0e-15)
+    assert result["trace_identity_residual_normalized"] == pytest.approx(0.0, abs=5.0e-15)
     assert result["renormalization"]["physical_PTUM_prediction"] is False
     json.dumps(result, allow_nan=False)
 

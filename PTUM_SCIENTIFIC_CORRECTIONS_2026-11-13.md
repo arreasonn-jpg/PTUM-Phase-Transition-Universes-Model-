@@ -2549,3 +2549,17 @@ a general adiabatic subtraction, a second independent numerical
 stress-tensor prescription, a massive/interacting waterfall
 renormalization, or PTUM backreaction. The new code, tests and
 manuscript equations require exact-head CI. Gate 5 remains NOT MET.
+
+
+### Conformal radiation benchmark residual normalization correction
+
+The first exact-head Python run for the analytic conformal-radiation
+benchmark reported 2 failures and 209 passes. Both failures came from
+requiring an absolute \(10^{-300}\) residual for the trace identity at
+small nonzero \(H\); floating-point cancellation left a residual of
+order machine precision relative to the trace, not a physical
+conservation violation. The implementation now reports both absolute
+and scale-normalized trace/continuity residuals, and the regressions
+check the normalized quantities against \(5\times10^{-15}\). The
+background equations, anomaly coefficient, stress tensor and all
+physical inputs are unchanged. A fresh exact-head run is required.

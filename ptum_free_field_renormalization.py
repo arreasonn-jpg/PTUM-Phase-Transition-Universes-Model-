@@ -87,8 +87,18 @@ def conformal_scalar_radiation_flrw_anomaly_stress(
     rho = trace_anomaly / 4.0
     pressure = (trace_anomaly + rho) / 3.0
     rho_dot = -8.0 * h * rho
-    continuity_residual = rho_dot + 3.0 * h * (rho + pressure)
+    continuity_term = 3.0 * h * (rho + pressure)
+    continuity_residual = rho_dot + continuity_term
     trace_residual = -rho + 3.0 * pressure - trace_anomaly
+    continuity_scale = max(
+        abs(rho_dot), abs(continuity_term), np.finfo(float).tiny
+    )
+    trace_scale = max(
+        abs(rho), abs(3.0 * pressure), abs(trace_anomaly),
+        np.finfo(float).tiny,
+    )
+    continuity_residual_normalized = continuity_residual / continuity_scale
+    trace_residual_normalized = trace_residual / trace_scale
 
     values = np.asarray(
         [
@@ -103,6 +113,8 @@ def conformal_scalar_radiation_flrw_anomaly_stress(
             rho_dot,
             continuity_residual,
             trace_residual,
+            continuity_residual_normalized,
+            trace_residual_normalized,
         ],
         dtype=float,
     )
@@ -127,7 +139,9 @@ def conformal_scalar_radiation_flrw_anomaly_stress(
         "pressure_renormalized_GeV4": pressure,
         "rho_time_derivative_GeV5": rho_dot,
         "continuity_residual_GeV5": continuity_residual,
+        "continuity_residual_normalized": continuity_residual_normalized,
         "trace_identity_residual_GeV4": trace_residual,
+        "trace_identity_residual_normalized": trace_residual_normalized,
         "state_dependent_radiation_constant": 0.0,
         "renormalization": {
             "field": "one_free_real_massless_scalar",
