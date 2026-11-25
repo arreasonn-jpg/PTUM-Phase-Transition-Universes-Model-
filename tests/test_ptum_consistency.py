@@ -4544,7 +4544,7 @@ def test_scalar_pole_metric_variation_constant_curvature_reduces_to_FR_plus_U():
     einstein = ricci - 0.5 * metric * scalar
     expected = -0.5 * U * metric + F * einstein
     assert np.asarray(result["metric_euler_derivative_a2_GeV4"]) == pytest.approx(
-        expected, rel=3.0e-13, abs=1.0-20
+        expected, rel=3.0e-13, abs=1.0e-20
     )
 
 
