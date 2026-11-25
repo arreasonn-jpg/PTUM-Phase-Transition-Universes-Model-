@@ -2282,3 +2282,45 @@ remains NOT MET; Gate 10 remains PARTIAL.
 The matrix row-break escapes in this Markdown derivation were normalized
 after review; the Python implementation, manuscript equations and
 numerical results are unchanged.
+
+
+
+## 2026-11-25 scalar bulk-pole metric variation (pending exact-head CI)
+
+The two-real-scalar bulk heat-kernel coefficient has been decomposed in
+four dimensions into
+\[
+a_2^{\rm bulk}=U_0+FR_E+A R_E^2+B R_{\mu\nu}R^{\mu\nu}
++\frac{N}{180}\mathcal E_4,
+\]
+with
+\[
+U_0=\tfrac12\operatorname{tr}(\mathcal H^2),\quad
+F=\operatorname{tr}[(\Xi-\tfrac16\mathbf1)\mathcal H],\quad
+A=\tfrac12\operatorname{tr}[(\Xi-\tfrac16\mathbf1)^2]-\frac{N}{180},
+\quad B=\frac{N}{60}.
+\]
+Using the inverse-metric variations of \(FR\), \(R^2\), and
+\(R_{\mu\nu}R^{\mu\nu}\), the implementation now returns the local
+metric Euler derivative of this bulk coefficient. The four-dimensional
+Euler density has no bulk variation in exactly four dimensions; its
+boundary terms and dimensional-continuation finite contribution are
+explicitly omitted. The result is the coefficient of a divergent local
+pole, not a renormalized stress tensor.
+
+The function requires a positive-definite Euclidean metric, a Riemann
+tensor in \(R_{\mu\alpha\nu\beta}\) slot order, its Ricci contraction,
+and caller-supplied \(\Box R_{\mu\nu}\),
+\(\nabla_\mu\nabla_\nu R\), and
+\(\nabla_\mu\nabla_\nu F\). It validates the algebraic curvature
+symmetries, Ricci/scalar contractions and derivative traces before
+returning the pole and cancelling-counterterm coefficients. It does not
+generate a spacetime geometry or derivative data.
+
+New regressions cover the flat constant-background limit, the
+constant-curvature reduction, the conformal-coupling trace identity,
+inconsistent curvature-jet rejection, and the manuscript equations.
+They are pending a fresh exact-head workflow. No lattice stress,
+Friedmann source, initial condition, finite matching condition or
+physical prediction has been changed. Gate 5 remains NOT MET; Gate 10
+remains PARTIAL.
