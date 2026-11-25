@@ -220,3 +220,14 @@ finite matching conditions. It includes no SM/gauge/fermion/graviton
 loops, boundary/initial-surface terms or real-time CTP finite part.
 R0 remains partial, Gate 5 remains **NOT MET**, and no lattice vacuum
 subtraction or physical quantum prediction is claimed.
+
+
+## 2026-11-25 exact-head verification of the polynomial RG control
+
+Workflow [45590315635](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45590315635) on exact code head 977ab5919d1055bfc3545473687a9a3cea3237d3 completed successfully:
+- 203 Python regression cases passed, including the full pole-residue reconstruction, decoupled and mixed beta-function limits, conformal-coupling fixed point, and fail-closed quartic stability checks.
+- The two-scale homogeneous smoke scan passed 4/4 with zero failed integrations. Its strict-JSON payload uses \(\Phi_c/M_{\rm Pl}=0.9862280831209068\), records quantum_vacuum_seeded=false, and has maximum chain-rule continuity residual \(3.3603\times10^{-12}\).
+- The 11-grid bare-WKB UV audit passed and its JSON was parsed with non-finite constants rejected. The fixed-box bare stress grows by \(16664.2325\), the high-cutoff log slope is \(3.8822733\), and the fixed-spacing volume spread is \(2.38067\times10^{-13}\). Zero-point energy remains; subtraction and counterterms are false; no continuum limit is claimed.
+- The 47-page LaTeX PDF built. The polynomial-control display was split after the preceding exact-head run showed an Overfull box. This run has zero Overfull boxes and no unresolved references/citations after the bibliography rerun. 80 Underfull hbox warnings remain.
+
+The exact-head RG-control regressions and the manuscript equations are therefore verified. The polynomial model remains a control theory only. R0 is still incomplete because the plateau functional counterterms, EFT cutoff, renormalized boundary data, finite matching conditions, full loop content and boundary/initial-state terms remain unresolved. Gate 5 remains **NOT MET**.

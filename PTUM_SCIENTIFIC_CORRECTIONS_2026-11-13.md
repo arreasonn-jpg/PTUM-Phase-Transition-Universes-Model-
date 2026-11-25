@@ -2497,3 +2497,37 @@ hbox on each LaTeX pass. The same equation has been split across two
 aligned rows. No formula, coefficient, test threshold or scientific
 claim was changed. A fresh exact-head build is required to verify the
 formatting correction.
+
+
+## 2026-11-25 exact-head verification of the polynomial scalar RG control
+
+Workflow 45590315635 on exact head
+977ab5919d1055bfc3545473687a9a3cea3237d3 passed 203 Python
+regression cases, the 4/4 two-scale smoke scan, the 11-grid bare-WKB
+UV audit, and the LaTeX build. The new beta-function regression
+reconstructs the complete local \(a_2/(16\pi^2)\) residue at nonzero
+fields and constant curvature, and the decoupled, mixed, conformal and
+quartic-stability controls pass.
+
+The smoke artifact ZIP SHA-256 is
+86fc7c2422fcfcca2f82049af964e1b7b54ed79fbb9cb7a1f35a0ba416214b54;
+its strict-JSON payload SHA-256 is
+105e3c4e1e560ba5d292da7ca476b50e0e308fe9088fa4641e2b48e21d4766f6.
+It contains 4/4 successful classical rows, exact
+\(\Phi_c/M_{\rm Pl}=0.9862280831209068\), and
+quantum_vacuum_seeded=false. The maximum chain-rule continuity
+residual is \(3.3603\times10^{-12}\).
+
+The UV-audit ZIP SHA-256 is
+adee79bb4db4977ecf214cae5fd32ba4334217643875695ac9802d08ba2799ad;
+its strict-JSON payload SHA-256 is
+260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749.
+The fixed-box bare-stress factor is \(16664.2325\), the high-cutoff
+log slope is \(3.8822733\), and the fixed-spacing volume spread is
+\(2.38067\times10^{-13}\). Zero-point energy remains; subtraction and
+counterterms are false; no continuum limit is claimed.
+
+The 47-page PDF built with zero Overfull boxes and no final-pass
+unresolved references/citations, but 80 Underfull hbox warnings remain.
+The polynomial RG control is verified; it is not the non-polynomial
+PTUM plateau beta function and does not complete R0 or Gate 5.

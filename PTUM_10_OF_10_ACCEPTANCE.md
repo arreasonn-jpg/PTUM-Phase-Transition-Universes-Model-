@@ -2199,3 +2199,22 @@ choose \(\Lambda_{\rm EFT}\), \(\mu_R\) boundary data or finite matching
 conditions. R0 remains partial; Gate 5 remains **NOT MET**. Exact-head
 Python and manuscript verification are pending. No lattice subtraction
 or physical quantum result is claimed.
+
+
+### 2026-11-25 exact-head verification of the polynomial RG control
+
+Workflow 45590315635 on exact head
+977ab5919d1055bfc3545473687a9a3cea3237d3 passed 203 Python tests,
+the 4/4 two-scale smoke scan, the 11-grid bare-WKB UV audit and the
+47-page manuscript build. The beta-function reconstruction and all
+three new RG regressions passed. The smoke and UV JSON payloads were
+strictly parsed. The manuscript has zero Overfull boxes and no
+final-pass unresolved references/citations; 80 Underfull hbox warnings
+remain.
+
+The UV audit still reports a fixed-box bare-stress factor of 16664.2325
+and a high-cutoff log slope of 3.8822733. Zero-point energy remains,
+no subtraction or counterterms are applied, and no continuum limit is
+claimed. The RG beta functions apply only to the polynomial control
+model, not the PTUM plateau. R0 remains partial, Gate 5 remains
+**NOT MET**, and Gate 10 remains **PARTIAL**.

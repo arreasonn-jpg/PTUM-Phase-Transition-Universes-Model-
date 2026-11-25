@@ -1376,3 +1376,21 @@ Gate 5 remains NOT MET.
 - A selected EFT cutoff, renormalization scale boundary values, finite renormalization conditions, or a complete matched counterterm action.
 - SM/gauge/fermion/graviton loops, boundary/initial-state terms, a finite real-time CTP effective action, a renormalized stress tensor, or a cutoff-independent lattice.
 - Closure of R0 or Gate 5. No physical quantum prediction is claimed.
+
+
+## 2026-11-25 exact-head RG-control verification boundary
+
+Workflow 45590315635 on commit 977ab5919d1055bfc3545473687a9a3cea3237d3
+passed 203 Python tests, the 4/4 smoke scan, the 11-grid bare-WKB UV
+audit and the manuscript build. The smoke and UV JSON payloads were
+strictly parsed. The manuscript has zero Overfull boxes and no
+final-pass unresolved references/citations, with 80 Underfull hbox
+warnings remaining.
+
+The verified beta functions apply only to the declared two-real-scalar
+quartic polynomial control EFT. The actual plateau's non-polynomial
+functional counterterms, EFT cutoff and finite matching conditions
+remain open. The UV audit still demonstrates the bare lattice's
+cutoff dependence. Gate 5 remains NOT MET; no quantum waterfall,
+renormalized stress tensor, relic abundance or continuum limit is
+claimed.
