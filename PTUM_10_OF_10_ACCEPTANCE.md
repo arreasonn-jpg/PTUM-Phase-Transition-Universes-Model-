@@ -2253,3 +2253,17 @@ counterterms or continuum claim. The PDF has zero Overfull boxes and
 no final-pass unresolved references/citations, but 80 Underfull hbox
 warnings remain. R1 remains partial, Gate 5 remains **NOT MET**, and
 Gate 10 remains **PARTIAL**.
+
+
+### 2026-11-25 fresh exact-endpoint full-grid revalidation queued
+
+The current branch now requests a fresh full scan because older
+100-row results predate subsequent changes to the action signs,
+threshold matching and numerical diagnostics. The scan derives
+\(\Phi_c\) from the exact Hubble-flow endpoint and will run 100
+homogeneous post-threshold trajectories plus the paired
+4,001/256,001-point and four-level solver-tolerance study on the same
+initial-condition grid. The scan is explicitly classical and
+quantum_vacuum_seeded=false. The run is queued; no result is inferred.
+Gate 4 remains scoped to the homogeneous post-threshold equations.
+Gate 5 remains **NOT MET** and Gate 7 remains **NOT MET**.

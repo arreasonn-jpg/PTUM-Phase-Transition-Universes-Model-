@@ -2598,3 +2598,15 @@ final-pass unresolved references/citations; 80 Underfull hbox warnings
 remain. This verifies only the analytic free conformal benchmark,
 not a general adiabatic or interacting waterfall renormalization.
 R1 remains partial and Gate 5 remains NOT MET.
+
+
+## 2026-11-25 fresh 100-row exact-endpoint scan request
+
+A new full scan is triggered on the current PR #2 branch. The scan
+source derives \(\Phi_c\) from the exact Hubble-flow endpoint and
+reuses the same 100 initial conditions across the 4,001/256,001-point
+output-grid comparison and four DOP853 tolerance levels. The
+homogeneous post-threshold nature and classical (non-quantum) seed
+interpretation are explicit. Older scan artifacts are not accepted
+as current evidence until this run's JSON, checkpoints and comparison
+tables are inspected. The full scan is queued; no result is claimed.

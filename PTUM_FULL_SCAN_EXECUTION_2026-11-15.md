@@ -143,3 +143,39 @@ pass has 73 Underfull hbox warnings, with no Overfull hboxes or
 unresolved references/citations.
 
 This is not a full 100-row convergence proof. Gate 4 remains PARTIAL.
+
+
+## 2026-11-25 fresh exact-endpoint 100-row scan queued
+
+A new full scan is being triggered from the current authorized PR #2
+branch because older 100-row artifacts predate later equation,
+threshold and diagnostic changes. The current source derives
+\(\Phi_c\) from
+\(\texttt{compute\_observables}(0.02,n_{\rm target}=60,n_*=55)\)
+through the exact Hubble-flow endpoint, then sets
+\(\Phi_c=x_{\rm end,H}M_{\rm Pl}\) in both scan scenarios.
+
+The current scan contract is:
+- two energy scales: \(V_0=10^{64}\) and \(10^{56}\ {\rm GeV}^4\);
+- 50 initial conditions per scale, the full \(5\times5\times2\)
+  seed/velocity/threshold-offset grid, 100 unique row keys total;
+- homogeneous post-threshold trajectories over \(20\,\mu^{-1}\),
+  4,001 output points, DOP853, \(rtol=10^{-9}\),
+  \(atol=10^{-12}\), and a 1,000,000-RHS fail-closed guard;
+- a paired full-grid study on the same 100 initial conditions:
+  4,001 versus 256,001 output points and successive tolerance pairs
+  \((10^{-9},10^{-12})\), \((10^{-10},10^{-13})\),
+  \((10^{-11},10^{-14})\), and \((10^{-12},10^{-15})\);
+- a separate 36-run targeted convergence probe on representative
+  trajectories.
+
+The source explicitly sets quantum_vacuum_seeded=false. This remains
+a homogeneous post-threshold classical sensitivity scan, not the
+threshold crossing, a quantum vacuum ensemble, or an inhomogeneous
+backreacting waterfall. No result is accepted until the full JSON
+artifacts, row keys, failed integrations, all comparison tables and
+strict convergence flags have been inspected. A failed or incomplete
+row is not a physical classification.
+
+The new run is triggered by the [FULL-SCAN] commit marker below.
+At the time of this entry, the new artifacts do not yet exist.
