@@ -2091,3 +2091,16 @@ DeprecationWarning. The UV audit passed; the LaTeX job was still in
 progress at the last inspection. The corrected head requires a new
 exact-head Python and manuscript run. Gate 5 remains NOT MET and
 Gate 10 remains PARTIAL.
+
+
+
+### 2026-11-25 metric-variation tensor audit refinement
+
+The metric Euler derivative now reports its four additive tensor pieces
+separately and validates the first algebraic Bianchi identity. A
+regression supplies a fully antisymmetric four-form perturbation that
+leaves the Ricci contraction unchanged but violates Bianchi; it must be
+rejected. The flat-limit test checks the component sum. This additional
+code and test revision is awaiting exact-head CI. The prior one-failure
+test-stimulus correction remains documented above; no production
+tolerance was altered.
