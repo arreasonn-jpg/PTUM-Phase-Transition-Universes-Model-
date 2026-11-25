@@ -4605,9 +4605,9 @@ def test_scalar_pole_metric_variation_rejects_inconsistent_curvature_jets():
     with pytest.raises(ValueError, match="Ricci scalar is inconsistent"):
         ptum_scalar_one_loop_pole_metric_variation(
             0.9 * params.Phi_c, 0.2 * params.psi_0, params,
-            **{**kwargs, "ricci_scalar_euclidean_gev2": scalar + 1.0},
+            **{**kwargs, "ricci_scalar_euclidean_gev2": scalar + 1.0e-3 * params.m_psi**2},
         )
-    with pytest.raises(ValueError, match="Box\(R\) must equal"):
+    with pytest.raises(ValueError, match=r"Box\(R\) must equal"):
         ptum_scalar_one_loop_pole_metric_variation(
             0.9 * params.Phi_c, 0.2 * params.psi_0, params,
             **{
