@@ -1310,3 +1310,22 @@ metric-variation pieces. A new regression verifies rejection of a
 four-form contamination that passes pair symmetries and Ricci
 contraction but violates Bianchi, and checks the sum of returned pieces.
 Fresh exact-head CI is pending.
+
+
+
+## 2026-11-25 exact-head metric-variation verification boundary
+
+Workflow 45586718905 on head
+8bfbe348675470223477cdb8e45b5b7a7f233b8d passed 199 Python tests,
+the 4/4 two-scale smoke scan and the 11-grid bare-WKB UV audit. The
+47-page PDF built with no unresolved references/citations but retained
+66 final-pass Underfull and two final-pass Overfull hbox warnings. The
+two Overfull warnings were localized to the new metric-variation
+displays and have been reformatted on a later, not-yet-verified head.
+
+The smoke and UV ZIPs were inspected and both JSON payloads passed a
+strict parser that rejects NaN/Infinity. The smoke result remains a
+4-row software check with no quantum vacuum seed. The UV audit still
+shows the bare fixed-box stress factor 16664.2325 and the expected
+cutoff growth; zero-point energy is retained and no subtraction,
+counterterms or continuum limit are claimed. Gate 5 remains NOT MET.
