@@ -1341,3 +1341,24 @@ checks both orthogonal curvature blocks and retains the Euler-density
 term in the action, whose integrated value is topological. The test
 requires exact-head CI and does not establish a renormalized stress
 tensor or physical quantum evolution.
+
+
+
+## 2026-11-25 exact-head product-sphere finite-difference verification
+
+Exact-head workflow 45587737076 on
+ee6a7dced58f30122150fcbaae832cf356423778 passed 200 Python tests,
+the 4/4 two-scale smoke scan, the 11-grid bare-WKB UV audit and the
+47-page LaTeX build. The new product-sphere finite-difference test
+passed for independent rescalings of both curvature blocks. The final
+LaTeX pass retained 80 Underfull hbox warnings but had zero Overfull
+hboxes and zero unresolved references/citations.
+
+The inspected PDF artifact contains the metric-variation equations.
+The smoke and UV JSON payloads both pass strict parsing. The smoke rows
+remain classical controls with no quantum vacuum seed. The UV audit
+continues to show the bare zero-point cutoff divergence and explicitly
+does not claim subtraction, counterterms or a continuum limit. This
+is verification of the local divergent Euclidean metric variation,
+not a finite renormalized stress tensor or a physical waterfall result.
+Gate 5 remains NOT MET.
