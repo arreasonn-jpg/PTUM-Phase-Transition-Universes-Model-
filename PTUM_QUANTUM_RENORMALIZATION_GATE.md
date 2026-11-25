@@ -265,3 +265,30 @@ Workflow [45591701409](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Un
 - The 48-page LaTeX PDF built with zero Overfull boxes and no unresolved references/citations after the bibliography rerun. 80 Underfull hbox warnings remain.
 
 The analytic conformal-scalar benchmark is verified as a free-field control only. It is not a general adiabatic subtraction, an independent point-splitting comparison, or a renormalization of the massive interacting PTUM waterfall. R1 remains partial and Gate 5 remains **NOT MET**.
+
+
+## 2026-11-25 R1.2 second-order adiabatic subtraction for field variance
+
+A new ptum_adiabatic_subtraction.py helper derives the local adiabatic
+counterterm for the scalar field variance in four-dimensional FLRW. For the
+canonical conformal-time mode
+v_k'' + [k^2+a^2 M^2+(6 xi-1)a''/a] v_k = 0, define
+omega_k^2=k^2+a^2 M^2 and
+W2 = (6 xi-1)a''/(2 a omega_k) - omega_k''/(4 omega_k^2)
+     + 3(omega_k')^2/(8 omega_k^3),
+|v_k|_ad,0-2^2 = 1/(2 omega_k) - W2/(2 omega_k^2).
+The derivatives of the supplied M^2(eta) are included in omega_k' and
+omega_k''. The finite-band integral also checks the canonical Wronskian
+v_k v_k'^* - v_k' v_k^* = i and rejects non-positive zeroth-order
+frequencies rather than assigning a vacuum to unstable modes.
+
+Five new regressions cover the exact conformal massless and Minkowski
+massive limits, independent finite-difference checks of the frequency
+derivatives, Wronskian rejection, and non-positive-frequency/grid rejection.
+
+This is an R1 field-variance subtraction control only. The integral is
+explicitly finite-band: neither IR nor UV tails are extrapolated, finite
+renormalization conditions are not selected, and no stress-tensor
+subtraction, renormalized Phi force, CTP finite part, initial
+Friedmann closure, or lattice counterterm is supplied. It does not
+renormalize the nonlinear PTUM waterfall. Gate 5 remains NOT MET.
