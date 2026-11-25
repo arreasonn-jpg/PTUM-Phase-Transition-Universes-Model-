@@ -2075,3 +2075,19 @@ CTP source, or lattice counterterm. Gates 2, 3, 8 and 10 remain PARTIAL;
 Gates 5, 6, 7 and 9 remain NOT MET. Gate 1 remains MET only for the
 stated classical tree-level EFT, and Gate 4 remains MET only for the
 homogeneous two-field post-threshold background. PTUM is not 10/10.
+
+
+
+### 2026-11-25 metric-variation regression correction
+
+The first workflow on the metric-variation implementation,
+45586007724, reported one Python failure in the deliberately inconsistent
+Ricci-scalar input test. The test changed the scalar by an absolute
+1 GeV^2, which was below the scale-aware tolerance for the benchmark
+curvature (of order \(m_\psi^2\)). The test input is now perturbed by
+\(10^{-3}m_\psi^2\); the implementation tolerance is unchanged. A
+Python regex literal was converted to a raw string to avoid a
+DeprecationWarning. The UV audit passed; the LaTeX job was still in
+progress at the last inspection. The corrected head requires a new
+exact-head Python and manuscript run. Gate 5 remains NOT MET and
+Gate 10 remains PARTIAL.
