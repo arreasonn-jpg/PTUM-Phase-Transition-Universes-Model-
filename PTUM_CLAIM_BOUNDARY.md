@@ -1329,3 +1329,15 @@ strict parser that rejects NaN/Infinity. The smoke result remains a
 shows the bare fixed-box stress factor 16664.2325 and the expected
 cutoff growth; zero-point energy is retained and no subtraction,
 counterterms or continuum limit are claimed. Gate 5 remains NOT MET.
+
+
+
+## 2026-11-25 finite-difference metric-variation check
+
+A regression now checks the analytic metric Euler derivative against
+central finite differences of the integrated full \(a_2\) action on
+\(S^2\times S^2\), varying each sphere's radius independently. This
+checks both orthogonal curvature blocks and retains the Euler-density
+term in the action, whose integrated value is topological. The test
+requires exact-head CI and does not establish a renormalized stress
+tensor or physical quantum evolution.
