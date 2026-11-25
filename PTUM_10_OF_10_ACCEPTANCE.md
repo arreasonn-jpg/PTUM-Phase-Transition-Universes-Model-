@@ -2042,3 +2042,36 @@ The pole derivative implementation remains a local Euclidean bulk
 coefficient at fixed curvature. It is not a finite renormalized force,
 metric variation, renormalized stress tensor, or real-time CTP equation.
 Gate 5 remains NOT MET and Gate 10 remains PARTIAL.
+
+
+
+## 2026-11-25 local scalar pole metric-variation extension
+
+A new helper derives the inverse-Euclidean-metric variation of the
+coupled two-scalar local bulk \(a_2\) coefficient. In four dimensions,
+the curvature-squared combination is reduced modulo the Euler density
+to \(A R_E^2+B R_{\mu\nu}R^{\mu\nu}\), while the field-dependent
+terms contribute \(-g_{\mu\nu}U_0/2\) and
+\(F G^E_{\mu\nu}+(g_{\mu\nu}\Box_E-\nabla_\mu\nabla_\nu)F\).
+The \(R^2\) and Ricci-squared variations include their second
+covariant-derivative terms. The helper requires and validates the
+Euclidean curvature and derivative tensors as explicit inputs.
+
+Five regressions cover the flat limit, constant-curvature limit,
+conformal-coupling trace identity, inconsistent curvature data, and
+the displayed manuscript equations. These newest code, test and
+manuscript changes are awaiting exact-head CI. The previous exact-head
+workflow 45369471261 on 9ac3ef28fb36d2eed955b9a1c8cef1ee15fcdbfb
+passed 194 Python tests, the 4/4 two-scale smoke scan, the 11-grid
+bare-WKB UV audit, and the 46-page LaTeX build. The final LaTeX pass
+still had 80 Underfull hbox warnings; it had zero Overfull hboxes and
+zero unresolved references/citations. Long scans were skipped by
+design. The new metric-variation changes have not been verified by
+that earlier run.
+
+Gate 5 remains NOT MET: this is a local divergent Euclidean metric
+Euler derivative, not a finite renormalized stress tensor, real-time
+CTP source, or lattice counterterm. Gates 2, 3, 8 and 10 remain PARTIAL;
+Gates 5, 6, 7 and 9 remain NOT MET. Gate 1 remains MET only for the
+stated classical tree-level EFT, and Gate 4 remains MET only for the
+homogeneous two-field post-threshold background. PTUM is not 10/10.
