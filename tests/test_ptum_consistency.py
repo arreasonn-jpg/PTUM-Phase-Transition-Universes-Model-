@@ -4500,6 +4500,11 @@ def test_scalar_pole_metric_variation_flat_constant_background_limit():
         result["euclidean_counterterm_metric_euler_derivative_coefficient_GeV4"]
     ) == pytest.approx(expected / (16.0 * np.pi**2), rel=2.0e-14)
     json.dumps(result, allow_nan=False)
+    components = [
+        np.asarray(value)
+        for value in result["metric_variation_components_GeV4"].values()
+    ]
+    assert np.sum(components, axis=0) == pytest.approx(expected, rel=2.0e-14)
     assert result["assumptions"]["result_is_metric_euler_derivative_not_stress_tensor"] is True
     assert result["assumptions"]["renormalized_stress_tensor_computed"] is False
 
@@ -4613,6 +4618,25 @@ def test_scalar_pole_metric_variation_rejects_inconsistent_curvature_jets():
             **{
                 **kwargs,
                 "box_ricci_tensor_euclidean_gev4": np.eye(4),
+            },
+        )
+
+    import itertools
+    levi_civita = np.zeros((4, 4, 4, 4), dtype=float)
+    for permutation in itertools.permutations(range(4)):
+        inversions = sum(
+            permutation[i] > permutation[j]
+            for i in range(4) for j in range(i + 1, 4)
+        )
+        levi_civita[permutation] = (-1.0) ** inversions
+    with pytest.raises(ValueError, match="first Bianchi"):
+        ptum_scalar_one_loop_pole_metric_variation(
+            0.9 * params.Phi_c, 0.2 * params.psi_0, params,
+            **{
+                **kwargs,
+                "riemann_tensor_euclidean_gev2": (
+                    riemann + 1.0e-3 * params.m_psi**2 * levi_civita
+                ),
             },
         )
 
