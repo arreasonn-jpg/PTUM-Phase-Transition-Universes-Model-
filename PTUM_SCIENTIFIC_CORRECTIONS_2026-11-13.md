@@ -2341,3 +2341,17 @@ and the regex assertion is raw-string escaped to avoid a Python
 DeprecationWarning. No production tolerance or scientific criterion
 was changed. The corrected exact-head run is pending. The same workflow's
 bare-WKB UV audit passed; its LaTeX job was still running when inspected.
+
+
+
+### Metric-variation tensor audit refinement
+
+The metric-variation helper now also checks the first algebraic Bianchi
+identity, in addition to pair antisymmetry, pair exchange and the Ricci
+contraction. Its output exposes the volume, field-curvature, R-squared
+and Ricci-squared contributions separately, as well as the two curvature
+variation tensors. A regression adds a fully antisymmetric four-form
+contamination: it preserves pair symmetries and the Ricci contraction
+but violates the first Bianchi identity, so the helper must reject it.
+The flat-limit test also checks that the reported tensor pieces sum to
+the total. These additions are pending exact-head CI.
