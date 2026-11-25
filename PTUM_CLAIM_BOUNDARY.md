@@ -1257,3 +1257,33 @@ unresolved references/citations. The analytic scalar-pole field
 derivatives passed central-difference checks and the psi=0 Z2 control.
 This does not turn the divergent coefficients into a finite force or
 renormalized stress tensor. Gate 5 remains NOT MET.
+
+
+
+## 2026-11-25 scalar bulk-pole metric-variation boundary
+
+### Supported, pending exact-head CI
+- The local two-scalar Euclidean bulk \(a_2\) coefficient is rewritten
+  in four dimensions as \(U_0+FR+A R^2+B R_{\mu\nu}R^{\mu\nu}\)
+  plus the Euler density, with the coefficients derived from the
+  coupled Hessian and explicit \(\xi_\Phi,\xi_\psi\).
+- The code evaluates the inverse-Euclidean-metric Euler derivative of
+  this local bulk coefficient, including the \(FR\) derivative terms
+  and the fourth-derivative curvature terms.
+- Curvature tensors and covariant derivative data are explicit caller
+  inputs. Algebraic symmetries, Ricci/scalar contractions and derivative
+  traces are checked.
+- Flat, constant-curvature and conformal-coupling trace identities are
+  guarded by new regressions.
+
+### Not supported
+- A finite or renormalized stress tensor, a Lorentzian in-in/CTP source,
+  or a self-consistent semiclassical Einstein equation.
+- Boundary/initial-surface counterterms or the finite contribution
+  associated with the dimensional continuation of the Euler density.
+- A geometry solver for the supplied curvature and derivative tensors.
+- SM/gauge/fermion/graviton loops, finite matching conditions, or a
+  cutoff-independent lattice evolution.
+
+The new implementation and tests require fresh exact-head CI. Gate 5
+remains NOT MET.
