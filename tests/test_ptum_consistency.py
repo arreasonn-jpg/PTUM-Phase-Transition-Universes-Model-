@@ -4440,3 +4440,190 @@ def test_scalar_bulk_pole_field_derivative_identity_is_displayed_in_manuscript()
     assert r"\right]" in source
     assert r"\partial_\Phi\mathcal H" in source
     assert r"\partial_\psi\mathcal H" in source
+
+
+
+def _conformally_flat_euclidean_riemann(metric, ricci):
+    inverse_metric = np.linalg.inv(metric)
+    scalar = float(np.einsum("mn,mn", inverse_metric, ricci))
+    riemann = np.zeros((4, 4, 4, 4), dtype=float)
+    for mu in range(4):
+        for alpha in range(4):
+            for nu in range(4):
+                for beta in range(4):
+                    riemann[mu, alpha, nu, beta] = (
+                        metric[mu, nu] * ricci[alpha, beta]
+                        - metric[mu, beta] * ricci[alpha, nu]
+                        - metric[alpha, nu] * ricci[mu, beta]
+                        + metric[alpha, beta] * ricci[mu, nu]
+                    ) / 2.0 - scalar / 6.0 * (
+                        metric[mu, nu] * metric[alpha, beta]
+                        - metric[mu, beta] * metric[alpha, nu]
+                    )
+    return riemann, scalar
+
+
+def test_scalar_pole_metric_variation_flat_constant_background_limit():
+    from ptum_renormalization import (
+        ptum_scalar_hessian,
+        ptum_scalar_one_loop_pole_metric_variation,
+    )
+
+    params = PTUMParameters()
+    phi = 0.87 * params.Phi_c
+    psi = 0.23 * params.psi_0
+    metric = np.eye(4)
+    zero2 = np.zeros((4, 4))
+    zero4 = np.zeros((4, 4, 4, 4))
+    result = ptum_scalar_one_loop_pole_metric_variation(
+        phi, psi, params,
+        xi_phi=0.0, xi_psi=0.0,
+        metric_euclidean=metric,
+        ricci_tensor_euclidean_gev2=zero2,
+        ricci_scalar_euclidean_gev2=0.0,
+        riemann_tensor_euclidean_gev2=zero4,
+        box_ricci_tensor_euclidean_gev4=zero2,
+        hessian_ricci_scalar_euclidean_gev4=zero2,
+        hessian_F_euclidean_gev4=zero2,
+    )
+    hessian = ptum_scalar_hessian(phi, psi, params)
+    U = 0.5 * np.trace(hessian @ hessian)
+    expected = -0.5 * U * metric
+    assert np.asarray(result["metric_euler_derivative_a2_GeV4"]) == pytest.approx(
+        expected, rel=2.0e-14, abs=1.0e-20
+    )
+    assert result["a2_bulk_GeV4"] == pytest.approx(U, rel=2.0e-14)
+    assert np.asarray(
+        result["gamma1_divergent_metric_euler_derivative_coefficient_GeV4"]
+    ) == pytest.approx(-expected / (16.0 * np.pi**2), rel=2.0e-14)
+    assert np.asarray(
+        result["euclidean_counterterm_metric_euler_derivative_coefficient_GeV4"]
+    ) == pytest.approx(expected / (16.0 * np.pi**2), rel=2.0e-14)
+    assert result["assumptions"]["result_is_metric_euler_derivative_not_stress_tensor"] is True
+    assert result["assumptions"]["renormalized_stress_tensor_computed"] is False
+
+
+def test_scalar_pole_metric_variation_constant_curvature_reduces_to_FR_plus_U():
+    from ptum_renormalization import (
+        ptum_scalar_hessian,
+        ptum_scalar_one_loop_pole_metric_variation,
+    )
+
+    params = PTUMParameters()
+    phi = 0.92 * params.Phi_c
+    psi = 0.19 * params.psi_0
+    metric = np.eye(4)
+    curvature_scale = 0.07 * params.m_psi**2
+    ricci = 3.0 * curvature_scale * metric
+    scalar = 12.0 * curvature_scale
+    riemann = np.empty((4, 4, 4, 4), dtype=float)
+    for mu in range(4):
+        for alpha in range(4):
+            for nu in range(4):
+                for beta in range(4):
+                    riemann[mu, alpha, nu, beta] = curvature_scale * (
+                        metric[mu, nu] * metric[alpha, beta]
+                        - metric[mu, beta] * metric[alpha, nu]
+                    )
+    zero2 = np.zeros((4, 4))
+    result = ptum_scalar_one_loop_pole_metric_variation(
+        phi, psi, params,
+        xi_phi=0.13, xi_psi=0.21,
+        metric_euclidean=metric,
+        ricci_tensor_euclidean_gev2=ricci,
+        ricci_scalar_euclidean_gev2=scalar,
+        riemann_tensor_euclidean_gev2=riemann,
+        box_ricci_tensor_euclidean_gev4=zero2,
+        hessian_ricci_scalar_euclidean_gev4=zero2,
+        hessian_F_euclidean_gev4=zero2,
+    )
+    hessian = ptum_scalar_hessian(phi, psi, params)
+    delta_xi = np.diag([0.13 - 1.0 / 6.0, 0.21 - 1.0 / 6.0])
+    U = 0.5 * np.trace(hessian @ hessian)
+    F = np.trace(delta_xi @ hessian)
+    einstein = ricci - 0.5 * metric * scalar
+    expected = -0.5 * U * metric + F * einstein
+    assert np.asarray(result["metric_euler_derivative_a2_GeV4"]) == pytest.approx(
+        expected, rel=3.0e-13, abs=1.0-20
+    )
+
+
+def test_scalar_pole_metric_variation_conformal_trace_identity():
+    from ptum_renormalization import (
+        ptum_scalar_hessian,
+        ptum_scalar_one_loop_pole_metric_variation,
+    )
+
+    params = PTUMParameters()
+    phi = 0.88 * params.Phi_c
+    psi = 0.31 * params.psi_0
+    metric = np.eye(4)
+    scale = params.m_psi**2
+    ricci = np.diag([0.7, 0.9, 1.1, 1.3]) * scale
+    riemann, scalar = _conformally_flat_euclidean_riemann(metric, ricci)
+    hessian_R = np.diag([0.11, 0.12, 0.08, 0.06]) * scale**2
+    box_ricci = np.diag([0.13, 0.07, 0.09, 0.08]) * scale**2
+    assert np.trace(hessian_R) == pytest.approx(np.trace(box_ricci))
+    zero2 = np.zeros((4, 4))
+    result = ptum_scalar_one_loop_pole_metric_variation(
+        phi, psi, params,
+        xi_phi=1.0 / 6.0, xi_psi=1.0 / 6.0,
+        metric_euclidean=metric,
+        ricci_tensor_euclidean_gev2=ricci,
+        ricci_scalar_euclidean_gev2=scalar,
+        riemann_tensor_euclidean_gev2=riemann,
+        box_ricci_tensor_euclidean_gev4=box_ricci,
+        hessian_ricci_scalar_euclidean_gev4=hessian_R,
+        hessian_F_euclidean_gev4=zero2,
+    )
+    hessian = ptum_scalar_hessian(phi, psi, params)
+    U = 0.5 * np.trace(hessian @ hessian)
+    assert result["metric_euler_derivative_trace_GeV4"] == pytest.approx(
+        -2.0 * U, rel=2.0e-11, abs=1.0e-20
+    )
+
+
+def test_scalar_pole_metric_variation_rejects_inconsistent_curvature_jets():
+    from ptum_renormalization import ptum_scalar_one_loop_pole_metric_variation
+
+    params = PTUMParameters()
+    metric = np.eye(4)
+    ricci = np.diag([1.0, 2.0, 3.0, 4.0]) * params.m_psi**2
+    riemann, scalar = _conformally_flat_euclidean_riemann(metric, ricci)
+    zero2 = np.zeros((4, 4))
+    kwargs = dict(
+        xi_phi=0.0, xi_psi=0.0,
+        metric_euclidean=metric,
+        ricci_tensor_euclidean_gev2=ricci,
+        ricci_scalar_euclidean_gev2=scalar,
+        riemann_tensor_euclidean_gev2=riemann,
+        box_ricci_tensor_euclidean_gev4=zero2,
+        hessian_ricci_scalar_euclidean_gev4=zero2,
+        hessian_F_euclidean_gev4=zero2,
+    )
+    with pytest.raises(ValueError, match="Ricci scalar is inconsistent"):
+        ptum_scalar_one_loop_pole_metric_variation(
+            0.9 * params.Phi_c, 0.2 * params.psi_0, params,
+            **{**kwargs, "ricci_scalar_euclidean_gev2": scalar + 1.0},
+        )
+    with pytest.raises(ValueError, match="Box\(R\) must equal"):
+        ptum_scalar_one_loop_pole_metric_variation(
+            0.9 * params.Phi_c, 0.2 * params.psi_0, params,
+            **{
+                **kwargs,
+                "box_ricci_tensor_euclidean_gev4": np.eye(4),
+            },
+        )
+
+
+def test_scalar_pole_metric_variation_derivation_is_displayed_in_manuscript():
+    from pathlib import Path
+
+    source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
+    assert r"\label{eq:ptum_scalar_metric_variation_h1}" in source
+    assert r"\label{eq:ptum_scalar_metric_variation_h2}" in source
+    assert r"\label{eq:ptum_scalar_pole_metric_variation}" in source
+    assert r"\mathcal E_{\mu\nu}^{(a_2)}" in source
+    assert r"\frac{N}{60}" in source
+    assert "four-dimensional Euler density" in source
+    assert "not a renormalized stress tensor" in source
