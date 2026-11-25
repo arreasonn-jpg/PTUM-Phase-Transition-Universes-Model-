@@ -179,3 +179,53 @@ row is not a physical classification.
 
 The new run is triggered by the [FULL-SCAN] commit marker below.
 At the time of this entry, the new artifacts do not yet exist.
+
+
+## 2026-11-25 exact-head paired convergence result
+
+The fresh paired study in workflow 45592679131 ran on source head
+4590fc37825399f668098bdf3177b261e60e071f. It completed all five
+profiles and passed the declared homogeneous-domain acceptance rule:
+- 500/500 integrations succeeded, zero failed runs, 400 comparisons.
+  Each of the five profiles has 100/100 expected unique row keys, with
+  no missing or unexpected keys.
+- The 4,001-to-256,001 output-grid comparison passed 100/100 rows.
+  The finite-difference FRW continuity residual decreased for every
+  row; median observed order was 0.9905928, median reduction factor
+  61.5445, and minimum reduction factor 1.37970.
+- Successive solver-tolerance comparisons passed 98/100, 99/100 and
+  100/100 rows. The first two refinements are retained as history and
+  are not represented as full strict-threshold passes. All six state
+  error envelopes and all measured dimensionless classification
+  diagnostic envelopes decreased monotonically; classification flags,
+  metric availability and conservation checks remained consistent.
+  The finest adjacent tolerance pair passed 100/100. The production
+  tolerances were not relaxed.
+- The 400-comparison summary reports 297/300 strict pairwise tolerance
+  comparisons passing, with 100/100 at the final adjacent refinement.
+  The acceptance rule explicitly requires monotonic envelopes and a
+  passing finest pair, not retroactive passage of earlier pairs.
+- Quadratic virial data were consistently unavailable in all rows and
+  are recorded as unavailable, not as measured. Q, w and the virial
+  diagnostic were available in 94/100 rows; H/omega was available in
+  73/100 rows.
+- Artifact ZIP SHA-256:
+  108f00e04b2b919572b0fe1c7ab2b1c14ec1a8fe8d18750a7ac6176d63eed2b5.
+  Extracted strict-JSON SHA-256:
+  de97dd3d35d5c20d0ee63c00fecd1c5efa0cf3b588a3083a4c0f7838da4f5d2c.
+  Both JSON files in the ZIP were parsed with non-finite constants rejected.
+
+All six jobs in workflow 45592679131 passed: 211 Python cases, the
+4/4 two-scale smoke scan, the 100/100 baseline scan, the 36-run
+targeted convergence probe, the paired 500-run study and the 11-grid
+bare-WKB UV audit, plus the LaTeX build. The PDF has zero Overfull
+boxes and zero unresolved references/citations, but 80 Underfull
+hbox warnings remain.
+
+This closes the fresh output-grid and solver-tolerance package only
+for the homogeneous two-field post-threshold equations. It does not
+simulate the threshold crossing or quantum-seeded inhomogeneous
+waterfall and does not include renormalized backreaction, rescattering,
+defect-network evolution or relic production. Gate 4 remains scoped
+to that homogeneous domain. Gate 5 remains NOT MET; Gate 10 remains
+PARTIAL.
