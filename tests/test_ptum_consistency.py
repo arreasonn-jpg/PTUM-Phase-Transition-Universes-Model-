@@ -4732,3 +4732,114 @@ def test_scalar_pole_metric_variation_matches_product_sphere_action_finite_diffe
         assert finite_difference == pytest.approx(
             predicted_variation, rel=2.0e-8, abs=1.0e-18
         )
+
+
+# One-loop RG extraction from the same two-scalar heat-kernel pole.
+def test_scalar_quartic_rg_betas_reconstruct_the_full_heat_kernel_residue():
+    from ptum_renormalization import (
+        scalar_heat_kernel_a2,
+        scalar_quartic_one_loop_rg_beta_functions,
+    )
+
+    m_phi2, m_psi2 = 3.2, 4.7
+    lambda_phi4, lambda_psi4, mixed = 0.17, 0.23, 0.08
+    xi_phi, xi_psi = 0.12, 0.31
+    phi, psi = 0.7, -0.4
+    ricci_scalar = 0.19
+    riemann_squared = ricci_scalar**2 / 6.0
+    ricci_tensor_squared = ricci_scalar**2 / 4.0
+
+    hessian = np.array(
+        [
+            [
+                m_phi2 + 3.0 * lambda_phi4 * phi**2 + mixed * psi**2,
+                2.0 * mixed * phi * psi,
+            ],
+            [
+                2.0 * mixed * phi * psi,
+                m_psi2 + mixed * phi**2 + 3.0 * lambda_psi4 * psi**2,
+            ],
+        ],
+        dtype=float,
+    )
+    a2 = scalar_heat_kernel_a2(
+        hessian,
+        (xi_phi, xi_psi),
+        ricci_scalar_gev2=ricci_scalar,
+        riemann_squared_gev4=riemann_squared,
+        ricci_tensor_squared_gev4=ricci_tensor_squared,
+    )["a2_bulk_GeV4"]
+
+    result = scalar_quartic_one_loop_rg_beta_functions(
+        m_phi2, m_psi2, lambda_phi4, lambda_psi4, mixed, xi_phi, xi_psi
+    )
+    beta = result["beta_coefficients"]
+    curvature_beta = result["curvature_beta_coefficients"]
+    euler_density = (
+        riemann_squared - 4.0 * ricci_tensor_squared + ricci_scalar**2
+    )
+    reconstructed = (
+        beta["rho_vacuum_Euclidean_GeV4"]
+        + 0.5 * beta["m_phi_squared_GeV2"] * phi**2
+        + 0.5 * beta["m_psi_squared_GeV2"] * psi**2
+        + 0.25 * beta["lambda_phi4"] * phi**4
+        + 0.25 * beta["lambda_psi4"] * psi**4
+        + 0.5 * beta["mixed_coupling"] * phi**2 * psi**2
+        + ricci_scalar * (
+            beta["einstein_R_E_coefficient_GeV2"]
+            + 0.5 * beta["xi_phi"] * phi**2
+            + 0.5 * beta["xi_psi"] * psi**2
+        )
+        + curvature_beta["R_E_squared"] * ricci_scalar**2
+        + curvature_beta["Ricci_tensor_squared"] * ricci_tensor_squared
+        + curvature_beta["Euler_density"] * euler_density
+    )
+    expected = a2 / (16.0 * np.pi**2)
+    assert reconstructed == pytest.approx(expected, rel=3.0e-14, abs=1.0e-18)
+    assert result["scheme"] == "MS-bar"
+    assert result["assumptions"]["finite_renormalization_conditions_selected"] is False
+    assert result["assumptions"]["nonpolynomial_ptum_plateau_beta_functions_returned"] is False
+    json.dumps(result, allow_nan=False)
+
+
+def test_scalar_quartic_rg_betas_recover_decoupled_and_conformal_limits():
+    from ptum_renormalization import scalar_quartic_one_loop_rg_beta_functions
+
+    loop = 1.0 / (16.0 * np.pi**2)
+    result = scalar_quartic_one_loop_rg_beta_functions(
+        2.5, 4.0, 0.12, 0.21, 0.0, 1.0 / 6.0, 1.0 / 6.0
+    )
+    beta = result["beta_coefficients"]
+    assert beta["lambda_phi4"] == pytest.approx(18.0 * 0.12**2 * loop)
+    assert beta["lambda_psi4"] == pytest.approx(18.0 * 0.21**2 * loop)
+    assert beta["mixed_coupling"] == 0.0
+    assert beta["xi_phi"] == 0.0
+    assert beta["xi_psi"] == 0.0
+    assert beta["m_phi_squared_GeV2"] == pytest.approx(6.0 * 0.12 * 2.5 * loop)
+    assert beta["m_psi_squared_GeV2"] == pytest.approx(6.0 * 0.21 * 4.0 * loop)
+
+    mixed_result = scalar_quartic_one_loop_rg_beta_functions(
+        2.5, 4.0, 0.12, 0.21, 0.08, 0.1, 0.2
+    )
+    mixed_beta = mixed_result["beta_coefficients"]["mixed_coupling"]
+    expected_mixed = (
+        6.0 * 0.08 * (0.12 + 0.21) + 8.0 * 0.08**2
+    ) * loop
+    assert mixed_beta == pytest.approx(expected_mixed)
+
+
+def test_scalar_quartic_rg_betas_reject_unbounded_and_nonfinite_inputs():
+    from ptum_renormalization import scalar_quartic_one_loop_rg_beta_functions
+
+    with pytest.raises(ValueError, match="unbounded below"):
+        scalar_quartic_one_loop_rg_beta_functions(
+            1.0, 1.0, 0.1, 0.2, -0.2, 0.0, 0.0
+        )
+    with pytest.raises(ValueError, match="non-negative"):
+        scalar_quartic_one_loop_rg_beta_functions(
+            1.0, 1.0, -0.1, 0.2, 0.0, 0.0, 0.0
+        )
+    with pytest.raises(ValueError, match="finite real scalar"):
+        scalar_quartic_one_loop_rg_beta_functions(
+            True, 1.0, 0.1, 0.2, 0.0, 0.0, 0.0
+        )

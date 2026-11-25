@@ -181,3 +181,42 @@ UV audit passed and retained renormalized=false; the 46-page PDF built.
 Its final LaTeX pass had 79 Underfull hbox warnings, zero Overfull
 hboxes, and zero unresolved reference/citation warnings. Long scans
 were skipped by design. Gate 5 remains NOT MET.
+
+
+### R0.2 one-loop RG projection in a polynomial scalar control EFT
+
+A separate two-real-scalar polynomial control model is now used to test
+the map from the local pole residue to renormalization-group beta
+functions. For
+\[
+V_{\rm poly}=\rho_{\rm vac}
++\tfrac12m_\Phi^2\Phi^2+\tfrac12m_\psi^2\psi^2
++\tfrac14\lambda_{\Phi,4}\Phi^4
++\tfrac14\lambda_\psi\psi^4
++\tfrac12c\Phi^2\psi^2,
+\]
+the code returns the one-loop MS-bar beta functions for the vacuum
+energy, both masses, both quartics, the mixed coupling, both
+non-minimal curvature couplings, the Einstein-curvature coefficient,
+and the \(R^2\), Ricci-squared and Euler-density coefficients. The
+curvature basis is reduced modulo the four-dimensional Euler density.
+The quartic boundedness condition is checked before any coefficient is
+returned.
+
+Three regressions were added: reconstruction of the complete
+\(a_2/(16\pi^2)\) residue from the beta coefficients at nonzero fields
+and nonzero constant curvature; decoupled single-scalar and mixed
+coupling limits, including the conformal \(\xi=1/6\) fixed point; and
+fail-closed rejection of an unbounded quartic potential and invalid
+scalar inputs.
+
+This is an RG consistency oracle for the **polynomial control theory**,
+not a beta-function solution for the non-polynomial PTUM plateau.
+The plateau retains the functional counterterms
+\([V_{\rm eff}''(\Phi)]^2\) and \(R_E V_{\rm eff}''(\Phi)\), so a finite
+quartic truncation cannot be silently substituted. The code does not
+select \(\Lambda_{\rm EFT}\), \(\mu_R\), renormalized boundary values or
+finite matching conditions. It includes no SM/gauge/fermion/graviton
+loops, boundary/initial-surface terms or real-time CTP finite part.
+R0 remains partial, Gate 5 remains **NOT MET**, and no lattice vacuum
+subtraction or physical quantum prediction is claimed.

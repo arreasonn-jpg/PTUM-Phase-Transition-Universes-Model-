@@ -2461,3 +2461,29 @@ conditions, a renormalized stress tensor, real-time CTP backreaction,
 or a lattice counterterm. The long 100-row and paired convergence jobs
 were skipped by design; this workflow adds no new full-scan evidence.
 Gate 5 remains NOT MET and Gate 10 remains PARTIAL.
+
+
+## 2026-11-25 one-loop scalar RG projection control
+
+A separate polynomial two-real-scalar control EFT now has explicit
+one-loop MS-bar beta coefficients derived from the same local
+\(a_2/(16\pi^2\epsilon)\) residue. The returned coefficients cover the
+vacuum energy, both mass parameters, both quartics, the mixed quartic,
+both non-minimal curvature couplings, the Einstein-curvature coefficient,
+and the \(R^2\), Ricci-squared and Euler-density terms. The curvature
+basis is reduced modulo the four-dimensional Euler density.
+
+A regression reconstructs the full local pole density from the beta
+coefficients at nonzero fields and nonzero constant curvature and
+compares it with the matrix heat-kernel expression. Decoupled,
+mixed-coupling and conformal-coupling limits are tested; unbounded
+quartic inputs are rejected. These new tests and manuscript equations
+require exact-head CI.
+
+This is not the beta function of the non-polynomial PTUM plateau.
+The exact plateau pole retains \([V_{\rm eff}''(\Phi)]^2\) and
+\(R_E V_{\rm eff}''(\Phi)\), which require a functional or explicitly
+matched infinite-operator treatment. No \(\Lambda_{\rm EFT}\),
+\(\mu_R\) boundary values or finite matching conditions have been
+selected. Gate 5 remains NOT MET; no lattice subtraction, renormalized
+stress tensor or physical quantum prediction is claimed.

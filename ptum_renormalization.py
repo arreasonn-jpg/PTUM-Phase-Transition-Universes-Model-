@@ -687,3 +687,135 @@ def ptum_scalar_one_loop_pole_metric_variation(
             "physical_prediction": False,
         },
     }
+
+
+def scalar_quartic_one_loop_rg_beta_functions(
+    m_phi_squared_gev2: float,
+    m_psi_squared_gev2: float,
+    lambda_phi4: float,
+    lambda_psi4: float,
+    mixed_coupling: float,
+    xi_phi: float,
+    xi_psi: float,
+) -> dict[str, object]:
+    """Return one-loop MS-bar beta functions for a two-real-scalar quartic control EFT.
+
+    The Euclidean potential normalization is
+        V = rho_vac + m_phi^2 Phi^2/2 + m_psi^2 psi^2/2
+            + lambda_phi4 Phi^4/4 + lambda_psi4 psi^4/4
+            + c Phi^2 psi^2/2.
+    The curvature action is
+        zeta_R R + xi_phi R Phi^2/2 + xi_psi R psi^2/2
+        + alpha_R R^2 + beta_R Ricci^2 + gamma_R E_4.
+
+    These coefficients follow by expanding the same two-field heat-kernel
+    pole a2/(16 pi^2 epsilon), with epsilon=4-d, in this polynomial
+    control basis. They are not beta functions for the non-polynomial
+    PTUM plateau potential. No boundary values, EFT cutoff, or finite
+    renormalization conditions are selected here.
+    """
+    m_phi2 = _finite_real_scalar("m_phi_squared_gev2", m_phi_squared_gev2)
+    m_psi2 = _finite_real_scalar("m_psi_squared_gev2", m_psi_squared_gev2)
+    lam_phi = _finite_real_scalar("lambda_phi4", lambda_phi4)
+    lam_psi = _finite_real_scalar("lambda_psi4", lambda_psi4)
+    mixed = _finite_real_scalar("mixed_coupling", mixed_coupling)
+    xi_phi_value = _finite_real_scalar("xi_phi", xi_phi)
+    xi_psi_value = _finite_real_scalar("xi_psi", xi_psi)
+
+    if lam_phi < 0.0 or lam_psi < 0.0:
+        raise ValueError("quartic self-couplings must be non-negative")
+    stability_bound = -np.sqrt(lam_phi) * np.sqrt(lam_psi)
+    if mixed < stability_bound:
+        raise ValueError(
+            "quartic potential is unbounded below: mixed_coupling "
+            "is below -sqrt(lambda_phi4*lambda_psi4)"
+        )
+
+    delta_xi_phi = xi_phi_value - 1.0 / 6.0
+    delta_xi_psi = xi_psi_value - 1.0 / 6.0
+    loop = 1.0 / (16.0 * np.pi**2)
+    field_count = 2.0
+
+    # Flat-space potential and mass beta functions from 1/2 tr(H^2).
+    beta = {
+        "rho_vacuum_Euclidean_GeV4": (
+            (m_phi2**2 + m_psi2**2) / (32.0 * np.pi**2)
+        ),
+        "m_phi_squared_GeV2": (
+            6.0 * lam_phi * m_phi2 + 2.0 * mixed * m_psi2
+        ) * loop,
+        "m_psi_squared_GeV2": (
+            2.0 * mixed * m_phi2 + 6.0 * lam_psi * m_psi2
+        ) * loop,
+        "lambda_phi4": (
+            18.0 * lam_phi**2 + 2.0 * mixed**2
+        ) * loop,
+        "lambda_psi4": (
+            18.0 * lam_psi**2 + 2.0 * mixed**2
+        ) * loop,
+        "mixed_coupling": (
+            6.0 * mixed * (lam_phi + lam_psi) + 8.0 * mixed**2
+        ) * loop,
+        "xi_phi": (
+            6.0 * lam_phi * delta_xi_phi
+            + 2.0 * mixed * delta_xi_psi
+        ) * loop,
+        "xi_psi": (
+            2.0 * mixed * delta_xi_phi
+            + 6.0 * lam_psi * delta_xi_psi
+        ) * loop,
+        "einstein_R_E_coefficient_GeV2": (
+            delta_xi_phi * m_phi2 + delta_xi_psi * m_psi2
+        ) * loop,
+    }
+
+    # Curvature-squared basis after the four-dimensional Euler reduction:
+    # a2 = ... + A R^2 + B R_mu_nu R^mu_nu + (N/180) E4.
+    A = 0.5 * (delta_xi_phi**2 + delta_xi_psi**2) - field_count / 180.0
+    B = field_count / 60.0
+    beta_curvature = {
+        "R_E_squared": A * loop,
+        "Ricci_tensor_squared": B * loop,
+        "Euler_density": (field_count / 180.0) * loop,
+    }
+    all_values = np.asarray(
+        list(beta.values()) + list(beta_curvature.values()), dtype=float
+    )
+    if not np.all(np.isfinite(all_values)):
+        raise ValueError("one-loop scalar RG beta coefficients are non-finite")
+
+    return {
+        "beta_definition": "beta_g = mu_R * d g / d mu_R",
+        "scheme": "MS-bar",
+        "loop_order": 1,
+        "potential_normalization": (
+            "rho_vac + m_phi^2*Phi^2/2 + m_psi^2*psi^2/2 "
+            "+ lambda_phi4*Phi^4/4 + lambda_psi4*psi^4/4 "
+            "+ mixed_coupling*Phi^2*psi^2/2"
+        ),
+        "curvature_basis": (
+            "zeta_R*R_E + xi_phi*R_E*Phi^2/2 + xi_psi*R_E*psi^2/2 "
+            "+ alpha_R*R_E^2 + beta_R*R_munu^2 + gamma_R*E_4"
+        ),
+        "beta_coefficients": beta,
+        "curvature_beta_coefficients": beta_curvature,
+        "quartic_boundedness_condition": (
+            "lambda_phi4 >= 0, lambda_psi4 >= 0, "
+            "mixed_coupling >= -sqrt(lambda_phi4*lambda_psi4)"
+        ),
+        "assumptions": {
+            "two_real_scalar_fields": True,
+            "only_scalar_one_loop_determinant_included": True,
+            "curvature_couplings_are_explicit_inputs": True,
+            "curvature_squared_basis_uses_four_dimensional_euler_reduction": True,
+            "one_loop_scalar_wavefunction_counterterm": 0.0,
+            "finite_renormalization_conditions_selected": False,
+            "renormalization_scale_boundary_values_supplied": False,
+            "eft_cutoff_selected": False,
+            "nonpolynomial_ptum_plateau_beta_functions_returned": False,
+            "sm_gauge_fermion_and_graviton_loops_included": False,
+            "boundary_or_initial_surface_terms_included": False,
+            "real_time_ctp_finite_part_computed": False,
+            "physical_prediction": False,
+        },
+    }

@@ -1362,3 +1362,17 @@ does not claim subtraction, counterterms or a continuum limit. This
 is verification of the local divergent Euclidean metric variation,
 not a finite renormalized stress tensor or a physical waterfall result.
 Gate 5 remains NOT MET.
+
+
+## 2026-11-25 polynomial scalar RG control boundary
+
+### Supported, pending exact-head CI
+- One-loop MS-bar beta coefficients for a two-real-scalar **renormalizable polynomial control model**, in the explicitly stated potential and Euclidean curvature-operator normalizations.
+- The coefficients reproduce the full local two-field heat-kernel pole density at nonzero fields and nonzero constant curvature.
+- Decoupled scalar, mixed-coupling, conformal-coupling and quartic boundedness controls are covered by regressions.
+
+### Not supported
+- Beta functions for the actual non-polynomial PTUM plateau potential. Its \( [V_{\rm eff}''(\Phi)]^2 \) and \(R_E V_{\rm eff}''(\Phi)\) structures require functional running or an explicitly matched infinite-operator EFT treatment.
+- A selected EFT cutoff, renormalization scale boundary values, finite renormalization conditions, or a complete matched counterterm action.
+- SM/gauge/fermion/graviton loops, boundary/initial-state terms, a finite real-time CTP effective action, a renormalized stress tensor, or a cutoff-independent lattice.
+- Closure of R0 or Gate 5. No physical quantum prediction is claimed.

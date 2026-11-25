@@ -5423,6 +5423,106 @@ not a completed renormalization prescription
 \cite{Vassilevich2003,MarkkanenTranberg2013}.
 
 
+
+
+\paragraph{One-loop RG extraction in a polynomial control EFT.}
+As an independent normalization and operator-projection check, consider
+the renormalizable two-real-scalar control potential
+\begin{equation}
+\begin{aligned}
+V_{\rm poly}
+&=\rho_{\rm vac}
++\frac12m_\Phi^2\Phi^2+\frac12m_\psi^2\psi^2
++\frac{\lambda_{\Phi,4}}4\Phi^4
++\frac{\lambda_\psi}4\psi^4
++\frac c2\Phi^2\psi^2 .
+\end{aligned}
+\end{equation}
+This is a polynomial control theory, not a replacement for the PTUM
+plateau potential. Define
+$\beta_g\equiv\mu_R\,dg/d\mu_R$ and
+$\delta\xi_I\equiv\xi_I-\tfrac16$. Expanding the same two-field
+$a_2^{\rm bulk}/(16\pi^2)$ residue in this basis gives
+\begin{align}
+\beta_{\rho_{\rm vac}}
+&=\frac{m_\Phi^4+m_\psi^4}{32\pi^2},
+&
+\beta_{m_\Phi^2}
+&=\frac{6\lambda_{\Phi,4}m_\Phi^2+2cm_\psi^2}{16\pi^2},
+\nonumber\\
+\beta_{m_\psi^2}
+&=\frac{2cm_\Phi^2+6\lambda_\psi m_\psi^2}{16\pi^2},
+&
+\beta_{\lambda_{\Phi,4}}
+&=\frac{18\lambda_{\Phi,4}^2+2c^2}{16\pi^2},
+\nonumber\\
+\beta_{\lambda_\psi}
+&=\frac{18\lambda_\psi^2+2c^2}{16\pi^2},
+&
+\beta_c
+&=\frac{6c(\lambda_{\Phi,4}+\lambda_\psi)+8c^2}{16\pi^2}.
+\label{eq:ptum_scalar_quartic_beta_potential}
+\end{align}
+For the curvature operators, use
+\begin{equation}
+\begin{aligned}
+\mathcal L_E^{\rm curv}
+&=\zeta_E R_E
++\frac12\xi_\Phi R_E\Phi^2
++\frac12\xi_\psi R_E\psi^2\\
+&\quad+\alpha_E R_E^2
++\beta_E R_{\mu\nu}R^{\mu\nu}
++\gamma_E\mathcal E_4 .
+\end{aligned}
+\end{equation}
+With $N=2$ real fields,
+\begin{align}
+\beta_{\xi_\Phi}
+&=\frac{6\lambda_{\Phi,4}\delta\xi_\Phi
++2c\delta\xi_\psi}{16\pi^2},
+&
+\beta_{\xi_\psi}
+&=\frac{2c\delta\xi_\Phi
++6\lambda_\psi\delta\xi_\psi}{16\pi^2},
+\nonumber\\
+\beta_{\zeta_E}
+&=\frac{\delta\xi_\Phi m_\Phi^2
++\delta\xi_\psi m_\psi^2}{16\pi^2},
+&
+\beta_{\alpha_E}
+&=\frac{A}{16\pi^2},
+\nonumber\\
+\beta_{\beta_E}
+&=\frac{B}{16\pi^2},
+&
+\beta_{\gamma_E}
+&=\frac{N}{180\,16\pi^2},
+\label{eq:ptum_scalar_quartic_beta_curvature}
+\end{align}
+where
+\begin{equation}
+A=\frac12(\delta\xi_\Phi^2+\delta\xi_\psi^2)-\frac{N}{180},
+\qquad B=\frac{N}{60}.
+\end{equation}
+The $R^2$, Ricci-squared and Euler coefficients use the same
+four-dimensional Euler reduction as the metric-variation formula.
+The quartic potential is bounded below when
+$\lambda_{\Phi,4}\ge0$, $\lambda_\psi\ge0$ and
+$c\ge-\sqrt{\lambda_{\Phi,4}\lambda_\psi}$.
+
+The implementation reconstructs the complete local pole residue from
+these beta coefficients and checks it against the independent matrix
+trace for a curved constant-curvature control. Decoupled single-field,
+mixed-coupling and conformal-coupling limits are also tested. This is
+a one-loop MS-bar beta-function oracle for the polynomial scalar
+control model only. The non-polynomial PTUM plateau instead retains
+the functional structures $[V_{\rm eff}''(\Phi)]^2$ and
+$R_E V_{\rm eff}''(\Phi)$; replacing those by a finite quartic
+truncation is not justified by this check. No EFT cutoff, renormalized
+boundary values, finite matching conditions, SM/gauge/fermion loops,
+boundary terms or real-time CTP finite part are selected here.
+
+
 \paragraph{Scope of the calculations currently present.}
 The public Python implementation contains a homogeneous two-field
 $(\Phi,\psi)$ background solver, a linear $\chi_k$ mode solver on

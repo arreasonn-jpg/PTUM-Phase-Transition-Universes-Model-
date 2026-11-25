@@ -2182,3 +2182,20 @@ renormalized stress tensor, SM/gauge/fermion/graviton loops, CTP
 finite parts and lattice counterterm implementation remain absent.
 Gate 10 remains PARTIAL because Underfull hbox warnings persist.
 The long scans were skipped; no new 100-row physical scan is claimed.
+
+
+### 2026-11-25 polynomial scalar RG control (pending exact-head CI)
+
+A two-real-scalar polynomial control EFT now has one-loop MS-bar beta
+coefficients derived from the existing heat-kernel pole. The beta
+coefficients reconstruct the complete local \(a_2/(16\pi^2)\) density,
+including the scalar potential, non-minimal curvature, Einstein and
+curvature-squared terms in the declared Euclidean basis. Regressions
+cover the matrix-residue reconstruction, decoupled and mixed limits,
+the conformal-coupling fixed point, and fail-closed quartic stability.
+
+This is not the RG flow of the non-polynomial PTUM plateau and does not
+choose \(\Lambda_{\rm EFT}\), \(\mu_R\) boundary data or finite matching
+conditions. R0 remains partial; Gate 5 remains **NOT MET**. Exact-head
+Python and manuscript verification are pending. No lattice subtraction
+or physical quantum result is claimed.
