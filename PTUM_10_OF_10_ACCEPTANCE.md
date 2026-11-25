@@ -2147,3 +2147,38 @@ Euler-density term in the action, so it checks the expected topological
 cancellation as well as the non-topological curvature terms. This new
 regression is pending exact-head CI. It is a check of the divergent
 local Euclidean coefficient only; Gate 5 remains NOT MET.
+
+
+
+## 2026-11-25 exact-head metric-variation acceptance result
+
+Workflow 45587737076 on exact head
+ee6a7dced58f30122150fcbaae832cf356423778 passed:
+- 200 Python regression cases, including the independent product-sphere
+  finite-difference comparison of the full integrated \(a_2\) action
+  against the analytic inverse-metric Euler derivative for each
+  two-sphere block.
+- 4/4 two-scale smoke trajectories with zero integration failures.
+- The 11-grid bare-WKB UV-cutoff audit.
+- The 47-page manuscript build, with zero Overfull hboxes and zero
+  unresolved references/citations; 80 Underfull hbox warnings remain.
+
+The smoke and UV artifacts were extracted and parsed with a strict JSON
+parser that rejects NaN/Infinity. The smoke payload contains four
+successful classical rows, uses the exact endpoint threshold
+\(\Phi_c/M_{\rm Pl}=0.9862280831209045\), and explicitly records
+\(\texttt{quantum\_vacuum\_seeded=false}\). The UV payload continues
+to show the fixed-box bare stress factor 16664.2325 and high-cutoff
+slope 3.8822733; zero-point energy remains and no subtraction,
+counterterms, continuum limit or physical quantum prediction is
+claimed. The PDF artifact is a valid 47-page PDF and contains the
+metric-variation equations.
+
+This closes the software verification of the new local metric Euler
+derivative under the tested algebraic limits and product-sphere
+finite-difference variations. It does not close Gate 5: finite
+renormalization conditions, boundary/initial-state terms, the
+renormalized stress tensor, SM/gauge/fermion/graviton loops, CTP
+finite parts and lattice counterterm implementation remain absent.
+Gate 10 remains PARTIAL because Underfull hbox warnings persist.
+The long scans were skipped; no new 100-row physical scan is claimed.
