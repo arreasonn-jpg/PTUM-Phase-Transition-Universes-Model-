@@ -2400,3 +2400,20 @@ and their regressions are verified by the 199-test run. The LaTeX
 overfull equations were reformatted in a subsequent commit; no physical
 formula or numerical tolerance was changed. Gate 5 remains NOT MET;
 Gate 10 remains PARTIAL pending a warning-audited build.
+
+
+
+## 2026-11-25 independent finite-difference test of the pole metric variation
+
+A new regression evaluates the integrated scalar bulk \(a_2\) action on
+the compact product geometry \(S^2(K_1)\times S^2(K_2)\), with constant
+curvatures in the two orthogonal two-dimensional blocks. It varies the
+inverse metric by independently rescaling each sphere radius. For each
+block, a central finite difference of
+\(\int d^4x\sqrt{g_E}\,a_2^{\rm bulk}\) is compared with the
+corresponding block trace of the analytic metric Euler derivative,
+including the full Euler-density contribution in the action. The
+integrated Euler term is topological and does not alter the derivative.
+This is an independent functional-variation check of the local
+Euclidean pole formula, not a renormalized stress tensor or a
+real-time physical prediction. The new test is pending exact-head CI.
