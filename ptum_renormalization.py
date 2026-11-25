@@ -516,6 +516,15 @@ def ptum_scalar_one_loop_pole_metric_variation(
         rtol=0.0, atol=riemann_atol,
     ):
         raise ValueError("Riemann tensor must have pair-exchange symmetry")
+    riemann_bianchi = (
+        riemann
+        + riemann.transpose(0, 2, 3, 1)
+        + riemann.transpose(0, 3, 1, 2)
+    )
+    if not np.allclose(
+        riemann_bianchi, 0.0, rtol=0.0, atol=3.0 * riemann_atol
+    ):
+        raise ValueError("Riemann tensor must satisfy the first Bianchi identity")
 
     ricci_from_riemann = np.einsum(
         "mn,manb->ab", inverse_metric, riemann
@@ -618,14 +627,15 @@ def ptum_scalar_one_loop_pole_metric_variation(
         + 0.5 * metric * box_R
         + box_ricci
     )
-    metric_euler = (
-        -0.5 * metric * U
-        + F * einstein
-        + metric * box_F
-        - hessian_F
-        + A * H1
-        + B * H2
-    )
+    metric_components = {
+        "volume_potential_term_GeV4": -0.5 * metric * U,
+        "field_curvature_term_GeV4": (
+            F * einstein + metric * box_F - hessian_F
+        ),
+        "ricci_scalar_squared_term_GeV4": A * H1,
+        "ricci_tensor_squared_term_GeV4": B * H2,
+    }
+    metric_euler = sum(metric_components.values())
     if not np.all(np.isfinite(metric_euler)) or not np.isfinite(a2_bulk):
         raise ValueError("scalar pole metric variation is non-finite")
 
@@ -640,6 +650,13 @@ def ptum_scalar_one_loop_pole_metric_variation(
             "B_dimensionless": B,
             "ricci_squared_GeV4": ricci_squared,
             "riemann_squared_GeV4": riemann_squared,
+        },
+        "metric_variation_components_GeV4": {
+            name: value.tolist() for name, value in metric_components.items()
+        },
+        "curvature_variation_tensors_GeV4": {
+            "H1_R_squared": H1.tolist(),
+            "H2_Ricci_squared": H2.tolist(),
         },
         "metric_euler_derivative_a2_GeV4": metric_euler.tolist(),
         "metric_euler_derivative_trace_GeV4": float(
