@@ -2234,3 +2234,22 @@ adiabatic subtraction or an independent numerical point-splitting
 comparison. Massive/interacting modes, numerical UV/volume/time-step
 convergence and PTUM backreaction remain absent. Gate 5 remains
 **NOT MET**; exact-head CI is pending.
+
+
+### 2026-11-25 exact-head conformal radiation-FRW benchmark verification
+
+Workflow 45591701409 on exact head
+8c903c7575c46ddbf592e83949531f09c86a0fd4 passed 211 Python tests,
+the 4/4 two-scale smoke scan, the 11-grid UV audit and the 48-page
+LaTeX build. The exact conformal mode/Wronskian and trace/continuity
+Ward-identity tests passed after replacing overstrict absolute-zero
+assertions with scale-normalized residual checks.
+
+The smoke artifact remains a homogeneous classical scan, not a
+quantum-seeded waterfall. The UV artifact still shows a fixed-box
+bare-stress factor of 16664.2325 and a high-cutoff log slope of
+3.8822733, with zero-point energy retained and no subtraction,
+counterterms or continuum claim. The PDF has zero Overfull boxes and
+no final-pass unresolved references/citations, but 80 Underfull hbox
+warnings remain. R1 remains partial, Gate 5 remains **NOT MET**, and
+Gate 10 remains **PARTIAL**.

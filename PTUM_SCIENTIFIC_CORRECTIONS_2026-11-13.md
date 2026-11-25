@@ -2563,3 +2563,38 @@ and scale-normalized trace/continuity residuals, and the regressions
 check the normalized quantities against \(5\times10^{-15}\). The
 background equations, anomaly coefficient, stress tensor and all
 physical inputs are unchanged. A fresh exact-head run is required.
+
+
+## 2026-11-25 exact-head verification of the conformal radiation-FRW benchmark
+
+Workflow 45591701409 on exact head
+8c903c7575c46ddbf592e83949531f09c86a0fd4 passed 211 Python
+regression cases. The new exact conformal mode/Wronskian, heat-kernel
+trace anomaly, trace identity, continuity equation, Minkowski limit and
+input-validation tests all passed. The earlier two residual failures
+were resolved by checking scale-normalized Ward residuals at
+\(5\times10^{-15}\); the anomaly and stress formulas were unchanged.
+
+The two-scale smoke artifact ZIP SHA-256 is
+ddac0fa79e71a5217c89c7418300bf2d912fa12be0f9f2fedfea9ccf8c5d680a;
+its strict-JSON payload SHA-256 is
+d3d85207367776136410b324d078279984224dfe1d707b43590e14700fb6e179.
+All 4 rows succeeded, all were classical (quantum_vacuum_seeded=false),
+the exact threshold output was
+\(\Phi_c/M_{\rm Pl}=0.9862280831209045\), and the maximum
+chain-rule continuity residual was \(3.2166\times10^{-12}\).
+
+The 11-grid UV-audit artifact ZIP SHA-256 is
+82ff85175562a87a6bb4e6f379f9885226ee73379b795bcd435e20a964267616;
+its strict-JSON payload SHA-256 remains
+260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749.
+The fixed-box bare-stress factor is \(16664.2325\), the high-cutoff
+log slope is \(3.8822733\), and fixed-spacing volume spread is
+\(2.38067\times10^{-13}\). Zero-point energy remains; no subtraction,
+counterterms or continuum limit are claimed.
+
+The 48-page manuscript built with zero Overfull boxes and no
+final-pass unresolved references/citations; 80 Underfull hbox warnings
+remain. This verifies only the analytic free conformal benchmark,
+not a general adiabatic or interacting waterfall renormalization.
+R1 remains partial and Gate 5 remains NOT MET.

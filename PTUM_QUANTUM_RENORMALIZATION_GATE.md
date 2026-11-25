@@ -254,3 +254,14 @@ numerical stress-tensor prescription. Massive/minimally coupled modes,
 independent point-splitting comparison, numerical UV/volume/time-step
 convergence and a renormalized PTUM waterfall remain open. Gate 5
 remains **NOT MET**.
+
+
+## 2026-11-25 exact-head verification of the conformal radiation benchmark
+
+Workflow [45591701409](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45591701409) on exact head 8c903c7575c46ddbf592e83949531f09c86a0fd4 completed successfully:
+- 211 Python regression cases passed. The new tests cover exact conformal mode equation/Wronskian, the heat-kernel anomaly, trace and continuity Ward identities, the Minkowski limit and invalid-input rejection.
+- The two-scale smoke scan passed 4/4 with zero failed integrations. Its strict-JSON payload uses \(\Phi_c/M_{\rm Pl}=0.9862280831209045\), records quantum_vacuum_seeded=false, and has maximum chain-rule continuity residual \(3.2166\times10^{-12}\).
+- The 11-grid bare-WKB UV audit passed. Its strict-JSON payload retains the same cutoff-growth evidence: fixed-box bare-stress factor \(16664.2325\), high-cutoff log slope \(3.8822733\), and fixed-spacing volume spread \(2.38067\times10^{-13}\). Zero-point energy remains; subtraction and counterterms are false; no continuum limit is claimed.
+- The 48-page LaTeX PDF built with zero Overfull boxes and no unresolved references/citations after the bibliography rerun. 80 Underfull hbox warnings remain.
+
+The analytic conformal-scalar benchmark is verified as a free-field control only. It is not a general adiabatic subtraction, an independent point-splitting comparison, or a renormalization of the massive interacting PTUM waterfall. R1 remains partial and Gate 5 remains **NOT MET**.

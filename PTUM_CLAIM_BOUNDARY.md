@@ -1407,3 +1407,19 @@ claimed.
 - General massive or minimally coupled FLRW renormalization, fourth-order adiabatic subtraction, or an independent point-splitting stress-tensor comparison.
 - Interacting \(\lambda_\psi\psi^4\) renormalization, PTUM waterfall backreaction, lattice counterterms, or a quantum-seeded nonlinear calculation.
 - Closure of R1, R0 or Gate 5. No PTUM physical prediction is claimed.
+
+
+## 2026-11-25 exact-head conformal benchmark verification boundary
+
+Workflow 45591701409 on commit
+8c903c7575c46ddbf592e83949531f09c86a0fd4 passed 211 Python tests,
+the 4/4 two-scale smoke scan, the 11-grid UV audit and the 48-page
+manuscript build. The conformal-mode Wronskian and trace/continuity
+identities passed at scale-normalized roundoff. The smoke and UV JSON
+artifacts were strictly parsed.
+
+The UV audit continues to show bare cutoff growth and explicitly
+retains zero-point energy without subtraction or counterterms. The
+free conformal benchmark is not a general massive/interacting
+renormalization prescription or an independent point-splitting
+comparison. R1 remains partial; Gate 5 remains NOT MET.
