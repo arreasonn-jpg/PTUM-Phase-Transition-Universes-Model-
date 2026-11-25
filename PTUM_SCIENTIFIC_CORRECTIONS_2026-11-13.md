@@ -2692,3 +2692,27 @@ This is not a renormalized stress tensor or a complete expectation
 value: finite-band IR/UV tails, finite matching conditions, the
 interacting Phi force and lattice counterterms remain absent.
 Gate 5 remains NOT MET.
+
+
+## 2026-11-25 exact-head short CI for adiabatic variance helper
+
+Workflow 45596418537 on code head 9171604a41e25b8fb0ee78833be09603fd592293 passed:
+- 216 Python regression cases, including the five second-order adiabatic field-variance tests;
+- 4/4 two-scale homogeneous smoke trajectories with zero failed integrations;
+- the 11-grid bare-WKB UV cutoff audit;
+- the 48-page manuscript PDF build.
+
+The final LaTeX pass has zero unresolved references/citations and zero
+Overfull hboxes. It retains 80 Underfull hbox warnings. The UV audit
+still reports the bare fixed-box stress growth factor 16664.2325 and
+high-cutoff log slope 3.8822733; zero-point energy remains and no
+subtraction, counterterms or continuum limit are claimed. The long
+full-scan jobs were skipped for this non-FULL-SCAN commit; the separate
+paired 500-run convergence result remains tied to source head
+4590fc37825399f668098bdf3177b261e60e071f, whose simulation source was
+unchanged by the adiabatic helper.
+
+The new field-variance routine remains a finite-band R1 control only.
+It does not close the renormalized stress tensor, the Phi force, the
+initial Friedmann constraint or the nonlinear lattice counterterms.
+Gate 5 remains NOT MET and Gate 10 remains PARTIAL.
