@@ -2324,3 +2324,20 @@ They are pending a fresh exact-head workflow. No lattice stress,
 Friedmann source, initial condition, finite matching condition or
 physical prediction has been changed. Gate 5 remains NOT MET; Gate 10
 remains PARTIAL.
+
+
+
+### Exact-head regression correction for the metric-variation extension
+
+Workflow 45586007724 on head cadcbb316e507c8a9d8c54a94e7ddf13bdd1a619
+ran the Python regression suite and reported one failure in the new
+fail-closed curvature-input test. The test perturbed a curvature scalar
+by an absolute 1 GeV^2 even though the benchmark curvature scale is
+of order m_psi^2; that perturbation was smaller than the declared
+scale-aware comparison tolerance. This was an inadequate test input,
+not a failed physical equation. The test now perturbs by
+10^-3 m_psi^2, which is well above the existing relative tolerance,
+and the regex assertion is raw-string escaped to avoid a Python
+DeprecationWarning. No production tolerance or scientific criterion
+was changed. The corrected exact-head run is pending. The same workflow's
+bare-WKB UV audit passed; its LaTeX job was still running when inspected.
