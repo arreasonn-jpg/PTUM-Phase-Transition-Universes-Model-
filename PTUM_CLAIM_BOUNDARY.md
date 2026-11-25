@@ -1299,3 +1299,14 @@ dimensionally scaled perturbation \(10^{-3}m_\psi^2\), without changing
 the production comparison tolerance. A regex string was also made raw
 to remove its escape-sequence deprecation warning. Fresh exact-head CI
 is required; no new physics result is claimed.
+
+
+
+### Metric-variation tensor audit refinement
+
+The helper now validates the first algebraic Bianchi identity and returns
+the individual volume, field-curvature, R-squared and Ricci-squared
+metric-variation pieces. A new regression verifies rejection of a
+four-form contamination that passes pair symmetries and Ricci
+contraction but violates Bianchi, and checks the sum of returned pieces.
+Fresh exact-head CI is pending.
