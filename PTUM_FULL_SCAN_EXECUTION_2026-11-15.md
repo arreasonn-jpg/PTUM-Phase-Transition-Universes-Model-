@@ -229,3 +229,17 @@ waterfall and does not include renormalized backreaction, rescattering,
 defect-network evolution or relic production. Gate 4 remains scoped
 to that homogeneous domain. Gate 5 remains NOT MET; Gate 10 remains
 PARTIAL.
+
+
+## 2026-11-25 fresh exact-endpoint 100-row baseline scan
+
+Workflow 45592679131 on exact source head 4590fc37825399f668098bdf3177b261e60e071f completed the baseline full scan:
+- 100/100 integrations succeeded, zero failed rows; 50 rows in each scenario and 100 unique initial-condition keys.
+- All rows use the exact threshold Phi_c/M_Pl = 0.9862280831209045, 4,001 output points over 20 mu^-1, DOP853, rtol=1e-9, atol=1e-12, and quantum_vacuum_seeded=false.
+- Classification counts: high-scale threshold-matched, 48 non-quartic and 2 insufficient-oscillation rows, 0 quartic; low-scale underdamped control, 41 non-quartic, 4 insufficient-oscillation and 5 quartic rows. Overall: 89 non-quartic, 6 insufficient-oscillation, 5 quartic.
+- Every quartic row lies in the low-scale control at the largest tested classical field seed (psi_init=5 psi_0) and the smaller offset (0.01 Phi_c). Their w_final spans 0.37218--0.37363, Q_final 10.651--11.071, virial ratio 0.90607--0.90962, and H/omega about 6.87e-5--7.01e-5. They are not quantum-vacuum-seeded attractor evidence.
+- The strict JSON artifact was parsed with non-finite JSON constants rejected. ZIP SHA-256: 82d1771f15417d172152233fcd1c41fcec776df936b6b56dfc59f958dcc2556d; extracted result JSON SHA-256: 625873f9d761e6df694170c33efa02dc543464f87542d75f76ff747c856764e3.
+- The maximum chain-rule FRW continuity residual was 1.33249e-10; the maximum sampled finite-difference residual ratio was 0.03723375. These are diagnostics of the homogeneous ODE/output-grid calculation, not a full inhomogeneous stress-tensor conservation result.
+- Exact-head short checks on this scan head passed 211 Python cases, 4/4 two-scale smoke trajectories, targeted convergence, the 11-grid bare-WKB UV audit, and LaTeX. The PDF is 48 pages; its final pass has zero Overfull boxes and zero unresolved references/citations, but 80 Underfull hbox warnings remain.
+
+This baseline scan is separate from the paired 500-run convergence study recorded below. It is a homogeneous post-threshold classical sensitivity scan, not the coupled threshold crossing or quantum-seeded inhomogeneous waterfall.
