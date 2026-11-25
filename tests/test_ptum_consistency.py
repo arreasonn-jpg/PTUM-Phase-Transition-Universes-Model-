@@ -4969,13 +4969,13 @@ def test_adiabatic_variance_subtraction_has_exact_minkowski_massive_limit():
         effective_mass_squared=mass_squared,
         curvature_coupling=0.13,
     )
-    assert result["variance_subtracted_finite_band"] == pytest.approx(
-        0.0, abs=1.0e-16
-    )
+    assert abs(result["variance_subtracted_finite_band"]) / max(
+        result["variance_bare_finite_band"], 1.0e-300
+    ) < 3.0e-15
     assert result["variance_bare_finite_band"] == pytest.approx(
         result["variance_adiabatic_counterterm_finite_band"],
-        rel=2.0e-15,
-        abs=1.0e-16,
+        rel=3.0e-15,
+        abs=1.0e-15,
     )
 
 

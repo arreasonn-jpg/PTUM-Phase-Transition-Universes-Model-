@@ -1423,16 +1423,3 @@ retains zero-point energy without subtraction or counterterms. The
 free conformal benchmark is not a general massive/interacting
 renormalization prescription or an independent point-splitting
 comparison. R1 remains partial; Gate 5 remains NOT MET.
-
-
-## 2026-11-25 field-variance renormalization boundary
-
-The branch now contains a second-order adiabatic subtraction for the
-finite-band scalar field variance, with canonical Wronskian validation
-and exact conformal-massless/Minkowski-massive controls. This supports
-only the local UV subtraction of <psi^2> through adiabatic order two
-on caller-supplied backgrounds. It is not a renormalized stress tensor,
-a renormalized force on Phi, a self-consistent Friedmann source, or a
-renormalized lattice evolution. The finite momentum tails and finite
-renormalization conditions are not supplied. No quantum-waterfall,
-backreaction, relic or observational claim is promoted. Gate 5 remains NOT MET.
