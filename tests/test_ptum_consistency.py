@@ -4499,6 +4499,7 @@ def test_scalar_pole_metric_variation_flat_constant_background_limit():
     assert np.asarray(
         result["euclidean_counterterm_metric_euler_derivative_coefficient_GeV4"]
     ) == pytest.approx(expected / (16.0 * np.pi**2), rel=2.0e-14)
+    json.dumps(result, allow_nan=False)
     assert result["assumptions"]["result_is_metric_euler_derivative_not_stress_tensor"] is True
     assert result["assumptions"]["renormalized_stress_tensor_computed"] is False
 
@@ -4512,7 +4513,7 @@ def test_scalar_pole_metric_variation_constant_curvature_reduces_to_FR_plus_U():
     params = PTUMParameters()
     phi = 0.92 * params.Phi_c
     psi = 0.19 * params.psi_0
-    metric = np.eye(4)
+    metric = np.diag([1.0, 1.5, 2.0, 2.5])
     curvature_scale = 0.07 * params.m_psi**2
     ricci = 3.0 * curvature_scale * metric
     scalar = 12.0 * curvature_scale
