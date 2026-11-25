@@ -2355,3 +2355,48 @@ contamination: it preserves pair symmetries and the Ricci contraction
 but violates the first Bianchi identity, so the helper must reject it.
 The flat-limit test also checks that the reported tensor pieces sum to
 the total. These additions are pending exact-head CI.
+
+
+
+## 2026-11-25 exact-head verification of the local pole metric variation
+
+Workflow 45586718905 on exact head
+8bfbe348675470223477cdb8e45b5b7a7f233b8d completed successfully:
+- 199 Python regression cases passed.
+- The two-scale smoke scan completed 4/4 with zero failed integrations.
+- The fixed-box bare-WKB UV audit completed and produced strict JSON.
+- The 47-page LaTeX PDF built with zero unresolved references/citations.
+  Its final pass still had 66 Underfull hboxes and two Overfull hboxes,
+  both localized to the newly added metric-variation displays at lines
+  5308 and 5324. Those equations have now been split across aligned
+  lines without changing the formulas; the new manuscript build is
+  pending on the later head.
+
+Artifact audit:
+- Smoke ZIP SHA-256:
+  76fff038a49fc09183d55c6382d30e774e0e29219461fde0831e3528f3e690d2.
+  Strict JSON SHA-256:
+  105e3c4e1e560ba5d292da7ca476b50e0e308fe9088fa4641e2b48e21d4766f6.
+  It contains 4/4 successful rows across the high-scale threshold-matched
+  and low-scale underdamped-control cases. All rows use
+  Phi_c/M_Pl=0.9862280831209068. The metadata explicitly records
+  quantum_vacuum_seeded=false. The maximum chain-rule continuity
+  residual in this smoke artifact is 3.3603e-12. This is a smoke test,
+  not a new 100-row physical scan.
+- Bare-WKB UV-audit ZIP SHA-256:
+  a1f8e24786656d4b03264f12981fd2c8e8b9af3fce582d6fec5395d7a96b6a7e.
+  Strict JSON SHA-256:
+  260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749.
+  Across 11 grids, the fixed-box bare stress rises by 16664.2325 and
+  the N=32-to-64 log slope is 3.8822733. The fixed-spacing volume
+  density spread is 2.38067e-13. The artifact explicitly retains
+  zero-point energy and records vacuum_subtraction_applied=false,
+  counterterms_applied=false, continuum_limit_claimed=false and
+  physical_quantum_prediction=false. It confirms the UV blocker; it
+  does not renormalize the lattice.
+
+The metric-variation helper, Bianchi validation, component decomposition,
+and their regressions are verified by the 199-test run. The LaTeX
+overfull equations were reformatted in a subsequent commit; no physical
+formula or numerical tolerance was changed. Gate 5 remains NOT MET;
+Gate 10 remains PARTIAL pending a warning-audited build.
