@@ -1287,3 +1287,15 @@ renormalized stress tensor. Gate 5 remains NOT MET.
 
 The new implementation and tests require fresh exact-head CI. Gate 5
 remains NOT MET.
+
+
+
+### Metric-variation input-test correction
+
+The first exact-head Python run had one failure because the test's
+absolute curvature perturbation was numerically negligible compared
+with the physical benchmark scale. The regression now uses a
+dimensionally scaled perturbation \(10^{-3}m_\psi^2\), without changing
+the production comparison tolerance. A regex string was also made raw
+to remove its escape-sequence deprecation warning. Fresh exact-head CI
+is required; no new physics result is claimed.
