@@ -2417,3 +2417,47 @@ integrated Euler term is topological and does not alter the derivative.
 This is an independent functional-variation check of the local
 Euclidean pole formula, not a renormalized stress tensor or a
 real-time physical prediction. The new test is pending exact-head CI.
+
+
+
+## 2026-11-25 exact-head finite-difference verification completed
+
+Workflow 45587737076 on exact head
+ee6a7dced58f30122150fcbaae832cf356423778 completed successfully:
+- 200 Python regression cases passed, including the independent
+  \(S^2(K_1)\times S^2(K_2)\) finite-difference variation of the
+  integrated full \(a_2\) action under separate metric rescalings.
+- The two-scale smoke scan passed 4/4 with zero failed integrations.
+- The 11-grid bare-WKB UV-cutoff audit passed.
+- The 47-page manuscript PDF built. The final LaTeX pass had 80
+  Underfull hbox warnings, zero Overfull hboxes, and zero unresolved
+  references/citations.
+
+The PDF ZIP SHA-256 is
+3270d1aaac3c5d30ce229e04ebc176018e521538875e01708034724192cf5dec;
+the extracted 47-page PDF SHA-256 is
+e782f691a70b19a6efa372aa1f903f9368d795f6fd03182e253d1761f2a96658.
+The smoke ZIP SHA-256 is
+507e8623e90244eadf53c3dcbff979047c94e5869a4df018cbd25bb1d73a9a10;
+its strict-JSON payload SHA-256 is
+d3d85207367776136410b324d078279984224dfe1d707b43590e14700fb6e179.
+It contains 4/4 successful rows at
+Phi_c/M_Pl=0.9862280831209045, with quantum_vacuum_seeded=false.
+The UV-audit ZIP SHA-256 is
+a71d189261267972e904803fa260d6813c4974b9fa070ad70dd50e89e1ed3ac6;
+its strict-JSON payload SHA-256 is unchanged at
+260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749.
+It still reports the fixed-box bare-stress factor 16664.2325, the
+high-cutoff slope 3.8822733, and fixed-spacing volume spread
+2.38067e-13. Zero-point energy is retained; subtraction and
+counterterms are false; no continuum limit or physical quantum
+prediction is claimed.
+
+The product-sphere finite-difference comparison passed for both
+independent curvature blocks. This verifies the analytic metric
+variation of the local divergent Euclidean coefficient under the
+tested compact geometry. It does not provide finite renormalization
+conditions, a renormalized stress tensor, real-time CTP backreaction,
+or a lattice counterterm. The long 100-row and paired convergence jobs
+were skipped by design; this workflow adds no new full-scan evidence.
+Gate 5 remains NOT MET and Gate 10 remains PARTIAL.
