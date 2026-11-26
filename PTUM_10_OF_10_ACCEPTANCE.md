@@ -2434,3 +2434,54 @@ This is not a self-consistent quantum background; Gate 2 remains PARTIAL.
 Exact-head workflow 45799709372 on commit cb4ee0ebeae8ced796691d0dce4690373337da70 passed 224 Python cases, 4/4 smoke trajectories, the 11-grid bare-WKB audit, and the 49-page manuscript build. The final LaTeX pass retains 81 Underfull hboxes, with zero Overfull hboxes and no unresolved references/citations. The smoke and UV JSON artifacts were strictly parsed. The full 100-row and paired convergence jobs were skipped on this non-FULL-SCAN head; the next commit requests that exact-head revalidation.
 
 The intermediate test failures were not hidden: commit f4b0b2d misplaced manuscript assertions in an import tuple and failed collection; commit 97b018f corrected the placement, after which 223 cases passed and one obsolete lattice-claim assertion failed. Commit cb4ee0e updated that assertion to the corrected manuscript statement that the lattice is classical nonlinear but not a quantum-renormalized four-field simulation. The final exact-head run passed all 224 cases.
+
+
+
+## 2026-11-26 exact-head 100-row baseline revalidation
+
+Workflow [45800154570](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45800154570) ran on exact source head
+\texttt{b388bfe371b46b229266320a4a3edc9812a65e18}. The baseline
+DOP853 scan completed 100/100 integrations with zero failures,
+50 initial conditions per energy scale, exact
+\(\Phi_c/M_{\rm Pl}=0.9862280831209068\), 4,001 output points over
+\(20\mu^{-1}\), \(\mathrm{rtol}=10^{-9}\), and
+\(\mathrm{atol}=10^{-12}\). Its strict-JSON artifact has ZIP SHA-256
+\texttt{f4ab5ee18afb92a6509b50fe5062a529354b2333a841457edad5fd5b5bad0916}
+and result JSON SHA-256
+\texttt{5c86db1631da9efd35f956a266edbd5c30cfdae405de1cb9e6e06029c042c1a2}.
+
+Observed classifications:
+- high-scale threshold-matched: 48 non-quartic, 2 insufficient oscillation,
+  0 quartic;
+- low-scale underdamped control: 41 non-quartic, 4 insufficient
+  oscillation, 5 quartic;
+- total: 89 non-quartic, 6 insufficient oscillation, 5 quartic.
+
+The five quartic-classifier rows all use the largest manually specified
+classical seed \(\psi_{\rm init}=5\psi_0\) and the smaller offset
+\(0.01\Phi_c\), and occur only in the low-scale control. Their
+\(w_\psi=0.37218\text{--}0.37363\),
+\(Q=10.6511\text{--}11.0710\), virial ratio
+\(0.90607\text{--}0.90962\), and \(H/\omega\) maximum
+\(6.8652\times10^{-5}\text{--}7.0139\times10^{-5}\).
+The scan records \texttt{quantum\_vacuum\_seeded=false}. This is
+not evidence for a quantum-seeded attractor, high-scale quartic phase,
+inhomogeneous stability, or a microscopic proxy-fluid realization.
+
+The maximum chain-rule continuity residual is \(1.19986\times10^{-10}\);
+the maximum finite-difference residual ratio is \(3.72337\times10^{-2}\)
+and remains sampling-sensitive. The paired current-head 100-row,
+500-integration output-grid/solver-tolerance revalidation was still
+running at the time of this update. Gate 4 remains scoped to the
+homogeneous post-threshold domain; Gate 5 remains NOT MET, Gate 7
+remains NOT MET, and Gate 10 remains PARTIAL.
+
+In the same workflow, the exact-head Python regression passed 224 cases,
+the two-scale smoke scan passed 4/4 with zero failed integrations,
+the 11-grid bare-WKB UV audit passed, and the 49-page manuscript built.
+The final LaTeX pass had 81 Underfull hbox warnings, zero Overfull hboxes,
+and zero unresolved references/citations. Strict-JSON smoke and UV
+artifacts were inspected. The UV audit still shows a high-cutoff
+bare-stress log slope of 3.8822733, retained zero-point energy, and no
+vacuum subtraction, counterterms, or continuum-limit claim.
+The paired convergence job is the only workflow job still in progress.

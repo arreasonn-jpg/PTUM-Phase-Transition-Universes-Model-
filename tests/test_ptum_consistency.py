@@ -2080,21 +2080,27 @@ def test_mukhanov_sasaki_spectrum_claim_remains_author_reported():
 
 
 
-def test_manuscript_reports_current_radau_scan_failures_and_claim_boundary():
+def test_manuscript_separates_historical_scans_from_exact_head_baseline():
     from pathlib import Path
 
     source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
-    assert "Radau and BDF full scans each completed 98/100 trajectories" in source
-    assert "two rows exhausted" in source
-    assert "No trajectory passes the joint quartic classifier" in source
-    assert "only two late half-cycles occur" in source
-    assert "all three solvers give identical regime labels" in source
-    assert "completed all 100/100 trajectories" in source
-    assert "all three solvers give identical regime labels" in source
-    assert "No trajectory passes the joint quartic classifier" in source
-    assert r"current-source DOP853 execution PR \#7 completed the 100-row scan" in source
-    assert "neither a quantum-seeded inhomogeneous waterfall" in source
-
+    required = (
+        "historical engineering evidence",
+        "fresh exact-head DOP853 baseline",
+        "100/100",
+        "48 non-quartic and 2 insufficient-oscillation rows",
+        "41 non-quartic, 4 insufficient-oscillation, and 5 quartic-classifier rows",
+        "All five quartic-classifier rows occur only in the low-scale control",
+        r"\psi_{\rm init}=5\psi_0",
+        "quantum_vacuum_seeded=false",
+        "paired 100-row",
+        "not evidence for a quantum-seeded attractor",
+        "not a microscopic prediction of the present",
+    )
+    for phrase in required:
+        assert phrase in source
+    assert "No trajectory passes the joint quartic classifier" not in source
+    assert "only two late half-cycles occur" not in source
 
 
 def test_dimensionless_background_rhs_is_equivalent_to_physical_rhs():

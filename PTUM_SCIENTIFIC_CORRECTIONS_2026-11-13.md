@@ -2824,3 +2824,43 @@ Two intermediate test failures are recorded transparently: f4b0b2d misplaced a s
 The next documentation commit uses the workflow's explicit FULL-SCAN opt-in to
 re-evaluate the 100-row exact-endpoint scan and paired convergence on this
 branch head. Gate 2 remains PARTIAL; Gates 5 and 6 remain NOT MET.
+
+
+## 2026-11-26 exact-head 100-row baseline revalidation
+
+Workflow [45800154570](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45800154570) on exact code head
+\texttt{b388bfe371b46b229266320a4a3edc9812a65e18} completed the
+100-row DOP853 homogeneous post-threshold baseline:
+- 100/100 integrations succeeded; zero failures; 50 rows per scale.
+- Exact threshold: \(\Phi_c/M_{\rm Pl}=0.9862280831209068\).
+  Each trajectory uses 4,001 output points over \(20\mu^{-1}\),
+  \(\mathrm{rtol}=10^{-9}\), \(\mathrm{atol}=10^{-12}\), and the
+  integrated single-field FRW fuel velocity.
+- The strict-JSON artifact was parsed with non-finite constants rejected.
+  ZIP SHA-256:
+  \texttt{f4ab5ee18afb92a6509b50fe5062a529354b2333a841457edad5fd5b5bad0916};
+  extracted result JSON SHA-256:
+  \texttt{5c86db1631da9efd35f956a266edbd5c30cfdae405de1cb9e6e06029c042c1a2}.
+- Regimes: high scale 48 non-quartic/2 insufficient oscillation; low-scale
+  underdamped control 41 non-quartic/4 insufficient oscillation/5 quartic.
+  All five quartic-classifier rows are low-scale controls with
+  \(\psi_{\rm init}=5\psi_0\) and offset \(0.01\Phi_c\). Their
+  cycle-averaged \(w_\psi=0.37218\text{--}0.37363\),
+  \(Q=10.6511\text{--}11.0710\), virial ratio
+  \(0.90607\text{--}0.90962\), and \(H/\omega\) maximum
+  \(6.8652\times10^{-5}\text{--}7.0139\times10^{-5}\).
+- The maximum chain-rule FRW continuity residual is
+  \(1.19986\times10^{-10}\); the maximum sampled finite-difference
+  residual ratio is \(3.72337\times10^{-2}\). The latter remains
+  sampling-sensitive and is not replaced by the chain-rule diagnostic.
+- The scan explicitly records \texttt{quantum\_vacuum\_seeded=false}. It is a
+  homogeneous post-threshold sensitivity scan, not a quantum-seeded
+  crossing or inhomogeneous waterfall.
+
+The paired 100-row/500-integration output-grid and solver-tolerance
+revalidation is still in progress on this head. The baseline
+classification counts are therefore recorded as observed, not yet
+promoted to a converged current-head result. Gate 7 remains NOT MET:
+the five low-scale classical controls do not establish a high-scale
+quartic attractor, perturbative stability, or a microscopic proxy-fluid.
+Gate 5 remains NOT MET; Gate 10 remains PARTIAL.

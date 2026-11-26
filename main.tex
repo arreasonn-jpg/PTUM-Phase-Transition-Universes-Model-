@@ -55,8 +55,12 @@ $\epsilon_H=1$ gives $3H_c/(2\mu)\simeq4.29$. The plateau estimate
 is $3H_*/(2\mu)\simeq25$. All indicate an overdamped benchmark, but
 the actual transition still requires the coupled background
 solution. A microscopic quartic proxy-fluid regime has not yet been
-established, so the proxy-fluid closure remains phenomenological
-pending the revised high-resolution scan and inhomogeneous dynamics. The formulation should be read as an effective phenomenological framework rather than as a first-principles derivation of the pre-discharge background, a solution of the cosmological-constant hierarchy, or a UV completion.%
+established. The exact-head homogeneous scan finds five
+classifier-positive trajectories only in a low-scale control with
+the largest manually specified classical seed, and none in the
+high-scale threshold-matched set; paired convergence and
+inhomogeneous dynamics remain outstanding. The proxy-fluid closure
+therefore remains phenomenological. The formulation should be read as an effective phenomenological framework rather than as a first-principles derivation of the pre-discharge background, a solution of the cosmological-constant hierarchy, or a UV completion.%
 } % abstract'ın kapanış parantezi
 \PACS{
       {98.80.Cq}{Particle-theory and field-theory models of the early Universe} \and
@@ -154,10 +158,13 @@ kinetic energy gives $3H_c/(2\mu)\simeq4.29$. The benchmark is
 therefore strongly damped. The real-$\psi$ waterfall is tachyonic
 below threshold, so the exact $\psi=0$ solution is not a stable
 post-trigger state; physically justified seeds and inhomogeneous
-growth must be included. The revised 100-point homogeneous scan is
-a post-threshold sensitivity study, not a microscopic derivation of
-the proxy-fluid. No quartic attractor is claimed until its
-high-resolution results and convergence tests are inspected.
+growth must be included. The exact-head 100-point homogeneous scan contains five
+classifier-positive quartic trajectories, all in the low-scale
+underdamped control with the largest manually specified classical
+field seed; none occurs in the high-scale threshold-matched set.
+The paired output-grid/solver-tolerance revalidation remains in
+progress, and these rows do not establish a quantum-seeded attractor
+or microscopic proxy-fluid realization.
 
 The aim of the present paper is therefore broader than a
 phenomenological dark-radiation study. We pursue three linked goals:
@@ -835,104 +842,101 @@ quartic-dominance and averaging conditions are independently established.
 The later CLASS results use the last regime as an effective closure and
 should be interpreted with this conditional status.
 
-\paragraph{Critical numerical status:}
-The earlier homogeneous benchmark scan used the superseded
-activation-mass sign and only 200 output samples over
-$20\mu^{-1}$. Its reported overdamping and quartic classifications
-are historical and are not treated as results for the revised
-waterfall model. The exact endpoint now gives
-$3H_c/(2\mu)\simeq4.29$ when the kinetic contribution at
-$\epsilon_H=1$ is included (the potential-only estimate is $3.50$),
-so the benchmark is strongly damped. The Radau and BDF full scans each completed 98/100 trajectories;
-the same two rows exhausted the 1,000,000-RHS engineering guard.
-A third DOP853 scan, launched from the PR \#2 source commit
-`bebd0bd1e5f75e31d3d0ba8dfe84a9b53293bea0`, completed all 100/100
-trajectories at unchanged $\mathrm{rtol}=10^{-9}$,
-$\mathrm{atol}=10^{-12}$ and the same RHS guard. The two rows that
-exhausted the implicit-solver budgets completed under DOP853 and were
-classified non-quartic; they have no successful Radau/BDF counterpart.
-Among the 98 common successful rows, all three solvers give identical
-regime labels. DOP853 and Radau final-state relative differences are
-at most $3.16\times10^{-9}$ in $\Phi$,
-$1.18\times10^{-7}$ in $\dot\Phi$,
-$4.77\times10^{-7}$ in $\psi$,
-$9.12\times10^{-6}$ in $\dot\psi$,
-$2.86\times10^{-10}$ in $H$, and
-$5.72\times10^{-10}$ in total density. Their $Q$, averaged $w$ and
-virial diagnostics agree within $5.95\times10^{-8}$,
-$1.81\times10^{-8}$ and $1.77\times10^{-7}$, respectively.
-This is strong cross-method agreement on the 98 common rows, not a
-solver-tolerance or output-grid convergence proof.
-The DOP853 scan has 48 non-quartic and two insufficient-oscillation
-classifications at high scale, and 43 non-quartic and seven
-insufficient-oscillation classifications at low scale. No trajectory
-passes the joint quartic classifier. The largest high-scale quartic indicator
-is $Q\simeq1.002<2$. In the low-scale control, some large classical-seed
-rows reach $Q\simeq11.12$, $w_\psi\simeq0.363$, and a virial ratio near
-$0.890$, but only two late half-cycles occur in the final 20 percent
-of the run; the required late-time adiabatic diagnostic is therefore
-unavailable. These rows do not establish a sustained quartic-fluid
-phase. For DOP853, the median finite-difference continuity residual
-normalized by $H\rho$ is about $2.82\times10^{-2}$ at high scale and
-$3.58\times10^{-6}$ at low scale; the corresponding maxima are
-$3.72\times10^{-2}$ and $1.76\times10^{-4}$. The independent
-chain-rule continuity residual maxima are $1.20\times10^{-10}$ and
-$4.92\times10^{-15}$, respectively. These are distinct diagnostics:
-the finite-difference estimator remains sampling-sensitive. A targeted
-128001-to-256001-point study is stable for four selected trajectories,
-but convergence of the full 100-row grid remains mandatory. The isolated BDF scan completed 98/100 trajectories, matching Radau's two RHS-budget failures and all 98 successful regime labels. This is cross-solver agreement, not solver-tolerance or output-grid convergence. The current-source DOP853 execution PR \#7 completed the 100-row scan; its strict-JSON artifact and cross-solver comparison are recorded in the reproducibility notes. This scan
-remains homogeneous and post-threshold; it is neither a quantum-seeded
-inhomogeneous waterfall nor a relic calculation.
+\paragraph{Historical solver comparison and exact-head baseline:}
+The earlier Radau/BDF/DOP853 comparison on source commit
+\texttt{bebd0bd1e5f75e31d3d0ba8dfe84a9b53293bea0} is retained only
+as historical engineering evidence. That scan had two implicit-solver
+RHS-budget failures and no joint quartic-classifier passes in its
+98 common successful rows. Subsequent waterfall-sign, exact-threshold,
+and scan-initialization revisions mean those historical classifications
+are not evidence for the present branch head.
+
+The fresh exact-head DOP853 baseline on
+\texttt{b388bfe371b46b229266320a4a3edc9812a65e18} completed
+$100/100$ integrations with zero failures in workflow
+\href{https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45800154570}{45800154570}.
+It uses 50 initial conditions per scale, the exact
+$\Phi_c/M_{\rm Pl}=0.9862280831209068$, 4,001 output points over
+$20\mu^{-1}$, DOP853 with
+$\mathrm{rtol}=10^{-9}$ and $\mathrm{atol}=10^{-12}$, and fuel
+velocities from the integrated single-field FRW trajectory.
+The artifact explicitly records
+\texttt{quantum\_vacuum\_seeded=false}; zero-seed rows are exact
+classical invariant controls, not vacuum-fluctuation realizations.
+
+The classifications are:
+\begin{itemize}
+\item high-scale threshold-matched set: 48 non-quartic and 2
+      insufficient-oscillation rows; no quartic rows;
+\item low-scale underdamped control: 41 non-quartic, 4
+      insufficient-oscillation, and 5 quartic-classifier rows.
+\end{itemize}
+All five quartic-classifier rows occur only in the low-scale control,
+with the largest tested classical seed $\psi_{\rm init}=5\psi_0$
+and the smaller field offset $0.01\Phi_c$. Their cycle-averaged
+$w_\psi$ is $0.37218$--$0.37363$, $Q$ is
+$10.6511$--$11.0710$, the virial ratio is
+$0.90607$--$0.90962$, and the largest late-time $H/\omega$ is
+$6.87\times10^{-5}$--$7.01\times10^{-5}$ over four or five late
+half-cycles. Thus the current baseline has 89 non-quartic, 6
+insufficient-oscillation, and 5 quartic-classifier rows overall.
+These five rows are a narrow manually seeded classical control;
+they are not evidence for a quantum-seeded attractor, the
+CMB-normalized high-scale benchmark, a spatially inhomogeneous
+fluid, or a microscopic realization of the CLASS proxy-fluid.
+
+The maximum chain-rule continuity residual is
+$1.20\times10^{-10}$. The maximum sampled finite-difference residual
+normalized by $H\rho$ is $3.72\times10^{-2}$ and remains
+output-grid-sensitive; the chain-rule and finite-difference
+diagnostics are not interchangeable. The paired 100-row,
+500-integration output-grid/solver-tolerance revalidation in workflow
+45800154570 is still running. Until that study and its strict-JSON
+artifact are inspected, the baseline classifications are not promoted
+to a converged scan result.
 
 The scale tension between CMB normalization and a quartic proxy-fluid
 phase remains a research question, not a demonstrated no-go theorem.
-The quartic phase requires quartic potential dominance, rapid
+A quartic phase requires quartic potential dominance, rapid
 oscillations relative to expansion, controlled energy transfer and
 a perturbation-level closure derived from the underlying fields.
 The current Boltzmann analysis uses $w_\psi=1/3$ as a phenomenological
-closure; it is not a microscopic prediction of the present homogeneous
-post-threshold simulation.
+closure; it is not a microscopic prediction of the present
+homogeneous post-threshold simulation.
 
 \noindent\textbf{Resolution scenarios (all currently VARSAYIM).}
 Three concrete routes could in principle reconcile the two scales,
 none of which is implemented or verified here:
 \begin{enumerate}[label=(\alph*)]
 \item \emph{Modified friction / non-minimal coupling:} a coupling of
-$\Phi$ to the Ricci scalar or an additional dissipative sector could
-lower the effective Hubble friction during the discharge, reducing
-$3H/(2\mu)$ below unity at $V_0\sim10^{64}\,\mathrm{GeV}^4$ without
-changing the CMB normalization. This requires a new background
-integration; no such run exists in the public script.
-\item \emph{Sustained energy injection:} rescattering of the rolling
-$\Phi$ field into $\psi$ (the $\alpha m_\psi^2\Phi^2\psi^2/E_{\rm th}^2$
-interaction) could maintain oscillations after barrier crossing even
-when the bare damping is large. The revised 100-point high-resolution
-initial-condition scan is generated by \texttt{ptum\_task1\_scan.py}
-using the dimensionless fuel potential, exact endpoint-matched
-discharge threshold, and integrated single-field fuel velocity. The
-Radau artifact is published as a CI artifact and contains 98
-successful integrations and two explicit RHS-budget failures; it is
-not an all-success scan. None of the 98 successful rows passes the
-joint quartic classifier. The two failed rows remain unclassified,
-and the current-source DOP853 cross-check is running on isolated execution PR \#7. No conclusion is drawn
-for the failed rows or unsampled parameter regions. The scan is a
-homogeneous post-threshold sensitivity study, not a quantum-seeded
-inhomogeneous calculation.
-\item \emph{Reframed benchmark:} treat the CMB-normalized
-benchmark as a strongly damped, non-oscillatory waterfall candidate,
-but do not set $w_\psi=0$ by placing the field exactly at the
-tachyonically unstable origin. The seeded field evolution must
-determine its actual averaged equation of state. The $w=1/3$
-proxy-fluid remains a separate phenomenological scenario tested
-against data on its own terms. In the Bayesian analysis,
-$\Delta N_{\rm fluid}$ is a constraint on this phenomenological
-fluid component, not a first-principles prediction of the
-homogeneous waterfall calculation.
+      $\Phi$ to the Ricci scalar or an additional dissipative sector
+      could lower the effective Hubble friction during the discharge,
+      reducing $3H/(2\mu)$ below unity at
+      $V_0\sim10^{64}\,\mathrm{GeV}^4$ without changing the CMB
+      normalization. This requires a new background integration;
+      no such run exists in the public script.
+\item \emph{Sustained energy transfer:} rescattering of the rolling
+      $\Phi$ field into $\psi$ could in principle maintain oscillations
+      after barrier crossing even when the bare damping is large.
+      No quantum mode backreaction, nonlinear rescattering, or
+      SM-source energy transfer is included in the current scan.
+      The five quartic-classifier rows described above occur only in
+      the low-scale control with a manually imposed $5\psi_0$ seed;
+      they do not demonstrate this mechanism at the high scale.
+\item \emph{Reframed benchmark:} treat the CMB-normalized benchmark
+      as a strongly damped waterfall candidate, but do not set
+      $w_\psi=0$ by placing the field exactly at the tachyonically
+      unstable origin. The seeded field evolution must determine its
+      actual averaged equation of state. The $w=1/3$ proxy-fluid
+      remains a separate phenomenological scenario tested against
+      data on its own terms. In the Bayesian analysis,
+      $\Delta N_{\rm fluid}$ is a constraint on this phenomenological
+      fluid component, not a first-principles prediction of the
+      homogeneous waterfall calculation.
 \end{enumerate}
-Resolving the tension definitively (options (a) or (b)) requires a
-full numerical background solution plus a physically initialized,
+Resolving the tension definitively (options (a) or (b)) requires
+a full numerical background solution plus a physically initialized,
 converged nonlinear lattice evolution and is left for future work.
-
 
 \subsection{Operational stability and observable closure of the discharge sector}
 \label{subsec:ptum_operational_stability}

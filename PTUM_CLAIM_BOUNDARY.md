@@ -1603,3 +1603,31 @@ Gate 5 remains NOT MET.
 Workflow 45799709372 on commit cb4ee0ebeae8ced796691d0dce4690373337da70 passed 224 Python cases. The new regression verifies that the wrapper's initial Phi and Phi-dot exactly match the integrated single-field inflationary state at (1+delta)Phi_c, that the expanding psi-bar=0 background crosses from positive to negative m_eff^2, and that no quantum mode backreaction is silently enabled. The manuscript now distinguishes this linear test-field crossing from the separate externally supplied-history utilities and the finite-cutoff classical lattice.
 
 The exact-head smoke scan passed 4/4 and the 11-grid bare-WKB audit passed; both JSON artifacts were parsed with non-finite constants rejected. The smoke metadata explicitly records quantum_vacuum_seeded=false because that scan remains a homogeneous classical sensitivity control. The 49-page PDF built with 81 final-pass Underfull hboxes, zero Overfull hboxes and zero unresolved references/citations. The full 100-row and paired convergence jobs were skipped on this non-FULL-SCAN commit. Gate 2 remains PARTIAL because the linear modes do not backreact; Gates 5 and 6 remain NOT MET.
+
+
+## 2026-11-26 exact-head homogeneous scan boundary
+
+### Supported on code head \texttt{b388bfe371b46b229266320a4a3edc9812a65e18}
+- The exact-head DOP853 baseline completed 100/100 homogeneous
+  post-threshold integrations with zero failures and exact
+  \(\Phi_c/M_{\rm Pl}=0.9862280831209068\).
+- Five rows pass the current homogeneous quartic classifier. All five
+  are in the low-scale underdamped control, all use the largest
+  manually selected classical field seed \(\psi_{\rm init}=5\psi_0\)
+  and the smaller offset \(0.01\Phi_c\). None of the 50 high-scale
+  threshold-matched rows passes.
+- Their cycle-averaged \(w_\psi\), \(Q\), virial ratio and late-time
+  \(H/\omega\) satisfy the implemented homogeneous classifier.
+- The strict-JSON result artifact has SHA-256
+  \texttt{5c86db1631da9efd35f956a266edbd5c30cfdae405de1cb9e6e06029c042c1a2}.
+
+### Not supported
+- A quantum-vacuum-seeded attractor: the scan metadata explicitly says
+  \texttt{quantum\_vacuum\_seeded=false}.
+- A quartic phase in the CMB-normalized high-scale threshold-matched set.
+- Spatially inhomogeneous stability, sound speed, anisotropic stress,
+  defect-network evolution, quantum backreaction, rescattering, or
+  SM-sector energy transfer.
+- Current-head output-grid/solver-tolerance convergence: the paired
+  500-integration study in workflow 45800154570 was still running when
+  this boundary was recorded. Gate 7 remains NOT MET.
