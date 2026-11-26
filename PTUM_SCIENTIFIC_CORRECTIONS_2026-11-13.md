@@ -2804,3 +2804,23 @@ Friedmann or Phi equations; there is no nonlinear quantum rescattering
 or SM-source evolution. The homogeneous post-threshold scan and the
 separate finite-cutoff classical lattice remain distinct calculations.
 Gate 2 remains PARTIAL; Gates 5 and 6 remain NOT MET.
+
+## 2026-11-26 exact-head linear-crossing scope and CI verification
+
+The waterfall wrapper's initial state is obtained from the integrated
+single-field inflationary trajectory at Phi=(1+start_fraction)Phi_c.
+It evolves the expanding psi-bar=0 invariant background through the
+threshold, then initializes finite-band linear psi_k modes in a
+first-order adiabatic vacuum in the stable phase. The new regression
+checks the exact initial Phi/Phi-dot match, positive initial and negative
+post-crossing m_eff^2, expansion, the exact psi=0 homogeneous solution,
+and that mode backreaction remains disabled. This is a linear test-field
+crossing, not a self-consistent quantum background.
+
+Exact-head workflow 45799709372 on cb4ee0ebeae8ced796691d0dce4690373337da70 passed 224 Python cases, the 4/4 smoke scan, the 11-grid bare-WKB UV audit and the 49-page LaTeX build. The final pass had 81 Underfull hboxes, zero Overfull hboxes and zero unresolved references/citations. Strict JSON inspection confirmed the smoke artifact uses Phi_c/M_Pl=0.9862280831209068 and quantum_vacuum_seeded=false; the UV artifact retains zero-point energy and applies no subtraction or counterterms. The 100-row scan and paired convergence jobs were skipped for this non-FULL-SCAN commit.
+
+Two intermediate test failures are recorded transparently: f4b0b2d misplaced a source assertion in an import tuple and failed collection; 97b018f fixed the placement but exposed one stale assertion that described the nonlinear classical lattice as not nonlinear. cb4ee0e updated the assertion to the accurate quantum-renormalization scope. The final exact-head regression passed 224/224.
+
+The next documentation commit uses the workflow's explicit FULL-SCAN opt-in to
+re-evaluate the 100-row exact-endpoint scan and paired convergence on this
+branch head. Gate 2 remains PARTIAL; Gates 5 and 6 remain NOT MET.

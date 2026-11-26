@@ -1597,3 +1597,9 @@ Gate 5 remains NOT MET.
   nonlinear quantum rescattering, fragmentation, SM-source evolution,
   or a physical relic/defect prediction. Gate 2 remains PARTIAL; Gates 5
   and 6 remain NOT MET.
+
+## 2026-11-26 exact-head verification of the linear inflation-to-waterfall wrapper
+
+Workflow 45799709372 on commit cb4ee0ebeae8ced796691d0dce4690373337da70 passed 224 Python cases. The new regression verifies that the wrapper's initial Phi and Phi-dot exactly match the integrated single-field inflationary state at (1+delta)Phi_c, that the expanding psi-bar=0 background crosses from positive to negative m_eff^2, and that no quantum mode backreaction is silently enabled. The manuscript now distinguishes this linear test-field crossing from the separate externally supplied-history utilities and the finite-cutoff classical lattice.
+
+The exact-head smoke scan passed 4/4 and the 11-grid bare-WKB audit passed; both JSON artifacts were parsed with non-finite constants rejected. The smoke metadata explicitly records quantum_vacuum_seeded=false because that scan remains a homogeneous classical sensitivity control. The 49-page PDF built with 81 final-pass Underfull hboxes, zero Overfull hboxes and zero unresolved references/citations. The full 100-row and paired convergence jobs were skipped on this non-FULL-SCAN commit. Gate 2 remains PARTIAL because the linear modes do not backreact; Gates 5 and 6 remain NOT MET.
