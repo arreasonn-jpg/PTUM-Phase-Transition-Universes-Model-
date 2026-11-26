@@ -2946,3 +2946,32 @@ the declared small-bias range. No annihilation estimate is promoted
 when the actual bias lies outside its own small-bias domain.
 This is an analytic diagnostic guard, not a domain-wall network
 simulation; Gate 5 remains NOT MET.
+
+
+## 2026-11-26 domain-wall guard exact-head CI
+
+Workflow [45805018373](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45805018373) on commit
+\texttt{664ed12d160a0b45a484e3ca3527a5f4685f446e} passed 225/225
+Python regression cases, 4/4 smoke trajectories, the 11-grid bare-WKB
+audit and the 49-page manuscript build. The new required-source
+small-bias validity test passed. The final LaTeX pass retained 87
+Underfull hbox warnings, with zero Overfull hboxes and no unresolved
+references/citations.
+
+Strict-JSON smoke and UV artifacts were parsed with non-finite values
+rejected. Artifact checksums:
+- smoke ZIP \texttt{1e4cc175b32f03a81efce576ba78bc88e224ffe1080c985b29e67d66554956ea};
+  JSON \texttt{d3d85207367776136410b324d078279984224dfe1d707b43590e14700fb6e179};
+- UV ZIP \texttt{0793fdec1ddf35f82333cd131f8c7256c006c85c69e415e1fe816ad1cf95a430};
+  JSON \texttt{260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749};
+- PDF ZIP \texttt{e9774f0a3fabafec39d41a8822d244fb4d8d9f5334cdb23d70d86c55863703fa};
+  PDF \texttt{3bbf8a154afd2c969eb54ac94a880481e9a1a87ef533158a6d9b9876970a6948}.
+
+The smoke scan again records \texttt{quantum\_vacuum\_seeded=false};
+the UV audit again retains zero-point energy and applies no vacuum
+subtraction or counterterms, with high-cutoff bare-stress slope 3.8822733.
+Long full-scan jobs were skipped because this commit changes only the
+analytic defect diagnostic, tests and documentation. The exact-head
+100-row/500-integration homogeneous scan remains verified on unchanged
+simulation source head b388bfe in workflow 45800154570. Gate 5 remains
+NOT MET and Gate 10 remains PARTIAL.

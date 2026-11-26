@@ -1666,3 +1666,14 @@ network-area control test confirms the helper flags extrapolation rather
 than treating the linear formula as reliable. This does not calculate
 the SM expectation value, predict the actual bias, or simulate wall
 formation/annihilation. Gate 5 remains NOT MET.
+
+
+## 2026-11-26 defect diagnostic CI boundary
+
+The required-linear-source small-bias validity guard in
+\texttt{ptum_defects.py} passed its regression in workflow 45805018373.
+The exact-head suite passed 225 tests, the 4/4 smoke scan, 11-grid UV
+audit and 49-page PDF build. This validates the diagnostic's declared
+linearization guard only. It does not supply the Wilson coefficient,
+renormalized SM condensate, thermal history, or an inhomogeneous
+domain-wall network evolution. Gate 5 remains NOT MET.
