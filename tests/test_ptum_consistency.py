@@ -1087,6 +1087,9 @@ def test_manuscript_documents_linear_waterfall_mode_hierarchy():
         r"\label{eq:waterfall_finite_band_number}",
         "the occupation number and the associated finite-band number density are withheld",
         "does not include mode backreaction",
+        "single-field inflationary background",
+        "evolves it through the threshold",
+        "quantum mode stress and force do not feed back into the Friedmann or",
     ):
         assert required in normalized_source
 
@@ -1095,9 +1098,6 @@ def test_waterfall_finite_band_spectrum_reports_units_and_wronskian_status():
     from ptum_waterfall_modes import (
         build_waterfall_background,
         integrate_waterfall_spectrum,
-        "single-field inflationary background",
-        "evolves the",
-        "quantum mode stress and force do not feed back into the Friedmann or",
     )
 
     background = build_waterfall_background(
