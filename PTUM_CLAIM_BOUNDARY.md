@@ -1555,3 +1555,22 @@ renormalized finite source.
 - Quantum-seeded nonlinear waterfall, rescattering, defect-network
   abundance, relic density, or observational constraints. Gate 5
   remains NOT MET.
+
+## 2026-11-26 exact-head verification of the massive de Sitter R1.3 control
+
+Workflow 45797854235 on commit 2a8d02ede094a82578cd82cac3ec07df74ebf6ad
+passed 223 Python cases. The new exact de Sitter mode regression verifies
+the plane-wave Wronskian and the k^{-7} residual scaling of both local
+order-four stress counterterms. The same run passed the 4/4 homogeneous
+smoke scan, the 11-grid bare-lattice UV audit and the 49-page manuscript
+build. The final LaTeX pass retained 81 Underfull hboxes but had no
+Overfull hboxes or unresolved references/citations.
+
+The smoke JSON was strictly parsed: all four rows succeeded, used the
+exact endpoint-matched threshold, and explicitly recorded
+quantum_vacuum_seeded=false. The lattice UV JSON was also strictly
+parsed and continues to report retained zero-point energy, no
+subtraction, no counterterms and no continuum limit. The 100-row scan
+and paired convergence jobs were skipped for this non-FULL-SCAN commit.
+The exact de Sitter test strengthens only the local free-field control;
+Gate 5 remains NOT MET.

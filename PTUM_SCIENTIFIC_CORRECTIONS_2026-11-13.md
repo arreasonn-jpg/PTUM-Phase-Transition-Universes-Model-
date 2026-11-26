@@ -2771,3 +2771,16 @@ This is an independent analytic free-field control. It is not a
 renormalized finite-band continuum result, a point-splitting
 implementation, an interacting waterfall calculation, or a physical
 PTUM prediction. Gate 5 remains NOT MET.
+
+## 2026-11-26 exact-head verification of the massive de Sitter R1.3 control
+
+Workflow [45797854235](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45797854235) on exact head 2a8d02ede094a82578cd82cac3ec07df74ebf6ad completed successfully:
+- 223 Python regression cases passed, including the new exact massive minimally coupled de Sitter mode, Wronskian, analytic bare Hilbert stress and \(k^{-7}\) residual-scaling checks.
+- The two-scale homogeneous smoke scan passed 4/4 with zero failed integrations. Strict JSON parsing rejected non-finite constants and succeeded. All rows use \(\Phi_c/M_{\rm Pl}=0.9862280831209045\), record quantum_vacuum_seeded=false, and have maximum chain-rule continuity residual \(3.2166\times10^{-12}\). The maximum sampled finite-difference residual ratio is \(3.72335\times10^{-2}\); it remains a diagnostic, not a strict convergence result.
+- The 11-grid bare-WKB lattice UV audit passed. Its strict JSON retains zero-point energy and explicitly records vacuum_subtraction_applied=false, counterterms_applied=false, and continuum_limit_claimed=false. The high-cutoff slope is \(3.8822733\), and the fixed-spacing volume-density spread is \(2.38067\times10^{-13}\).
+- The 49-page manuscript PDF built. Its final LaTeX pass has 81 Underfull hbox warnings, zero Overfull hboxes, and zero unresolved references/citations. Typography warnings remain.
+- The full 100-row sensitivity scan and the paired convergence jobs were skipped because this was not a FULL-SCAN commit.
+
+Artifact checksums: smoke ZIP 557c0f8fa91d5ade3500d47b8e01563578d7886678333775a969021f89bc52e5 (strict JSON d3d85207367776136410b324d078279984224dfe1d707b43590e14700fb6e179); UV ZIP 8ef6b08480443eb5691029e7ec98f2053832968146d6cb0cdfe890a0b499bcff (strict JSON 260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749); manuscript ZIP df1a2ec2ce4cb35b553e5125139eaacdf5434940a78c416270d6db771d42daf3 (PDF 7020736ee15667decdfbf8719301903df6248633445404914f832505ff9e8886).
+
+The exact massive de Sitter control is verified. The lattice remains unsubtracted and cutoff dependent; no interacting renormalization, self-consistent backreaction, rescattering, or physical quantum-waterfall claim is promoted. Gate 5 remains NOT MET and Gate 10 remains PARTIAL.

@@ -343,3 +343,9 @@ independent point-splitting in a general background, finite matching
 conditions, a renormalized \(\Phi\) force, or self-consistent
 Friedmann/CTP backreaction. It does not change the bare lattice
 initializer or its UV divergence. Gate 5 remains **NOT MET**.
+
+## 2026-11-26 exact-head verification of the massive de Sitter R1.3 control
+
+Workflow [45797854235](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45797854235) on exact head 2a8d02ede094a82578cd82cac3ec07df74ebf6ad passed 223 Python regression cases. The exact massive minimally coupled de Sitter test verifies the plane-wave Wronskian and the k^{-7} remainder of both fourth-order mode-stress counterterms. The two-scale homogeneous smoke scan passed 4/4 with zero failures; its strict JSON uses the exact \(\Phi_c/M_{\rm Pl}=0.9862280831209045\), explicitly records quantum_vacuum_seeded=false, and has maximum chain-rule continuity residual \(3.2166\times10^{-12}\). The 11-grid bare-WKB UV audit passed and still records zero-point energy retained, no vacuum subtraction, no counterterms and no continuum limit. The 49-page PDF built with 81 final-pass Underfull hboxes, zero Overfull hboxes and zero unresolved references/citations. The long full-scan and paired-convergence jobs were skipped by design.
+
+This verifies the new analytic free-field control only. The interacting renormalized stress, renormalized \(\Phi\) force, momentum tails, finite matching conditions, self-consistent Friedmann/CTP backreaction and lattice counterterms remain absent. Gate 5 remains NOT MET.
