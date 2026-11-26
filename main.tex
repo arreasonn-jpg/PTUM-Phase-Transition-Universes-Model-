@@ -5572,18 +5572,18 @@ include PTUM backreaction.
 \label{sec:ptum_adiabatic_stress_control}
 
 For a real scalar with external homogeneous mass $M^2(\eta)$ and curvature
-coupling $\xi$, define the canonical mode $v_k=a\psi_k$ in conformal time:
-\begin{equation}
-v_k''+\left[k^2+a^2M^2+(6\xi-1)\frac{a''}{a}\right]v_k=0,
-\qquad
-\omega_k^2=k^2+a^2M^2,\qquad
+coupling $\xi$, define the canonical mode $v_k=a\psi_k$ in conformal time
+(see, e.g., \cite{ParkerFulling1974,BirrellDavies1982}):
+\begin{align}
+v_k''&+\left[k^2+a^2M^2+(6\xi-1)\frac{a''}{a}\right]v_k=0,\\
+\omega_k^2&=k^2+a^2M^2,\qquad
 \sigma=(6\xi-1)\frac{a''}{a}.
-\end{equation}
+\end{align}
 The WKB frequency $W_k=\omega_k+W_k^{(2)}+W_k^{(4)}$ follows from
-\begin{equation}
-W_k^2=\omega_k^2+\sigma-\frac{W_k''}{2W_k}
-+\frac{3(W_k')^2}{4W_k^2},
-\end{equation}
+\begin{align}
+W_k^2&=\omega_k^2+\sigma-\frac{W_k''}{2W_k}\\
+&\quad+\frac{3(W_k')^2}{4W_k^2},
+\end{align}
 with
 \begin{align}
 W_k^{(2)}
@@ -5591,35 +5591,35 @@ W_k^{(2)}
 -\frac{\omega_k''}{4\omega_k^2}
 +\frac{3(\omega_k')^2}{8\omega_k^3},\\
 W_k^{(4)}
-&=\frac{1}{2\omega_k}\left[
+&=\frac{1}{2\omega_k}\Biggl[
 -\frac12\left(
 \frac{W_k^{(2)''}}{\omega_k}
 -\frac{\omega_k''W_k^{(2)}}{\omega_k^2}
-\right)
-+\frac32\frac{\omega_k'}{\omega_k}
+\right)\\
+&\qquad+\frac32\frac{\omega_k'}{\omega_k}
 \left(
 \frac{W_k^{(2)'}}{\omega_k}
 -\frac{\omega_k'W_k^{(2)}}{\omega_k^2}
 \right)
 -(W_k^{(2)})^2
-\right].
+\Biggr].
 \end{align}
 Writing $S_k=|v_k|^2=1/(2W_k)$ and
 $A_k=\mathcal H+W_k'/(2W_k)$, the Hilbert energy-density and isotropic
 pressure counterterms are
 \begin{align}
 \rho_{k,\mathrm{ad}}^{(0-4)}
-&=\frac{1}{a^4}\left[
+&=\frac{1}{a^4}\Biggl[
 \frac{W_k}{4}
-+\frac{A_k^2+\omega_k^2}{4W_k}
-+3\xi\left(\mathcal H S_k'-\mathcal H^2S_k\right)
-\right]_{0-4},\\
++\frac{A_k^2+\omega_k^2}{4W_k}\\
+&\qquad+3\xi\left(\mathcal H S_k'-\mathcal H^2S_k\right)
+\Biggr]_{0-4},\\
 p_{k,\mathrm{ad}}^{(0-4)}
-&=\frac{1}{a^4}\left[
+&=\frac{1}{a^4}\Biggl[
 \frac{W_k}{4}
-+\frac{A_k^2-k^2/3-a^2M^2}{4W_k}
-+\xi\left(-S_k''+3\mathcal H S_k'-3\mathcal H^2S_k\right)
-\right]_{0-4}.
++\frac{A_k^2-k^2/3-a^2M^2}{4W_k}\\
+&\qquad+\xi\left(-S_k''+3\mathcal H S_k'-3\mathcal H^2S_k\right)
+\Biggr]_{0-4}.
 \end{align}
 The bracket means expand the displayed expressions and retain terms
 through fourth adiabatic order. Derivatives of $S_k$ are retained only
@@ -5628,17 +5628,20 @@ counterterm remains order two; the order-four variance completion is
 reported separately only to expose the matched WKB Ward-identity
 diagnostic.
 
-For the external-mass sector split, the exact classical identity is
+Before renormalization, the external-mass sector identity is
 \begin{equation}
 \dot\rho_\psi+3H(\rho_\psi+p_\psi)
 =\frac12\dot M^2\,\langle\psi^2\rangle .
 \end{equation}
-Thus, for $M^2=m_{\rm eff}^2(\Phi)$ and positive $\Phi$ rolling downward,
-$\dot M^2<0$ and this source is negative, consistent with the declared
-$(-+++)$ sector-transfer convention. The regression suite checks the
-matched order-four WKB counterterm identity, the exact conformal-massless
-and Minkowski-massive limits, and independent finite differences of
-the $W_k^{(2)}$ derivatives.
+For $M^2=m_{\rm eff}^2(\Phi)$ and positive $\Phi$ rolling downward,
+$\dot M^2<0$. At the classical/bare level, where $\psi^2\geq0$, this
+corresponds to negative transfer into the $\psi$ sector under the
+declared $(-+++)$ split. A finite renormalized $\langle\psi^2\rangle$
+need not be positive, so the sign of the renormalized finite source
+must be evaluated rather than inferred from $\dot M^2$ alone. The
+regression suite checks the matched order-four WKB counterterm identity,
+the exact conformal-massless and Minkowski-massive limits, and
+independent finite differences of the $W_k^{(2)}$ derivatives.
 
 The implementation is deliberately finite-band and requires positive
 zeroth-order and full mode frequencies on the supplied band. It does
@@ -5902,6 +5905,15 @@ Phys.\ Rev.\ Lett.\ \textbf{131}, 041002 (2023).
 
 
 % ---- Curved-spacetime one-loop renormalization / heat kernel ----
+\bibitem{ParkerFulling1974}
+L.~Parker and S.~A.~Fulling,
+Phys.\\ Rev.\\ D \\textbf{9}, 341--354 (1974).
+
+\\bibitem{BirrellDavies1982}
+N.~D.~Birrell and P.~C.~W.~Davies,
+\\textit{Quantum Fields in Curved Space}
+(Cambridge University Press, Cambridge, 1982).
+
 \bibitem{Vassilevich2003}
 D.~V.~Vassilevich,
 Phys.\ Rept.\ \textbf{388}, 279--360 (2003),

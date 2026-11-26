@@ -2399,7 +2399,7 @@ completion.
 Regression coverage includes the exact conformal-massless and
 Minkowski-massive limits, finite-band vacuum cancellation, independent
 W2 derivative finite differences, the matched external-mass Ward
-identity, and fail-closed inputs. Exact-head CI is pending.
+identity, and fail-closed inputs. Exact-head workflow 45795403829 passed 222 Python regression cases, the 4/4 homogeneous smoke scan, and the 11-grid bare-WKB UV audit. The 48-page PDF built; three overfull equations in the new display are split in the follow-up layout commit.
 
 This advances only the local free-field renormalization controls.
 Finite renormalization conditions, momentum tails, a renormalized

@@ -5137,13 +5137,17 @@ def test_fourth_order_stress_subtraction_removes_exact_conformal_and_minkowski_v
         effective_mass_squared_derivatives=(0.0, 0.0, 0.0, 0.0, 0.0),
         curvature_coupling=1.0 / 6.0,
     )
-    for key in (
-        "rho_subtracted_finite_band_GeV4",
-        "pressure_subtracted_finite_band_GeV4",
-        "variance_subtracted_order0_to2_finite_band_GeV2",
-    ):
-        assert abs(conformal[key]) < 2.0e-14 * max(
-            abs(conformal["rho_bare_finite_band_GeV4"]), 1.0
+    comparisons = (
+        ("rho_subtracted_finite_band_GeV4", "rho_bare_finite_band_GeV4"),
+        ("pressure_subtracted_finite_band_GeV4", "pressure_bare_finite_band_GeV4"),
+        (
+            "variance_subtracted_order0_to2_finite_band_GeV2",
+            "variance_bare_finite_band_GeV2",
+        ),
+    )
+    for subtracted_key, bare_key in comparisons:
+        assert abs(conformal[subtracted_key]) < 2.0e-14 * max(
+            abs(conformal[bare_key]), 1.0e-300
         )
     assert conformal["mode_wronskian_max_normalized_error"] < 1.0e-14
 
@@ -5159,13 +5163,17 @@ def test_fourth_order_stress_subtraction_removes_exact_conformal_and_minkowski_v
         ),
         curvature_coupling=0.13,
     )
-    for key in (
-        "rho_subtracted_finite_band_GeV4",
-        "pressure_subtracted_finite_band_GeV4",
-        "variance_subtracted_order0_to2_finite_band_GeV2",
-    ):
-        assert abs(minkowski[key]) < 2.0e-14 * max(
-            abs(minkowski["rho_bare_finite_band_GeV4"]), 1.0
+    comparisons = (
+        ("rho_subtracted_finite_band_GeV4", "rho_bare_finite_band_GeV4"),
+        ("pressure_subtracted_finite_band_GeV4", "pressure_bare_finite_band_GeV4"),
+        (
+            "variance_subtracted_order0_to2_finite_band_GeV2",
+            "variance_bare_finite_band_GeV2",
+        ),
+    )
+    for subtracted_key, bare_key in comparisons:
+        assert abs(minkowski[subtracted_key]) < 2.0e-14 * max(
+            abs(minkowski[bare_key]), 1.0e-300
         )
     assert minkowski["renormalized_stress_tensor_claimed"] is False
     json.dumps(minkowski, allow_nan=False)

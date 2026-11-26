@@ -285,8 +285,9 @@ positive zeroth-order and full mode frequencies on the supplied band.
 It returns bare, counterterm and subtracted finite-band rho, pressure
 and variance, plus the external-mass source
 (1/2) dot(M^2) <psi^2>. For M^2=m_eff^2(Phi), positive-Phi downward
-motion has dot(M^2)<0, preserving the declared negative psi-sector
-transfer rather than calling it positive injection.
+motion has dot(M^2)<0. At the classical/bare level with psi^2>=0
+this is negative transfer; a finite renormalized variance can be
+sign-indefinite, so its finite source must be evaluated explicitly.
 
 Six regressions cover exact conformal-massless and Minkowski-massive
 limits, exact finite-band vacuum subtraction in both controls, independent
@@ -302,3 +303,14 @@ loops, or lattice counterterms are included. No physical quantum
 waterfall or relic result is claimed. Gate 5 remains NOT MET and Gate
 10 remains PARTIAL pending exact-head CI and the outstanding warning
 cleanup.
+
+
+## 2026-11-26 exact-head verification of R1.3
+
+Workflow [45795403829](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45795403829) on code head 91aea66bf2fd8101d850c9ab30d8b190d99da8ea completed successfully:
+- 222 Python regression cases passed.
+- The two-scale homogeneous CI smoke scan passed 4/4 with zero failed integrations. The strict-JSON rows use the exact endpoint-matched Phi_c/M_Pl=0.9862280831209068, explicitly record quantum_vacuum_seeded=false, and have maximum chain-rule continuity residual 3.3603e-12.
+- The 11-grid bare-WKB UV audit passed. Its fixed-spacing volume spread is 2.38067e-13 and its high-cutoff log slope is 3.8822733. The artifact explicitly retains zero-point energy and records vacuum_subtraction_applied=false, counterterms_applied=false and continuum_limit_claimed=false.
+- The 48-page manuscript PDF built. The first exact-head pass exposed three overfull equations in the newly added R1.3 subsection; those equations are split in the follow-up layout commit. Underfull boxes remain elsewhere, and the full scan/convergence jobs were skipped by design.
+
+The Python and numerical control jobs are green, but this does not convert the finite-band WKB helper into a complete renormalization prescription. Gate 5 remains NOT MET.

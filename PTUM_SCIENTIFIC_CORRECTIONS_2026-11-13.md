@@ -2732,9 +2732,9 @@ and variance.
 
 The external-mass Ward identity is recorded as
 dot(rho)+3H(rho+p)=0.5 dot(M^2)<psi^2>. For the PTUM waterfall mass and
-positive-Phi downward motion, dot(M^2)<0, so the psi-sector source is
-negative under the declared split. This does not overturn the previous
-sign convention.
+positive-Phi downward motion, dot(M^2)<0. For a classical/bare positive
+psi^2 this is negative transfer under the declared split; a finite
+renormalized variance may be sign-indefinite and must be evaluated.
 
 Regression coverage includes conformal massless and Minkowski massive
 exact limits, finite-band vacuum cancellation, independent W2 derivative
@@ -2743,3 +2743,13 @@ input checks. Exact-head CI for this new implementation is pending.
 This remains a local subtraction control, not a finite renormalized
 stress tensor, renormalized Phi force, self-consistent backreaction,
 CTP result, or lattice counterterm. Gate 5 remains NOT MET.
+
+
+Exact-head workflow 45795403829 verified 222 Python tests, a 4/4
+homogeneous smoke scan, and the 11-grid bare-WKB UV audit. The strict
+scan JSON retained the exact Phi_c and quantum_vacuum_seeded=false.
+The UV artifact retained zero-point energy and explicitly made no
+subtraction, counterterm, or continuum-limit claim. The 48-page PDF
+built but exposed three overfull equations in the new R1.3 display;
+the follow-up manuscript edit splits those displays and adds the
+standard adiabatic-regularization references. Underfull warnings remain.

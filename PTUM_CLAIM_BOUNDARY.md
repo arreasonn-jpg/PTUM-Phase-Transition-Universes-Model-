@@ -1528,3 +1528,10 @@ PTUM initial-value problem, CTP finite parts, SM/gauge/fermion/graviton
 loops, self-consistent Friedmann backreaction and lattice counterterms
 remain absent. No quantum-waterfall, relic-density or observational
 claim is promoted. Gate 5 remains NOT MET.
+
+
+The external-mass Ward identity has the sign
+dot(rho)+3H(rho+p)=0.5 dot(M^2)<psi^2>. With dot(M^2)<0, a classical
+positive psi^2 gives negative transfer; a finite renormalized variance
+can be sign-indefinite, so no universal sign is assigned to the
+renormalized finite source.
