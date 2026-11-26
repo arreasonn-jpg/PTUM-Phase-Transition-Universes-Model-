@@ -1510,3 +1510,21 @@ The new field-variance routine remains a finite-band R1 control only.
 It does not close the renormalized stress tensor, the Phi force, the
 initial Friedmann constraint or the nonlinear lattice counterterms.
 Gate 5 remains NOT MET and Gate 10 remains PARTIAL.
+
+
+## 2026-11-26 fourth-order adiabatic stress boundary
+
+The branch now derives local fourth-order WKB counterterms for the
+homogeneous Hilbert energy density and pressure of one real scalar on
+caller-supplied spatially flat FLRW histories. It also provides a
+finite-band bare-minus-counterterm integrator with Wronskian and
+positive-frequency checks. The order-two field-variance UV subtraction
+is kept distinct from the optional order-four WKB completion used in
+the matched stress Ward diagnostic.
+
+This is not a fully renormalized stress tensor or force on Phi:
+finite matching conditions, IR/UV tail treatment, the interacting
+PTUM initial-value problem, CTP finite parts, SM/gauge/fermion/graviton
+loops, self-consistent Friedmann backreaction and lattice counterterms
+remain absent. No quantum-waterfall, relic-density or observational
+claim is promoted. Gate 5 remains NOT MET.

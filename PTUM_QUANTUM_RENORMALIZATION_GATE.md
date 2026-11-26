@@ -265,3 +265,40 @@ Workflow [45591701409](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Un
 - The 48-page LaTeX PDF built with zero Overfull boxes and no unresolved references/citations after the bibliography rerun. 80 Underfull hbox warnings remain.
 
 The analytic conformal-scalar benchmark is verified as a free-field control only. It is not a general adiabatic subtraction, an independent point-splitting comparison, or a renormalization of the massive interacting PTUM waterfall. R1 remains partial and Gate 5 remains **NOT MET**.
+
+
+## 2026-11-26 R1.3 fourth-order adiabatic stress-tensor control
+
+The new ptum_adiabatic_stress.py module derives the order-four WKB
+frequency and the corresponding Hilbert energy-density and isotropic
+pressure counterterms for a real scalar with external time-dependent
+mass and curvature coupling on a supplied spatially flat FLRW history.
+The implementation uses conformal-time derivative jets through fourth
+order, expands the nonlinear WKB equation consistently, and returns
+both order-two and order-four field-variance completions. The standard
+field-variance UV subtraction is still identified as order two; the
+order-four variance is exposed separately for the matched WKB
+energy-transfer identity.
+
+The finite-band integrator checks the canonical Wronskian and requires
+positive zeroth-order and full mode frequencies on the supplied band.
+It returns bare, counterterm and subtracted finite-band rho, pressure
+and variance, plus the external-mass source
+(1/2) dot(M^2) <psi^2>. For M^2=m_eff^2(Phi), positive-Phi downward
+motion has dot(M^2)<0, preserving the declared negative psi-sector
+transfer rather than calling it positive injection.
+
+Six regressions cover exact conformal-massless and Minkowski-massive
+limits, exact finite-band vacuum subtraction in both controls, independent
+finite-difference checks of W2' and W2'', the matched order-four
+external-mass Ward identity, and fail-closed Wronskian/frequency/jet
+validation.
+
+This closes only a local free-field adiabatic stress-counterterm
+derivation/control. The integrals remain finite-band; no IR/UV tails,
+finite renormalization conditions, finite CTP part, renormalized Phi
+force, self-consistent Friedmann backreaction, SM/gauge/fermion/graviton
+loops, or lattice counterterms are included. No physical quantum
+waterfall or relic result is claimed. Gate 5 remains NOT MET and Gate
+10 remains PARTIAL pending exact-head CI and the outstanding warning
+cleanup.

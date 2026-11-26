@@ -5567,6 +5567,89 @@ waterfall field, implement a general FLRW adiabatic subtraction, or
 include PTUM backreaction.
 
 
+
+\subsubsection{Fourth-order adiabatic stress-tensor subtraction control}
+\label{sec:ptum_adiabatic_stress_control}
+
+For a real scalar with external homogeneous mass $M^2(\eta)$ and curvature
+coupling $\xi$, define the canonical mode $v_k=a\psi_k$ in conformal time:
+\begin{equation}
+v_k''+\left[k^2+a^2M^2+(6\xi-1)\frac{a''}{a}\right]v_k=0,
+\qquad
+\omega_k^2=k^2+a^2M^2,\qquad
+\sigma=(6\xi-1)\frac{a''}{a}.
+\end{equation}
+The WKB frequency $W_k=\omega_k+W_k^{(2)}+W_k^{(4)}$ follows from
+\begin{equation}
+W_k^2=\omega_k^2+\sigma-\frac{W_k''}{2W_k}
++\frac{3(W_k')^2}{4W_k^2},
+\end{equation}
+with
+\begin{align}
+W_k^{(2)}
+&=\frac{\sigma}{2\omega_k}
+-\frac{\omega_k''}{4\omega_k^2}
++\frac{3(\omega_k')^2}{8\omega_k^3},\\
+W_k^{(4)}
+&=\frac{1}{2\omega_k}\left[
+-\frac12\left(
+\frac{W_k^{(2)''}}{\omega_k}
+-\frac{\omega_k''W_k^{(2)}}{\omega_k^2}
+\right)
++\frac32\frac{\omega_k'}{\omega_k}
+\left(
+\frac{W_k^{(2)'}}{\omega_k}
+-\frac{\omega_k'W_k^{(2)}}{\omega_k^2}
+\right)
+-(W_k^{(2)})^2
+\right].
+\end{align}
+Writing $S_k=|v_k|^2=1/(2W_k)$ and
+$A_k=\mathcal H+W_k'/(2W_k)$, the Hilbert energy-density and isotropic
+pressure counterterms are
+\begin{align}
+\rho_{k,\mathrm{ad}}^{(0-4)}
+&=\frac{1}{a^4}\left[
+\frac{W_k}{4}
++\frac{A_k^2+\omega_k^2}{4W_k}
++3\xi\left(\mathcal H S_k'-\mathcal H^2S_k\right)
+\right]_{0-4},\\
+p_{k,\mathrm{ad}}^{(0-4)}
+&=\frac{1}{a^4}\left[
+\frac{W_k}{4}
++\frac{A_k^2-k^2/3-a^2M^2}{4W_k}
++\xi\left(-S_k''+3\mathcal H S_k'-3\mathcal H^2S_k\right)
+\right]_{0-4}.
+\end{align}
+The bracket means expand the displayed expressions and retain terms
+through fourth adiabatic order. Derivatives of $S_k$ are retained only
+to the order required by that truncation. The field-variance UV
+counterterm remains order two; the order-four variance completion is
+reported separately only to expose the matched WKB Ward-identity
+diagnostic.
+
+For the external-mass sector split, the exact classical identity is
+\begin{equation}
+\dot\rho_\psi+3H(\rho_\psi+p_\psi)
+=\frac12\dot M^2\,\langle\psi^2\rangle .
+\end{equation}
+Thus, for $M^2=m_{\rm eff}^2(\Phi)$ and positive $\Phi$ rolling downward,
+$\dot M^2<0$ and this source is negative, consistent with the declared
+$(-+++)$ sector-transfer convention. The regression suite checks the
+matched order-four WKB counterterm identity, the exact conformal-massless
+and Minkowski-massive limits, and independent finite differences of
+the $W_k^{(2)}$ derivatives.
+
+The implementation is deliberately finite-band and requires positive
+zeroth-order and full mode frequencies on the supplied band. It does
+not extrapolate the infrared or ultraviolet tails, select finite
+renormalization conditions, compute a finite renormalized force on
+$\Phi$, solve a self-consistent Friedmann system, include SM/gauge/fermion
+loops, or provide nonlinear lattice counterterms. It is a local
+adiabatic subtraction control, not a renormalized PTUM stress tensor or
+a physical quantum-waterfall prediction. Gate 5 remains NOT MET.
+
+
 \paragraph{Scope of the calculations currently present.}
 The public Python implementation contains a homogeneous two-field
 $(\Phi,\psi)$ background solver, a linear $\chi_k$ mode solver on

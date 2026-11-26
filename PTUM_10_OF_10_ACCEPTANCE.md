@@ -2382,3 +2382,28 @@ The new field-variance routine remains a finite-band R1 control only.
 It does not close the renormalized stress tensor, the Phi force, the
 initial Friedmann constraint or the nonlinear lattice counterterms.
 Gate 5 remains NOT MET and Gate 10 remains PARTIAL.
+
+
+## 2026-11-26 R1.3 local fourth-order adiabatic stress control
+
+A new order-four WKB stress-counterterm module and finite-band
+integrator have been added for a real scalar with an external
+time-dependent mass on supplied spatially flat FLRW backgrounds.
+The code derives W2 and W4 from the nonlinear WKB frequency equation,
+varies the same nonminimally coupled scalar Hilbert tensor into rho
+and pressure, checks canonical Wronskian normalization, and refuses
+non-positive adiabatic frequencies. The order-two field-variance UV
+subtraction remains distinct from the order-four matched WKB variance
+completion.
+
+Regression coverage includes the exact conformal-massless and
+Minkowski-massive limits, finite-band vacuum cancellation, independent
+W2 derivative finite differences, the matched external-mass Ward
+identity, and fail-closed inputs. Exact-head CI is pending.
+
+This advances only the local free-field renormalization controls.
+Finite renormalization conditions, momentum tails, a renormalized
+Phi force, self-consistent Friedmann backreaction, CTP finite parts,
+SM/gauge/fermion/graviton loops, and lattice counterterms remain absent.
+Gate 5 remains NOT MET; Gate 10 remains PARTIAL until exact-head CI and
+the remaining warning cleanup are complete. PTUM is not 10/10.

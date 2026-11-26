@@ -2716,3 +2716,30 @@ The new field-variance routine remains a finite-band R1 control only.
 It does not close the renormalized stress tensor, the Phi force, the
 initial Friedmann constraint or the nonlinear lattice counterterms.
 Gate 5 remains NOT MET and Gate 10 remains PARTIAL.
+
+
+## 2026-11-26 fourth-order adiabatic stress-tensor control
+
+Added a local order-four WKB derivation for the Hilbert rho and pressure
+counterterms of a real scalar on externally supplied spatially flat
+FLRW histories. The implementation carries conformal-time jets through
+fourth derivative, computes W2 and W4 from the nonlinear WKB equation,
+and exposes the order-two field-variance UV subtraction separately
+from an order-four matched variance completion. The finite-band
+integrator checks canonical Wronskian normalization and positive
+frequencies, then reports bare, counterterm and subtracted rho, pressure
+and variance.
+
+The external-mass Ward identity is recorded as
+dot(rho)+3H(rho+p)=0.5 dot(M^2)<psi^2>. For the PTUM waterfall mass and
+positive-Phi downward motion, dot(M^2)<0, so the psi-sector source is
+negative under the declared split. This does not overturn the previous
+sign convention.
+
+Regression coverage includes conformal massless and Minkowski massive
+exact limits, finite-band vacuum cancellation, independent W2 derivative
+finite differences, a matched order-four Ward identity, and fail-closed
+input checks. Exact-head CI for this new implementation is pending.
+This remains a local subtraction control, not a finite renormalized
+stress tensor, renormalized Phi force, self-consistent backreaction,
+CTP result, or lattice counterterm. Gate 5 remains NOT MET.

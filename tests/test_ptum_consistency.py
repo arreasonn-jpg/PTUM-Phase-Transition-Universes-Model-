@@ -5055,3 +5055,229 @@ def test_adiabatic_variance_subtraction_rejects_nonpositive_frequency_and_bad_gr
             scale_factor_second=0.0,
             effective_mass_squared=1.0,
         )
+
+
+# Fourth-order adiabatic stress-tensor subtraction controls.
+def _ptum_polynomial_derivatives_at(coefficients, eta):
+    import math
+    return [
+        sum(
+            coefficients[order] * eta ** (order - derivative_order)
+            / math.factorial(order - derivative_order)
+            for order in range(derivative_order, 5)
+        )
+        for derivative_order in range(5)
+    ]
+
+
+def test_fourth_order_adiabatic_stress_has_exact_conformal_massless_limit():
+    from ptum_adiabatic_stress import fourth_order_adiabatic_stress_coefficients
+
+    k = np.geomspace(0.05, 8.0, 40)
+    a = 2.4
+    result = fourth_order_adiabatic_stress_coefficients(
+        k,
+        scale_factor_derivatives=(a, 0.37, 0.0, 0.0, 0.0),
+        effective_mass_squared_derivatives=(0.0, 0.0, 0.0, 0.0, 0.0),
+        curvature_coupling=1.0 / 6.0,
+    )
+    assert np.allclose(
+        result["rho_mode_counterterm"], k / (2.0 * a**4),
+        rtol=2.0e-15, atol=1.0e-300,
+    )
+    assert np.allclose(
+        result["pressure_mode_counterterm"], k / (6.0 * a**4),
+        rtol=2.0e-15, atol=1.0e-300,
+    )
+    assert np.allclose(
+        result["field_variance_mode_counterterm_order0_to2"],
+        1.0 / (2.0 * k * a**2),
+        rtol=2.0e-15, atol=1.0e-300,
+    )
+    assert np.all(result["WKB_frequency_order2"] == 0.0)
+    assert np.all(result["WKB_frequency_order4"] == 0.0)
+    assert result["adiabatic_order_stress_tensor"] == 4
+    assert result["assumptions"]["renormalized_PTUM_stress_tensor_claimed"] is False
+
+
+def test_fourth_order_adiabatic_stress_has_exact_minkowski_massive_limit():
+    from ptum_adiabatic_stress import fourth_order_adiabatic_stress_coefficients
+
+    k = np.geomspace(0.1, 12.0, 48)
+    mass_squared = 2.5
+    omega = np.sqrt(k**2 + mass_squared)
+    result = fourth_order_adiabatic_stress_coefficients(
+        k,
+        scale_factor_derivatives=(1.0, 0.0, 0.0, 0.0, 0.0),
+        effective_mass_squared_derivatives=(
+            mass_squared, 0.0, 0.0, 0.0, 0.0
+        ),
+        curvature_coupling=0.13,
+    )
+    assert np.allclose(result["rho_mode_counterterm"], omega / 2.0)
+    assert np.allclose(result["pressure_mode_counterterm"], k**2 / (6.0 * omega))
+    assert np.allclose(
+        result["field_variance_mode_counterterm_order0_to2"],
+        1.0 / (2.0 * omega),
+    )
+    assert np.all(result["WKB_frequency_order2"] == 0.0)
+    assert np.all(result["WKB_frequency_order4"] == 0.0)
+
+
+def test_fourth_order_stress_subtraction_removes_exact_conformal_and_minkowski_vacua():
+    from ptum_adiabatic_stress import adiabatically_subtracted_stress_tensor_finite_band
+
+    k = np.geomspace(0.1, 8.0, 64)
+    eta = 0.23
+    conformal_modes = np.exp(-1j * k * eta) / np.sqrt(2.0 * k)
+    conformal_derivatives = -1j * k * conformal_modes
+    conformal = adiabatically_subtracted_stress_tensor_finite_band(
+        k, conformal_modes, conformal_derivatives,
+        scale_factor_derivatives=(2.4, 0.37, 0.0, 0.0, 0.0),
+        effective_mass_squared_derivatives=(0.0, 0.0, 0.0, 0.0, 0.0),
+        curvature_coupling=1.0 / 6.0,
+    )
+    for key in (
+        "rho_subtracted_finite_band_GeV4",
+        "pressure_subtracted_finite_band_GeV4",
+        "variance_subtracted_order0_to2_finite_band_GeV2",
+    ):
+        assert abs(conformal[key]) < 2.0e-14 * max(
+            abs(conformal["rho_bare_finite_band_GeV4"]), 1.0
+        )
+    assert conformal["mode_wronskian_max_normalized_error"] < 1.0e-14
+
+    mass_squared = 2.5
+    omega = np.sqrt(k**2 + mass_squared)
+    minkowski_modes = np.exp(-1j * omega * eta) / np.sqrt(2.0 * omega)
+    minkowski_derivatives = -1j * omega * minkowski_modes
+    minkowski = adiabatically_subtracted_stress_tensor_finite_band(
+        k, minkowski_modes, minkowski_derivatives,
+        scale_factor_derivatives=(1.0, 0.0, 0.0, 0.0, 0.0),
+        effective_mass_squared_derivatives=(
+            mass_squared, 0.0, 0.0, 0.0, 0.0
+        ),
+        curvature_coupling=0.13,
+    )
+    for key in (
+        "rho_subtracted_finite_band_GeV4",
+        "pressure_subtracted_finite_band_GeV4",
+        "variance_subtracted_order0_to2_finite_band_GeV2",
+    ):
+        assert abs(minkowski[key]) < 2.0e-14 * max(
+            abs(minkowski["rho_bare_finite_band_GeV4"]), 1.0
+        )
+    assert minkowski["renormalized_stress_tensor_claimed"] is False
+    json.dumps(minkowski, allow_nan=False)
+
+
+def test_fourth_order_wkb_frequency_derivatives_match_independent_finite_differences():
+    from ptum_adiabatic_stress import fourth_order_adiabatic_stress_coefficients
+
+    k = np.asarray([1.7, 2.1])
+    a0 = [2.3, 0.4, 0.08, -0.03, 0.015]
+    m0 = [1.2, 0.2, -0.05, 0.02, -0.01]
+    eta = 0.13
+    step = 3.0e-4
+
+    def coefficients_at(time):
+        return fourth_order_adiabatic_stress_coefficients(
+            k,
+            scale_factor_derivatives=_ptum_polynomial_derivatives_at(a0, time),
+            effective_mass_squared_derivatives=_ptum_polynomial_derivatives_at(
+                m0, time
+            ),
+            curvature_coupling=0.17,
+        )
+
+    center = coefficients_at(eta)
+    plus = coefficients_at(eta + step)
+    minus = coefficients_at(eta - step)
+    w2_fd_first = (
+        plus["WKB_frequency_order2"][0]
+        - minus["WKB_frequency_order2"][0]
+    ) / (2.0 * step)
+    w2_fd_second = (
+        plus["WKB_frequency_order2"][0]
+        - 2.0 * center["WKB_frequency_order2"][0]
+        + minus["WKB_frequency_order2"][0]
+    ) / step**2
+    assert center["WKB_frequency_order2_prime"][0] == pytest.approx(
+        w2_fd_first, rel=2.0e-7, abs=1.0e-10
+    )
+    assert center["WKB_frequency_order2_second"][0] == pytest.approx(
+        w2_fd_second, rel=2.0e-6, abs=1.0e-9
+    )
+
+
+def test_fourth_order_adiabatic_counterterms_satisfy_external_mass_ward_identity():
+    from ptum_adiabatic_stress import fourth_order_adiabatic_stress_coefficients
+
+    k = np.geomspace(1.0, 10.0, 320)
+    a0 = [1.3, 0.2, 0.07, 0.015, -0.006]
+    m0 = [0.8, 0.11, -0.03, 0.012, -0.004]
+    xi = 0.1
+    step = 1.0e-4
+    measure = k**2 / (2.0 * np.pi**2)
+
+    def integrated_counterterms(time):
+        a = _ptum_polynomial_derivatives_at(a0, time)
+        mass = _ptum_polynomial_derivatives_at(m0, time)
+        result = fourth_order_adiabatic_stress_coefficients(
+            k,
+            scale_factor_derivatives=a,
+            effective_mass_squared_derivatives=mass,
+            curvature_coupling=xi,
+        )
+        rho = float(np.trapezoid(measure * result["rho_mode_counterterm"], k))
+        pressure = float(np.trapezoid(
+            measure * result["pressure_mode_counterterm"], k
+        ))
+        variance4 = float(np.trapezoid(
+            measure * result["field_variance_mode_counterterm_order0_to4"], k
+        ))
+        return rho, pressure, variance4, a, mass
+
+    rho, pressure, variance4, a, mass = integrated_counterterms(0.0)
+    rho_plus = integrated_counterterms(step)[0]
+    rho_minus = integrated_counterterms(-step)[0]
+    rho_dot = (rho_plus - rho_minus) / (2.0 * step * a[0])
+    hubble = a[1] / a[0]**2
+    mass_squared_dot = mass[1] / a[0]
+    transfer = 0.5 * mass_squared_dot * variance4
+    residual = rho_dot + 3.0 * hubble * (rho + pressure) - transfer
+    scale = max(
+        abs(rho_dot),
+        abs(3.0 * hubble * (rho + pressure)),
+        abs(transfer),
+        1.0e-30,
+    )
+    assert abs(residual) / scale < 1.0e-7
+
+
+def test_fourth_order_adiabatic_stress_rejects_bad_wronskian_and_unstable_band():
+    from ptum_adiabatic_stress import (
+        adiabatically_subtracted_stress_tensor_finite_band,
+        fourth_order_adiabatic_stress_coefficients,
+    )
+
+    k = np.asarray([0.5, 1.0, 2.0])
+    with pytest.raises(ValueError, match="Wronskian normalization"):
+        adiabatically_subtracted_stress_tensor_finite_band(
+            k, np.ones(3, dtype=complex), np.zeros(3, dtype=complex),
+            scale_factor_derivatives=(1.0, 0.0, 0.0, 0.0, 0.0),
+            effective_mass_squared_derivatives=(1.0, 0.0, 0.0, 0.0, 0.0),
+        )
+    with pytest.raises(ValueError, match="full zeroth-plus-curvature frequency"):
+        fourth_order_adiabatic_stress_coefficients(
+            np.asarray([0.1, 0.2]),
+            scale_factor_derivatives=(1.0, 0.0, 2.0, 0.0, 0.0),
+            effective_mass_squared_derivatives=(0.0, 0.0, 0.0, 0.0, 0.0),
+            curvature_coupling=0.0,
+        )
+    with pytest.raises(ValueError, match="five conformal-time derivatives"):
+        fourth_order_adiabatic_stress_coefficients(
+            k,
+            scale_factor_derivatives=(1.0, 0.0, 0.0, 0.0),
+            effective_mass_squared_derivatives=(1.0, 0.0, 0.0, 0.0, 0.0),
+        )
