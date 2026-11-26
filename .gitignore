@@ -19,3 +19,38 @@ htmlcov/
 ptum_inflation_scan.json
 
 task1_parameter_scan_results.json
+
+# Windows download artifacts
+*.Zone.Identifier
+*:Zone.Identifier
+
+# Backups and patches (dev only)
+*.bak
+*.bak_*
+*.pre_*
+*.orig
+*.patch
+*.patch:Zone.Identifier
+
+# Large artifacts (should be in LFS or external)
+PTUM.zip
+PTUM_BDF_*.zip
+*.log
+*.json
+!task1_parameter_scan_results.json
+!colab_environment.json
+!ptum_task1_18point_scan_colab.json
+
+# Metrics and audit outputs (reproducible, not source)
+ptum_*_pilot.json
+ptum_*_full*.json
+ptum_*_metrics*.txt
+ptum_validation80_*.json
+amplification_breakdown_summary.txt
+dense_eom_*.txt
+
+# Backup directories
+backup_per_field_ulp_*/
+
+# Misc dev files
+'ts -maxdepth 1 -type f \'
