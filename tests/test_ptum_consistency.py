@@ -1689,6 +1689,34 @@ def test_domain_wall_bias_required_source_can_annihilate_before_bbn():
     assert result["annihilation_before_bbn"]
     assert result["annihilation_before_wall_domination"]
 
+def test_required_domain_wall_source_flags_small_bias_extrapolation():
+    from ptum_defects import domain_wall_bias_diagnostics
+
+    kwargs = dict(
+        mu_eff=1.0e4, lambda_psi=0.1, hubble_bbn=1.0e-20,
+        reduced_planck_mass=2.435e18,
+    )
+    controlled = domain_wall_bias_diagnostics(
+        epsilon_bias=0.0, network_area_factor=1.0, **kwargs
+    )
+    assert controlled["required_linear_source_small_bias_approx_valid"]
+    assert controlled["required_linear_source_to_spinodal_ratio"] == pytest.approx(
+        controlled["required_linear_source_for_bbn_and_domination"]
+        / controlled["epsilon_critical"]
+    )
+    assert controlled["required_linear_source_to_spinodal_ratio"] < 0.1
+
+    extrapolated = domain_wall_bias_diagnostics(
+        epsilon_bias=0.0, network_area_factor=3.0e27, **kwargs
+    )
+    ratio = extrapolated["required_linear_source_to_spinodal_ratio"]
+    assert ratio == pytest.approx(
+        extrapolated["required_linear_source_for_bbn_and_domination"]
+        / extrapolated["epsilon_critical"]
+    )
+    assert 0.1 < ratio < 1.0
+    assert not extrapolated["required_linear_source_small_bias_approx_valid"]
+
 
 def test_complex_dimension_five_wilson_coefficient_splits_scalar_and_pseudoscalar_couplings():
     from ptum_defects import broken_phase_fermion_couplings_from_wilson

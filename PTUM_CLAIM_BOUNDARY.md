@@ -1652,3 +1652,17 @@ Overfull hboxes or unresolved references/citations. The 100-row
 homogeneous scan and paired convergence evidence remain on unchanged
 simulation source head b388bfe; this documentation/test-only commit
 does not alter the equations or solver. Gate 10 remains PARTIAL.
+
+
+
+
+## 2026-11-26 domain-wall linear-source validity boundary
+
+The analytic defect helper now reports the ratio of the *required
+linearized* source to the spinodal source and a separate boolean stating
+whether the required source lies inside the declared small-bias range.
+The current benchmark-like case is safely inside that range; an extreme
+network-area control test confirms the helper flags extrapolation rather
+than treating the linear formula as reliable. This does not calculate
+the SM expectation value, predict the actual bias, or simulate wall
+formation/annihilation. Gate 5 remains NOT MET.

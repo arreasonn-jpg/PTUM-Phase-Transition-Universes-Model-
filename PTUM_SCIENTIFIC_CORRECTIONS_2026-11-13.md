@@ -2927,3 +2927,22 @@ Artifact checksums:
 The final LaTeX pass has 87 Underfull hbox warnings, zero Overfull
 hboxes and zero unresolved references/citations. Gate 10 remains PARTIAL
 until warning cleanup and clean-room reproducibility are complete.
+
+
+## 2026-11-26 domain-wall required-source validity guard
+
+The defect diagnostic previously returned the linearized source
+\(\epsilon_{\rm req}^{\rm lin}=\Delta V_{\rm req}/(2v)\) without
+separately indicating whether that *required* source itself lies in
+the small-bias expansion domain. This could be extrapolated beyond the
+range where \(\Delta V\simeq2\epsilon v\) is controlled even when the
+actual supplied bias was small. The code now returns
+\(r_{\rm req}=\epsilon_{\rm req}^{\rm lin}/\epsilon_{\rm crit}\) and
+\texttt{required_linear_source_small_bias_approx_valid}, using the
+explicit \texttt{small_bias_fraction} (default 0.1). A regression
+covers both the benchmark-like small-ratio case and a large-network
+case where the required linear source is below spinodal but outside
+the declared small-bias range. No annihilation estimate is promoted
+when the actual bias lies outside its own small-bias domain.
+This is an analytic diagnostic guard, not a domain-wall network
+simulation; Gate 5 remains NOT MET.

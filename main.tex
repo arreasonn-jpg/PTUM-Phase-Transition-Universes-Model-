@@ -1202,6 +1202,16 @@ wall domination and BBN is therefore
 \max(H_{\rm BBN},H_{\rm dom}).
 \label{eq:ptum_domain_wall_bias_bound}
 \end{equation}
+The diagnostic also reports the linearized source
+$\epsilon_{\rm req}^{\rm lin}
+=\sigma_{\rm wall}\max(H_{\rm BBN},H_{\rm dom})/(2v)$ and its
+spinodal ratio
+$r_{\rm req}=\epsilon_{\rm req}^{\rm lin}/\epsilon_{\rm crit}$.
+It marks this required-source estimate self-consistent only when
+$r_{\rm req}\le f_{\rm small}$, where $f_{\rm small}=0.1$ by default
+and is an explicit diagnostic input. If this condition fails, the
+linearized source is retained only as an extrapolation; it is not
+reported as a reliable annihilation requirement.
 
 For a conditional benchmark, take the late broken-phase limit
 $\Phi=0$, so that $\mu_{\rm eff}=m_\psi$, and use

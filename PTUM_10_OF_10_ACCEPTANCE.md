@@ -2563,3 +2563,19 @@ long scans because the commit changes only documentation/tests; the
 full scan and paired homogeneous convergence remain verified on the
 unchanged simulation source head b388bfe in workflow 45800154570.
 Gate 10 remains PARTIAL.
+
+
+## 2026-11-26 domain-wall required-source validity check
+
+A small fail-closed refinement was added to \texttt{ptum_defects.py}.
+The helper now returns the ratio
+\(r_{\rm req}=\epsilon_{\rm req}^{\rm lin}/\epsilon_{\rm crit}\) and
+\texttt{required_linear_source_small_bias_approx_valid}. The validity
+flag checks the required linearized source against the configured
+small-bias fraction (default 0.1), rather than relying only on whether
+the currently supplied bias is small. Regression tests cover both a
+benchmark-like valid source and a large-network extrapolation where
+\(0.1<r_{\rm req}<1\). This closes no physical defect criterion:
+the Wilson coefficient, renormalized SM condensate, thermal history,
+network dynamics and annihilation simulation remain missing. Gate 5
+remains NOT MET.

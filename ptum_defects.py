@@ -398,6 +398,10 @@ def domain_wall_bias_diagnostics(
     required_delta_v = sigma * max(hubble_bbn, h_dom)
     required_epsilon_linear = required_delta_v / (2.0 * v)
     epsilon_critical = float(tilted["epsilon_critical"])
+    required_source_ratio = required_epsilon_linear / epsilon_critical
+    required_source_small_bias_valid = bool(
+        required_source_ratio <= small_bias_fraction
+    )
     small_bias_valid = (
         bool(tilted["metastable_vacuum_exists"])
         and epsilon_bias_magnitude <= small_bias_fraction * epsilon_critical
@@ -450,6 +454,10 @@ def domain_wall_bias_diagnostics(
         "annihilation_before_wall_domination": before_domination,
         "required_vacuum_bias_for_bbn_and_domination": required_delta_v,
         "required_linear_source_for_bbn_and_domination": required_epsilon_linear,
+        "required_linear_source_to_spinodal_ratio": float(required_source_ratio),
+        "required_linear_source_small_bias_approx_valid": (
+            required_source_small_bias_valid
+        ),
         "network_area_factor": network_area_factor,
         "small_bias_fraction": small_bias_fraction,
         "cosmological_estimates_are_order_of_magnitude": True,
