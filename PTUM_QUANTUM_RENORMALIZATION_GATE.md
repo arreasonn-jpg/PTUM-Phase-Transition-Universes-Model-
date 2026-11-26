@@ -314,3 +314,32 @@ Workflow [45795403829](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Un
 - The 48-page manuscript PDF built. The first exact-head pass exposed three overfull equations in the newly added R1.3 subsection; those equations are split in the follow-up layout commit. Underfull boxes remain elsewhere, and the full scan/convergence jobs were skipped by design.
 
 The Python and numerical control jobs are green, but this does not convert the finite-band WKB helper into a complete renormalization prescription. Gate 5 remains NOT MET.
+
+## 2026-11-26 R1.3 exact massive de Sitter mode control
+
+An additional independent analytic control now tests the fourth-order
+stress counterterms on a **massive, minimally coupled** scalar in de
+Sitter, not only on the conformal-massless and Minkowski-massive limits.
+For \(H=1\), \(a(\eta)=-1/\eta\), \(M^2=2\), and \(\xi=0\), the mass
+and curvature terms cancel in the canonical mode equation:
+\[
+\Omega_k^2=k^2+a^2M^2-a''/a=k^2,\qquad
+v_k=e^{-ik\eta}/\sqrt{2k}.
+\]
+At \(\eta=-1\), the exact bare Hilbert mode contributions are
+\[
+\rho_{k,\mathrm{bare}}=k/2+3/(4k),\qquad
+p_{k,\mathrm{bare}}=k/6-1/(4k).
+\]
+The new regression checks the exact mode Wronskian and compares these
+closed-form expressions with the order-four local counterterms at
+\(k=20,40,80\). The residuals scale as \(k^{-7}\), consistent with the
+first omitted sixth adiabatic order. The manuscript displays the same
+analytic control.
+
+This is a stronger R1 free-field UV check, but it does **not** supply
+momentum-tail integration, a cutoff-independent finite stress tensor,
+independent point-splitting in a general background, finite matching
+conditions, a renormalized \(\Phi\) force, or self-consistent
+Friedmann/CTP backreaction. It does not change the bare lattice
+initializer or its UV divergence. Gate 5 remains **NOT MET**.

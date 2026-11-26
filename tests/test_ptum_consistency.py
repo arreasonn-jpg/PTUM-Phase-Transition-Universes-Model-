@@ -5289,3 +5289,68 @@ def test_fourth_order_adiabatic_stress_rejects_bad_wronskian_and_unstable_band()
             scale_factor_derivatives=(1.0, 0.0, 0.0, 0.0),
             effective_mass_squared_derivatives=(1.0, 0.0, 0.0, 0.0, 0.0),
         )
+def test_fourth_order_adiabatic_stress_matches_exact_massive_de_sitter_modes():
+    """Check the order-four UV subtraction against an exact massive de Sitter mode.
+
+    In units H=1 at eta=-1, a=-1/eta gives a=1, a''/a=2 and
+    M^2=2 with xi=0.  The curvature and mass terms cancel in the
+    canonical mode equation, so v_k=exp(-ik eta)/sqrt(2k) is exact.
+    The first omitted sixth adiabatic order gives a k^-7 remainder
+    in each mode stress component.
+    """
+    from pathlib import Path
+
+    from ptum_adiabatic_stress import fourth_order_adiabatic_stress_coefficients
+
+    k = np.asarray([20.0, 40.0, 80.0])
+    a_derivatives = (1.0, 1.0, 2.0, 6.0, 24.0)
+    mass_derivatives = (2.0, 0.0, 0.0, 0.0, 0.0)
+    result = fourth_order_adiabatic_stress_coefficients(
+        k,
+        scale_factor_derivatives=a_derivatives,
+        effective_mass_squared_derivatives=mass_derivatives,
+        curvature_coupling=0.0,
+    )
+
+    # Omega_k^2 = k^2 + a^2 M^2 - a''/a = k^2 exactly.
+    omega_squared = k**2 + 1.0**2 * 2.0 - 2.0
+    assert np.allclose(omega_squared, k**2, rtol=0.0, atol=0.0)
+
+    eta = -1.0
+    modes = np.exp(-1j * k * eta) / np.sqrt(2.0 * k)
+    mode_derivatives = -1j * k * modes
+    wronskian = (
+        modes * np.conjugate(mode_derivatives)
+        - mode_derivatives * np.conjugate(modes)
+    )
+    assert np.allclose(wronskian, 1j, rtol=0.0, atol=2.0e-15)
+
+    # Exact bare Hilbert mode contributions at a=1 and H=1.
+    rho_exact = k / 2.0 + 3.0 / (4.0 * k)
+    pressure_exact = k / 6.0 - 1.0 / (4.0 * k)
+    rho_remainder = result["rho_mode_counterterm"] - rho_exact
+    pressure_remainder = result["pressure_mode_counterterm"] - pressure_exact
+
+    assert np.all(np.isfinite(rho_remainder))
+    assert np.all(np.isfinite(pressure_remainder))
+    assert np.all(rho_remainder > 0.0)
+    assert np.all(pressure_remainder < 0.0)
+
+    # The order-four counterterms remove all k, k^-1, k^-3 and k^-5
+    # terms: the remaining exact-mode mismatch is O(k^-7).
+    assert np.all((rho_remainder * k**7 > 3.5) & (rho_remainder * k**7 < 5.0))
+    assert np.all(
+        (pressure_remainder * k**7 < -8.0)
+        & (pressure_remainder * k**7 > -12.0)
+    )
+    np.testing.assert_allclose(
+        rho_remainder[:-1] / rho_remainder[1:], 2.0**7, rtol=0.04
+    )
+    np.testing.assert_allclose(
+        pressure_remainder[:-1] / pressure_remainder[1:], 2.0**7, rtol=0.04
+    )
+
+    manuscript = Path("main.tex").read_text(encoding="utf-8")
+    assert "Independent massive de Sitter control" in manuscript
+    assert r"\rho_{k,\mathrm{bare}}=\frac{k}{2}+\frac{3}{4k}" in manuscript
+    assert r"p_{k,\mathrm{bare}}=\frac{k}{6}-\frac{1}{4k}" in manuscript

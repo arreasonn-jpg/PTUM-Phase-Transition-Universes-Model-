@@ -2753,3 +2753,21 @@ subtraction, counterterm, or continuum-limit claim. The 48-page PDF
 built but exposed three overfull equations in the new R1.3 display;
 the follow-up manuscript edit splits those displays and adds the
 standard adiabatic-regularization references. Underfull warnings remain.
+
+## 2026-11-26 independent massive de Sitter adiabatic-stress control
+
+A new exact-mode regression tests the fourth-order free-field stress
+counterterms in a non-conformal expanding background. For de Sitter
+\(H=1\), \(a=-1/\eta\), a minimally coupled scalar with \(M^2=2\),
+and \(\xi=0\), the canonical frequency is exactly \(k\) because
+\(a^2M^2=a''/a\). The exact plane-wave mode has Wronskian \(i\).
+At \(\eta=-1\), the exact bare Hilbert mode stresses are
+\(\rho_k=k/2+3/(4k)\) and \(p_k=k/6-1/(4k)\). The new test compares
+these with the local order-four counterterms for \(k=20,40,80\) and
+checks the expected \(k^{-7}\) first-omitted-order residual in both
+components. The manuscript records the derivation and limitation.
+
+This is an independent analytic free-field control. It is not a
+renormalized finite-band continuum result, a point-splitting
+implementation, an interacting waterfall calculation, or a physical
+PTUM prediction. Gate 5 remains NOT MET.

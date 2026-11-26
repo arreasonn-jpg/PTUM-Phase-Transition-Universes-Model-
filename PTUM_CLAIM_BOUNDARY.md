@@ -1535,3 +1535,23 @@ dot(rho)+3H(rho+p)=0.5 dot(M^2)<psi^2>. With dot(M^2)<0, a classical
 positive psi^2 gives negative transfer; a finite renormalized variance
 can be sign-indefinite, so no universal sign is assigned to the
 renormalized finite source.
+
+## 2026-11-26 exact massive de Sitter R1.3 control
+
+### Supported after exact-head regression
+- For \(H=1\), \(a=-1/\eta\), \(M^2=2\), and \(\xi=0\), the canonical
+  mode equation reduces exactly to \(v_k''+k^2v_k=0\).
+- The analytic plane-wave mode, canonical Wronskian, and exact bare
+  Hilbert mode stresses are compared with the fourth-order local
+  counterterms. The residual is checked to scale as \(k^{-7}\) over the
+  declared test momenta \(k=20,40,80\).
+
+### Not supported
+- A general independent point-splitting stress tensor, integrated
+  cutoff-independent stress, or a full IR/UV momentum-tail treatment.
+- Finite renormalization conditions, the interacting PTUM \(\lambda_\psi\)
+  theory, a renormalized force on \(\Phi\), CTP finite parts,
+  self-consistent Friedmann backreaction, or lattice counterterms.
+- Quantum-seeded nonlinear waterfall, rescattering, defect-network
+  abundance, relic density, or observational constraints. Gate 5
+  remains NOT MET.
