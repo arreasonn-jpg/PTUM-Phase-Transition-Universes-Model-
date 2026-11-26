@@ -1636,3 +1636,19 @@ The exact-head smoke scan passed 4/4 and the 11-grid bare-WKB audit passed; both
   tolerance comparisons exceeded the strict threshold but were resolved
   by later refinement. This is not inhomogeneous or quantum convergence.
   Gate 7 remains NOT MET.
+
+
+## 2026-11-26 exact-head documentation CI boundary
+
+Workflow 45804043025 on commit
+\texttt{65eab8dfe3ff1e3c407946793e749f4255cfae40} passed 224 Python
+regression tests, 4/4 homogeneous smoke trajectories, the 11-grid
+bare-WKB UV audit and the 49-page manuscript build. The smoke artifact
+was strictly parsed and confirms the exact endpoint threshold and
+\texttt{quantum\_vacuum\_seeded=false}. The UV artifact remains a bare
+cutoff audit with zero-point energy retained and no subtraction or
+counterterms. The final PDF has 87 Underfull hbox warnings but no
+Overfull hboxes or unresolved references/citations. The 100-row
+homogeneous scan and paired convergence evidence remain on unchanged
+simulation source head b388bfe; this documentation/test-only commit
+does not alter the equations or solver. Gate 10 remains PARTIAL.

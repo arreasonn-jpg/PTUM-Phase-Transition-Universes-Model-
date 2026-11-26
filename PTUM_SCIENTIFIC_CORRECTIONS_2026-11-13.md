@@ -2885,6 +2885,45 @@ The first documentation-only regression run on commit 6c2fb71
 passed 223/224 tests. Its sole failure was a manuscript test expecting
 the literal unescaped token \texttt{quantum_vacuum_seeded=false};
 the LaTeX source correctly escapes underscores inside \texttt{\textbackslash texttt}.
-The assertion is corrected to require the escaped LaTeX token. The
-LaTeX build, smoke, and UV jobs in that run succeeded; the follow-up
-exact-head CI result is pending.
+The assertion was corrected to require the escaped LaTeX token.
+Follow-up workflow [45804043025](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45804043025)
+on commit \texttt{65eab8dfe3ff1e3c407946793e749f4255cfae40} passed
+224/224 Python tests, the 4/4 smoke scan, and the 11-grid UV audit.
+The 49-page PDF built; its final LaTeX pass had 87 Underfull hbox
+warnings, zero Overfull hboxes, and no unresolved references/citations.
+The smoke JSON was strictly parsed (4/4 successful, exact
+\(\Phi_c/M_{\rm Pl}=0.9862280831209068\), quantum seed flag false,
+maximum chain-rule residual \(3.36033\times10^{-12}\)). The UV JSON
+was strictly parsed and continues to show retained zero-point energy,
+no subtraction/counterterms/continuum claim, and high-cutoff slope
+3.8822733. This documentation/test-only commit does not change the
+simulation source; the 100-row scan and paired convergence remain tied
+to exact simulation head b388bfe in workflow 45800154570.
+
+
+## 2026-11-26 exact-head documentation regression and artifact verification
+
+The corrected manuscript regression is now green on exact branch head
+\texttt{65eab8dfe3ff1e3c407946793e749f4255cfae40}. Workflow
+[45804043025](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45804043025)
+passed 224 Python tests, 4/4 smoke trajectories, the 11-grid UV audit,
+and the 49-page PDF build. Strict-JSON smoke and UV artifacts were
+parsed with non-finite constants rejected.
+
+Artifact checksums:
+- smoke ZIP:
+  \texttt{ad27977c5e56c9b2252bffbc4bc1c2d52df7676eca4143d9f176607a34fb87e5};
+  JSON:
+  \texttt{105e3c4e1e560ba5d292da7ca476b50e0e308fe9088fa4641e2b48e21d4766f6};
+- UV ZIP:
+  \texttt{e1cbcdab425855495d5cc95f9a878b8338695fc758d948bd504f1abeb178d4f5};
+  JSON:
+  \texttt{260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749};
+- PDF ZIP:
+  \texttt{6d1307ef8561dda4adb848784e0a3b13a7ff61e40cadd2435b1256e79451737a};
+  PDF:
+  \texttt{f177179f7c02cd0a8cf94d04d007f2516709a1e58356ecfb50c9092ddbf0ff07}.
+
+The final LaTeX pass has 87 Underfull hbox warnings, zero Overfull
+hboxes and zero unresolved references/citations. Gate 10 remains PARTIAL
+until warning cleanup and clean-room reproducibility are complete.

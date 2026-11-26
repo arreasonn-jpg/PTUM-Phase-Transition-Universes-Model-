@@ -15,7 +15,7 @@ This file defines the evidence required before PTUM can be called scientifically
 | 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The exact-head 100-row scan has 5/100 quartic-classifier rows, all in the low-scale underdamped control with the largest manually imposed classical seed \(\psi_{\rm init}=5\psi_0\) and offset \(0.01\Phi_c\); none of the 50 high-scale threshold-matched trajectories passes. Their \(w_{\psi,\rm exc}=0.3722\text{--}0.3736\), \(Q=10.65\text{--}11.07\), virial ratio \(0.9061\text{--}0.9096\), and \(H/\omega\simeq6.9\times10^{-5}\text{--}7.0\times10^{-5}\) are stable across all five tested homogeneous grid/tolerance profiles. This is a narrow classical control, not a quantum-seeded attractor or microscopic proxy-fluid. Sound speed, anisotropic stress, inhomogeneous stability and robust parameter-volume evidence remain absent |
 | 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. The repository includes conditional broken-phase scalar/pseudoscalar two-body and electroweak-symmetric chiral three-body vacuum widths, plus a continuous constant-\(w_c\), constant-\(\Gamma\), constant-\(g_*\) condensate/radiation FRW integrator. On exact head `150487c`, the BDF stiff-tail correction passes the 178-test regression, including five continuous-history tests. The integrator includes radiation in \(H\), independent cumulative condensate/radiation/total energy-budget residuals, \(T(N)\), sampled \(T_{\max}\), \(H=\Gamma\), radiation-domination events and \(S_{\rm com}(N)\). This remains a conditional constant-parameter benchmark, not a PTUM-derived prediction: Wilson matrices, cutoff, quasiparticle mass history, coupled energy partition, thermal thresholds, blocking/enhancement, inverse processes, portal pair production and nonperturbative preheating are unresolved. |
 | 9. Observational reproducibility | Public exact CLASS patch; pinned version/commit; complete configs, likelihoods, data, chains and commands; independent rerun reproduces posteriors and model comparison | **NOT MET**. Reported numbers are author-reported; patch availability and chains remain unverified |
-| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Exact-head workflow [45800154570](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45800154570) on simulation head b388bfe passed 224 Python cases, 4/4 smoke trajectories, the 11-grid bare-WKB audit, 100/100 full scan, 500/500 paired convergence integrations and 400 comparisons, and the 49-page LaTeX build. All strict-JSON artifacts were inspected. The final LaTeX pass had 81 Underfull hbox warnings, zero Overfull hboxes and zero unresolved references/citations. The full-grid convergence ZIP SHA-256 is 440c45ab73dc1ed9f8bfb8ea09f43a823a43b74f7d9b53ba4092812ef8be73e4; full-scan ZIP f4ab5ee18afb92a6509b50fe5062a529354b2333a841457edad5fd5b5bad0916; smoke ZIP 287842d84f422fa793e34704c9229e4570110b64f851f2a540e5e06f9c468448; UV ZIP c1a11323f22ac2eebe7834c3b1eba997b2451ef423c94615407af2fcf3ef1142; PDF ZIP ba4fd888242021ae4e70c9f4962e24616154823865b1837013b30e54e36bb6db. Documentation commit 6c2fb71 then exposed one regression assertion that expected an unescaped LaTeX underscore (223/224 passed); this commit corrects the assertion, with follow-up CI pending. Clean-room reproducibility and warning cleanup remain open |
+| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Exact simulation workflow [45800154570](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45800154570) passed 224 Python cases, 4/4 smoke trajectories, the 11-grid bare-WKB audit, 100/100 full scan, 500/500 paired convergence integrations and 400 comparisons. Follow-up documentation/test workflow [45804043025](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45804043025) passed 224 Python cases, 4/4 smoke, the 11-grid UV audit and the 49-page PDF build. Its final LaTeX pass had 87 Underfull hbox warnings, zero Overfull hboxes and zero unresolved references/citations. Smoke ZIP SHA-256 ad27977c5e56c9b2252bffbc4bc1c2d52df7676eca4143d9f176607a34fb87e5; UV ZIP e1cbcdab425855495d5cc95f9a878b8338695fc758d948bd504f1abeb178d4f5; PDF ZIP 6d1307ef8561dda4adb848784e0a3b13a7ff61e40cadd2435b1256e79451737a. The UV artifact retains zero-point energy and claims no subtraction, counterterms or continuum limit. Clean-room reproducibility and warning cleanup remain open |
 
 ## Current implementation evidence
 
@@ -2492,8 +2492,10 @@ vacuum subtraction, counterterms, or continuum-limit claim.
 The full-scan workflow completed successfully. The paired study's
 strict-JSON artifact is recorded below; the documentation-only regression
 run on 6c2fb71 had one assertion-only failure (223/224) because the test
-expected an unescaped LaTeX underscore. The corrected assertion is in
-the current follow-up commit; its CI result is pending.
+expected an unescaped LaTeX underscore. The corrected assertion is in commit
+\texttt{65eab8dfe3ff1e3c407946793e749f4255cfae40}; workflow 45804043025
+passed all 224 Python tests. Its final LaTeX pass retains 87 Underfull
+hbox warnings, with zero Overfull hboxes and no unresolved references.
 
 
 
@@ -2540,3 +2542,24 @@ retains zero-point energy and applies no vacuum subtraction or
 counterterms; its high-cutoff bare-stress slope is 3.8822733. Gate 4
 is MET only for the homogeneous post-threshold background domain;
 Gates 5 and 7 remain NOT MET and Gate 10 remains PARTIAL.
+
+
+
+## 2026-11-26 exact-head documentation/test CI
+
+Workflow [45804043025](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45804043025) on head
+\texttt{65eab8dfe3ff1e3c407946793e749f4255cfae40} passed 224/224
+Python regression cases, 4/4 smoke trajectories, the 11-grid bare-WKB
+UV audit and the 49-page manuscript build. The exact smoke and UV JSON
+artifacts were strictly parsed. The smoke uses the exact endpoint
+threshold, explicitly records quantum_vacuum_seeded=false, and has
+maximum chain-rule residual \(3.36033\times10^{-12}\). The UV audit
+retains zero-point energy, applies no vacuum subtraction or counterterms,
+and reports high-cutoff bare-stress slope 3.8822733.
+
+The final LaTeX pass has 87 Underfull hbox warnings, zero Overfull
+hboxes and zero unresolved references/citations. This run skipped the
+long scans because the commit changes only documentation/tests; the
+full scan and paired homogeneous convergence remain verified on the
+unchanged simulation source head b388bfe in workflow 45800154570.
+Gate 10 remains PARTIAL.
