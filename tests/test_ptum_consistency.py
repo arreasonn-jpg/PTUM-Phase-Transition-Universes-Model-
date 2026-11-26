@@ -2080,7 +2080,7 @@ def test_mukhanov_sasaki_spectrum_claim_remains_author_reported():
 
 
 
-def test_manuscript_separates_historical_scans_from_exact_head_baseline():
+def test_manuscript_reports_exact_head_scan_and_paired_convergence():
     from pathlib import Path
 
     source = " ".join(Path("main.tex").read_text(encoding="utf-8").split())
@@ -2092,13 +2092,21 @@ def test_manuscript_separates_historical_scans_from_exact_head_baseline():
         "41 non-quartic, 4 insufficient-oscillation, and 5 quartic-classifier rows",
         "All five quartic-classifier rows occur only in the low-scale control",
         r"\psi_{\rm init}=5\psi_0",
-        "quantum_vacuum_seeded=false",
-        "paired 100-row",
+        r"quantum\_vacuum\_seeded=false",
+        "paired exact-head 100-row output-grid/solver-tolerance study",
+        "completed 500/500 successful integrations and 400 comparisons",
+        "All 100 output-grid comparisons passed",
+        "Every row's sampled finite-difference continuity residual decreased",
+        "median observed order was 0.9906",
+        "The three intermediate comparisons that exceeded the strict state threshold",
+        "The finest adjacent tolerance comparison passed 100/100",
+        "all 100 regime flags and metric-availability patterns remained unchanged",
         "not evidence for a quantum-seeded attractor",
         "not a microscopic prediction of the present",
     )
     for phrase in required:
         assert phrase in source
+    assert "is still running" not in source
     assert "No trajectory passes the joint quartic classifier" not in source
     assert "only two late half-cycles occur" not in source
 

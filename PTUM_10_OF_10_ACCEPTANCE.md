@@ -9,13 +9,13 @@ This file defines the evidence required before PTUM can be called scientifically
 | 1. Complete action and conventions | One explicit covariant action; fixed metric/sign conventions; all fields, dimensions, gauge representations, potentials, couplings, real/complex field choices and symmetry-breaking structure specified | **MET (classical tree-level EFT)**. The minimally coupled Einstein + PTUM + chiral-SM action, field representations, canonical dimensions, Higgs and Yukawa potentials, dimension-five PTUM operators, and the explicit ψ/Φ_res symmetry scope are specified. The manuscript now displays the exact per-generation SU(3)^3, SU(3)^2U(1), SU(2)^2U(1), U(1)^3 and mixed gravitational-U(1) anomaly sums; a Fraction-based registry audit checks these and the even-doublet SU(2) Witten condition. Quantum/UV completion remains outside this gate and open separately |
 | 2. Inflation-to-waterfall connection | Exact inflation endpoint; threshold crossing in the same coupled background; stability of all modes before crossing; quantum seed prescription | **PARTIAL**. The wrapper initializes from the integrated single-field inflationary trajectory at Phi=(1+start_fraction)Phi_c and evolves the expanding psi-bar=0 invariant background through Phi_c. Linear psi_k modes are initialized in a first-order adiabatic vacuum in the stable phase and evolved through tachyonic intervals with Wronskian and adiabaticity checks; the exact-head regression verifies that the initial field and velocity match the inflationary trajectory. This is not a self-consistent coupled quantum background: mode stress/force does not backreact, all-mode stability and an IR/UV-complete initial-state prescription across all relevant modes is not demonstrated, and nonlinear rescattering/SM sources are absent |
 | 3. Hilbert tensors and conservation | Every sector tensor derived from the same action; all Q_i^nu derived; sum of currents cancels; numerical conservation converges independently with solver tolerance and timestep | **PARTIAL**. The classical tree-level gauge, Higgs, chiral-fermion and PTUM Hilbert tensors and all interaction currents are now written from one action; the current solver does not evolve SM fields, and full-sector numerical conservation/timestep-tolerance convergence is not yet demonstrated |
-| 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **MET for the homogeneous two-field post-threshold background domain**. The historical 500/500 DOP853 integration suite and its paired comparisons remain valid. On exact code head `c42a9a8e7007fc223297b475282a729d5a068595`, the fresh 100-row sensitivity scan completed 100/100 with zero failures. The targeted convergence study completed 36/36 runs and passed all four case summaries. The full paired study then completed 500/500 integrations and 400 comparisons across the same 100 initial conditions: all 100 output-grid comparisons passed; every finite-difference continuity residual decreased from 4,001 to 256,001 points, with median observed order 0.9906 and minimum reduction factor 1.3797. Successive tolerance refinements passed 98/100, 99/100 and 100/100 rows; the state and classification error envelopes decreased monotonically, all flags and metric availability remained unchanged, and the finest adjacent comparison passed 100/100. Three earlier pairwise comparisons exceeded the strict state threshold but were resolved by subsequent refinement; they are not hidden or counted as passing. This gate remains scoped to homogeneous post-threshold equations and does not close Gates 2 or 5 |
+| 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **MET for the homogeneous two-field post-threshold background domain**. Exact simulation source head \texttt{b388bfe371b46b229266320a4a3edc9812a65e18}: 100/100 baseline trajectories and the paired 500/500 integration, 400-comparison study passed. All 100 output-grid comparisons passed; every finite-difference continuity residual decreased on the 4,001-to-256,001 grid refinement (median observed order 0.9906; minimum reduction factor 1.3797). Successive tolerance refinements passed 98/100, 99/100, and 100/100; three intermediate comparisons exceeded strict limits but were resolved by subsequent refinement. State/classification error envelopes were monotonic, all 100 regime flags and metric-availability patterns were unchanged across five profiles, and the finest adjacent comparison passed 100/100. This gate remains limited to homogeneous post-threshold equations and does not close Gates 2 or 5 |
 | 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and a defect-topology analysis (including the Z2 domain-wall risk of a real waterfall scalar) | **NOT MET**. The branch now includes a second-order finite-band adiabatic variance subtraction and a fourth-order free-field Hilbert stress-counterterm control. A separate linear wrapper evolves adiabatic-vacuum psi_k modes through the threshold on the expanding psi-bar=0 background, but without quantum stress/force backreaction or nonlinear rescattering. R1.3 is tested in exact conformal-massless, Minkowski-massive and massive minimally coupled de Sitter limits; the latest regression adds an exact de Sitter plane-wave/Wronskian check and verifies the expected k^-7 mode-stress remainder after fourth-order subtraction. These are local free-field controls only. The 3-D classical lattice still retains zero-point energy: its fixed-box audit shows a bare stress growth factor 16664.2325 and high-cutoff slope 3.8822733. No interacting finite renormalization conditions, full momentum tails, renormalized Phi force, self-consistent initial Friedmann closure, CTP finite part, lattice counterterms or cutoff-independent quantum continuum limit are available. Quantum-seeded backreaction, converged rescattering and a physical defect-network prediction remain unestablished. |
 | 6. Resonance and relic abundance | Expanding-background mode equations; converged monodromy/Floquet growth; momentum integration; backreaction; thermalization and entropy dilution; independently reproduced relic abundance | **NOT MET**. The waterfall wrapper builds a psi-bar=0 expanding-FRW history from the integrated inflationary state and evolves a finite band of linear modes from a first-order adiabatic vacuum through the tachyonic interval. The spectrum remains finite-band; the momentum grid and IR/UV tails are not converged. There is no self-consistent quantum backreaction, converged monodromy/Floquet/relic calculation, nonlinear rescattering, thermalization or entropy dilution |
-| 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The fresh 100-row scan found 5/100 trajectories classified as quartic, all five in the low-scale underdamped control, all at the largest tested classical seed (\(\psi_{\rm init}=5\psi_0\)) and smaller field offset (\(0.01\Phi_c\)); none of the 50 high-scale threshold-matched trajectories reached the quartic class. These five controls have \(w_{\psi,\rm exc}=0.3722\text{--}0.3736\), \(Q=10.65\text{--}11.07\), virial ratio \(0.9061\text{--}0.9096\), and \(H/\omega\simeq6.9\times10^{-5}\text{--}7.0\times10^{-5}\). This is a narrow homogeneous, manually seeded control region, not a quantum-seeded attractor or a microscopic proxy-fluid realization. Sound speed, anisotropic stress, inhomogeneous stability and robust parameter-volume convergence remain absent |
+| 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The exact-head 100-row scan has 5/100 quartic-classifier rows, all in the low-scale underdamped control with the largest manually imposed classical seed \(\psi_{\rm init}=5\psi_0\) and offset \(0.01\Phi_c\); none of the 50 high-scale threshold-matched trajectories passes. Their \(w_{\psi,\rm exc}=0.3722\text{--}0.3736\), \(Q=10.65\text{--}11.07\), virial ratio \(0.9061\text{--}0.9096\), and \(H/\omega\simeq6.9\times10^{-5}\text{--}7.0\times10^{-5}\) are stable across all five tested homogeneous grid/tolerance profiles. This is a narrow classical control, not a quantum-seeded attractor or microscopic proxy-fluid. Sound speed, anisotropic stress, inhomogeneous stability and robust parameter-volume evidence remain absent |
 | 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. The repository includes conditional broken-phase scalar/pseudoscalar two-body and electroweak-symmetric chiral three-body vacuum widths, plus a continuous constant-\(w_c\), constant-\(\Gamma\), constant-\(g_*\) condensate/radiation FRW integrator. On exact head `150487c`, the BDF stiff-tail correction passes the 178-test regression, including five continuous-history tests. The integrator includes radiation in \(H\), independent cumulative condensate/radiation/total energy-budget residuals, \(T(N)\), sampled \(T_{\max}\), \(H=\Gamma\), radiation-domination events and \(S_{\rm com}(N)\). This remains a conditional constant-parameter benchmark, not a PTUM-derived prediction: Wilson matrices, cutoff, quasiparticle mass history, coupled energy partition, thermal thresholds, blocking/enhancement, inverse processes, portal pair production and nonperturbative preheating are unresolved. |
 | 9. Observational reproducibility | Public exact CLASS patch; pinned version/commit; complete configs, likelihoods, data, chains and commands; independent rerun reproduces posteriors and model comparison | **NOT MET**. Reported numbers are author-reported; patch availability and chains remain unverified |
-| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Exact-head workflow [45799709372](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45799709372) on cb4ee0ebeae8ced796691d0dce4690373337da70 passed 224 Python regression cases, the 4/4 two-scale homogeneous smoke scan, the 11-grid bare-WKB lattice UV audit and the 49-page LaTeX build. The final LaTeX pass had 81 Underfull hbox warnings, zero Overfull hboxes and zero unresolved references/citations. The smoke and UV JSON artifacts were strictly parsed with non-finite constants rejected; the smoke rows use Phi_c/M_Pl=0.9862280831209068, explicitly record quantum_vacuum_seeded=false, and have maximum chain-rule residual 3.36033e-12. The long 100-row scan and paired convergence jobs were skipped for this non-FULL-SCAN commit; the following documentation commit is marked FULL-SCAN to request fresh exact-head validation. The lattice UV artifact still retains zero-point energy and claims no vacuum subtraction, counterterms or continuum limit. Artifact ZIP SHA-256 values: smoke 5150acc964a2058288657fdc721cabb59d17e433bcd3360c9ccf07f97a58c995, UV 8f17e088c5990b1571a6de973612f6b15273a0200d11b888d871089bffa4a0e9, PDF 512a929fa894bea5a795ce2a018a1e88d9754515615b99c707420d64ee8994cb. Clean-room reproducibility and warning cleanup remain open |
+| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Exact-head workflow [45800154570](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45800154570) on simulation head b388bfe passed 224 Python cases, 4/4 smoke trajectories, the 11-grid bare-WKB audit, 100/100 full scan, 500/500 paired convergence integrations and 400 comparisons, and the 49-page LaTeX build. All strict-JSON artifacts were inspected. The final LaTeX pass had 81 Underfull hbox warnings, zero Overfull hboxes and zero unresolved references/citations. The full-grid convergence ZIP SHA-256 is 440c45ab73dc1ed9f8bfb8ea09f43a823a43b74f7d9b53ba4092812ef8be73e4; full-scan ZIP f4ab5ee18afb92a6509b50fe5062a529354b2333a841457edad5fd5b5bad0916; smoke ZIP 287842d84f422fa793e34704c9229e4570110b64f851f2a540e5e06f9c468448; UV ZIP c1a11323f22ac2eebe7834c3b1eba997b2451ef423c94615407af2fcf3ef1142; PDF ZIP ba4fd888242021ae4e70c9f4962e24616154823865b1837013b30e54e36bb6db. Documentation commit 6c2fb71 then exposed one regression assertion that expected an unescaped LaTeX underscore (223/224 passed); this commit corrects the assertion, with follow-up CI pending. Clean-room reproducibility and warning cleanup remain open |
 
 ## Current implementation evidence
 
@@ -2470,9 +2470,14 @@ inhomogeneous stability, or a microscopic proxy-fluid realization.
 
 The maximum chain-rule continuity residual is \(1.19986\times10^{-10}\);
 the maximum finite-difference residual ratio is \(3.72337\times10^{-2}\)
-and remains sampling-sensitive. The paired current-head 100-row,
-500-integration output-grid/solver-tolerance revalidation was still
-running at the time of this update. Gate 4 remains scoped to the
+and remains sampling-sensitive. The paired current-head 100-row/500-integration output-grid and
+solver-tolerance revalidation completed successfully: 100/100 output-grid
+comparisons passed; all 100 finite-difference residuals decreased on
+grid refinement; tolerance refinements passed 98/100, 99/100 and 100/100;
+all 100 classifications and metric-availability patterns were unchanged
+across five profiles; and the finest adjacent tolerance comparison
+passed 100/100. Three intermediate pairwise comparisons exceeded strict
+thresholds but were resolved by later refinement. Gate 4 remains scoped to the
 homogeneous post-threshold domain; Gate 5 remains NOT MET, Gate 7
 remains NOT MET, and Gate 10 remains PARTIAL.
 
@@ -2484,4 +2489,54 @@ and zero unresolved references/citations. Strict-JSON smoke and UV
 artifacts were inspected. The UV audit still shows a high-cutoff
 bare-stress log slope of 3.8822733, retained zero-point energy, and no
 vacuum subtraction, counterterms, or continuum-limit claim.
-The paired convergence job is the only workflow job still in progress.
+The full-scan workflow completed successfully. The paired study's
+strict-JSON artifact is recorded below; the documentation-only regression
+run on 6c2fb71 had one assertion-only failure (223/224) because the test
+expected an unescaped LaTeX underscore. The corrected assertion is in
+the current follow-up commit; its CI result is pending.
+
+
+
+## 2026-11-26 exact-head paired convergence completion
+
+The full-scan workflow [45800154570](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45800154570) completed successfully on simulation source head
+\texttt{b388bfe371b46b229266320a4a3edc9812a65e18}. The paired study
+contains 500/500 successful integrations (100 each at the reference
+4,001-point grid, 256,001-point grid, and three successively tighter
+solver tolerances) and 400 comparisons. Strict JSON parsing rejected
+non-finite constants and succeeded. Artifact ZIP SHA-256:
+\texttt{440c45ab73dc1ed9f8bfb8ea09f43a823a43b74f7d9b53ba4092812ef8be73e4};
+result JSON SHA-256:
+\texttt{de97dd3d35d5c20d0ee63c00fecd1c5efa0cf3b588a3083a4c0f7838da4f5d2c}.
+
+All 100 output-grid comparisons passed. Every finite-difference
+continuity residual decreased on the 64-fold grid refinement; the
+median observed order was 0.9905928, minimum observed order 0.0773922,
+median reduction factor 61.5445 and minimum reduction factor 1.3797.
+The three tolerance refinements had 98/100, 99/100 and 100/100 passing
+adjacent comparisons (297/300 overall). The three intermediate
+comparisons that exceeded strict thresholds were retained and resolved
+by subsequent refinement. State and classification error envelopes
+decreased monotonically; all 100 regime flags and metric-availability
+patterns remained unchanged across all five profiles; the finest
+adjacent comparison passed 100/100. Its maximum final-state relative
+difference was \(1.62786\times10^{-7}\), maximum normalized
+classification-metric difference \(6.36010\times10^{-11}\), maximum
+chain-rule residual difference \(1.56662\times10^{-10}\), and maximum
+finite-difference residual difference \(1.81134\times10^{-7}\).
+
+The 89 non-quartic / 6 insufficient-oscillation / 5 quartic-classifier
+baseline labels are therefore numerically stable within this declared
+homogeneous post-threshold grid/tolerance study. All five quartic rows
+remain confined to the low-scale manually seeded control; none appears
+in the high-scale threshold-matched set. This is not an inhomogeneous
+or quantum-waterfall convergence result and does not close Gate 7.
+
+The same workflow passed 224 Python regression cases, the 4/4 smoke
+scan, the 11-grid bare-WKB UV audit, and the 49-page manuscript build.
+The PDF retains 81 Underfull hbox warnings, with zero Overfull hboxes
+and zero unresolved references/citations. The lattice UV artifact still
+retains zero-point energy and applies no vacuum subtraction or
+counterterms; its high-cutoff bare-stress slope is 3.8822733. Gate 4
+is MET only for the homogeneous post-threshold background domain;
+Gates 5 and 7 remain NOT MET and Gate 10 remains PARTIAL.

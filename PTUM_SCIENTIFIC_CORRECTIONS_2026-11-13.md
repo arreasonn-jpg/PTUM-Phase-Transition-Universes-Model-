@@ -2857,10 +2857,34 @@ Workflow [45800154570](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Un
   homogeneous post-threshold sensitivity scan, not a quantum-seeded
   crossing or inhomogeneous waterfall.
 
-The paired 100-row/500-integration output-grid and solver-tolerance
-revalidation is still in progress on this head. The baseline
-classification counts are therefore recorded as observed, not yet
-promoted to a converged current-head result. Gate 7 remains NOT MET:
+The paired exact-head study completed 500/500 integrations and
+400 comparisons. All 100 output-grid comparisons passed; every
+finite-difference residual decreased on the 64-fold output-grid
+refinement, with median observed order 0.9906 and minimum reduction
+factor 1.3797. The three tolerance refinements passed 98/100, 99/100,
+and 100/100 adjacent comparisons. The three intermediate failures
+were resolved by subsequent refinement; state and classification
+error envelopes decreased monotonically, all 100 regime flags and
+metric-availability patterns were unchanged across all five profiles,
+and the finest adjacent comparison passed 100/100. The maximum
+final-pair state relative difference was 1.63e-7 and the maximum
+normalized classification-metric difference was 6.36e-11. The
+convergence artifact ZIP SHA-256 is
+\texttt{440c45ab73dc1ed9f8bfb8ea09f43a823a43b74f7d9b53ba4092812ef8be73e4};
+the extracted strict-JSON SHA-256 is
+\texttt{de97dd3d35d5c20d0ee63c00fecd1c5efa0cf3b588a3083a4c0f7838da4f5d2c}.
+The 89/6/5 regime counts and all five low-scale quartic labels are
+stable under the tested homogeneous grid/tolerance refinements. This
+does not test inhomogeneous or quantum-waterfall convergence. Gate 7 remains NOT MET:
 the five low-scale classical controls do not establish a high-scale
 quartic attractor, perturbative stability, or a microscopic proxy-fluid.
 Gate 5 remains NOT MET; Gate 10 remains PARTIAL.
+
+
+The first documentation-only regression run on commit 6c2fb71
+passed 223/224 tests. Its sole failure was a manuscript test expecting
+the literal unescaped token \texttt{quantum_vacuum_seeded=false};
+the LaTeX source correctly escapes underscores inside \texttt{\textbackslash texttt}.
+The assertion is corrected to require the escaped LaTeX token. The
+LaTeX build, smoke, and UV jobs in that run succeeded; the follow-up
+exact-head CI result is pending.

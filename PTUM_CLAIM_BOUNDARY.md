@@ -1628,6 +1628,11 @@ The exact-head smoke scan passed 4/4 and the 11-grid bare-WKB audit passed; both
 - Spatially inhomogeneous stability, sound speed, anisotropic stress,
   defect-network evolution, quantum backreaction, rescattering, or
   SM-sector energy transfer.
-- Current-head output-grid/solver-tolerance convergence: the paired
-  500-integration study in workflow 45800154570 was still running when
-  this boundary was recorded. Gate 7 remains NOT MET.
+- The homogeneous current-head output-grid/solver-tolerance study is
+  supported: 500/500 integrations and 400 comparisons completed;
+  100/100 output-grid comparisons passed, the final adjacent tolerance
+  comparison passed 100/100, and all 100 regime flags/metric-availability
+  patterns remained unchanged across five profiles. Three intermediate
+  tolerance comparisons exceeded the strict threshold but were resolved
+  by later refinement. This is not inhomogeneous or quantum convergence.
+  Gate 7 remains NOT MET.

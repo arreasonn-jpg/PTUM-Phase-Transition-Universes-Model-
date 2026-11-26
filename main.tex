@@ -58,8 +58,10 @@ solution. A microscopic quartic proxy-fluid regime has not yet been
 established. The exact-head homogeneous scan finds five
 classifier-positive trajectories only in a low-scale control with
 the largest manually specified classical seed, and none in the
-high-scale threshold-matched set; paired convergence and
-inhomogeneous dynamics remain outstanding. The proxy-fluid closure
+high-scale threshold-matched set. The paired output-grid and
+solver-tolerance study confirms that these homogeneous labels are
+stable across the tested refinements; inhomogeneous dynamics remain
+outstanding. The proxy-fluid closure
 therefore remains phenomenological. The formulation should be read as an effective phenomenological framework rather than as a first-principles derivation of the pre-discharge background, a solution of the cosmological-constant hierarchy, or a UV completion.%
 } % abstract'ın kapanış parantezi
 \PACS{
@@ -162,9 +164,11 @@ growth must be included. The exact-head 100-point homogeneous scan contains five
 classifier-positive quartic trajectories, all in the low-scale
 underdamped control with the largest manually specified classical
 field seed; none occurs in the high-scale threshold-matched set.
-The paired output-grid/solver-tolerance revalidation remains in
-progress, and these rows do not establish a quantum-seeded attractor
-or microscopic proxy-fluid realization.
+The paired 500-integration output-grid/solver-tolerance study passes
+its declared homogeneous convergence criteria and preserves all
+100 classification labels across five numerical profiles. This does
+not establish a quantum-seeded attractor or microscopic proxy-fluid
+realization.
 
 The aim of the present paper is therefore broader than a
 phenomenological dark-radiation study. We pursue three linked goals:
@@ -889,11 +893,30 @@ The maximum chain-rule continuity residual is
 $1.20\times10^{-10}$. The maximum sampled finite-difference residual
 normalized by $H\rho$ is $3.72\times10^{-2}$ and remains
 output-grid-sensitive; the chain-rule and finite-difference
-diagnostics are not interchangeable. The paired 100-row,
-500-integration output-grid/solver-tolerance revalidation in workflow
-45800154570 is still running. Until that study and its strict-JSON
-artifact are inspected, the baseline classifications are not promoted
-to a converged scan result.
+diagnostics are not interchangeable. The paired exact-head 100-row output-grid/solver-tolerance study
+completed 500/500 successful integrations and 400 comparisons in
+workflow 45800154570; its strict-JSON artifact was independently
+parsed. All 100 output-grid comparisons passed. Every row's sampled
+finite-difference continuity residual decreased from 4,001 to
+256,001 points; the median observed order was 0.9906, the minimum
+was 0.0774, and the minimum reduction factor was 1.3797. Thus the
+predeclared median-order and all-row-improvement criteria passed.
+
+The three successive tolerance refinements passed 98/100, 99/100,
+and 100/100 adjacent comparisons (297/300 overall). The three
+intermediate comparisons that exceeded the strict state threshold
+were resolved by subsequent refinement and are retained in the
+artifact. State and classification error envelopes decreased
+monotonically; all 100 regime flags and metric-availability patterns
+remained unchanged across all five study profiles. The finest
+adjacent tolerance comparison passed 100/100. Its maximum final-state
+relative difference was $1.63\\times10^{-7}$, maximum normalized
+classification-metric difference $6.36\\times10^{-11}$, maximum
+chain-rule residual difference $1.57\\times10^{-10}$, and maximum
+finite-difference residual difference $1.82\\times10^{-7}$.
+The five low-scale quartic-classifier labels are therefore stable
+under the tested homogeneous grid and solver refinements. This does
+not test spatial, quantum, or nonlinear-waterfall convergence.
 
 The scale tension between CMB normalization and a quartic proxy-fluid
 phase remains a research question, not a demonstrated no-go theorem.
