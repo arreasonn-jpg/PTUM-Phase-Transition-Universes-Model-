@@ -5680,13 +5680,20 @@ prescription, or an interacting PTUM prediction.
 
 \paragraph{Scope of the calculations currently present.}
 The public Python implementation contains a homogeneous two-field
-$(\Phi,\psi)$ background solver, a linear $\chi_k$ mode solver on
-externally supplied expanding-FRW histories, and the new nonlinear
-three-dimensional classical lattice subsystem with inhomogeneous
-$\psi$ but homogeneous $\Phi$. The lattice prototype includes classical
-backreaction and nonlinear mode coupling, but it is not a nonlinear
-lattice simulation of the full four-field system and it does not
-establish quantum-seeded dynamics, SM-sector backreaction,
+$(\Phi,\psi)$ background solver and a linear waterfall wrapper that
+constructs the expanding $\bar\psi=0$ trajectory from the integrated
+single-field inflationary solution above $\Phi_c$ and evolves it through
+the threshold. Linear $\psi_k$ modes are initialized in a first-order
+adiabatic vacuum while the effective mass is positive and are evolved
+through any tachyonic interval with Wronskian and adiabaticity checks.
+This is a test-field calculation: the quantum mode stress and force do
+not feed back into the Friedmann or $\Phi$ equations. The general linear
+mode utilities can also accept externally supplied expanding-FRW
+histories. The separate nonlinear three-dimensional classical lattice
+has inhomogeneous $\psi$ and homogeneous $\Phi$; it includes classical
+backreaction and nonlinear mode coupling, but it is not a quantum
+renormalized lattice simulation of the full four-field system and does
+not establish quantum-seeded nonlinear dynamics, SM-sector backreaction,
 thermalization, a relic abundance, or a physical defect probability.
 The proxy-fluid closure therefore remains phenomenological pending
 the calculations listed above.

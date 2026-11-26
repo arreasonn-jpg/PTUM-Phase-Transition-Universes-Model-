@@ -2784,3 +2784,23 @@ Workflow [45797854235](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Un
 Artifact checksums: smoke ZIP 557c0f8fa91d5ade3500d47b8e01563578d7886678333775a969021f89bc52e5 (strict JSON d3d85207367776136410b324d078279984224dfe1d707b43590e14700fb6e179); UV ZIP 8ef6b08480443eb5691029e7ec98f2053832968146d6cb0cdfe890a0b499bcff (strict JSON 260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749); manuscript ZIP df1a2ec2ce4cb35b553e5125139eaacdf5434940a78c416270d6db771d42daf3 (PDF 7020736ee15667decdfbf8719301903df6248633445404914f832505ff9e8886).
 
 The exact massive de Sitter control is verified. The lattice remains unsubtracted and cutoff dependent; no interacting renormalization, self-consistent backreaction, rescattering, or physical quantum-waterfall claim is promoted. Gate 5 remains NOT MET and Gate 10 remains PARTIAL.
+
+## 2026-11-26 clarification of the linear inflation-to-waterfall calculation
+
+The repository's waterfall wrapper does more than integrate a mode on
+an arbitrary external history. It obtains the initial Phi and Phi-dot
+from the integrated single-field inflationary solution at
+Phi=(1+delta)Phi_c, evolves the expanding psi-bar=0 invariant
+background through the threshold, and initializes linear psi_k
+modes in a first-order adiabatic vacuum in the stable phase. The modes
+are then evolved through any tachyonic interval with Wronskian and
+adiabaticity checks. A new regression verifies the exact initial
+inflationary field/velocity match and the subsequent stable-to-tachyonic
+mass sign change.
+
+This is a linear test-field crossing calculation, not a self-consistent
+coupled quantum background. The mode stress and force do not enter the
+Friedmann or Phi equations; there is no nonlinear quantum rescattering
+or SM-source evolution. The homogeneous post-threshold scan and the
+separate finite-cutoff classical lattice remain distinct calculations.
+Gate 2 remains PARTIAL; Gates 5 and 6 remain NOT MET.

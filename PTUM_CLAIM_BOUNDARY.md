@@ -1574,3 +1574,26 @@ subtraction, no counterterms and no continuum limit. The 100-row scan
 and paired convergence jobs were skipped for this non-FULL-SCAN commit.
 The exact de Sitter test strengthens only the local free-field control;
 Gate 5 remains NOT MET.
+
+## 2026-11-26 inflation-to-waterfall linear crossing boundary
+
+### Supported
+- The waterfall wrapper initializes the psi-bar=0 background at
+  Phi=(1+delta)Phi_c using the integrated single-field inflationary
+  trajectory, rather than assigning an arbitrary potential-slow-roll
+  velocity.
+- It evolves the expanding invariant background through the threshold
+  and changes the sign of m_eff^2(Phi) on the resulting trajectory.
+- Linear psi_k modes are initialized with a first-order adiabatic
+  vacuum while the mode is stable, then evolved through tachyonic
+  intervals with Wronskian and adiabaticity diagnostics. Particle
+  numbers are withheld when the final adiabatic basis or Wronskian
+  fails its declared numerical check.
+
+### Not supported
+- Quantum mode stress or the renormalized force on Phi feeding back
+  into the Friedmann/background equations.
+- A fully coupled quantum background, all-momentum stability proof,
+  nonlinear quantum rescattering, fragmentation, SM-source evolution,
+  or a physical relic/defect prediction. Gate 2 remains PARTIAL; Gates 5
+  and 6 remain NOT MET.

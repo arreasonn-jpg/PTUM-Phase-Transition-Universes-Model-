@@ -1095,6 +1095,9 @@ def test_waterfall_finite_band_spectrum_reports_units_and_wronskian_status():
     from ptum_waterfall_modes import (
         build_waterfall_background,
         integrate_waterfall_spectrum,
+        "single-field inflationary background",
+        "evolves the",
+        "quantum mode stress and force do not feed back into the Friedmann or",
     )
 
     background = build_waterfall_background(
@@ -5354,3 +5357,34 @@ def test_fourth_order_adiabatic_stress_matches_exact_massive_de_sitter_modes():
     assert "Independent massive de Sitter control" in manuscript
     assert r"\rho_{k,\mathrm{bare}}=\frac{k}{2}+\frac{3}{4k}" in manuscript
     assert r"p_{k,\mathrm{bare}}=\frac{k}{6}-\frac{1}{4k}" in manuscript
+
+
+def test_waterfall_background_initializes_from_integrated_inflationary_state():
+    from ptum_inflation_background import state_at_field_value
+    from ptum_waterfall_modes import build_waterfall_background
+
+    params = PTUMParameters(V0=1.0e64)
+    start_fraction = 0.05
+    x_initial = (params.Phi_c / M_PL) * (1.0 + start_fraction)
+    inflation_state = state_at_field_value(
+        params.lambda_phi, x_initial, V0=params.V0
+    )
+    background = build_waterfall_background(
+        params,
+        start_fraction=start_fraction,
+        t_end_mu=10.0,
+        n_points=1001,
+    )
+
+    assert background["initial_state"] == inflation_state
+    assert background["Phi_over_Mpl"][0] == pytest.approx(x_initial, rel=0.0, abs=1e-14)
+    assert background["Phi_dot_over_Mpl_mu"][0] == pytest.approx(
+        inflation_state["Phi_dot"] / (M_PL * params.mu), rel=2e-14, abs=1e-14
+    )
+    mass_squared = background["effective_mass_sq_over_mu2"]
+    assert mass_squared[0] > 0.0
+    assert np.min(mass_squared) < 0.0
+    assert 0.0 < background["threshold_crossing_tau"] < 10.0
+    assert np.all(np.diff(background["scale_factor"]) > 0.0)
+    assert background["psi_homogeneous_exact_zero"] is True
+    assert background["backreaction_included"] is False
