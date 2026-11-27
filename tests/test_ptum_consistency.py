@@ -5504,6 +5504,8 @@ def test_reproducibility_inventory_keeps_ptum_archive_and_class_pipeline_unverif
 
     notes = Path("PTUM_REPRODUCIBILITY_NOTES.md").read_text(encoding="utf-8")
     manifest = Path("PTUM_LIBRARY_MANIFEST.md").read_text(encoding="utf-8")
+    normalized_notes = " ".join(notes.split())
+    normalized_manifest = " ".join(manifest.split())
     for phrase in (
         "2026-11-27 exact-head repository and CI audit",
         "PTUM.zip (6,248,335 bytes)",
@@ -5514,6 +5516,6 @@ def test_reproducibility_inventory_keeps_ptum_archive_and_class_pipeline_unverif
         "227 Python tests passed",
         "full 100-row scan, full-grid convergence and scan-convergence jobs",
     ):
-        assert phrase in notes
-    assert "archive's contents are unverified" in manifest
-    assert "No individually reviewable CLASS patch" in manifest
+        assert phrase in normalized_notes
+    assert "internal contents are unverified" in normalized_manifest
+    assert "No individually reviewable CLASS patch" in normalized_manifest
