@@ -61,3 +61,25 @@ physics gates include coupled quantum-seeded inhomogeneous waterfall
 dynamics, backreaction/rescattering, converged expanding-background
 mode production, a microscopic proxy-fluid realization, reheating and
 entropy history, and independent CLASS/Cobaya reproduction.
+
+
+## 2026-11-27 current-source audit
+
+This addendum supersedes the historical 51-test/pending-CI snapshot in
+the original manifest. The exact source head is
+d2f15928ba6af8b75b0dc9d823d0a291acbf22f3. Its recursive Git tree has
+86 entries. PTUM.zip is tracked at 6,248,335 bytes, but its internal
+contents are unverified. No individually reviewable CLASS patch,
+production Cobaya YAML, MCMC chain file or raw likelihood/data bundle
+appears as a separate tracked path outside the archive.
+
+Exact-head workflow 45971792497 completed successfully: 227 tests
+passed; the two-scale smoke scan completed 4/4 with no integration
+failures and explicitly no quantum vacuum seeds; the 11-grid bare-WKB
+UV audit completed; and the 49-page manuscript PDF built. The final
+LaTeX pass had 79 Underfull boxes, no Overfull boxes and no unresolved
+references/citations. The full 100-row and convergence jobs were
+skipped, not passed.
+
+These software/build results do not satisfy the quantum waterfall,
+renormalization, relic/backreaction or independent CLASS/Cobaya gates.

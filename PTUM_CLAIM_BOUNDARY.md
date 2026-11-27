@@ -1689,3 +1689,18 @@ reproducing the radiation specialization. It is not a second independent
 point-splitting mode integral, does not renormalize the massive interacting
 waterfall, and does not supply a Phi force or backreaction. Gate 5 remains
 NOT MET.
+
+
+## 2026-11-27 observational reproducibility boundary
+
+The tracked source tree has 86 entries and contains PTUM.zip (6,248,335
+bytes), but the archive's contents are not verified. No separate
+reviewable CLASS patch, production Cobaya YAML, MCMC chain files or raw
+likelihood/data bundle are present in the tracked tree outside that
+archive. Therefore no claim is made that the archive lacks these items;
+rather, their availability and validity remain unverified.
+
+The exact-head CI pass (227 tests, 4/4 smoke trajectories, 11-grid bare
+UV diagnostic and 49-page PDF) is a software/build result only. It does
+not reproduce CLASS/Cobaya or any observational posterior. Gate 9
+remains NOT MET.

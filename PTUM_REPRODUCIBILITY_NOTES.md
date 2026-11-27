@@ -172,3 +172,45 @@ Extracted JSON SHA-256:
 This targeted study does not establish convergence of the complete
 100-row scan. It does not simulate an inhomogeneous quantum-seeded
 waterfall or establish a relic abundance.
+
+
+## 2026-11-27 exact-head repository and CI audit
+
+**Source:** canonical branch head d2f15928ba6af8b75b0dc9d823d0a291acbf22f3.  
+**Tracked tree:** 86 entries, recursive tree response not truncated.
+
+The tracked tree contains PTUM.zip (6,248,335 bytes), the manuscript,
+figures, Python modules, one CI workflow, and regression tests. Outside
+that archive, the tree contains no individually reviewable CLASS patch
+or diff, no production Cobaya YAML configuration, no MCMC chain files,
+and no raw likelihood/data bundle. The archive exists, but its contents
+remain unverified; its presence is not evidence that it contains a
+valid patch or complete pipeline. No claim about the archive's internal
+contents is made here.
+
+Workflow 45971792497 ran on the exact source head above and completed
+successfully:
+- 227 Python tests passed.
+- The four-trajectory, two-scale smoke scan completed 4/4 with zero
+  integration failures. Its strict JSON contains no NaN/Infinity.
+  Exact endpoint matching gives Phi_c/M_Pl=0.9862280831209068, and
+  every row declares quantum_vacuum_seeded=false. The largest sampled
+  chain-rule continuity residual is 3.3603e-12.
+- The 11-grid bare-lattice UV audit passed as a diagnostic. It still
+  records zero-point energy, with vacuum_subtraction_applied=false,
+  counterterms_applied=false and continuum_limit_claimed=false.
+- The manuscript built to a 49-page PDF. On the final LaTeX pass there
+  were 79 Underfull hboxes, zero Overfull hboxes and no unresolved
+  citations/references. Initial-pass forward-reference warnings were
+  resolved on the second pass.
+
+The full 100-row scan, full-grid convergence and scan-convergence jobs
+were skipped by workflow conditions. Their earlier artifacts are not
+revalidated by workflow 45971792497. This addendum supersedes the
+historical 51-test/pending-CI snapshot above.
+
+**Gate 9 remains NOT MET.** The exact CLASS upstream commit, patch
+source/checksum, clean-tree apply/build log, production Cobaya YAMLs,
+likelihood/data versions and independently rerunnable chains are still
+not available as a verified package. No observational result is
+reclassified as independently reproduced.

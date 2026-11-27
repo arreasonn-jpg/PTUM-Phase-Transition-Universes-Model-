@@ -2605,3 +2605,21 @@ waterfall prediction. It does not change the lattice vacuum metadata.
 Gate 5 remains NOT MET; Gate 10 remains PARTIAL until the exact-head
 workflow for this commit is observed and the remaining warning/clean-room
 work is completed.
+
+
+## 2026-11-27 Gate 9 current-source audit
+
+The exact branch head d2f15928ba6af8b75b0dc9d823d0a291acbf22f3 has
+86 tracked tree entries. PTUM.zip exists at 6,248,335 bytes, but its
+contents remain unverified. Outside that archive, there is no separately
+tracked CLASS patch/diff, production Cobaya YAML, MCMC chain file or
+raw likelihood/data bundle. This inventory does not prove that the
+archive lacks such files; it only prevents claiming that they have
+been independently inspected.
+
+Exact-head workflow 45971792497 passed 227 tests, a 4/4 two-scale
+smoke scan, the 11-grid bare-WKB UV audit and a 49-page LaTeX build.
+The full 100-row scan and paired convergence jobs were skipped. The
+bare-WKB audit still applies no vacuum subtraction or counterterms and
+makes no continuum-limit claim. Gate 9 remains NOT MET; Gate 5 remains
+NOT MET; Gate 10 remains PARTIAL.

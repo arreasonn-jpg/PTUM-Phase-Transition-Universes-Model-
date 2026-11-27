@@ -2995,3 +2995,21 @@ independent point-splitting mode integral, a massive/interacting
 subtraction, a PTUM renormalized stress tensor, a Phi force, or
 self-consistent backreaction. Gate 5 remains NOT MET; Gate 10 remains
 PARTIAL pending exact-head CI and warning/clean-room work.
+
+
+## 2026-11-27 CLASS/Cobaya source-tree audit
+
+A fresh recursive tree inspection at d2f15928ba6af8b75b0dc9d823d0a291acbf22f3
+returned 86 tracked entries. PTUM.zip is present (6,248,335 bytes), but
+its contents could not be verified; no conclusion about the archive's
+internal files is justified. Outside it, no separately tracked CLASS
+patch/diff, production Cobaya YAML, MCMC chain files or raw likelihood
+bundle is exposed. Gate 9 remains NOT MET.
+
+Exact-head workflow 45971792497 completed successfully: 227 tests,
+4/4 two-scale smoke trajectories, 11-grid bare-WKB audit and 49-page
+PDF. The full 100-row scan and convergence jobs were skipped. The
+smoke rows are classical controls (quantum_vacuum_seeded=false), and
+the bare UV audit still applies no vacuum subtraction or counterterms.
+These results do not establish quantum waterfall dynamics or
+observational reproducibility.

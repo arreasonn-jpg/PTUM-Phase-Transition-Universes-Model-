@@ -5497,3 +5497,23 @@ def test_conformal_scalar_flat_flrw_anomaly_stress_rejects_ambiguous_inputs():
         conformal_scalar_flat_flrw_anomaly_stress(
             1.0, 0.0, state_radiation_constant_gev4=np.nan
         )
+
+
+def test_reproducibility_inventory_keeps_ptum_archive_and_class_pipeline_unverified():
+    from pathlib import Path
+
+    notes = Path("PTUM_REPRODUCIBILITY_NOTES.md").read_text(encoding="utf-8")
+    manifest = Path("PTUM_LIBRARY_MANIFEST.md").read_text(encoding="utf-8")
+    for phrase in (
+        "2026-11-27 exact-head repository and CI audit",
+        "PTUM.zip (6,248,335 bytes)",
+        "archive exists, but its contents remain unverified",
+        "no individually reviewable CLASS patch",
+        "production Cobaya YAML",
+        "Gate 9 remains NOT MET",
+        "227 Python tests passed",
+        "full 100-row scan, full-grid convergence and scan-convergence jobs",
+    ):
+        assert phrase in notes
+    assert "archive's contents are unverified" in manifest
+    assert "No individually reviewable CLASS patch" in manifest
