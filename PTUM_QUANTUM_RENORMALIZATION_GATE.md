@@ -349,3 +349,50 @@ initializer or its UV divergence. Gate 5 remains **NOT MET**.
 Workflow [45797854235](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45797854235) on exact head 2a8d02ede094a82578cd82cac3ec07df74ebf6ad passed 223 Python regression cases. The exact massive minimally coupled de Sitter test verifies the plane-wave Wronskian and the k^{-7} remainder of both fourth-order mode-stress counterterms. The two-scale homogeneous smoke scan passed 4/4 with zero failures; its strict JSON uses the exact \(\Phi_c/M_{\rm Pl}=0.9862280831209045\), explicitly records quantum_vacuum_seeded=false, and has maximum chain-rule continuity residual \(3.2166\times10^{-12}\). The 11-grid bare-WKB UV audit passed and still records zero-point energy retained, no vacuum subtraction, no counterterms and no continuum limit. The 49-page PDF built with 81 final-pass Underfull hboxes, zero Overfull hboxes and zero unresolved references/citations. The long full-scan and paired-convergence jobs were skipped by design.
 
 This verifies the new analytic free-field control only. The interacting renormalized stress, renormalized \(\Phi\) force, momentum tails, finite matching conditions, self-consistent Friedmann/CTP backreaction and lattice counterterms remain absent. Gate 5 remains NOT MET.
+
+
+## 2026-11-27 R1.4 general spatially-flat FLRW conformal-anomaly oracle
+
+The free-field anomaly control now covers a general spatially-flat FLRW
+instant, not only the radiation solution. With signature (-+++),
+\[
+R=6(2H^2+\dot H),\quad
+R_{\mu\nu\rho\sigma}^2=12[(\dot H+H^2)^2+H^4],
+\]
+\[
+R_{\mu\nu}^2=9(\dot H+H^2)^2+3(\dot H+3H^2)^2.
+\]
+Consequently
+\[
+R_{\mu\nu\rho\sigma}^2-R_{\mu\nu}^2
+=-12H^2(H^2+\dot H).
+\]
+For one massless conformally coupled real scalar, the declared scheme
+sets the scheme-dependent \(\Box R\) coefficient to zero. The trace is
+\[
+T^\mu{}_\mu=-\frac{H^2(H^2+\dot H)}{240\pi^2}.
+\]
+The conservation and trace identities then give
+\[
+\rho=\frac{H^4}{960\pi^2}+\frac{C}{a^4},\qquad
+p=\frac{T^\mu{}_\mu+\rho}{3},
+\]
+where the state-dependent comoving-radiation constant \(C\) is an
+explicit input. The implementation reports the curvature invariants,
+trace, energy density, pressure, time derivative and normalized Ward
+residuals separately.
+
+Regressions cover Minkowski, de Sitter, radiation and a generic
+non-radiation flat-FLRW instant, including a nonzero state component.
+The radiation specialization agrees with the earlier radiation-only
+benchmark. This is an analytic conformal-anomaly/conservation oracle;
+it is not an independent point-splitting mode integral, a general
+massive-field subtraction, or an interacting PTUM calculation.
+The finite \(\Box R\) convention is explicit and must not be transferred
+to another renormalization scheme without matching.
+
+R1 gains a broader exact analytic control only. No cutoff tails,
+massive minimally coupled general-background comparison, finite
+matching conditions, interacting \(\Phi\) force, CTP backreaction or
+lattice counterterms are supplied. Gate 5 remains **NOT MET** and
+Gate 10 remains **PARTIAL** pending exact-head CI and warning cleanup.

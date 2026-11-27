@@ -2975,3 +2975,23 @@ analytic defect diagnostic, tests and documentation. The exact-head
 100-row/500-integration homogeneous scan remains verified on unchanged
 simulation source head b388bfe in workflow 45800154570. Gate 5 remains
 NOT MET and Gate 10 remains PARTIAL.
+
+
+## 2026-11-27 general flat-FLRW conformal-anomaly oracle
+
+Added an analytic one-real-scalar conformal-anomaly stress helper for
+spatially-flat FLRW with arbitrary finite H and dot(H). The local
+curvature invariants independently reduce to
+Riemann^2 - Ricci^2 = -12 H^2 (H^2 + dot(H)); the declared scheme
+sets the ambiguous Box(R) coefficient to zero. Conservation gives
+rho = H^4/(960 pi^2) + C/a^4 and p = (trace + rho)/3, with the
+state-dependent radiation constant exposed as an input. The helper
+reports normalized trace and continuity residuals. Regressions cover
+Minkowski, de Sitter, radiation, generic flat-FLRW kinematics and the
+radiation-only specialization identity.
+
+This is an exact analytic free-field control only. It is not an
+independent point-splitting mode integral, a massive/interacting
+subtraction, a PTUM renormalized stress tensor, a Phi force, or
+self-consistent backreaction. Gate 5 remains NOT MET; Gate 10 remains
+PARTIAL pending exact-head CI and warning/clean-room work.

@@ -2585,3 +2585,23 @@ remains NOT MET.
 ## 2026-11-26 domain-wall diagnostic follow-up CI
 
 Workflow [45805018373](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45805018373) passed 225 Python tests, 4/4 smoke trajectories, the 11-grid bare-WKB audit and the 49-page manuscript build. The new regression verifies that the required linearized domain-wall source is marked invalid when it lies outside the configured small-bias fraction even if a metastable minimum still exists. The final LaTeX pass has 87 Underfull hbox warnings, zero Overfull hboxes and no unresolved references/citations. Long scan jobs were skipped for this defect-only commit; the full homogeneous scan/convergence evidence remains on simulation source head b388bfe. Gate 5 remains NOT MET.
+
+
+## 2026-11-27 R1.4 general flat-FLRW conformal anomaly control
+
+ptum_free_field_renormalization.py now evaluates the conformal trace
+anomaly and its conserved stress completion for a general spatially-flat
+FLRW instant. The declared scheme fixes the ambiguous Box(R) trace
+coefficient to zero and exposes the state-dependent C/a^4 radiation
+component as an input. The implementation checks the curvature-invariant
+identity, trace identity and continuity residual. Regression cases cover
+Minkowski, de Sitter, radiation and a generic non-radiation background;
+the radiation result is cross-checked against the earlier specialized
+benchmark.
+
+This is an analytic free-field oracle, not an independent point-splitting
+mode integral, not a massive/interacting subtraction, and not a PTUM
+waterfall prediction. It does not change the lattice vacuum metadata.
+Gate 5 remains NOT MET; Gate 10 remains PARTIAL until the exact-head
+workflow for this commit is observed and the remaining warning/clean-room
+work is completed.

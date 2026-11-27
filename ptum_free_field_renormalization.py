@@ -156,3 +156,124 @@ def conformal_scalar_radiation_flrw_anomaly_stress(
             "physical_PTUM_prediction": False,
         },
     }
+
+
+def conformal_scalar_flat_flrw_anomaly_stress(
+    hubble_gev: float,
+    dot_hubble_gev2: float,
+    *,
+    scale_factor: float = 1.0,
+    state_radiation_constant_gev4: float = 0.0,
+) -> dict[str, object]:
+    """Return the conformal-vacuum anomaly stress on flat FLRW.
+
+    For one free, massless, conformally coupled real scalar in four
+    dimensions, use the trace-anomaly convention
+        T = (Riemann^2 - Ricci^2)/(2880*pi^2),
+    with the scheme-dependent Box(R) term fixed to zero. On spatially
+    flat FLRW this is -H^2*(H^2+dot(H))/(240*pi^2). Conservation and
+    -rho+3*p=T give rho=H^4/(960*pi^2)+C/a^4 and p=(T+rho)/3.
+
+    C is an explicit state-dependent comoving-radiation constant. This
+    is an analytic free-field oracle, not an interacting PTUM stress
+    tensor or a general adiabatic-subtraction implementation.
+    """
+    h = _finite_real_scalar("hubble_gev", hubble_gev)
+    h_dot = _finite_real_scalar("dot_hubble_gev2", dot_hubble_gev2)
+    a = _finite_real_scalar("scale_factor", scale_factor)
+    radiation_constant = _finite_real_scalar(
+        "state_radiation_constant_gev4", state_radiation_constant_gev4
+    )
+    if a <= 0.0:
+        raise ValueError("scale_factor must be finite and positive")
+
+    h2 = h**2
+    h4 = h2**2
+    ricci_scalar = 6.0 * (2.0 * h2 + h_dot)
+    riemann_squared = 12.0 * ((h_dot + h2)**2 + h4)
+    ricci_tensor_squared = (
+        9.0 * (h_dot + h2)**2
+        + 3.0 * (h_dot + 3.0 * h2)**2
+    )
+    euler_density = (
+        riemann_squared - 4.0 * ricci_tensor_squared + ricci_scalar**2
+    )
+    trace_anomaly = (
+        riemann_squared - ricci_tensor_squared
+    ) / (2880.0 * np.pi**2)
+    trace_simplified = (
+        -h2 * (h2 + h_dot) / (240.0 * np.pi**2)
+    )
+    curvature_scale = max(
+        abs(trace_anomaly), abs(trace_simplified), np.finfo(float).tiny
+    )
+    if not np.isclose(
+        trace_anomaly, trace_simplified,
+        rtol=2.0e-14, atol=2.0e-14 * curvature_scale,
+    ):
+        raise ArithmeticError("flat-FLRW curvature invariants violate the anomaly identity")
+
+    rho_anomaly = h4 / (960.0 * np.pi**2)
+    rho_state = radiation_constant / a**4
+    rho = rho_anomaly + rho_state
+    pressure = (trace_anomaly + rho) / 3.0
+    rho_dot = h**3 * h_dot / (240.0 * np.pi**2) - 4.0 * h * rho_state
+    continuity_residual = rho_dot + 3.0 * h * (rho + pressure)
+    trace_residual = -rho + 3.0 * pressure - trace_anomaly
+    continuity_scale = max(
+        abs(rho_dot), abs(3.0 * h * (rho + pressure)),
+        np.finfo(float).tiny,
+    )
+    trace_scale = max(
+        abs(rho), abs(3.0 * pressure), abs(trace_anomaly),
+        np.finfo(float).tiny,
+    )
+    continuity_normalized = continuity_residual / continuity_scale
+    trace_normalized = trace_residual / trace_scale
+
+    values = np.asarray([
+        ricci_scalar, riemann_squared, ricci_tensor_squared, euler_density,
+        trace_anomaly, rho_anomaly, rho_state, rho, pressure, rho_dot,
+        continuity_residual, trace_residual, continuity_normalized,
+        trace_normalized,
+    ], dtype=float)
+    if not np.all(np.isfinite(values)):
+        raise ValueError("flat-FLRW conformal anomaly stress is non-finite")
+
+    return {
+        "background": {
+            "geometry": "spatially_flat_FLRW",
+            "H_GeV": h,
+            "dot_H_GeV2": h_dot,
+            "scale_factor": a,
+        },
+        "curvature_invariants_GeV4": {
+            "Ricci_scalar": ricci_scalar,
+            "Riemann_squared": riemann_squared,
+            "Ricci_tensor_squared": ricci_tensor_squared,
+            "Euler_density": euler_density,
+        },
+        "trace_anomaly_GeV4": trace_anomaly,
+        "rho_anomaly_GeV4": rho_anomaly,
+        "state_dependent_radiation_density_GeV4": rho_state,
+        "rho_anomaly_plus_state_GeV4": rho,
+        "pressure_anomaly_plus_state_GeV4": pressure,
+        "rho_time_derivative_GeV5": rho_dot,
+        "continuity_residual_GeV5": continuity_residual,
+        "continuity_residual_normalized": continuity_normalized,
+        "trace_identity_residual_GeV4": trace_residual,
+        "trace_identity_residual_normalized": trace_normalized,
+        "state_dependent_radiation_constant_GeV4": radiation_constant,
+        "renormalization": {
+            "field": "one_free_real_massless_scalar",
+            "curvature_coupling": "xi=1/6",
+            "prescription": "four-dimensional_conformal_trace_anomaly_plus_conservation",
+            "scheme_dependent_Box_R_coefficient": 0.0,
+            "finite_R_squared_ambiguity": "fixed_by_Box_R_coefficient_zero",
+            "state_component": "C/a^4",
+            "interactions_included": False,
+            "ptum_waterfall_backreaction_included": False,
+            "general_interacting_FLRW_subtraction_implemented": False,
+            "physical_PTUM_prediction": False,
+        },
+    }

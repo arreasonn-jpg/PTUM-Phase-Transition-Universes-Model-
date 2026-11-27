@@ -1677,3 +1677,15 @@ audit and 49-page PDF build. This validates the diagnostic's declared
 linearization guard only. It does not supply the Wilson coefficient,
 renormalized SM condensate, thermal history, or an inhomogeneous
 domain-wall network evolution. Gate 5 remains NOT MET.
+
+
+## 2026-11-27 conformal-anomaly control boundary
+
+The general flat-FLRW conformal-scalar helper is an analytic trace-anomaly
+plus conservation benchmark with the scheme-dependent Box(R) coefficient
+fixed to zero and an explicit C/a^4 state term. It extends the exact
+free-field controls to de Sitter and generic flat-FLRW kinematics, while
+reproducing the radiation specialization. It is not a second independent
+point-splitting mode integral, does not renormalize the massive interacting
+waterfall, and does not supply a Phi force or backreaction. Gate 5 remains
+NOT MET.

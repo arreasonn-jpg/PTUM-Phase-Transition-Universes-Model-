@@ -5430,3 +5430,70 @@ def test_waterfall_background_initializes_from_integrated_inflationary_state():
     assert np.all(np.diff(background["scale_factor"]) > 0.0)
     assert background["psi_homogeneous_exact_zero"] is True
     assert background["backreaction_included"] is False
+
+
+def test_conformal_scalar_flat_flrw_anomaly_stress_closes_trace_and_conservation():
+    from ptum_free_field_renormalization import (
+        conformal_scalar_flat_flrw_anomaly_stress,
+        conformal_scalar_radiation_flrw_anomaly_stress,
+    )
+
+    cases = [
+        (0.0, 0.0, 1.0, 0.0),
+        (1.3, 0.0, 1.2, 0.17),
+        (2.0, -8.0, 0.75, 0.2),
+        (0.8, -0.13, 1.1, -0.03),
+    ]
+    for hubble, dot_hubble, scale_factor, radiation_constant in cases:
+        result = conformal_scalar_flat_flrw_anomaly_stress(
+            hubble,
+            dot_hubble,
+            scale_factor=scale_factor,
+            state_radiation_constant_gev4=radiation_constant,
+        )
+        expected_trace = (
+            -hubble**2 * (hubble**2 + dot_hubble) / (240.0 * np.pi**2)
+        )
+        expected_rho = (
+            hubble**4 / (960.0 * np.pi**2)
+            + radiation_constant / scale_factor**4
+        )
+        assert result["trace_anomaly_GeV4"] == pytest.approx(
+            expected_trace, rel=3.0e-14, abs=1.0e-30
+        )
+        assert result["rho_anomaly_plus_state_GeV4"] == pytest.approx(
+            expected_rho, rel=3.0e-14, abs=1.0e-30
+        )
+        assert result["pressure_anomaly_plus_state_GeV4"] == pytest.approx(
+            (expected_trace + expected_rho) / 3.0,
+            rel=3.0e-14,
+            abs=1.0e-30,
+        )
+        assert abs(result["continuity_residual_normalized"]) < 2.0e-14
+        assert abs(result["trace_identity_residual_normalized"]) < 2.0e-14
+        assert result["renormalization"]["scheme_dependent_Box_R_coefficient"] == 0.0
+
+    radiation_general = conformal_scalar_flat_flrw_anomaly_stress(2.0, -8.0)
+    radiation_special = conformal_scalar_radiation_flrw_anomaly_stress(2.0)
+    assert radiation_general["trace_anomaly_GeV4"] == pytest.approx(
+        radiation_special["trace_anomaly_GeV4"], rel=2.0e-14
+    )
+    assert radiation_general["rho_anomaly_plus_state_GeV4"] == pytest.approx(
+        radiation_special["rho_renormalized_GeV4"], rel=2.0e-14
+    )
+    assert radiation_general["pressure_anomaly_plus_state_GeV4"] == pytest.approx(
+        radiation_special["pressure_renormalized_GeV4"], rel=2.0e-14
+    )
+
+
+def test_conformal_scalar_flat_flrw_anomaly_stress_rejects_ambiguous_inputs():
+    from ptum_free_field_renormalization import conformal_scalar_flat_flrw_anomaly_stress
+
+    with pytest.raises(ValueError, match="hubble_gev"):
+        conformal_scalar_flat_flrw_anomaly_stress(True, 0.0)
+    with pytest.raises(ValueError, match="scale_factor"):
+        conformal_scalar_flat_flrw_anomaly_stress(1.0, 0.0, scale_factor=0.0)
+    with pytest.raises(ValueError, match="state_radiation_constant_gev4"):
+        conformal_scalar_flat_flrw_anomaly_stress(
+            1.0, 0.0, state_radiation_constant_gev4=np.nan
+        )
