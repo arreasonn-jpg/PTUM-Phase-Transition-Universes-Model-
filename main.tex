@@ -864,15 +864,25 @@ $1.81\times10^{-8}$ and $1.77\times10^{-7}$, respectively.
 This is strong cross-method agreement on the 98 common rows, not a
 solver-tolerance or output-grid convergence proof.
 The DOP853 scan has 48 non-quartic and two insufficient-oscillation
-classifications at high scale, and 43 non-quartic and seven
-insufficient-oscillation classifications at low scale. No trajectory
-passes the joint quartic classifier. The largest high-scale quartic indicator
-is $Q\simeq1.002<2$. In the low-scale control, some large classical-seed
-rows reach $Q\simeq11.12$, $w_\psi\simeq0.363$, and a virial ratio near
-$0.890$, but only two late half-cycles occur in the final 20 percent
-of the run; the required late-time adiabatic diagnostic is therefore
-unavailable. These rows do not establish a sustained quartic-fluid
-phase. For DOP853, the median finite-difference continuity residual
+classifications at high scale, matching the earlier reported count.
+At low scale, the current-HEAD classifier (quartic virial convention
+$\langle K\rangle/(2\langle V_4\rangle)$ with quartic value $1$) reports
+41 non-quartic, 4 insufficient-oscillation, and 5 quartic-flagged rows.
+These 5 rows, all with $\psi_{\rm init}=2.23\times10^{13}\,$GeV and
+$\phi_{\rm offset}=0.01\,\Phi_c$, reach $Q=10.6$--$11.1$,
+$w_\psi=0.372$--$0.374$, and a virial ratio $0.906$--$0.910$, within
+10\% of the quartic value of unity, with 4--5 late half-cycles and
+valid adiabaticity. The automated joint quartic classifier therefore
+flags them as quartic. They do not establish a sustained quartic-fluid
+attractor: the virial ratio is close to the quartic value but the orbit
+remains quasi-quadratic about the local minimum, and the classifier
+alone does not demonstrate attractor dynamics. The largest high-scale
+quartic indicator is $Q\simeq1.002<2$. The 5-row low-scale count versus
+the previously reported 43 non-quartic and 7 insufficient-oscillation
+reflects classifier-threshold evolution across code revisions; no
+high-scale trajectory passes the joint quartic classifier under any
+revision.
+ For DOP853, the median finite-difference continuity residual
 normalized by $H\rho$ is about $2.82\times10^{-2}$ at high scale and
 $3.58\times10^{-6}$ at low scale; the corresponding maxima are
 $3.72\times10^{-2}$ and $1.76\times10^{-4}$. The independent
