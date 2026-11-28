@@ -88,9 +88,9 @@ def _evaluate_band(k: np.ndarray) -> dict[str, object]:
         "k_min": float(k[0]),
         "k_max": float(k[-1]),
         "n_modes": int(k.size),
-        "rho_GeV4": float(result["rho_subtracted_finite_band_GeV4"]),
-        "pressure_GeV4": float(result["pressure_subtracted_finite_band_GeV4"]),
-        "variance_GeV2": float(
+        "rho_code_units_4": float(result["rho_subtracted_finite_band_GeV4"]),
+        "pressure_code_units_4": float(result["pressure_subtracted_finite_band_GeV4"]),
+        "variance_code_units_2": float(
             result["variance_subtracted_order0_to2_finite_band_GeV2"]
         ),
         "max_wronskian_error": float(result["mode_wronskian_max_normalized_error"]),
@@ -111,7 +111,7 @@ def _family_report(
         row["relative_error"] = {
             name: abs(row[name] - reference[name]["value"])
             / max(abs(reference[name]["value"]), np.finfo(float).tiny)
-            for name in ("rho_GeV4", "pressure_GeV4", "variance_GeV2")
+            for name in ("rho_code_units_4", "pressure_code_units_4", "variance_code_units_2")
         }
         rows.append(row)
     finest = rows[-1]
