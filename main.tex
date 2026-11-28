@@ -5681,14 +5681,39 @@ regression suite checks the matched order-four WKB counterterm identity,
 the exact conformal-massless and Minkowski-massive limits, and
 independent finite differences of the $W_k^{(2)}$ derivatives.
 
-The implementation is deliberately finite-band and requires positive
+When the external mass is a function of the homogeneous PTUM field,
+$M^2=M^2(\Phi)$, variation of the same interaction
+$-\tfrac12M^2(\Phi)\psi^2$ contributes the term
+\begin{equation}
+\mathcal C_\Phi^{\rm band}
+=\frac12 M^2_{,\Phi}
+\langle\psi^2\rangle_{\rm band,sub}
+\end{equation}
+to the $\Phi$ equation. With the declared sector split,
+\begin{equation}
+Q_\psi^0
+=\frac12\dot M^2\langle\psi^2\rangle_{\rm band,sub}
+=\dot\Phi\,\mathcal C_\Phi^{\rm band},
+\qquad
+Q_\Phi^0=-Q_\psi^0,
+\qquad
+\dot M^2=M^2_{,\Phi}\dot\Phi .
+\end{equation}
+The finite-band helper now exposes this $\Phi$-equation term using both
+the order-zero-to-two variance subtraction and the order-zero-to-four
+matched stress diagnostic, checks the mass chain rule, and reports the
+opposite sector source. In particular, for $M^2_{,\Phi}>0$ and
+$\dot\Phi<0$, the reported $Q_\psi^0$ is negative under this split.
+
+The implementation remains deliberately finite-band and requires positive
 zeroth-order and full mode frequencies on the supplied band. It does
 not extrapolate the infrared or ultraviolet tails, select finite
-renormalization conditions, compute a finite renormalized force on
-$\Phi$, solve a self-consistent Friedmann system, include SM/gauge/fermion
-loops, or provide nonlinear lattice counterterms. It is a local
-adiabatic subtraction control, not a renormalized PTUM stress tensor or
-a physical quantum-waterfall prediction. Gate 5 remains NOT MET.
+renormalization conditions, or compute a finite renormalized force on
+$\Phi$. It does not solve a self-consistent Friedmann system, include
+SM/gauge/fermion loops, or provide nonlinear lattice counterterms.
+It is a local free-field adiabatic subtraction control, not a
+renormalized PTUM stress tensor or a physical quantum-waterfall
+prediction. Gate 5 remains NOT MET.
 
 
 \paragraph{Independent massive de Sitter control.}

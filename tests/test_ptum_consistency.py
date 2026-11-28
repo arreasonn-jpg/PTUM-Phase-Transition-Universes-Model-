@@ -5519,3 +5519,154 @@ def test_reproducibility_inventory_keeps_ptum_archive_and_class_pipeline_unverif
         assert phrase in normalized_notes
     assert "internal contents are unverified" in normalized_manifest
     assert "No individually reviewable CLASS patch" in normalized_manifest
+
+
+def test_finite_band_adiabatic_stress_returns_action_matched_phi_sector_source():
+    from ptum_adiabatic_stress import adiabatically_subtracted_stress_tensor_finite_band
+
+    k = np.geomspace(1.0, 10.0, 128)
+    mass_squared = 3.5
+    mass_squared_dot = -0.6
+    mass_phi_derivative = 0.3
+    phi_dot = -2.0
+    omega = np.sqrt(k**2 + mass_squared)
+    beta = 2.0
+    alpha = np.sqrt(1.0 + beta**2)
+    normalization = np.sqrt(2.0 * omega)
+    modes = (alpha + beta) / normalization
+    mode_derivatives = -1j * omega * (alpha - beta) / normalization
+
+    result = adiabatically_subtracted_stress_tensor_finite_band(
+        k,
+        modes,
+        mode_derivatives,
+        scale_factor_derivatives=(1.0, 0.0, 0.0, 0.0, 0.0),
+        effective_mass_squared_derivatives=(
+            mass_squared, mass_squared_dot, 0.0, 0.0, 0.0
+        ),
+        curvature_coupling=0.13,
+        effective_mass_squared_phi_derivative_GeV=mass_phi_derivative,
+        phi_dot_GeV2=phi_dot,
+    )
+
+    assert result["finite_band_Phi_equation_mass_term_computed"] is True
+    assert result["mass_chain_rule_relative_residual"] < 1.0e-14
+    for order in ("order0_to2", "order0_to4"):
+        phi_term = result[
+            f"finite_band_Phi_equation_mass_term_{order}_GeV3"
+        ]
+        psi_source = result[
+            f"external_mass_energy_transfer_source_{order}_GeV5"
+        ]
+        phi_source = result[f"finite_band_Q_Phi_0_{order}_GeV5"]
+        assert psi_source == pytest.approx(phi_dot * phi_term, rel=2.0e-14, abs=1.0e-30)
+        assert phi_source == pytest.approx(-psi_source, rel=2.0e-14, abs=1.0e-30)
+        assert psi_source < 0.0
+        assert phi_source > 0.0
+
+    assert result["renormalized_force_on_Phi_computed"] is False
+    assert result["self_consistent_friedmann_backreaction"] is False
+    json.dumps(result, allow_nan=False)
+
+
+def test_finite_band_phi_source_requires_a_consistent_mass_chain_rule():
+    from ptum_adiabatic_stress import adiabatically_subtracted_stress_tensor_finite_band
+
+    k = np.asarray([1.0, 2.0, 3.0])
+    mass_squared = 2.0
+    omega = np.sqrt(k**2 + mass_squared)
+    modes = 1.0 / np.sqrt(2.0 * omega)
+    mode_derivatives = -1j * omega * modes
+    common = dict(
+        scale_factor_derivatives=(1.0, 0.0, 0.0, 0.0, 0.0),
+        effective_mass_squared_derivatives=(mass_squared, 0.4, 0.0, 0.0, 0.0),
+    )
+    with pytest.raises(ValueError, match="must be supplied together"):
+        adiabatically_subtracted_stress_tensor_finite_band(
+            k, modes, mode_derivatives,
+            **common,
+            effective_mass_squared_phi_derivative_GeV=0.2,
+        )
+    with pytest.raises(ValueError, match="mass chain rule mismatch"):
+        adiabatically_subtracted_stress_tensor_finite_band(
+            k, modes, mode_derivatives,
+            **common,
+            effective_mass_squared_phi_derivative_GeV=0.2,
+            phi_dot_GeV2=1.0,
+        )
+
+
+def test_finite_band_subtracted_stress_obeys_time_dependent_mass_ward_identity():
+    from scipy.integrate import solve_ivp
+
+    from ptum_adiabatic_stress import adiabatically_subtracted_stress_tensor_finite_band
+
+    k = np.geomspace(1.5, 8.0, 64)
+    mode_count = k.size
+    initial_time = -0.08
+
+    def mass_squared(time):
+        return 3.0 - 0.2 * time + 0.05 * time**2
+
+    def mass_squared_dot(time):
+        return -0.2 + 0.1 * time
+
+    omega_initial = np.sqrt(k**2 + mass_squared(initial_time))
+    beta = 0.2
+    alpha = np.sqrt(1.0 + beta**2)
+    normalization = np.sqrt(2.0 * omega_initial)
+    modes_initial = (alpha + beta) / normalization
+    omega_dot_initial = mass_squared_dot(initial_time) / (2.0 * omega_initial)
+    derivatives_initial = (
+        -1j * omega_initial * (alpha - beta)
+        - omega_dot_initial * (alpha + beta) / (2.0 * omega_initial)
+    ) / normalization
+    initial_state = np.concatenate((modes_initial, derivatives_initial)).astype(complex)
+
+    def rhs(time, state):
+        modes = state[:mode_count]
+        derivatives = state[mode_count:]
+        frequency_squared = k**2 + mass_squared(time)
+        return np.concatenate((derivatives, -frequency_squared * modes))
+
+    solution = solve_ivp(
+        rhs,
+        (initial_time, 0.01),
+        initial_state,
+        method="DOP853",
+        rtol=2.0e-12,
+        atol=2.0e-14,
+        dense_output=True,
+    )
+    assert solution.success
+
+    phi_dot = -0.7
+
+    def evaluate(time):
+        state = solution.sol(time)
+        mass_dot = mass_squared_dot(time)
+        return adiabatically_subtracted_stress_tensor_finite_band(
+            k,
+            state[:mode_count],
+            state[mode_count:],
+            scale_factor_derivatives=(1.0, 0.0, 0.0, 0.0, 0.0),
+            effective_mass_squared_derivatives=(
+                mass_squared(time), mass_dot, 0.1, 0.0, 0.0
+            ),
+            effective_mass_squared_phi_derivative_GeV=mass_dot / phi_dot,
+            phi_dot_GeV2=phi_dot,
+            curvature_coupling=0.0,
+            wronskian_tolerance=1.0e-8,
+        )
+
+    step = 2.0e-4
+    plus = evaluate(step)
+    minus = evaluate(-step)
+    center = evaluate(0.0)
+    rho_dot = (
+        plus["rho_subtracted_finite_band_GeV4"]
+        - minus["rho_subtracted_finite_band_GeV4"]
+    ) / (2.0 * step)
+    transfer = center["external_mass_energy_transfer_source_order0_to4_GeV5"]
+    scale = max(abs(rho_dot), abs(transfer), 1.0e-30)
+    assert abs(rho_dot - transfer) / scale < 2.0e-5

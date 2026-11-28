@@ -1704,3 +1704,24 @@ The exact-head CI pass (227 tests, 4/4 smoke trajectories, 11-grid bare
 UV diagnostic and 49-page PDF) is a software/build result only. It does
 not reproduce CLASS/Cobaya or any observational posterior. Gate 9
 remains NOT MET.
+
+
+## 2026-11-28 finite-band Phi-source boundary
+
+The free-field fourth-order adiabatic stress helper now exposes the
+action-matched finite-band term
+\[
+\mathcal C_\Phi^{\rm band}
+=\tfrac12M^2_{,\Phi}\langle\psi^2\rangle_{\rm band,sub}
+\]
+and verifies
+\[
+Q_\psi^0=\dot\Phi\,\mathcal C_\Phi^{\rm band},
+\qquad Q_\Phi^0=-Q_\psi^0,
+\qquad \dot M^2=M^2_{,\Phi}\dot\Phi.
+\]
+An external time-dependent-mass mode regression checks the corresponding
+finite-band stress Ward identity. This is not a renormalized interacting
+force, a self-consistent background source, or a quantum waterfall
+prediction. Finite matching, momentum tails, interacting CTP terms and
+backreaction remain absent. Gate 5 remains NOT MET.

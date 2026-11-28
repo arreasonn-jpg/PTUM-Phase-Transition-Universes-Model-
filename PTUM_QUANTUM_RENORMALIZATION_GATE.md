@@ -396,3 +396,39 @@ massive minimally coupled general-background comparison, finite
 matching conditions, interacting \(\Phi\) force, CTP backreaction or
 lattice counterterms are supplied. Gate 5 remains **NOT MET** and
 Gate 10 remains **PARTIAL** pending exact-head CI and warning cleanup.
+
+
+## 2026-11-28 R1.5 action-matched finite-band Phi-sector source
+
+For a free real scalar with an externally prescribed homogeneous mass
+\(M^2(\Phi)\), the interaction in the action is
+\(-\tfrac12M^2(\Phi)\psi^2\). Variation with respect to \(\Phi\)
+therefore gives the term
+\[
+\mathcal C_\Phi=\frac12M^2_{,\Phi}\langle\psi^2\rangle
+\]
+on the left-hand side of the homogeneous \(\Phi\) equation. With the
+declared Hilbert-sector split,
+\[
+Q_\psi^0=\frac12\dot M^2\langle\psi^2\rangle
+=\dot\Phi\,\mathcal C_\Phi,\qquad Q_\Phi^0=-Q_\psi^0.
+\]
+This sign gives \(Q_\psi^0<0\) for \(M^2_{,\Phi}>0\) and
+\(\dot\Phi<0\).
+
+The finite-band stress helper now optionally takes \(M^2_{,\Phi}\) and
+\(\dot\Phi\), verifies the chain rule against the supplied conformal-time
+mass jet, and returns \(\mathcal C_\Phi\) and \(Q_\Phi^0\) using both the
+order-two variance subtraction and the order-four matched diagnostic.
+Regression coverage includes the algebraic action/source identity, rejection
+of missing or inconsistent chain-rule data, and a time-dependent external
+mass mode evolution for which the subtracted stress obeys
+\(\dot\rho_{\psi,\rm sub}=Q_\psi^0\) in Minkowski space.
+
+This is a useful action-consistency bridge between the free-field stress
+and the \(\Phi\)-sector source, but it is still only a finite momentum band
+on an external background. It is **not** a finite renormalized force:
+the EFT cutoff, finite matching conditions, momentum tails, interacting
+self-energy, CTP finite part, and self-consistent \(\Phi\)/Friedmann
+backreaction remain unresolved. No nonlinear lattice counterterms or
+defect-network simulation are supplied. Gate 5 remains **NOT MET**.

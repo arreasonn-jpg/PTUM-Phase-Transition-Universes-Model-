@@ -10,12 +10,12 @@ This file defines the evidence required before PTUM can be called scientifically
 | 2. Inflation-to-waterfall connection | Exact inflation endpoint; threshold crossing in the same coupled background; stability of all modes before crossing; quantum seed prescription | **PARTIAL**. The wrapper initializes from the integrated single-field inflationary trajectory at Phi=(1+start_fraction)Phi_c and evolves the expanding psi-bar=0 invariant background through Phi_c. Linear psi_k modes are initialized in a first-order adiabatic vacuum in the stable phase and evolved through tachyonic intervals with Wronskian and adiabaticity checks; the exact-head regression verifies that the initial field and velocity match the inflationary trajectory. This is not a self-consistent coupled quantum background: mode stress/force does not backreact, all-mode stability and an IR/UV-complete initial-state prescription across all relevant modes is not demonstrated, and nonlinear rescattering/SM sources are absent |
 | 3. Hilbert tensors and conservation | Every sector tensor derived from the same action; all Q_i^nu derived; sum of currents cancels; numerical conservation converges independently with solver tolerance and timestep | **PARTIAL**. The classical tree-level gauge, Higgs, chiral-fermion and PTUM Hilbert tensors and all interaction currents are now written from one action; the current solver does not evolve SM fields, and full-sector numerical conservation/timestep-tolerance convergence is not yet demonstrated |
 | 4. Background numerical solution | Stable expanding-FRW integration; positivity/domain checks; independent energy and continuity diagnostics with robust background-energy normalization; timestep and solver-tolerance convergence | **MET for the homogeneous two-field post-threshold background domain**. Exact simulation source head \texttt{b388bfe371b46b229266320a4a3edc9812a65e18}: 100/100 baseline trajectories and the paired 500/500 integration, 400-comparison study passed. All 100 output-grid comparisons passed; every finite-difference continuity residual decreased on the 4,001-to-256,001 grid refinement (median observed order 0.9906; minimum reduction factor 1.3797). Successive tolerance refinements passed 98/100, 99/100, and 100/100; three intermediate comparisons exceeded strict limits but were resolved by subsequent refinement. State/classification error envelopes were monotonic, all 100 regime flags and metric-availability patterns were unchanged across five profiles, and the finest adjacent comparison passed 100/100. This gate remains limited to homogeneous post-threshold equations and does not close Gates 2 or 5 |
-| 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and defect-topology analysis | **NOT MET**. The real-\(\psi\) scalar truncation has a \(\mathbb Z_2\) domain-wall risk. The analytic bias helper now reports the required linearized source relative to the spinodal and flags when it exceeds the declared small-bias fraction; this prevents an uncontrolled \(2\epsilon v\) extrapolation. The Wilson coefficient, renormalized SM condensate, thermal history and network dynamics remain unspecified. No self-consistent quantum-renormalized lattice evolution or defect-network simulation exists |
+| 5. Waterfall/tachyonic dynamics | Inhomogeneous mode evolution, correct vacuum initial conditions, lattice or validated mode treatment, backreaction, rescattering and defect-topology analysis | **NOT MET**. The real-\(\psi\) scalar truncation has a \(\mathbb Z_2\) domain-wall risk. The analytic bias helper now reports the required linearized source relative to the spinodal and flags when it exceeds the declared small-bias fraction; this prevents an uncontrolled \(2\epsilon v\) extrapolation. The Wilson coefficient, renormalized SM condensate, thermal history and network dynamics remain unspecified. A free-field finite-band adiabatic helper now returns the action-matched mass term in the $\Phi$ equation from the same subtracted variance and checks the paired $Q_\psi^0=-Q_\Phi^0$ source through the mass chain rule; it is not a renormalized force or backreaction. No self-consistent quantum-renormalized lattice evolution or defect-network simulation exists |
 | 6. Resonance and relic abundance | Expanding-background mode equations; converged monodromy/Floquet growth; momentum integration; backreaction; thermalization and entropy dilution; independently reproduced relic abundance | **NOT MET**. The waterfall wrapper builds a psi-bar=0 expanding-FRW history from the integrated inflationary state and evolves a finite band of linear modes from a first-order adiabatic vacuum through the tachyonic interval. The spectrum remains finite-band; the momentum grid and IR/UV tails are not converged. There is no self-consistent quantum backreaction, converged monodromy/Floquet/relic calculation, nonlinear rescattering, thermalization or entropy dilution |
 | 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The exact-head 100-row scan has 5/100 quartic-classifier rows, all in the low-scale underdamped control with the largest manually imposed classical seed \(\psi_{\rm init}=5\psi_0\) and offset \(0.01\Phi_c\); none of the 50 high-scale threshold-matched trajectories passes. Their \(w_{\psi,\rm exc}=0.3722\text{--}0.3736\), \(Q=10.65\text{--}11.07\), virial ratio \(0.9061\text{--}0.9096\), and \(H/\omega\simeq6.9\times10^{-5}\text{--}7.0\times10^{-5}\) are stable across all five tested homogeneous grid/tolerance profiles. This is a narrow classical control, not a quantum-seeded attractor or microscopic proxy-fluid. Sound speed, anisotropic stress, inhomogeneous stability and robust parameter-volume evidence remain absent |
 | 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. The repository includes conditional broken-phase scalar/pseudoscalar two-body and electroweak-symmetric chiral three-body vacuum widths, plus a continuous constant-\(w_c\), constant-\(\Gamma\), constant-\(g_*\) condensate/radiation FRW integrator. On exact head `150487c`, the BDF stiff-tail correction passes the 178-test regression, including five continuous-history tests. The integrator includes radiation in \(H\), independent cumulative condensate/radiation/total energy-budget residuals, \(T(N)\), sampled \(T_{\max}\), \(H=\Gamma\), radiation-domination events and \(S_{\rm com}(N)\). This remains a conditional constant-parameter benchmark, not a PTUM-derived prediction: Wilson matrices, cutoff, quasiparticle mass history, coupled energy partition, thermal thresholds, blocking/enhancement, inverse processes, portal pair production and nonperturbative preheating are unresolved. |
 | 9. Observational reproducibility | Public exact CLASS patch; pinned version/commit; complete configs, likelihoods, data, chains and commands; independent rerun reproduces posteriors and model comparison | **NOT MET**. Reported numbers are author-reported; patch availability and chains remain unverified |
-| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Latest workflow [45805018373](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45805018373) on commit 664ed12 passed 225 Python cases, 4/4 smoke trajectories, the 11-grid bare-WKB audit and the 49-page manuscript build. Final LaTeX pass: 87 Underfull hboxes, zero Overfull hboxes and zero unresolved references/citations. Strict-JSON smoke/UV artifacts were inspected; smoke ZIP SHA-256 1e4cc175b32f03a81efce576ba78bc88e224ffe1080c985b29e67d66554956ea; UV ZIP 0793fdec1ddf35f82333cd131f8c7256c006c85c69e415e1fe816ad1cf95a430; PDF ZIP e9774f0a3fabafec39d41a8822d244fb4d8d9f5334cdb23d70d86c55863703fa. The exact-head 100-row scan and 500-integration paired convergence passed on unchanged simulation head b388bfe. The UV audit retains zero-point energy and makes no subtraction/counterterm/continuum claim. Clean-room reproducibility and warning cleanup remain open |
+| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Latest exact-head workflow [45973043125](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45973043125) on commit ce5c7fe40ab89ac2efa3a378df7344fea678d8ed passed 228 Python tests, 4/4 smoke trajectories, the 11-grid bare-WKB audit and the 49-page manuscript build. Final LaTeX pass: 81 Underfull hboxes, zero Overfull hboxes and zero unresolved references/citations. The smoke artifact was strictly parsed; the UV audit still retains zero-point energy and makes no subtraction/counterterm/continuum claim. The full 100-row scan and paired convergence jobs were skipped in this documentation/test-only run; their earlier evidence remains tied to the exact simulation source head. Clean-room reproducibility and warning cleanup remain open |
 
 ## Current implementation evidence
 
@@ -2623,3 +2623,47 @@ The full 100-row scan and paired convergence jobs were skipped. The
 bare-WKB audit still applies no vacuum subtraction or counterterms and
 makes no continuum-limit claim. Gate 9 remains NOT MET; Gate 5 remains
 NOT MET; Gate 10 remains PARTIAL.
+
+
+## 2026-11-28 R1.5 action-matched finite-band Phi-sector source
+
+The finite-band fourth-order adiabatic stress helper now optionally accepts
+both \(dM^2/d\Phi\) and \(\dot\Phi\). It checks
+\[
+\dot M^2=M^2_{,\Phi}\dot\Phi
+\]
+against the physical-time derivative inferred from the conformal-time mass
+jet. Using the same order-zero-to-two or order-zero-to-four subtracted
+\(\langle\psi^2\rangle\), it returns
+\[
+\mathcal C_\Phi^{\rm band}
+=\frac12M^2_{,\Phi}\langle\psi^2\rangle_{\rm band,sub},
+\qquad
+Q_\psi^0=\dot\Phi\,\mathcal C_\Phi^{\rm band},
+\qquad
+Q_\Phi^0=-Q_\psi^0.
+\]
+The order-two variance is the UV subtraction control; the order-four
+variance is retained as a matched stress/variance Ward diagnostic. They
+are reported separately and are not interchangeable renormalization
+schemes.
+
+New regressions check the chain rule and opposite sector sources, reject
+incomplete/inconsistent mass data, and evolve a non-vacuum finite-band
+mode ensemble on a time-dependent external mass to verify
+\(\dot\rho_{\psi,\rm sub}=Q_\psi^0\) in Minkowski space. These are
+external-background free-field Ward controls only. They do not select
+finite renormalization conditions, complete momentum tails, renormalize
+the interacting waterfall, or include \(\Phi\)/Friedmann backreaction.
+Gate 5 remains **NOT MET**.
+
+## 2026-11-27 exact-head software/build status
+
+Workflow [45973043125](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45973043125)
+on exact head ce5c7fe40ab89ac2efa3a378df7344fea678d8ed passed 228
+Python tests, the 4/4 two-scale smoke scan, the 11-grid bare-WKB UV
+audit, and the 49-page manuscript build. The final LaTeX pass retained
+81 Underfull hboxes, with zero Overfull hboxes and zero unresolved
+references/citations. The full 100-row scan and paired convergence
+jobs were skipped. The bare UV artifact retains zero-point energy and
+applies no vacuum subtraction or counterterms.

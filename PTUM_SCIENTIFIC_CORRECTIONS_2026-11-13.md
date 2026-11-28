@@ -3013,3 +3013,30 @@ smoke rows are classical controls (quantum_vacuum_seeded=false), and
 the bare UV audit still applies no vacuum subtraction or counterterms.
 These results do not establish quantum waterfall dynamics or
 observational reproducibility.
+
+
+## 2026-11-28 action-matched finite-band Phi-sector source
+
+The free-field fourth-order adiabatic stress helper now optionally accepts
+\(M^2_{,\Phi}\) and \(\dot\Phi\), checks
+\(\dot M^2=M^2_{,\Phi}\dot\Phi\), and reports the finite-band term
+\[
+\mathcal C_\Phi^{\rm band}
+=\frac12M^2_{,\Phi}\langle\psi^2\rangle_{\rm band,sub}
+\]
+from the same order-two or order-four subtracted variance. The declared
+sector split then gives
+\[
+Q_\psi^0=\dot\Phi\,\mathcal C_\Phi^{\rm band},
+\qquad Q_\Phi^0=-Q_\psi^0.
+\]
+For positive \(M^2_{,\Phi}\) and downward \(\dot\Phi<0\), \(Q_\psi^0\)
+is negative. New regressions check the chain rule, opposite sector
+sources, fail-closed input handling, and the finite-band stress Ward
+identity for a time-dependent external mass.
+
+This is only a free-field, finite-band, externally prescribed-background
+control. It is not a renormalized force on \(\Phi\), does not fix finite
+matching conditions or momentum tails, and does not include interacting
+self-energy, CTP backreaction, or nonlinear lattice counterterms.
+Gate 5 remains NOT MET.

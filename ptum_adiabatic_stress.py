@@ -7,7 +7,9 @@ The canonical mode v_k=a*psi_k obeys
 This module derives local fourth-order WKB counterterms for the homogeneous
 energy density and isotropic pressure on a caller-supplied spatially flat
 FLRW background. It also integrates bare-minus-counterterm quantities over
-a finite comoving momentum band.
+a finite comoving momentum band and, when the mass is explicitly tied to a
+homogeneous Phi trajectory, returns the action-matched finite-band mass term
+in the Phi equation and the opposite sector-transfer source.
 
 This is not a complete renormalization prescription: no finite matching
 conditions or momentum-tail extrapolations are selected, no coupled Phi
@@ -311,12 +313,22 @@ def adiabatically_subtracted_stress_tensor_finite_band(
     effective_mass_squared_derivatives,
     curvature_coupling: float = 0.0,
     wronskian_tolerance: float = 1.0e-7,
+    effective_mass_squared_phi_derivative_GeV: float | None = None,
+    phi_dot_GeV2: float | None = None,
+    mass_chain_rule_rtol: float = 1.0e-8,
 ) -> dict[str, object]:
     """Integrate bare-minus-fourth-order-counterterm stress over a finite k band.
 
     The supplied canonical modes must satisfy v*v'^* - v'*v^*=i.
     Both order-two and order-four variance subtractions are reported so
     the external-mass energy-transfer convention is explicit.
+
+    If both d(M^2)/d(Phi) and dot(Phi) are supplied, their product must
+    reproduce the physical-time derivative of M^2 inferred from the
+    conformal-time mass jet. The function then returns the finite-band
+    term +1/2 M^2_,Phi <psi^2>_sub in the Phi equation and the opposite
+    Phi-sector energy-transfer source. These quantities are not a
+    renormalized force or a self-consistent backreaction calculation.
     """
     k = _momentum_grid(k_comoving)
     try:
@@ -424,11 +436,85 @@ def adiabatically_subtracted_stress_tensor_finite_band(
     hubble = a[1] / a0**2
     mass_squared_dot = mass[1] / a0
 
+    if (effective_mass_squared_phi_derivative_GeV is None) != (phi_dot_GeV2 is None):
+        raise ValueError(
+            "effective_mass_squared_phi_derivative_GeV and phi_dot_GeV2 "
+            "must be supplied together"
+        )
+    chain_rule_tolerance = _finite_scalar(
+        "mass_chain_rule_rtol", mass_chain_rule_rtol
+    )
+    if chain_rule_tolerance <= 0.0:
+        raise ValueError("mass_chain_rule_rtol must be positive")
+
+    phi_mass_term_order2 = None
+    phi_mass_term_order4 = None
+    phi_sector_source_order2 = None
+    phi_sector_source_order4 = None
+    mass_chain_rule_residual = None
+    mass_chain_rule_relative_residual = None
+    if effective_mass_squared_phi_derivative_GeV is not None:
+        mass_phi_derivative = _finite_scalar(
+            "effective_mass_squared_phi_derivative_GeV",
+            effective_mass_squared_phi_derivative_GeV,
+        )
+        phi_velocity = _finite_scalar("phi_dot_GeV2", phi_dot_GeV2)
+        chain_rule_product = mass_phi_derivative * phi_velocity
+        if not np.isfinite(chain_rule_product):
+            raise ValueError("mass chain rule product must be finite")
+        mass_chain_rule_residual = mass_squared_dot - chain_rule_product
+        chain_rule_scale = max(
+            abs(mass_squared_dot),
+            abs(chain_rule_product),
+            np.finfo(float).tiny,
+        )
+        mass_chain_rule_relative_residual = (
+            abs(mass_chain_rule_residual) / chain_rule_scale
+        )
+        if not np.isfinite(mass_chain_rule_relative_residual):
+            raise ValueError("mass chain rule residual must be finite")
+        if mass_chain_rule_relative_residual > chain_rule_tolerance:
+            raise ValueError(
+                "mass chain rule mismatch: dot(M^2) must equal "
+                "d(M^2)/d(Phi) * dot(Phi); normalized residual "
+                f"{mass_chain_rule_relative_residual:.6g} exceeds "
+                f"{chain_rule_tolerance:.6g}"
+            )
+
+        # The same subtracted <psi^2> that sources Q_psi^0 enters the
+        # Phi equation through +1/2 (dM^2/dPhi) <psi^2>.
+        phi_mass_term_order2 = (
+            0.5 * mass_phi_derivative * variance_subtracted_order2
+        )
+        phi_mass_term_order4 = (
+            0.5 * mass_phi_derivative * variance_subtracted_order4
+        )
+        # With the declared split, Q_psi^0 = dot(Phi)*C_Phi and
+        # Q_Phi^0 = -Q_psi^0.  The order-four pair is a matched
+        # stress/variance Ward diagnostic, not a second renormalization.
+        phi_sector_source_order2 = (
+            -0.5 * mass_squared_dot * variance_subtracted_order2
+        )
+        phi_sector_source_order4 = (
+            -0.5 * mass_squared_dot * variance_subtracted_order4
+        )
+
+    optional_values = []
+    if effective_mass_squared_phi_derivative_GeV is not None:
+        optional_values.extend([
+            phi_mass_term_order2,
+            phi_mass_term_order4,
+            phi_sector_source_order2,
+            phi_sector_source_order4,
+            mass_chain_rule_residual,
+            mass_chain_rule_relative_residual,
+        ])
     values = np.asarray([
         rho_bare, pressure_bare, rho_counterterm, pressure_counterterm,
         variance_bare, variance_counterterm_order2, variance_counterterm_order4,
         rho_subtracted, pressure_subtracted,
         variance_subtracted_order2, variance_subtracted_order4,
+        hubble, mass_squared_dot, *optional_values,
     ])
     if not np.all(np.isfinite(values)):
         raise FloatingPointError("finite-band stress-tensor integral is non-finite")
@@ -454,6 +540,19 @@ def adiabatically_subtracted_stress_tensor_finite_band(
         ),
         "external_mass_energy_transfer_source_order0_to4_GeV5": (
             0.5 * mass_squared_dot * variance_subtracted_order4
+        ),
+        "finite_band_Phi_equation_mass_term_order0_to2_GeV3": (
+            phi_mass_term_order2
+        ),
+        "finite_band_Phi_equation_mass_term_order0_to4_GeV3": (
+            phi_mass_term_order4
+        ),
+        "finite_band_Q_Phi_0_order0_to2_GeV5": phi_sector_source_order2,
+        "finite_band_Q_Phi_0_order0_to4_GeV5": phi_sector_source_order4,
+        "mass_chain_rule_residual_GeV3": mass_chain_rule_residual,
+        "mass_chain_rule_relative_residual": mass_chain_rule_relative_residual,
+        "finite_band_Phi_equation_mass_term_computed": (
+            effective_mass_squared_phi_derivative_GeV is not None
         ),
         "hubble_GeV": hubble,
         "mass_squared_dot_GeV3": mass_squared_dot,

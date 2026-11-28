@@ -214,3 +214,19 @@ source/checksum, clean-tree apply/build log, production Cobaya YAMLs,
 likelihood/data versions and independently rerunnable chains are still
 not available as a verified package. No observational result is
 reclassified as independently reproduced.
+
+
+## 2026-11-27 exact-head software/build recheck
+
+The branch head ce5c7fe40ab89ac2efa3a378df7344fea678d8ed was
+verified by workflow [45973043125](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/45973043125):
+228 Python regression cases passed; the two-scale smoke scan completed
+4/4 with zero failed integrations; the 11-grid bare-WKB UV audit passed;
+and the 49-page manuscript PDF built. The final LaTeX pass retained
+81 Underfull hboxes, zero Overfull hboxes, and zero unresolved
+references/citations. The full 100-row scan and paired convergence jobs
+were skipped on this test/documentation-only head. The bare-WKB audit
+still retains zero-point energy, applies no vacuum subtraction or
+counterterms, and makes no continuum-limit claim. The tracked PTUM.zip
+archive remains uninspected; CLASS/Cobaya inputs and chains remain
+unverified.
