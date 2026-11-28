@@ -3111,7 +3111,7 @@ Gate 5 remains NOT MET; Gate 10 remains PARTIAL.
 ## 2026-11-28 R0.3: field derivatives of the scalar heat-kernel pole
 
 Added `ptum_scalar_heat_kernel_a2_field_derivatives` for the coupled
-real ((\Phi,\psi)) scalar Gaussian operator. At fixed metric it
+real \((\Phi,\psi)\) scalar Gaussian operator. At fixed metric it
 returns \(\partial_\Phi a_2\) and \(\partial_\psi a_2\), each with
 mass dimension three. The calculation compares the direct matrix
 derivative of \(\tfrac12\operatorname{tr}[A^2]\) with the derivative
