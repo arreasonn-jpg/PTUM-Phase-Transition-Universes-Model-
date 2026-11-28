@@ -520,3 +520,23 @@ finite CTP part, supply lattice counterterms, or include
 \(\Phi\)/Friedmann backreaction. The report explicitly remains
 finite-band and non-physical. R1 remains partial; Gate 5 remains
 **NOT MET**.
+
+
+### R0.3 analytic field derivatives of the scalar pole functional
+
+The new `ptum_scalar_heat_kernel_a2_field_derivatives` routine returns
+\(\partial_\Phi a_2\) and \(\partial_\psi a_2\) at fixed metric.
+It differentiates the same two-field Hessian used in the scalar
+heat-kernel coefficient, including the off-diagonal mixing. The result
+is independently reconstructed by differentiating the expanded local
+operator basis. A fail-closed relative agreement threshold of
+\(5\times10^{-12}\) is applied.
+
+The regression set checks central finite differences in stable and
+tachyonic regions, real-\(\psi\) \(Z_2\) parity, and invalid inputs.
+This is a local Euclidean pole-residue derivative, not a renormalized
+counterterm force. The pole normalization/sign, EFT cutoff, finite
+matching conditions, non-polynomial operator truncation, SM and
+gravitational loops, boundary/initial-state terms, CTP finite part and
+self-consistent backreaction remain unspecified. R0 is still partial
+and Gate 5 remains **NOT MET**.

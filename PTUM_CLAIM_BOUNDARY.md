@@ -1761,3 +1761,20 @@ This is a controlled free-field numerical check only. It does not
 converge the actual PTUM expanding-background spectrum, include
 interactions or backreaction, or provide a renormalized waterfall.
 The 234-test exact-head CI and new artifact do not upgrade Gate 5.
+
+
+## 2026-11-28 R0.3 scalar UV-pole derivative boundary
+
+The scalar heat-kernel helper now returns analytic
+\(\partial_\Phi a_2\) and \(\partial_\psi a_2\) for the two-real-field
+Gaussian operator at fixed metric. Matrix-trace and expanded-operator
+derivatives are cross-checked, and regressions test finite differences
+on both sides of the waterfall threshold plus the real-\(\psi\)
+\(Z_2\) parity.
+
+These outputs are derivatives of a local Euclidean UV-pole coefficient.
+They are not a renormalized force, a choice of counterterm sign or finite
+part, or a real-time source. The EFT cutoff, full retained functional
+counterterm basis, renormalization conditions, SM/gauge/fermion/graviton
+loops, boundary terms and CTP backreaction remain open. Gate 5 remains
+**NOT MET**.

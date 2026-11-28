@@ -3106,3 +3106,28 @@ waterfall prediction. It does not establish a self-consistent
 time-dependent interacting stress tensor, finite matching conditions,
 CTP backreaction, nonlinear lattice counterterms or a relic abundance.
 Gate 5 remains NOT MET; Gate 10 remains PARTIAL.
+
+
+## 2026-11-28 R0.3: field derivatives of the scalar heat-kernel pole
+
+Added `ptum_scalar_heat_kernel_a2_field_derivatives` for the coupled
+real ((\Phi,\psi)) scalar Gaussian operator. At fixed metric it
+returns \(\partial_\Phi a_2\) and \(\partial_\psi a_2\), each with
+mass dimension three. The calculation compares the direct matrix
+derivative of \(\tfrac12\operatorname{tr}[A^2]\) with the derivative
+of the expanded local operator decomposition, including the mixed
+Hessian entry and the explicit curvature-coupling terms. A mismatch
+above \(5\times10^{-12}\) relative is rejected.
+
+Regression coverage uses stable and tachyonic values of the waterfall
+mass, central finite differences, the real-field \(Z_2\) parity, and
+invalid-input rejection. This improves the algebraic specification of
+the field-dependent scalar UV-pole functional and the ingredients
+needed for a later action-level counterterm force.
+
+It does **not** choose the dimensional-regularization pole prefactor or
+counterterm sign, specify the EFT cutoff/operator truncation or finite
+matching conditions, include SM/gauge/fermion/graviton loops or
+initial-surface terms, compute a renormalized force, or evolve a
+self-consistent CTP/Friedmann system. It is not a physical quantum
+waterfall result. Gate 5 remains **NOT MET**.
