@@ -819,3 +819,160 @@ def scalar_quartic_one_loop_rg_beta_functions(
             "physical_prediction": False,
         },
     }
+
+def ptum_scalar_heat_kernel_a2_field_derivatives(
+    Phi: float,
+    psi: float,
+    params: PTUMParameters,
+    *,
+    xi_phi: float,
+    xi_psi: float,
+    ricci_scalar_gev2: float,
+    riemann_squared_gev4: float,
+    ricci_tensor_squared_gev4: float,
+) -> dict[str, object]:
+    """Differentiate the two-scalar bulk heat-kernel pole coefficient.
+
+    The derivatives are taken at fixed metric (so the curvature invariants
+    are held fixed).  They are derivatives of the local Euclidean UV-pole
+    residue a2, not a renormalized force: no pole prefactor, counterterm
+    sign, finite matching condition, or real-time CTP prescription is
+    selected here.
+
+    Two algebraically independent representations are evaluated:
+      (i)  d[1/2 tr(A^2)]/d(field), with
+           A = Hessian(V) + diag((xi_I - 1/6) R);
+      (ii) the derivative of the expanded local operator basis returned
+           by ptum_scalar_heat_kernel_a2_decomposition.
+    Their agreement is checked before the result is returned.
+    """
+    phi = _finite_real_scalar("Phi", Phi)
+    waterfall = _finite_real_scalar("psi", psi)
+    xi_phi_value = _finite_real_scalar("xi_phi", xi_phi)
+    xi_psi_value = _finite_real_scalar("xi_psi", xi_psi)
+    ricci = _finite_real_scalar("ricci_scalar_gev2", ricci_scalar_gev2)
+    riemann_sq = _finite_real_scalar(
+        "riemann_squared_gev4", riemann_squared_gev4
+    )
+    ricci_tensor_sq = _finite_real_scalar(
+        "ricci_tensor_squared_gev4", ricci_tensor_squared_gev4
+    )
+
+    matrix_result = ptum_scalar_heat_kernel_a2(
+        phi,
+        waterfall,
+        params,
+        xi_phi=xi_phi_value,
+        xi_psi=xi_psi_value,
+        ricci_scalar_gev2=ricci,
+        riemann_squared_gev4=riemann_sq,
+        ricci_tensor_squared_gev4=ricci_tensor_sq,
+    )
+    shifted = np.asarray(matrix_result["shifted_hessian_GeV2"], dtype=float)
+
+    x = params.lambda_phi * (phi / M_PL) ** 2
+    u_phi = (
+        2.0 * params.V0 * params.lambda_phi / M_PL**2
+        * np.exp(-x) * (1.0 - 2.0 * x)
+    )
+    u_phi_prime = (
+        -4.0 * params.V0 * params.lambda_phi**2 * phi / M_PL**4
+        * np.exp(-x) * (3.0 - 2.0 * x)
+    )
+    c_psi = params.alpha * params.m_psi**2 / params.E_th**2
+    m2_psi = float(meff_sq_psi(phi, params))
+    m2_phi_derivative = 2.0 * c_psi * phi
+    delta_xi_phi = xi_phi_value - 1.0 / 6.0
+    delta_xi_psi = xi_psi_value - 1.0 / 6.0
+    lam = float(params.lambda_psi)
+
+    # Matrix derivative of 1/2 tr(A^2), including the off-diagonal
+    # Hessian entry.  A is symmetric, so d(1/2 tr(A^2))=tr(A dA).
+    matrix_phi = (
+        shifted[0, 0] * u_phi_prime
+        + shifted[1, 1] * m2_phi_derivative
+        + 2.0 * shifted[0, 1] * (2.0 * c_psi * waterfall)
+    )
+    matrix_psi = (
+        shifted[0, 0] * (2.0 * c_psi * waterfall)
+        + shifted[1, 1] * (6.0 * lam * waterfall)
+        + 2.0 * shifted[0, 1] * (2.0 * c_psi * phi)
+    )
+
+    # Independent derivative of the expanded local operator basis.
+    expanded_phi = (
+        u_phi * u_phi_prime
+        + m2_psi * m2_phi_derivative
+        + waterfall**2 * (
+            c_psi * u_phi_prime
+            + 3.0 * lam * m2_phi_derivative
+            + 8.0 * c_psi**2 * phi
+        )
+        + ricci * (
+            delta_xi_phi * u_phi_prime
+            + delta_xi_psi * m2_phi_derivative
+        )
+    )
+    expanded_psi = (
+        2.0 * waterfall * (
+            c_psi * u_phi
+            + 3.0 * lam * m2_psi
+            + 4.0 * c_psi**2 * phi**2
+            + ricci * (
+                delta_xi_phi * c_psi
+                + 3.0 * delta_xi_psi * lam
+            )
+        )
+        + 2.0 * waterfall**3 * (c_psi**2 + 9.0 * lam**2)
+    )
+
+    def relative_residual(left: float, right: float) -> float:
+        return float(
+            abs(left - right)
+            / max(abs(left), abs(right), np.finfo(float).tiny)
+        )
+
+    phi_residual = relative_residual(matrix_phi, expanded_phi)
+    psi_residual = relative_residual(matrix_psi, expanded_psi)
+    if (not np.all(np.isfinite([
+            matrix_phi, matrix_psi, expanded_phi, expanded_psi,
+            phi_residual, psi_residual,
+        ]))):
+        raise FloatingPointError("heat-kernel field derivatives are non-finite")
+    if max(phi_residual, psi_residual) > 5.0e-12:
+        raise ArithmeticError(
+            "matrix and expanded heat-kernel field derivatives disagree: "
+            f"Phi={phi_residual:.6g}, psi={psi_residual:.6g}"
+        )
+
+    return {
+        "d_a2_dPhi_GeV3": float(matrix_phi),
+        "d_a2_dpsi_GeV3": float(matrix_psi),
+        "matrix_d_a2_dPhi_GeV3": float(matrix_phi),
+        "matrix_d_a2_dpsi_GeV3": float(matrix_psi),
+        "expanded_d_a2_dPhi_GeV3": float(expanded_phi),
+        "expanded_d_a2_dpsi_GeV3": float(expanded_psi),
+        "matrix_expansion_relative_residual_Phi": phi_residual,
+        "matrix_expansion_relative_residual_psi": psi_residual,
+        "field_derivative_mass_dimension": 3,
+        "a2_mass_dimension": 4,
+        "derivative_at_fixed_metric": True,
+        "curvature_invariants_GeV": {
+            "ricci_scalar_squared_dimension": 2,
+            "riemann_squared_dimension": 4,
+            "ricci_tensor_squared_dimension": 4,
+        },
+        "assumptions": {
+            "two_real_scalar_gaussian_operator": True,
+            "same_tree_level_PTUM_potential_as_hessian": True,
+            "matrix_and_expanded_derivations_compared": True,
+            "curvature_invariants_held_fixed_under_field_derivative": True,
+            "dimensional_regularization_pole_prefactor_applied": False,
+            "counterterm_sign_selected": False,
+            "finite_renormalization_conditions_selected": False,
+            "eft_cutoff_selected": False,
+            "renormalized_force_on_Phi_computed": False,
+            "real_time_CTP_backreaction_computed": False,
+            "physical_PTUM_prediction": False,
+        },
+    }
