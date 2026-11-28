@@ -5684,3 +5684,51 @@ def test_finite_band_phi_source_derivation_is_line_broken_in_manuscript():
     assert r"Q_\Phi^0" in derivation
     assert r"\dot M^2" in derivation
     assert derivation.count(r"\\") >= 2
+
+
+def test_finite_band_momentum_convergence_matches_minkowski_squeezed_state_reference():
+    from ptum_adiabatic_band_audit import run_minkowski_squeezed_band_audit
+
+    report = run_minkowski_squeezed_band_audit()
+    assert report["passed"]
+    assert report["subtraction"]["vacuum_piece_removed"]
+    assert report["subtraction"]["particle_spectrum_preserved"]
+    for family in report["families"].values():
+        assert family["passed"]
+        assert max(family["finest_relative_errors"].values()) < 2.0e-7
+        assert family["finest_wronskian_error"] < 1.0e-12
+        assert all(row["finite_band_only"] for row in family["rows"])
+        assert not any(row["renormalized_stress_tensor_claimed"] for row in family["rows"])
+    assert report["scope"]["infrared_and_ultraviolet_extensions_compared"]
+    assert report["scope"]["free_field_control_only"]
+    assert report["scope"]["physical_PTUM_prediction"] is False
+    json.dumps(report, allow_nan=False)
+
+
+def test_finite_band_minkowski_audit_keeps_the_exact_particle_spectrum():
+    from ptum_adiabatic_band_audit import (
+        MASS_SQUARED,
+        _squeezed_minkowski_modes,
+    )
+
+    k = np.asarray([0.4, 1.2, 2.5])
+    modes, derivatives = _squeezed_minkowski_modes(k)
+    wronskian = modes * np.conjugate(derivatives) - derivatives * np.conjugate(modes)
+    assert wronskian == pytest.approx(1.0j, rel=0.0, abs=2.0e-15)
+
+    beta_squared = 0.25**2 * np.exp(-2.0 * k / 0.8)
+    omega = np.sqrt(k**2 + MASS_SQUARED)
+    bare_rho = 0.5 * (
+        np.abs(derivatives)**2 + omega**2 * np.abs(modes)**2
+    )
+    vacuum_rho = 0.5 * omega
+    assert bare_rho - vacuum_rho == pytest.approx(omega * beta_squared, rel=2.0e-14)
+
+    bare_pressure = 0.5 * (
+        np.abs(derivatives)**2
+        - (k**2 / 3.0 + MASS_SQUARED) * np.abs(modes)**2
+    )
+    vacuum_pressure = k**2 / (6.0 * omega)
+    assert bare_pressure - vacuum_pressure == pytest.approx(
+        k**2 * beta_squared / (3.0 * omega), rel=2.0e-14
+    )
