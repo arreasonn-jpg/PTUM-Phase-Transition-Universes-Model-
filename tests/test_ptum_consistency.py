@@ -5922,3 +5922,86 @@ def test_ptum_scalar_heat_kernel_a2_field_derivatives_reject_nonfinite_inputs():
         ptum_scalar_heat_kernel_a2_field_derivatives(
             params.Phi_c, 0.0, params, **{**common, "ricci_scalar_gev2": np.nan}
         )
+
+def test_ptum_scalar_potential_one_loop_beta_matches_polynomial_control_limit():
+    from ptum_renormalization import (
+        ptum_scalar_potential_one_loop_beta,
+        scalar_quartic_one_loop_rg_beta_functions,
+    )
+
+    # lambda_phi=0 removes the plateau self-potential and leaves the exact
+    # polynomial (Phi,psi) control potential used by the RG beta oracle.
+    params = PTUMParameters(V0=1.0e56, lambda_phi=0.0)
+    mixed = params.alpha * params.m_psi**2 / params.E_th**2
+    polynomial = scalar_quartic_one_loop_rg_beta_functions(
+        m_phi_squared_gev2=0.0,
+        m_psi_squared_gev2=-params.m_psi**2,
+        lambda_phi4=0.0,
+        lambda_psi4=params.lambda_psi,
+        mixed_coupling=mixed,
+        xi_phi=1.0 / 6.0,
+        xi_psi=1.0 / 6.0,
+    )
+    beta = polynomial["beta_coefficients"]
+
+    for phi, psi in (
+        (0.30 * params.Phi_c, 0.40 * params.psi_0),
+        (1.20 * params.Phi_c, -0.20 * params.psi_0),
+    ):
+        result = ptum_scalar_potential_one_loop_beta(phi, psi, params)
+        reconstructed = (
+            beta["rho_vacuum_Euclidean_GeV4"]
+            + 0.5 * beta["m_phi_squared_GeV2"] * phi**2
+            + 0.5 * beta["m_psi_squared_GeV2"] * psi**2
+            + 0.25 * beta["lambda_phi4"] * phi**4
+            + 0.25 * beta["lambda_psi4"] * psi**4
+            + 0.5 * beta["mixed_coupling"] * phi**2 * psi**2
+        )
+        assert result["beta_V_scalar_one_loop_GeV4"] == pytest.approx(
+            reconstructed, rel=3.0e-13
+        )
+        assert result["trace_identity_relative_residual"] < 5.0e-13
+        assert result["assumptions"]["rg_flow_integrated"] is False
+        assert result["assumptions"]["physical_PTUM_prediction"] is False
+
+
+def test_ptum_scalar_potential_one_loop_beta_and_gradients_match_finite_differences():
+    from ptum_renormalization import ptum_scalar_potential_one_loop_beta
+
+    params = PTUMParameters(V0=1.0e56)
+    cases = (
+        (0.80 * params.Phi_c, 0.35 * params.psi_0),
+        (1.20 * params.Phi_c, -0.20 * params.psi_0),
+        (0.50 * params.Phi_c, 0.60 * params.psi_0),
+    )
+    for phi, psi in cases:
+        result = ptum_scalar_potential_one_loop_beta(phi, psi, params)
+        h_phi = 1.0e-5 * M_PL
+        h_psi = 1.0e-5 * params.psi_0
+        finite_difference_phi = (
+            ptum_scalar_potential_one_loop_beta(phi + h_phi, psi, params)[
+                "beta_V_scalar_one_loop_GeV4"
+            ]
+            - ptum_scalar_potential_one_loop_beta(phi - h_phi, psi, params)[
+                "beta_V_scalar_one_loop_GeV4"
+            ]
+        ) / (2.0 * h_phi)
+        finite_difference_psi = (
+            ptum_scalar_potential_one_loop_beta(phi, psi + h_psi, params)[
+                "beta_V_scalar_one_loop_GeV4"
+            ]
+            - ptum_scalar_potential_one_loop_beta(phi, psi - h_psi, params)[
+                "beta_V_scalar_one_loop_GeV4"
+            ]
+        ) / (2.0 * h_psi)
+
+        assert result["beta_V_scalar_one_loop_GeV4"] >= 0.0
+        assert result["d_beta_V_dPhi_scalar_one_loop_GeV3"] == pytest.approx(
+            finite_difference_phi, rel=2.0e-6, abs=1.0e-280
+        )
+        assert result["d_beta_V_dpsi_scalar_one_loop_GeV3"] == pytest.approx(
+            finite_difference_psi, rel=2.0e-6, abs=1.0e-280
+        )
+        assert result["assumptions"]["scalar_loops_only"] is True
+        assert result["assumptions"]["curvature_beta_functions_included"] is False
+        assert result["assumptions"]["finite_renormalization_conditions_selected"] is False
