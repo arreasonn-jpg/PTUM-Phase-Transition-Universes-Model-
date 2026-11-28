@@ -5707,7 +5707,7 @@ def test_finite_band_momentum_convergence_matches_minkowski_squeezed_state_refer
 
 def test_finite_band_minkowski_audit_keeps_the_exact_particle_spectrum():
     from ptum_adiabatic_band_audit import (
-        MASS_SQUARED,
+        MASS_SQUARED_GEV2,
         _squeezed_minkowski_modes,
     )
 
@@ -5717,7 +5717,7 @@ def test_finite_band_minkowski_audit_keeps_the_exact_particle_spectrum():
     assert wronskian == pytest.approx(1.0j, rel=0.0, abs=2.0e-15)
 
     beta_squared = 0.25**2 * np.exp(-2.0 * k / 0.8)
-    omega = np.sqrt(k**2 + MASS_SQUARED)
+    omega = np.sqrt(k**2 + MASS_SQUARED_GEV2)
     bare_rho = 0.5 * (
         np.abs(derivatives)**2 + omega**2 * np.abs(modes)**2
     )
@@ -5726,7 +5726,7 @@ def test_finite_band_minkowski_audit_keeps_the_exact_particle_spectrum():
 
     bare_pressure = 0.5 * (
         np.abs(derivatives)**2
-        - (k**2 / 3.0 + MASS_SQUARED) * np.abs(modes)**2
+        - (k**2 / 3.0 + MASS_SQUARED_GEV2) * np.abs(modes)**2
     )
     vacuum_pressure = k**2 / (6.0 * omega)
     assert bare_pressure - vacuum_pressure == pytest.approx(

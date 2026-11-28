@@ -19,9 +19,9 @@ from scipy.integrate import quad
 from ptum_adiabatic_stress import adiabatically_subtracted_stress_tensor_finite_band
 
 
-MASS_SQUARED = 1.7
+MASS_SQUARED_GEV2 = 1.7
 BETA_AMPLITUDE = 0.25
-K_STAR = 0.8
+K_STAR_GEV = 0.8
 REFERENCE_RELATIVE_TOLERANCE = 2.0e-7
 WRONSKIAN_TOLERANCE = 1.0e-12
 
@@ -33,8 +33,8 @@ def _squeezed_minkowski_modes(k_comoving: np.ndarray) -> tuple[np.ndarray, np.nd
         raise ValueError("k_comoving must be positive, finite and strictly increasing")
     if not np.all(np.isfinite(k)):
         raise ValueError("k_comoving must be finite")
-    omega = np.sqrt(k**2 + MASS_SQUARED)
-    beta_imaginary = BETA_AMPLITUDE * np.exp(-k / K_STAR)
+    omega = np.sqrt(k**2 + MASS_SQUARED_GEV2)
+    beta_imaginary = BETA_AMPLITUDE * np.exp(-k / K_STAR_GEV)
     alpha = np.sqrt(1.0 + beta_imaginary**2)
     normalization = np.sqrt(2.0 * omega)
     modes = (alpha + 1.0j * beta_imaginary) / normalization
@@ -47,8 +47,8 @@ def _squeezed_minkowski_modes(k_comoving: np.ndarray) -> tuple[np.ndarray, np.nd
 def _adaptive_reference() -> dict[str, dict[str, float]]:
     """Integrate the exact squeezed-state particle spectra on [0,infinity)."""
     def common(k: float) -> tuple[float, float, float]:
-        omega = float(np.sqrt(k**2 + MASS_SQUARED))
-        beta_squared = BETA_AMPLITUDE**2 * np.exp(-2.0 * k / K_STAR)
+        omega = float(np.sqrt(k**2 + MASS_SQUARED_GEV2))
+        beta_squared = BETA_AMPLITUDE**2 * np.exp(-2.0 * k / K_STAR_GEV)
         measure = k**2 / (2.0 * np.pi**2)
         return (
             measure * omega * beta_squared,
@@ -56,7 +56,7 @@ def _adaptive_reference() -> dict[str, dict[str, float]]:
             measure * beta_squared / omega,
         )
 
-    names = ("rho_code_units_4", "pressure_code_units_4", "variance_code_units_2")
+    names = ("rho_GeV4", "pressure_GeV4", "variance_GeV2")
     reference = {}
     for index, name in enumerate(names):
         value, error = quad(
@@ -79,7 +79,7 @@ def _evaluate_band(k: np.ndarray) -> dict[str, object]:
         derivatives,
         scale_factor_derivatives=(1.0, 0.0, 0.0, 0.0, 0.0),
         effective_mass_squared_derivatives=(
-            MASS_SQUARED, 0.0, 0.0, 0.0, 0.0
+            MASS_SQUARED_GEV2, 0.0, 0.0, 0.0, 0.0
         ),
         curvature_coupling=0.0,
         wronskian_tolerance=WRONSKIAN_TOLERANCE,
@@ -88,9 +88,9 @@ def _evaluate_band(k: np.ndarray) -> dict[str, object]:
         "k_min": float(k[0]),
         "k_max": float(k[-1]),
         "n_modes": int(k.size),
-        "rho_code_units_4": float(result["rho_subtracted_finite_band_GeV4"]),
-        "pressure_code_units_4": float(result["pressure_subtracted_finite_band_GeV4"]),
-        "variance_code_units_2": float(
+        "rho_GeV4": float(result["rho_subtracted_finite_band_GeV4"]),
+        "pressure_GeV4": float(result["pressure_subtracted_finite_band_GeV4"]),
+        "variance_GeV2": float(
             result["variance_subtracted_order0_to2_finite_band_GeV2"]
         ),
         "max_wronskian_error": float(result["mode_wronskian_max_normalized_error"]),
@@ -111,7 +111,7 @@ def _family_report(
         row["relative_error"] = {
             name: abs(row[name] - reference[name]["value"])
             / max(abs(reference[name]["value"]), np.finfo(float).tiny)
-            for name in ("rho_code_units_4", "pressure_code_units_4", "variance_code_units_2")
+            for name in ("rho_GeV4", "pressure_GeV4", "variance_GeV2")
         }
         rows.append(row)
     finest = rows[-1]
@@ -159,8 +159,8 @@ def run_minkowski_squeezed_band_audit() -> dict[str, object]:
             "field": "one free real scalar",
             "background": "Minkowski",
             "metric_signature": "(-+++)",
-            "units": "internally consistent arbitrary mass units; no GeV conversion",
-            "mass_squared_code_units_2": MASS_SQUARED,
+            "units": "GeV; the numerical mass and momentum scales are an arbitrary free-field control, not PTUM parameters",
+            "mass_squared_GeV2": MASS_SQUARED_GEV2,
             "curvature_coupling": 0.0,
             "state": "pure Gaussian squeezed state",
             "bogoliubov_beta": "i*0.25*exp(-k/0.8)",
