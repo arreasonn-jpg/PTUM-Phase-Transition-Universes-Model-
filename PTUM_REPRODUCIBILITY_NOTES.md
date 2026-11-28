@@ -273,3 +273,36 @@ the contained JSON SHA-256 is
 The full 100-row scan and paired convergence jobs were skipped because
 the simulation source was unchanged. PTUM.zip remains uninspected and
 the independent CLASS/Cobaya pipeline remains unverified.
+
+
+## 2026-11-28 exact-head R1.6 finite-band convergence audit
+
+Exact source head 00784e748d73fded40fd962ddfa912a2c283ea27,
+workflow [46131831457](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/46131831457).
+The 234-test regression suite passed. The two-scale homogeneous smoke
+scan completed 4/4 with zero integration failures; the 11-grid bare-WKB
+UV audit passed; the new finite-band adiabatic audit passed; and the
+49-page manuscript built. The final LaTeX pass had zero Overfull
+hboxes, 87 Underfull hboxes and no final-pass unresolved references,
+citations or warnings.
+
+The new audit compares fourth-order stress and second-order variance
+subtraction for a free Minkowski squeezed state with independent adaptive
+quadrature. Finest relative errors were \(3.4540\times10^{-8}\),
+\(5.6879\times10^{-8}\), and \(1.5029\times10^{-8}\) for fixed-band
+resolution; \(9.5435\times10^{-8}\), \(7.3476\times10^{-10}\), and
+\(1.7819\times10^{-7}\) for UV extension; and
+\(1.2206\times10^{-7}\), \(5.6879\times10^{-8}\), and
+\(1.7896\times10^{-7}\) for IR extension (rho, pressure, variance).
+The Wronskian error is below \(10^{-12}\). The artifact ZIP SHA-256 is
+463ff9083d55b67f5c1cdca8b63fe8b59e6bdb2ce49b8fc6f7a17702085a3298;
+the contained JSON SHA-256 is
+83c82117e93b7188a9e5a65ec1a6f51eaefa81c68c0732908a8e0d2ccd475633.
+
+The full 100-row homogeneous scan and paired scan-convergence jobs were
+skipped because the simulation source was unchanged. The separate
+11-grid lattice artifact still retains bare zero-point energy and makes
+no vacuum-subtraction or continuum-limit claim. The new finite-band
+control is not a PTUM waterfall, interacting renormalization,
+self-consistent backreaction or relic calculation. PTUM.zip and the
+independent CLASS/Cobaya package remain unverified.

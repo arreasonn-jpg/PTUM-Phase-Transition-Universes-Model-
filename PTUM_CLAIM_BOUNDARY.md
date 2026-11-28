@@ -1748,3 +1748,16 @@ with zero-point energy retained and no subtraction/counterterms. The
 final 49-page LaTeX build has zero Overfull hboxes and no final-pass
 unresolved references, but 87 Underfull hboxes remain. None of this
 upgrades Gate 5 to NOT MET.
+
+
+## 2026-11-28 R1.6 free-field momentum-convergence boundary
+
+The new finite-band audit verifies fourth-order stress and second-order
+variance subtraction for a prescribed squeezed Gaussian state in
+Minkowski space. Fixed-band grid refinement, IR-cutoff extension and
+UV-cutoff extension each agree with independent adaptive quadrature
+within \(2\times10^{-7}\); the Wronskian error is below \(10^{-12}\).
+This is a controlled free-field numerical check only. It does not
+converge the actual PTUM expanding-background spectrum, include
+interactions or backreaction, or provide a renormalized waterfall.
+The 234-test exact-head CI and new artifact do not upgrade Gate 5.

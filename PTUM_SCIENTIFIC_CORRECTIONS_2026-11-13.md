@@ -3070,3 +3070,39 @@ hboxes, and no final-pass unresolved references/citations. The first
 pass forward-reference warnings resolve on rerun. The full scan and
 paired convergence jobs were skipped because the simulation source was
 unchanged.
+
+
+## 2026-11-28 R1.6 free-field finite-band momentum convergence
+
+A pure Gaussian squeezed state in Minkowski space was used as an
+independent oracle for the existing fourth-order adiabatic stress and
+second-order variance subtraction. With
+\(\beta_k=i\beta_0e^{-k/k_*}\) and
+\(|\alpha_k|^2-|\beta_k|^2=1\), the exact vacuum-subtracted spectra are
+\[
+\rho_{k,\rm sub}=\omega_k|\beta_k|^2,\qquad
+p_{k,\rm sub}=\frac{k^2}{3\omega_k}|\beta_k|^2,\qquad
+\langle\varphi^2\rangle_{k,\rm sub}=\frac{|\beta_k|^2}{\omega_k}.
+\]
+The finite-band integrals were compared with independent adaptive
+quadrature over the full positive momentum axis, with separate fixed-band
+grid, UV-extension and IR-extension sequences. For the arbitrary
+free-field control scales \(M^2=1.7\,{\rm GeV}^2\),
+\(k_*=0.8\,{\rm GeV}\), \(\beta_0=0.25\), the finest relative errors
+were at most \(1.79\times10^{-7}\), below the predeclared
+\(2\times10^{-7}\) tolerance; the maximum normalized Wronskian error
+was below \(10^{-12}\).
+
+The strict-JSON audit is produced by ptum_adiabatic_band_audit.py
+and runs as a separate CI job. Workflow 46131831457 on exact head
+00784e748d73fded40fd962ddfa912a2c283ea27 passed 234 regression tests,
+the 4/4 homogeneous smoke scan, the 11-grid bare-WKB audit, the new
+finite-band convergence job and the 49-page PDF build. The final LaTeX
+pass had zero Overfull boxes, 87 Underfull boxes and no final-pass
+unresolved references/citations or warnings.
+
+This is a free Minkowski squeezed-state numerical control, not a PTUM
+waterfall prediction. It does not establish a self-consistent
+time-dependent interacting stress tensor, finite matching conditions,
+CTP backreaction, nonlinear lattice counterterms or a relic abundance.
+Gate 5 remains NOT MET; Gate 10 remains PARTIAL.

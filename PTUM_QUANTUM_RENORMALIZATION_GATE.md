@@ -458,3 +458,65 @@ counterterms. The 49-page PDF now has zero Overfull hboxes and no final-pass
 unresolved references; 87 Underfull hboxes remain. The R1.5 result is
 therefore an externally prescribed free-field Ward control only. Gate 5
 remains NOT MET.
+
+
+## 2026-11-28 R1.6 finite-band IR/UV and momentum-grid convergence control
+
+A new free-field control tests whether the existing finite-band stress
+integrator reproduces a known non-vacuum spectrum while its IR cutoff, UV
+cutoff and momentum resolution are varied independently. In Minkowski
+space with constant mass, choose a normalized pure Gaussian state
+\[
+\beta_k=i\beta_0e^{-k/k_*},\qquad
+\alpha_k=\sqrt{1+|\beta_k|^2},\qquad
+|\alpha_k|^2-|\beta_k|^2=1.
+\]
+At the evaluation instant the imaginary phase removes the anomalous
+interference term. The exact vacuum-subtracted spectra are
+\[
+\rho_{k,\rm sub}=\omega_k|\beta_k|^2,\qquad
+p_{k,\rm sub}=\frac{k^2}{3\omega_k}|\beta_k|^2,\qquad
+|\varphi_k|^2_{\rm sub}=\frac{|\beta_k|^2}{\omega_k},
+\quad \omega_k=\sqrt{k^2+M^2}.
+\]
+The integration measure is \(k^2/(2\pi^2)\). These formulae are
+independent of the fourth-order subtraction implementation and are
+integrated separately with adaptive quadrature over \(0\leq k<\infty\).
+
+The numerical control uses \(M^2=1.7\,{\rm GeV}^2\),
+\(k_*=0.8\,{\rm GeV}\), and \(\beta_0=0.25\). These are arbitrary
+free-field test scales, not PTUM parameters or a cosmological benchmark.
+The finite-band integrator is compared in three independent families:
+fixed-band resolution refinement, UV-cutoff extension at fixed IR cutoff,
+and IR-cutoff extension at fixed UV cutoff. The finest relative errors
+against the independent adaptive reference are:
+
+| Family | \(\rho\) | \(p\) | \(\langle\varphi^2\rangle\) |
+|---|---:|---:|---:|
+| Fixed-band grid refinement | \(3.4540\times10^{-8}\) | \(5.6879\times10^{-8}\) | \(1.5029\times10^{-8}\) |
+| UV extension | \(9.5435\times10^{-8}\) | \(7.3476\times10^{-10}\) | \(1.7819\times10^{-7}\) |
+| IR extension | \(1.2206\times10^{-7}\) | \(5.6879\times10^{-8}\) | \(1.7896\times10^{-7}\) |
+
+All are below the predeclared \(2\times10^{-7}\) reference tolerance.
+The maximum normalized Wronskian error is below \(10^{-12}\). The strict
+JSON artifact is ptum_adiabatic_band_audit.json; the ZIP SHA-256 is
+463ff9083d55b67f5c1cdca8b63fe8b59e6bdb2ce49b8fc6f7a17702085a3298
+and the contained JSON SHA-256 is
+83c82117e93b7188a9e5a65ec1a6f51eaefa81c68c0732908a8e0d2ccd475633.
+
+Exact-head workflow [46131831457](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/46131831457)
+on commit 00784e748d73fded40fd962ddfa912a2c283ea27 passed 234 Python
+tests, the 4/4 two-scale smoke scan, the 11-grid bare-WKB audit, this
+new finite-band audit, and the 49-page manuscript build. The final
+LaTeX pass had zero Overfull hboxes, 87 Underfull hboxes, and no final-pass
+unresolved references/citations or warnings. The full 100-row scan and
+paired scan-convergence jobs were skipped because the homogeneous
+simulation source was unchanged.
+
+This closes only a free Minkowski mode-sum convergence control. It does
+not renormalize the time-dependent PTUM waterfall, establish interacting
+momentum tails, choose finite renormalization conditions, include a
+finite CTP part, supply lattice counterterms, or include
+\(\Phi\)/Friedmann backreaction. The report explicitly remains
+finite-band and non-physical. R1 remains partial; Gate 5 remains
+**NOT MET**.

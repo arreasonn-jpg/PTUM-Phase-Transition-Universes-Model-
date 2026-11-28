@@ -83,3 +83,15 @@ skipped, not passed.
 
 These software/build results do not satisfy the quantum waterfall,
 renormalization, relic/backreaction or independent CLASS/Cobaya gates.
+
+
+## 2026-11-28 R1.6 current-source addition
+
+The branch adds ptum_adiabatic_band_audit.py, a strict-JSON free-field
+Minkowski squeezed-state audit for fourth-order stress and second-order
+variance subtraction. Exact-head workflow 46131831457 passed 234 tests
+and the new IR/UV/grid convergence job. The result is a finite-band
+free-field control only; it is not a PTUM waterfall, interacting
+renormalization, backreaction or a relic prediction. The full 100-row
+scan and paired convergence jobs were skipped because the homogeneous
+simulation source was unchanged.

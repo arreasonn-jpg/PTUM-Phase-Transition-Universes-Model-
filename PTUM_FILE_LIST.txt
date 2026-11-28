@@ -52,3 +52,5 @@ and uploaded as a CI artifact, not committed as a source file.
 The expanding-background linear chi-mode solver is in ptum_floquet.py.
 The repository's 10/10 evidence requirements and current gate statuses
 are maintained in PTUM_10_OF_10_ACCEPTANCE.md.
+
+ptum_adiabatic_band_audit.py
