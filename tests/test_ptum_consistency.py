@@ -5791,3 +5791,134 @@ def test_class_cobaya_archive_audit_fails_closed_on_invalid_zip(tmp_path):
     assert not report["crc_test_passed"]
     assert not report["reproduction_checklist"]["candidate_input_categories_present"]
     assert report["reproduction_checklist"]["independent_reproduction_verified"] is False
+
+def test_ptum_scalar_heat_kernel_a2_field_derivatives_match_finite_differences():
+    from ptum_renormalization import (
+        ptum_scalar_heat_kernel_a2,
+        ptum_scalar_heat_kernel_a2_field_derivatives,
+    )
+
+    params = PTUMParameters(V0=1.0e56)
+    hubble_scale = 1.0e10
+    curvature = 12.0 * hubble_scale**2
+    riemann_squared = 24.0 * hubble_scale**4
+    ricci_tensor_squared = 36.0 * hubble_scale**4
+    xi_phi = 0.03
+    xi_psi = 0.17
+    cases = (
+        (0.80 * params.Phi_c, 0.35 * params.psi_0),
+        (1.20 * params.Phi_c, -0.20 * params.psi_0),
+        (0.50 * params.Phi_c, 0.60 * params.psi_0),
+    )
+
+    def coefficient(phi, psi):
+        return ptum_scalar_heat_kernel_a2(
+            phi,
+            psi,
+            params,
+            xi_phi=xi_phi,
+            xi_psi=xi_psi,
+            ricci_scalar_gev2=curvature,
+            riemann_squared_gev4=riemann_squared,
+            ricci_tensor_squared_gev4=ricci_tensor_squared,
+        )["a2_bulk_GeV4"]
+
+    for phi, psi in cases:
+        result = ptum_scalar_heat_kernel_a2_field_derivatives(
+            phi,
+            psi,
+            params,
+            xi_phi=xi_phi,
+            xi_psi=xi_psi,
+            ricci_scalar_gev2=curvature,
+            riemann_squared_gev4=riemann_squared,
+            ricci_tensor_squared_gev4=ricci_tensor_squared,
+        )
+        h_phi = 1.0e-5 * M_PL
+        h_psi = 1.0e-5 * params.psi_0
+        finite_difference_phi = (
+            coefficient(phi + h_phi, psi) - coefficient(phi - h_phi, psi)
+        ) / (2.0 * h_phi)
+        finite_difference_psi = (
+            coefficient(phi, psi + h_psi) - coefficient(phi, psi - h_psi)
+        ) / (2.0 * h_psi)
+
+        assert result["matrix_expansion_relative_residual_Phi"] < 5.0e-12
+        assert result["matrix_expansion_relative_residual_psi"] < 5.0e-12
+        assert result["d_a2_dPhi_GeV3"] == pytest.approx(
+            finite_difference_phi, rel=2.0e-6, abs=1.0e-280
+        )
+        assert result["d_a2_dpsi_GeV3"] == pytest.approx(
+            finite_difference_psi, rel=2.0e-6, abs=1.0e-280
+        )
+        assert result["field_derivative_mass_dimension"] == 3
+        assert result["a2_mass_dimension"] == 4
+        assert result["derivative_at_fixed_metric"] is True
+        assert result["assumptions"]["counterterm_sign_selected"] is False
+        assert result["assumptions"]["physical_PTUM_prediction"] is False
+
+
+def test_ptum_scalar_heat_kernel_a2_field_derivatives_respect_real_psi_z2():
+    from ptum_renormalization import (
+        ptum_scalar_heat_kernel_a2,
+        ptum_scalar_heat_kernel_a2_field_derivatives,
+    )
+
+    params = PTUMParameters(V0=1.0e56)
+    phi = 0.73 * params.Phi_c
+    psi = 0.41 * params.psi_0
+    curvature = 8.0e20
+    common = dict(
+        xi_phi=0.02,
+        xi_psi=0.11,
+        ricci_scalar_gev2=curvature,
+        riemann_squared_gev4=2.0e41,
+        ricci_tensor_squared_gev4=3.0e41,
+    )
+    positive = ptum_scalar_heat_kernel_a2_field_derivatives(
+        phi, psi, params, **common
+    )
+    negative = ptum_scalar_heat_kernel_a2_field_derivatives(
+        phi, -psi, params, **common
+    )
+    at_origin = ptum_scalar_heat_kernel_a2_field_derivatives(
+        phi, 0.0, params, **common
+    )
+    coefficient_positive = ptum_scalar_heat_kernel_a2(
+        phi, psi, params, **common
+    )["a2_bulk_GeV4"]
+    coefficient_negative = ptum_scalar_heat_kernel_a2(
+        phi, -psi, params, **common
+    )["a2_bulk_GeV4"]
+
+    assert coefficient_positive == pytest.approx(
+        coefficient_negative, rel=2.0e-14
+    )
+    assert positive["d_a2_dPhi_GeV3"] == pytest.approx(
+        negative["d_a2_dPhi_GeV3"], rel=2.0e-14
+    )
+    assert positive["d_a2_dpsi_GeV3"] == pytest.approx(
+        -negative["d_a2_dpsi_GeV3"], rel=2.0e-14
+    )
+    assert at_origin["d_a2_dpsi_GeV3"] == 0.0
+
+
+def test_ptum_scalar_heat_kernel_a2_field_derivatives_reject_nonfinite_inputs():
+    from ptum_renormalization import ptum_scalar_heat_kernel_a2_field_derivatives
+
+    params = PTUMParameters(V0=1.0e56)
+    common = dict(
+        xi_phi=0.0,
+        xi_psi=0.0,
+        ricci_scalar_gev2=0.0,
+        riemann_squared_gev4=0.0,
+        ricci_tensor_squared_gev4=0.0,
+    )
+    with pytest.raises(ValueError, match="Phi must be a finite real scalar"):
+        ptum_scalar_heat_kernel_a2_field_derivatives(
+            True, 0.0, params, **common
+        )
+    with pytest.raises(ValueError, match="ricci_scalar_gev2"):
+        ptum_scalar_heat_kernel_a2_field_derivatives(
+            params.Phi_c, 0.0, params, **{**common, "ricci_scalar_gev2": np.nan}
+        )
