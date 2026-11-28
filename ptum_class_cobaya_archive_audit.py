@@ -130,6 +130,7 @@ def _entry_record(name: str, data: bytes) -> dict[str, Any]:
         "sha256": _sha256(data),
         "patch_candidate": patch_candidate,
         "patch_signature_valid": patch_signature,
+        "patch_targets_class": bool(patch_candidate and ("class" in lower or "class" in text.lower())),
         "cobaya_yaml_candidate": config_candidate,
         "cobaya_yaml_has_required_sections": config_complete,
         "dependency_lock_candidate": lock_candidate,
@@ -254,7 +255,7 @@ def audit_archive(path: str | Path) -> dict[str, Any]:
         "valid_class_patch_candidates": [
             x for x in entries
             if x.get("patch_candidate") and x.get("patch_signature_valid")
-            and ("class" in x["path"].lower() or "class" in _decode(raw[:0]))
+            and x.get("patch_targets_class")
         ],
         "cobaya_yaml_candidates": [x for x in entries if x.get("cobaya_yaml_candidate")],
         "complete_cobaya_yaml_candidates": [
@@ -287,18 +288,19 @@ def audit_archive(path: str | Path) -> dict[str, Any]:
 
     checklist = {
         "valid_zip_and_crc": bool(report["archive_valid"] and report["crc_test_passed"]),
-        "reviewable_class_patch": bool(groups["valid_class_patch_candidates"]),
-        "explicit_class_commit_metadata": bool(report["commit_hash_evidence"]),
-        "complete_cobaya_yaml": bool(groups["complete_cobaya_yaml_candidates"]),
-        "pinned_dependencies": bool(groups["pinned_dependency_locks"]),
-        "chain_or_posterior_files": bool(groups["chain_candidates"]),
-        "likelihood_data_files": bool(groups["likelihood_data_candidates"]),
-        "raw_data_files": bool(groups["raw_data_candidates"]),
+        "reviewable_class_patch_candidate": bool(groups["valid_class_patch_candidates"]),
+        "class_commit_hash_metadata_candidate": bool(report["commit_hash_evidence"]),
+        "cobaya_yaml_candidate_with_required_sections": bool(groups["complete_cobaya_yaml_candidates"]),
+        "pinned_dependency_lock_candidate": bool(groups["pinned_dependency_locks"]),
+        "chain_or_posterior_candidate": bool(groups["chain_candidates"]),
+        "likelihood_data_candidate": bool(groups["likelihood_data_candidates"]),
+        "raw_data_candidate": bool(groups["raw_data_candidates"]),
     }
     report["reproduction_checklist"] = {
         **checklist,
-        "missing_requirements": [name for name, present in checklist.items() if not present],
-        "complete_for_reproduction": all(checklist.values()),
+        "missing_candidate_categories": [name for name, present in checklist.items() if not present],
+        "candidate_input_categories_present": all(checklist.values()),
+        "independent_reproduction_verified": False,
     }
     return report
 
@@ -315,8 +317,8 @@ def main() -> int:
     )
     checklist = report["reproduction_checklist"]
     print(f"Archive valid: {report['archive_valid']}; entries inspected: {report['entry_count']}")
-    print(f"Reproduction inputs complete: {checklist['complete_for_reproduction']}")
-    print(f"Missing requirements: {checklist['missing_requirements']}")
+    print(f"Candidate input categories present: {checklist['candidate_input_categories_present']}")
+    print(f"Missing candidate categories: {checklist['missing_candidate_categories']}")
     print(f"Output: {args.output}")
     return 0 if report["archive_valid"] and report["crc_test_passed"] else 1
 

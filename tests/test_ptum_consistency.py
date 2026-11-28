@@ -5771,7 +5771,8 @@ def test_class_cobaya_archive_audit_inventory_classifies_reproduction_inputs(tmp
     assert report["candidate_groups"]["likelihood_data_candidates"]
     assert report["candidate_groups"]["raw_data_candidates"]
     assert report["commit_hash_evidence"][0]["hashes"] == [class_commit]
-    assert report["reproduction_checklist"]["complete_for_reproduction"]
+    assert report["reproduction_checklist"]["candidate_input_categories_present"]
+    assert report["reproduction_checklist"]["independent_reproduction_verified"] is False
     assert report["scope"]["patch_applied"] is False
     assert report["scope"]["cobaya_executed"] is False
     assert report["scope"]["posterior_independently_reproduced"] is False
@@ -5786,4 +5787,5 @@ def test_class_cobaya_archive_audit_fails_closed_on_invalid_zip(tmp_path):
     report = audit_archive(archive_path)
     assert not report["archive_valid"]
     assert not report["crc_test_passed"]
-    assert not report["reproduction_checklist"]["complete_for_reproduction"]
+    assert not report["reproduction_checklist"]["candidate_input_categories_present"]
+    assert report["reproduction_checklist"]["independent_reproduction_verified"] is False
