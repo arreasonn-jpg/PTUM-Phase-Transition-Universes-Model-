@@ -5759,6 +5759,7 @@ def test_class_cobaya_archive_audit_inventory_classifies_reproduction_inputs(tmp
         )
         archive.writestr("requirements.txt", "cobaya==3.5.0\nclassy==3.2.1.0\n")
         archive.writestr("chains/run_chain_1.txt", "0.1 0.2\n")
+        archive.writestr("highlights.txt", "A short manuscript highlights file, not likelihood data.\n")
         archive.writestr("data/planck_plik.fits", b"SYNTHETIC-LIKELIHOOD-DATA")
 
     report = audit_archive(archive_path)
@@ -5769,6 +5770,7 @@ def test_class_cobaya_archive_audit_inventory_classifies_reproduction_inputs(tmp
     assert report["candidate_groups"]["pinned_dependency_locks"]
     assert report["candidate_groups"]["chain_candidates"]
     assert report["candidate_groups"]["likelihood_data_candidates"]
+    assert all(item["path"] != "highlights.txt" for item in report["candidate_groups"]["likelihood_data_candidates"])
     assert report["candidate_groups"]["raw_data_candidates"]
     assert report["commit_hash_evidence"][0]["hashes"] == [class_commit]
     assert report["reproduction_checklist"]["candidate_input_categories_present"]

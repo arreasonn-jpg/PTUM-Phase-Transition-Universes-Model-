@@ -30,7 +30,8 @@ LOCK_NAMES = {
 }
 LIKELIHOOD_TOKENS = (
     "planck", "plik", "clik", "bao", "pantheon", "supernova",
-    "likelihood", "boss", "des", "sn_data", "highl", "lowl",
+    "likelihood", "boss", "des_y1", "des_y3", "des_bao", "sn_data",
+    "highl_plik", "highl-lite", "lowl_ee", "dr12",
 )
 CHAIN_TOKENS = ("chain", "mcmc", "posterior", "samples", "getdist", "paramnames", "covmat")
 CLASS_SOURCE_NAMES = {
