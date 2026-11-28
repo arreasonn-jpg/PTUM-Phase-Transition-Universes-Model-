@@ -1725,3 +1725,12 @@ finite-band stress Ward identity. This is not a renormalized interacting
 force, a self-consistent background source, or a quantum waterfall
 prediction. Finite matching, momentum tails, interacting CTP terms and
 backreaction remain absent. Gate 5 remains NOT MET.
+
+
+## 2026-11-28 R1.5 first exact-head CI boundary
+
+The finite-band source extension passed 231 regression tests, 4/4 smoke
+trajectories, and the 11-grid bare-WKB audit in workflow 46130156148.
+The PDF built, but the new sector-source display caused one 49.91374pt
+Overfull hbox; the equation has been split and awaits a clean exact-head
+LaTeX rerun. This does not change Gate 5 from NOT MET.

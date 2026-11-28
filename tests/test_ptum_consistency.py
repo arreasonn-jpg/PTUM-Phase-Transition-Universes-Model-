@@ -5670,3 +5670,17 @@ def test_finite_band_subtracted_stress_obeys_time_dependent_mass_ward_identity()
     transfer = center["external_mass_energy_transfer_source_order0_to4_GeV5"]
     scale = max(abs(rho_dot), abs(transfer), 1.0e-30)
     assert abs(rho_dot - transfer) / scale < 2.0e-5
+
+
+def test_finite_band_phi_source_derivation_is_line_broken_in_manuscript():
+    from pathlib import Path
+
+    manuscript = Path("main.tex").read_text(encoding="utf-8")
+    start = manuscript.index("When the external mass is a function of the homogeneous PTUM field")
+    end = manuscript.index("The implementation remains deliberately finite-band", start)
+    derivation = manuscript[start:end]
+    assert r"\begin{align}" in derivation
+    assert r"Q_\psi^0" in derivation
+    assert r"Q_\Phi^0" in derivation
+    assert r"\dot M^2" in derivation
+    assert derivation.count(r"\\") >= 2

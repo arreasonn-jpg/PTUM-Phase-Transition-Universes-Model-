@@ -230,3 +230,15 @@ still retains zero-point energy, applies no vacuum subtraction or
 counterterms, and makes no continuum-limit claim. The tracked PTUM.zip
 archive remains uninspected; CLASS/Cobaya inputs and chains remain
 unverified.
+
+
+## 2026-11-28 exact-head R1.5 CI and LaTeX follow-up
+
+Workflow [46130156148](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/46130156148)
+on head 0fd308c57be4c71acd1a341e1edc98efa4f17e9a passed 231 Python
+tests, 4/4 smoke trajectories, and the 11-grid bare-WKB UV audit. The
+smoke had zero integration failures. The PDF built to 49 pages, but
+the new source equation produced one 49.91374pt Overfull hbox and
+81 Underfull hboxes. The source equation was split into aligned lines
+for exact-head rebuild. The long 100-row scan and paired convergence
+jobs were skipped because the simulation source did not change.

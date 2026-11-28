@@ -3040,3 +3040,14 @@ control. It is not a renormalized force on \(\Phi\), does not fix finite
 matching conditions or momentum tails, and does not include interacting
 self-energy, CTP backreaction, or nonlinear lattice counterterms.
 Gate 5 remains NOT MET.
+
+
+## 2026-11-28 R1.5 exact-head CI and equation layout correction
+
+The action-matched finite-band Phi-source implementation passed 231
+Python regressions, the 4/4 smoke scan, and the 11-grid bare-WKB audit
+in workflow 46130156148. The manuscript built to 49 pages, but the
+combined source equation produced one 49.91374pt Overfull hbox. The
+equation is now split into aligned lines; exact-head LaTeX revalidation
+is required before counting the manuscript layout as clean. The
+remaining 81 Underfull hboxes are still recorded.

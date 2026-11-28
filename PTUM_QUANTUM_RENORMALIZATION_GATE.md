@@ -432,3 +432,14 @@ the EFT cutoff, finite matching conditions, momentum tails, interacting
 self-energy, CTP finite part, and self-consistent \(\Phi\)/Friedmann
 backreaction remain unresolved. No nonlinear lattice counterterms or
 defect-network simulation are supplied. Gate 5 remains **NOT MET**.
+
+
+## 2026-11-28 R1.5 exact-head regression and layout follow-up
+
+Workflow [46130156148](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/46130156148)
+passed the 231-test Python suite, 4/4 smoke trajectories, and the
+11-grid bare-WKB audit. The time-dependent external-mass Ward regression
+therefore passed on the exact code head. The PDF built to 49 pages, but
+the new combined sector-source equation produced a 49.91374pt Overfull
+hbox. It has been rewritten as a four-line aligned derivation; exact-head
+LaTeX verification is pending. Gate 5 remains NOT MET.
