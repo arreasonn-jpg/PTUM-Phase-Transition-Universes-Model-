@@ -976,3 +976,108 @@ def ptum_scalar_heat_kernel_a2_field_derivatives(
             "physical_PTUM_prediction": False,
         },
     }
+
+def ptum_scalar_potential_one_loop_beta(
+    Phi: float,
+    psi: float,
+    params: PTUMParameters,
+) -> dict[str, object]:
+    """Return the scalar-only one-loop MS-bar beta functional of the PTUM potential.
+
+    In flat Euclidean space and modulo total derivatives, the two-real-scalar
+    Gaussian determinant gives
+        beta_V(Phi,psi) = tr[H(Phi,psi)^2] / (32*pi^2)
+                       = a2_flat(Phi,psi) / (16*pi^2),
+    where H is the Hessian of the same PTUM tree-level potential used by
+    ptum_scalar_hessian.  The field derivatives are obtained from the
+    action-matched heat-kernel pole derivative helper.
+
+    This is a local scalar-loop functional beta, not a solution of its RG
+    flow.  It does not select the EFT cutoff, boundary values, finite
+    matching conditions, curvature terms, or the additional operators
+    required by a specified EFT truncation.
+    """
+    phi = _finite_real_scalar("Phi", Phi)
+    waterfall = _finite_real_scalar("psi", psi)
+    hessian = ptum_scalar_hessian(phi, waterfall, params)
+    a2_result = ptum_scalar_heat_kernel_a2(
+        phi,
+        waterfall,
+        params,
+        xi_phi=1.0 / 6.0,
+        xi_psi=1.0 / 6.0,
+        ricci_scalar_gev2=0.0,
+        riemann_squared_gev4=0.0,
+        ricci_tensor_squared_gev4=0.0,
+    )
+    derivatives = ptum_scalar_heat_kernel_a2_field_derivatives(
+        phi,
+        waterfall,
+        params,
+        xi_phi=1.0 / 6.0,
+        xi_psi=1.0 / 6.0,
+        ricci_scalar_gev2=0.0,
+        riemann_squared_gev4=0.0,
+        ricci_tensor_squared_gev4=0.0,
+    )
+
+    loop_factor = 1.0 / (16.0 * np.pi**2)
+    beta_from_trace = float(np.trace(hessian @ hessian)) / (32.0 * np.pi**2)
+    beta_from_a2 = float(a2_result["a2_bulk_GeV4"]) * loop_factor
+    beta_value = beta_from_a2
+    beta_phi = float(derivatives["d_a2_dPhi_GeV3"]) * loop_factor
+    beta_psi = float(derivatives["d_a2_dpsi_GeV3"]) * loop_factor
+    identity_scale = max(
+        abs(beta_from_trace), abs(beta_from_a2), np.finfo(float).tiny
+    )
+    identity_residual = abs(beta_from_trace - beta_from_a2) / identity_scale
+    values = np.asarray([
+        beta_from_trace, beta_from_a2, beta_phi, beta_psi, identity_residual
+    ])
+    if not np.all(np.isfinite(values)):
+        raise FloatingPointError("PTUM scalar potential beta functional is non-finite")
+    if identity_residual > 5.0e-13:
+        raise ArithmeticError(
+            "trace and heat-kernel beta functionals disagree: "
+            f"relative residual {identity_residual:.6g}"
+        )
+    if beta_value < 0.0:
+        raise ArithmeticError(
+            "real symmetric scalar Hessian must give a non-negative tr(H^2)"
+        )
+
+    return {
+        "beta_V_scalar_one_loop_GeV4": beta_value,
+        "d_beta_V_dPhi_scalar_one_loop_GeV3": beta_phi,
+        "d_beta_V_dpsi_scalar_one_loop_GeV3": beta_psi,
+        "beta_from_trace_GeV4": beta_from_trace,
+        "beta_from_heat_kernel_GeV4": beta_from_a2,
+        "trace_identity_relative_residual": identity_residual,
+        "scalar_hessian_GeV2": hessian.tolist(),
+        "beta_definition": "beta_V = mu_R * dV_E/dmu_R in MS-bar",
+        "loop_order": 1,
+        "field_basis": ["Phi", "psi"],
+        "potential": (
+            "V_eff(Phi) + 0.5*m_eff_squared(Phi)*psi^2 "
+            "+ 0.25*lambda_psi*psi^4"
+        ),
+        "operator_scope": (
+            "flat-space local potential functional from the two-real-scalar "
+            "Gaussian determinant, modulo total derivatives"
+        ),
+        "assumptions": {
+            "same_tree_level_hessian_as_PTUM_action": True,
+            "scalar_loops_only": True,
+            "flat_euclidean_curvature": True,
+            "curvature_beta_functions_included": False,
+            "sm_gauge_and_fermion_loops_included": False,
+            "graviton_loops_included": False,
+            "rg_flow_integrated": False,
+            "eft_cutoff_selected": False,
+            "renormalization_scale_boundary_values_supplied": False,
+            "finite_renormalization_conditions_selected": False,
+            "full_eft_operator_truncation_selected": False,
+            "real_time_ctp_backreaction_computed": False,
+            "physical_PTUM_prediction": False,
+        },
+    }
