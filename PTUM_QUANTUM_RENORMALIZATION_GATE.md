@@ -443,3 +443,18 @@ therefore passed on the exact code head. The PDF built to 49 pages, but
 the new combined sector-source equation produced a 49.91374pt Overfull
 hbox. It has been rewritten as a four-line aligned derivation; exact-head
 LaTeX verification is pending. Gate 5 remains NOT MET.
+
+
+## 2026-11-28 R1.5 exact-head CI confirmation
+
+Workflow [46130428147](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/46130428147)
+passed 232 Python tests, including the time-dependent external-mass
+subtracted-stress Ward regression, and the two-scale smoke scan passed
+4/4 with zero integration failures. The smoke artifact strictly parses,
+uses the exact endpoint \(\Phi_c/M_{\rm Pl}=0.9862280831209045\), and
+explicitly sets quantum_vacuum_seeded=false. The 11-grid UV artifact
+still retains zero-point energy and applies no vacuum subtraction or
+counterterms. The 49-page PDF now has zero Overfull hboxes and no final-pass
+unresolved references; 87 Underfull hboxes remain. The R1.5 result is
+therefore an externally prescribed free-field Ward control only. Gate 5
+remains NOT MET.

@@ -242,3 +242,34 @@ the new source equation produced one 49.91374pt Overfull hbox and
 81 Underfull hboxes. The source equation was split into aligned lines
 for exact-head rebuild. The long 100-row scan and paired convergence
 jobs were skipped because the simulation source did not change.
+
+
+## 2026-11-28 exact-head R1.5 artifacts and build
+
+Workflow [46130428147](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/46130428147)
+on commit 93d9bea4ac92d64fe8320e36e4d6f22976d0383c passed 232 tests,
+4/4 smoke trajectories with zero failed integrations, the 11-grid
+bare-WKB UV audit, and the 49-page manuscript build. The final LaTeX
+pass has zero Overfull hboxes, 87 Underfull hboxes, zero unresolved
+references/citations and zero final-pass warnings.
+
+The smoke artifact is strict JSON with four rows, exact
+Phi_c/M_Pl=0.9862280831209045, quantum_vacuum_seeded=false and maximum
+chain-rule continuity residual 3.2166235e-12. The two zero-seed rows
+remain exact classical invariant controls; the nonzero seeds are
+classical, not quantum vacuum fluctuations. Its ZIP SHA-256 is
+9e345475f4cfbb62851cff3b799251043f49c44f42bfc44ec36a27782e0753dc;
+the contained JSON SHA-256 is
+d3d85207367776136410b324d078279984224dfe1d707b43590e14700fb6e179.
+
+The UV artifact has 11 grids, high-cutoff bare-stress slope 3.8822732966,
+and fixed-spacing volume-density spread 2.38067e-13. It explicitly
+retains zero-point energy, applies no vacuum subtraction or counterterms,
+and makes no continuum-limit claim. Its ZIP SHA-256 is
+c6dd2af32bd338179e6b8d1a789fb6144745117ccf88bebeca238a7ea86e7f8f;
+the contained JSON SHA-256 is
+260730f3857d1b65433cd131f8c7256c006c85c69e415e1fe816ad1cf95a430.
+
+The full 100-row scan and paired convergence jobs were skipped because
+the simulation source was unchanged. PTUM.zip remains uninspected and
+the independent CLASS/Cobaya pipeline remains unverified.

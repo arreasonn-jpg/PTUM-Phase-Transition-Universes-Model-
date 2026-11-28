@@ -3051,3 +3051,22 @@ combined source equation produced one 49.91374pt Overfull hbox. The
 equation is now split into aligned lines; exact-head LaTeX revalidation
 is required before counting the manuscript layout as clean. The
 remaining 81 Underfull hboxes are still recorded.
+
+
+## 2026-11-28 R1.5 exact-head verification
+
+Commit 93d9bea4ac92d64fe8320e36e4d6f22976d0383c passed 232 Python
+tests, the 4/4 smoke scan, the 11-grid bare-WKB audit and the 49-page
+LaTeX build in workflow 46130428147. The exact smoke threshold remains
+\(\Phi_c/M_{\rm Pl}=0.9862280831209045\); all four trajectories completed
+without integration failure, quantum_vacuum_seeded=false, and the maximum
+chain-rule continuity residual is \(3.2166235\times10^{-12}\). The
+nonzero seeds are classical sensitivity controls, not quantum vacuum
+fluctuations. The UV audit has 11 grids, bare-stress slope 3.8822732966,
+fixed-spacing density spread \(2.38067\times10^{-13}\), zero-point
+energy retained, no vacuum subtraction/counterterms, and no continuum
+claim. The final LaTeX pass has zero Overfull hboxes, 87 Underfull
+hboxes, and no final-pass unresolved references/citations. The first
+pass forward-reference warnings resolve on rerun. The full scan and
+paired convergence jobs were skipped because the simulation source was
+unchanged.

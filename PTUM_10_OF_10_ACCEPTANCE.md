@@ -15,7 +15,7 @@ This file defines the evidence required before PTUM can be called scientifically
 | 7. Proxy-fluid realization | Demonstrate a stable parameter region with the required averaged equation of state, sound speed and anisotropic stress from the dynamics; show convergence and perturbative stability | **NOT MET**. The exact-head 100-row scan has 5/100 quartic-classifier rows, all in the low-scale underdamped control with the largest manually imposed classical seed \(\psi_{\rm init}=5\psi_0\) and offset \(0.01\Phi_c\); none of the 50 high-scale threshold-matched trajectories passes. Their \(w_{\psi,\rm exc}=0.3722\text{--}0.3736\), \(Q=10.65\text{--}11.07\), virial ratio \(0.9061\text{--}0.9096\), and \(H/\omega\simeq6.9\times10^{-5}\text{--}7.0\times10^{-5}\) are stable across all five tested homogeneous grid/tolerance profiles. This is a narrow classical control, not a quantum-seeded attractor or microscopic proxy-fluid. Sound speed, anisotropic stress, inhomogeneous stability and robust parameter-volume evidence remain absent |
 | 8. Reheating and entropy | Full energy partition from the coupled trajectory; decay/thermalization rates; BBN-compatible thermal history; comoving entropy calculation | **PARTIAL**. The repository includes conditional broken-phase scalar/pseudoscalar two-body and electroweak-symmetric chiral three-body vacuum widths, plus a continuous constant-\(w_c\), constant-\(\Gamma\), constant-\(g_*\) condensate/radiation FRW integrator. On exact head `150487c`, the BDF stiff-tail correction passes the 178-test regression, including five continuous-history tests. The integrator includes radiation in \(H\), independent cumulative condensate/radiation/total energy-budget residuals, \(T(N)\), sampled \(T_{\max}\), \(H=\Gamma\), radiation-domination events and \(S_{\rm com}(N)\). This remains a conditional constant-parameter benchmark, not a PTUM-derived prediction: Wilson matrices, cutoff, quasiparticle mass history, coupled energy partition, thermal thresholds, blocking/enhancement, inverse processes, portal pair production and nonperturbative preheating are unresolved. |
 | 9. Observational reproducibility | Public exact CLASS patch; pinned version/commit; complete configs, likelihoods, data, chains and commands; independent rerun reproduces posteriors and model comparison | **NOT MET**. Reported numbers are author-reported; patch availability and chains remain unverified |
-| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Workflow [46130156148](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/46130156148) on commit 0fd308c57be4c71acd1a341e1edc98efa4f17e9a passed 231 Python tests, 4/4 smoke trajectories and the 11-grid bare-WKB audit; the 49-page PDF built. The LaTeX log exposed one 49.91374pt Overfull hbox in the newly added long sector-source equation plus 81 Underfull hboxes; the long equation is now split across aligned lines and requires exact-head rebuild verification. The UV audit still retains zero-point energy and makes no subtraction/counterterm/continuum claim. Full 100-row scan and paired convergence jobs were skipped. Clean-room reproducibility and warning cleanup remain open |
+| 10. Software and manuscript reproducibility | Pinned environment; deterministic seeds; strict data schemas; full CI; clean LaTeX build; no unresolved references or contradictory claims; artifact hashes | **PARTIAL**. Exact-head workflow [46130428147](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/46130428147) on commit 93d9bea4ac92d64fe8320e36e4d6f22976d0383c passed 232 Python tests, 4/4 smoke trajectories and the 11-grid bare-WKB audit; the 49-page PDF built. Final LaTeX pass: zero Overfull hboxes, 87 Underfull hboxes, zero unresolved references/citations and zero final-pass LaTeX warnings. The smoke and UV JSON artifacts were strictly parsed and their hashes recorded. The full 100-row scan and paired convergence jobs were skipped. Clean-room reproducibility and remaining Underfull warnings keep this gate PARTIAL |
 
 ## Current implementation evidence
 
@@ -2682,3 +2682,39 @@ must be rechecked on its exact head. The UV audit still reports
 zero-point energy retained, no vacuum subtraction, no counterterms,
 and no continuum-limit claim. The long scan/convergence jobs were
 skipped because the simulation source was unchanged.
+
+
+## 2026-11-28 R1.5 exact-head CI and artifact verification
+
+Workflow [46130428147](https://github.com/arreasonn-jpg/PTUM-Phase-Transition-Universes-Model-/actions/runs/46130428147)
+on commit 93d9bea4ac92d64fe8320e36e4d6f22976d0383c passed 232
+Python regressions, the 4/4 two-scale smoke scan, the 11-grid bare-WKB
+UV audit, and the 49-page manuscript build. The smoke had zero failed
+integrations. Its strict-JSON rows retain
+\(\Phi_c/M_{\rm Pl}=0.9862280831209045\),
+\(\texttt{quantum\_vacuum\_seeded=false}\), and a maximum chain-rule
+continuity residual \(3.2166235\times10^{-12}\). The two zero-seed rows
+are exact classical invariant controls; the nonzero seeds are classical,
+not vacuum fluctuations. Both oscillatory smoke classifications remain
+non-quartic.
+
+The smoke ZIP SHA-256 is
+9e345475f4cfbb62851cff3b799251043f49c44f42bfc44ec36a27782e0753dc;
+its JSON SHA-256 is
+d3d85207367776136410b324d078279984224dfe1d707b43590e14700fb6e179.
+The UV ZIP SHA-256 is
+c6dd2af32bd338179e6b8d1a789fb6144745117ccf88bebeca238a7ea86e7f8f;
+its JSON SHA-256 is
+260730f3857d1b65433a2a435b041d6c6779d5b75f63b6c8c2e5ba9447493749.
+The UV artifact confirms 11 grids, a high-cutoff bare-stress slope
+3.8822732966, and fixed-spacing volume-density spread
+\(2.38067\times10^{-13}\). It explicitly retains zero-point energy,
+applies no vacuum subtraction or counterterms, and claims no continuum
+limit.
+
+The final LaTeX pass has zero Overfull hboxes, 87 Underfull hboxes,
+zero unresolved references/citations and zero final-pass LaTeX warnings.
+The first-pass undefined references/citations are resolved by the
+latexmk rerun. The 100-row scan and paired convergence jobs were skipped
+because the simulation source was unchanged. Gate 5 and Gate 9 remain
+NOT MET; Gate 10 remains PARTIAL.

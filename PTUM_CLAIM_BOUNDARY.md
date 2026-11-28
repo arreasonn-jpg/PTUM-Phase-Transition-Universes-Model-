@@ -1734,3 +1734,17 @@ trajectories, and the 11-grid bare-WKB audit in workflow 46130156148.
 The PDF built, but the new sector-source display caused one 49.91374pt
 Overfull hbox; the equation has been split and awaits a clean exact-head
 LaTeX rerun. This does not change Gate 5 from NOT MET.
+
+
+## 2026-11-28 R1.5 exact-head evidence boundary
+
+The action-matched finite-band Phi source and time-dependent-mass stress
+Ward regression passed in the 232-test suite of workflow 46130428147.
+The smoke and UV JSON artifacts were strictly parsed. The smoke is
+homogeneous and classical: quantum_vacuum_seeded=false, exact endpoint
+threshold, zero failed integrations; it does not supply quantum vacuum
+seeds or inhomogeneous rescattering. The UV audit is deliberately bare,
+with zero-point energy retained and no subtraction/counterterms. The
+final 49-page LaTeX build has zero Overfull hboxes and no final-pass
+unresolved references, but 87 Underfull hboxes remain. None of this
+upgrades Gate 5 to NOT MET.
