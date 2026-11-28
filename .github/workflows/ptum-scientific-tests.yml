@@ -248,3 +248,25 @@ jobs:
           path: ptum_adiabatic_band_audit.json
           if-no-files-found: ignore
           retention-days: 30
+
+
+  class-cobaya-archive-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Inventory bundled CLASS and Cobaya inputs
+        run: python ptum_class_cobaya_archive_audit.py --archive PTUM.zip --output ptum_class_cobaya_archive_audit.json
+      - name: Upload archive inventory and source archive for inspection
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ptum-class-cobaya-archive-inventory
+          path: |
+            ptum_class_cobaya_archive_audit.json
+            PTUM.zip
+          if-no-files-found: ignore
+          retention-days: 7

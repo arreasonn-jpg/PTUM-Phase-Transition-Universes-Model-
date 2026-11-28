@@ -5732,3 +5732,58 @@ def test_finite_band_minkowski_audit_keeps_the_exact_particle_spectrum():
     assert bare_pressure - vacuum_pressure == pytest.approx(
         k**2 * beta_squared / (3.0 * omega), rel=2.0e-14
     )
+
+
+def test_class_cobaya_archive_audit_inventory_classifies_reproduction_inputs(tmp_path):
+    import zipfile
+
+    from ptum_class_cobaya_archive_audit import audit_archive
+
+    archive_path = tmp_path / "synthetic_ptum.zip"
+    class_commit = "0123456789abcdef0123456789abcdef01234567"
+    with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr(
+            "CLASS/patches/ptum.patch",
+            "diff --git a/classy/background.c b/classy/background.c\n"
+            "--- a/classy/background.c\n+++ b/classy/background.c\n"
+            "@@ -1 +1 @@\n",
+        )
+        archive.writestr(
+            "CLASS_COMMIT.txt",
+            f"CLASS_COMMIT={class_commit}\n",
+        )
+        archive.writestr(
+            "cobaya/run.yaml",
+            "theory:\n  classy:\nlikelihood:\n  planck_2018_highl_plik.TTTEEE: null\n"
+            "sampler:\n  mcmc: null\n",
+        )
+        archive.writestr("requirements.txt", "cobaya==3.5.0\nclassy==3.2.1.0\n")
+        archive.writestr("chains/run_chain_1.txt", "0.1 0.2\n")
+        archive.writestr("data/planck_plik.fits", b"SYNTHETIC-LIKELIHOOD-DATA")
+
+    report = audit_archive(archive_path)
+    assert report["archive_valid"]
+    assert report["crc_test_passed"]
+    assert report["candidate_groups"]["valid_class_patch_candidates"]
+    assert report["candidate_groups"]["complete_cobaya_yaml_candidates"]
+    assert report["candidate_groups"]["pinned_dependency_locks"]
+    assert report["candidate_groups"]["chain_candidates"]
+    assert report["candidate_groups"]["likelihood_data_candidates"]
+    assert report["candidate_groups"]["raw_data_candidates"]
+    assert report["commit_hash_evidence"][0]["hashes"] == [class_commit]
+    assert report["reproduction_checklist"]["complete_for_reproduction"]
+    assert report["scope"]["patch_applied"] is False
+    assert report["scope"]["cobaya_executed"] is False
+    assert report["scope"]["posterior_independently_reproduced"] is False
+    json.dumps(report, allow_nan=False)
+
+
+def test_class_cobaya_archive_audit_fails_closed_on_invalid_zip(tmp_path):
+    from ptum_class_cobaya_archive_audit import audit_archive
+
+    archive_path = tmp_path / "not_a_zip.zip"
+    archive_path.write_bytes(b"not a zip archive")
+    report = audit_archive(archive_path)
+    assert not report["archive_valid"]
+    assert not report["crc_test_passed"]
+    assert not report["reproduction_checklist"]["complete_for_reproduction"]
