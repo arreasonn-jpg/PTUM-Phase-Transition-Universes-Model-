@@ -56,7 +56,7 @@ def _adaptive_reference() -> dict[str, dict[str, float]]:
             measure * beta_squared / omega,
         )
 
-    names = ("rho_GeV4", "pressure_GeV4", "variance_GeV2")
+    names = ("rho_code_units_4", "pressure_code_units_4", "variance_code_units_2")
     reference = {}
     for index, name in enumerate(names):
         value, error = quad(
@@ -159,7 +159,8 @@ def run_minkowski_squeezed_band_audit() -> dict[str, object]:
             "field": "one free real scalar",
             "background": "Minkowski",
             "metric_signature": "(-+++)",
-            "mass_squared_GeV2": MASS_SQUARED,
+            "units": "internally consistent arbitrary mass units; no GeV conversion",
+            "mass_squared_code_units_2": MASS_SQUARED,
             "curvature_coupling": 0.0,
             "state": "pure Gaussian squeezed state",
             "bogoliubov_beta": "i*0.25*exp(-k/0.8)",
