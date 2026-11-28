@@ -1778,3 +1778,20 @@ part, or a real-time source. The EFT cutoff, full retained functional
 counterterm basis, renormalization conditions, SM/gauge/fermion/graviton
 loops, boundary terms and CTP backreaction remain open. Gate 5 remains
 **NOT MET**.
+
+
+## 2026-11-28 R0.4 scalar beta-functional boundary
+
+The branch now evaluates the flat-space one-loop MS-bar potential beta
+functional for the actual non-polynomial PTUM two-field potential,
+\(\beta_V^{(1)}=\operatorname{tr}(\mathcal H^2)/(32\pi^2)\),
+and its two field derivatives. A \(\lambda_\Phi=0\) polynomial
+control reproduces the existing two-scalar polynomial beta coefficients.
+
+This is a scalar-only local beta functional, not an integrated RG flow.
+No EFT cutoff, functional operator truncation, renormalization-scale
+boundary values or finite matching conditions are selected. Curvature,
+SM gauge/fermion and gravitational loops, boundary/initial-surface
+terms, CTP finite parts and self-consistent backreaction remain absent.
+No physical quantum-waterfall claim is promoted; Gate 5 remains
+**NOT MET**.

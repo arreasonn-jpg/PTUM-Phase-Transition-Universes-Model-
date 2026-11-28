@@ -540,3 +540,28 @@ matching conditions, non-polynomial operator truncation, SM and
 gravitational loops, boundary/initial-state terms, CTP finite part and
 self-consistent backreaction remain unspecified. R0 is still partial
 and Gate 5 remains **NOT MET**.
+
+
+### R0.4 flat-space scalar beta functional for the PTUM potential
+
+The new `ptum_scalar_potential_one_loop_beta` routine evaluates the
+local one-loop MS-bar scalar beta functional
+\[
+\beta_V^{(1)}(\Phi,\psi)
+=\frac{1}{32\pi^2}\operatorname{tr}[\mathcal H^2]
+=\frac{a_{2,\rm flat}}{16\pi^2}
+\]
+for the actual non-polynomial PTUM potential. Its field gradients are
+obtained from the R0.3 heat-kernel pole derivatives. The result is
+checked against the existing polynomial two-scalar beta coefficients
+in the exact \(\lambda_\Phi=0\) control limit; the regression also
+checks finite-difference gradients and non-negativity of
+\(\operatorname{tr}(\mathcal H^2)\) in stable and tachyonic cases.
+
+This is only the local scalar-loop potential beta in flat space,
+modulo bulk total derivatives. It is not an integrated RG flow or a
+complete EFT: the cutoff, functional operator truncation, boundary
+values and finite matching conditions are not fixed, and curvature,
+SM/gauge/fermion/graviton loops, boundary terms and real-time CTP
+backreaction are not included. R0 remains partial; Gate 5 remains
+**NOT MET**.

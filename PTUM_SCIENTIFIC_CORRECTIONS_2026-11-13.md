@@ -3131,3 +3131,33 @@ matching conditions, include SM/gauge/fermion/graviton loops or
 initial-surface terms, compute a renormalized force, or evolve a
 self-consistent CTP/Friedmann system. It is not a physical quantum
 waterfall result. Gate 5 remains **NOT MET**.
+
+
+## 2026-11-28 R0.4: scalar-only beta functional of the PTUM plateau
+
+Added `ptum_scalar_potential_one_loop_beta`. In flat Euclidean space,
+modulo bulk total derivatives, it evaluates
+\[
+\beta_V^{(1)}(\Phi,\psi)
+=\frac{1}{32\pi^2}\operatorname{tr}\!\left[
+\mathcal H(\Phi,\psi)^2\right]
+=\frac{a_{2,\rm flat}}{16\pi^2},
+\]
+using the same two-field Hessian as the PTUM action. The field gradients
+are obtained from the R0.3 action-matched heat-kernel pole derivatives.
+The beta is non-negative for the real symmetric Hessian, including in
+the tachyonic region; this statement concerns the local pole coefficient,
+not stability of the background.
+
+A `lambda_phi=0` polynomial control removes the plateau self-potential
+and gives an exact normalization check against the existing polynomial
+two-scalar MS-bar beta coefficients, including the vacuum, mass, mixed
+and quartic terms. Regressions also compare both functional gradients
+with central finite differences on stable and tachyonic backgrounds.
+
+This remains a **local one-loop scalar-only beta functional**, not an
+integrated RG flow or a complete EFT prediction. The cutoff, operator
+truncation, renormalization-scale boundary data and finite matching
+conditions remain unspecified; curvature, SM gauge/fermion and
+gravitational running, boundary terms and real-time CTP backreaction
+are not included. Gate 5 remains **NOT MET**.
